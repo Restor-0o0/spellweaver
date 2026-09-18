@@ -1,0 +1,86 @@
+{
+  "id": "magicka:death_stasis_field",
+  "formula": {
+    "cold": 2,
+    "arcane": 1,
+    "death": 1
+  },
+  "name": "Stasis Field · Death",
+  "tier": "Generic Fusion",
+  "tags": "AOE/CC/DEATH",
+  "shape": "targeted_zone",
+  "origin": "aim_ground",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 4,
+    "speed": 0.99,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.9,
+    "slow_projectiles": true
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 8,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10
+  },
+  "effects": [
+    {
+      "type": "modify_temperature",
+      "amount": -80
+    },
+    {
+      "type": "deal_damage",
+      "amount": 2.5,
+      "element": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "arcane_unstable",
+      "duration_ticks": 90,
+      "strength": 1
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 80,
+      "strength": 1
+    },
+    {
+      "type": "drain_life",
+      "amount": 1.0,
+      "fraction": 0.4
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "chilled",
+        "duration_ticks": 120,
+        "strength": 4
+      },
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 120,
+        "strength": 2
+      },
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 60,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "A zone at the aim point with a 4-block radius for 8 s (projectiles inside slow down). Every second, on everyone inside except you:\n• Damage 1.25 ❤ arcane\n• Cold 80: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Arcane instability: −0.25 ❤ every 2 s for 4.5 s\n• Withering: −0.5 ❤ per second for 4 s\n• Life drain: 0.5 ❤ damage, you heal 0.2 ❤",
+  "self_description": "On you:\n• Slowness IV for 6 s\n• Stone skin (Resistance II) for 6 s\n• Withering: −0.5 ❤ per second for 3 s",
+  "balanced": true
+}

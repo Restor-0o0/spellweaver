@@ -1,0 +1,113 @@
+{
+  "id": "magicka:haste_surge_cold",
+  "formula": {
+    "lightning": 1,
+    "life": 2,
+    "arcane": 1,
+    "cold": 1
+  },
+  "name": "Haste Surge · Cold",
+  "tier": "Generic Fusion",
+  "tags": "MOVE/BUFF",
+  "shape": "direct_target",
+  "origin": "aim_hit",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 5.37,
+    "speed": 1.07,
+    "duration_ticks": 360,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 4.64
+  },
+  "construction": {
+    "material": "root",
+    "budget": 40,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12,
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "haste",
+      "duration_ticks": 450,
+      "strength": 2
+    },
+    {
+      "type": "apply_effect",
+      "effect": "minecraft:haste",
+      "duration_ticks": 450,
+      "strength": 2
+    },
+    {
+      "type": "delay",
+      "ticks": 300,
+      "effects": [
+        {
+          "type": "add_charge",
+          "amount": 54
+        },
+        {
+          "type": "apply_status",
+          "status": "chilled",
+          "duration_ticks": 60,
+          "strength": 1
+        }
+      ]
+    },
+    {
+      "type": "modify_temperature",
+      "amount": -80
+    },
+    {
+      "type": "apply_status",
+      "status": "chilled",
+      "duration_ticks": 180,
+      "strength": 3
+    }
+  ],
+  "self": {
+    "mode": "effects",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "haste",
+        "duration_ticks": 450,
+        "strength": 2
+      },
+      {
+        "type": "apply_effect",
+        "effect": "minecraft:haste",
+        "duration_ticks": 450,
+        "strength": 2
+      },
+      {
+        "type": "delay",
+        "ticks": 300,
+        "effects": [
+          {
+            "type": "add_charge",
+            "amount": 54
+          },
+          {
+            "type": "apply_status",
+            "status": "chilled",
+            "duration_ticks": 60,
+            "strength": 1
+          }
+        ]
+      },
+      {
+        "type": "modify_temperature",
+        "amount": -25
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "Affects the creature you aim at:\n• Speed III for 22.5 s\n• Haste II (faster mining), 22.5 s\n• 15 s later: charge 54: weakness, stuns for 1 s at 65 charge (×2 on wet); Slowness I for 3 s\n• Cold 80: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Slowness III for 9 s",
+  "self_description": "On you:\n• Speed III for 22.5 s\n• Haste II (faster mining), 22.5 s\n• 15 s later: charge 54: weakness, stuns for 1 s at 65 charge (×2 on wet); Slowness I for 3 s\n• Cold 25: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze"
+}

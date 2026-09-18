@@ -1,0 +1,54 @@
+{
+  "id": "magicka:raise_dead",
+  "formula": {
+    "death": 3
+  },
+  "name": "Raise Dead",
+  "tier": "Signature",
+  "tags": "SUMMON/REVIVE",
+  "shape": "summon_object",
+  "origin": "aim_hit",
+  "delivery": {
+    "radius": 1.5,
+    "speed": 0.9,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.0,
+    "object_kind": "undead"
+  },
+  "effects": [
+    {
+      "type": "raise_dead",
+      "count": 4,
+      "radius": 8,
+      "duration_ticks": 990
+    },
+    {
+      "type": "summon_undead",
+      "entity": "minecraft:skeleton",
+      "count": 1,
+      "duration_ticks": 990
+    }
+  ],
+  "self": {
+    "mode": "summon",
+    "effects": [
+      {
+        "type": "raise_dead",
+        "count": 4,
+        "radius": 8,
+        "duration_ticks": 990
+      },
+      {
+        "type": "summon_undead",
+        "entity": "minecraft:skeleton",
+        "count": 1,
+        "duration_ticks": 990
+      }
+    ]
+  },
+  "primary": "Raises recently fallen creatures as servants.\nAt the aim point (effects hit everyone within 1.5 blocks):\n• Summons servants for 49.5 s: skeleton ×1\n• Raises up to 4 recently slain creatures within 8 blocks as servants for 49.5 s",
+  "self_description": "Next to you (effects hit everyone within 1.5 blocks, including you):\n• Summons servants for 49.5 s: skeleton ×1\n• Raises up to 4 recently slain creatures within 8 blocks as servants for 49.5 s",
+  "balanced": true
+}

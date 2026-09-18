@@ -1,0 +1,42 @@
+{
+  "id": "magicka:grave_call",
+  "formula": {
+    "death": 2
+  },
+  "name": "Grave Call",
+  "tier": "Signature",
+  "tags": "SUMMON",
+  "shape": "summon_object",
+  "origin": "aim_hit",
+  "delivery": {
+    "radius": 1.5,
+    "speed": 0.9,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.0,
+    "object_kind": "undead"
+  },
+  "effects": [
+    {
+      "type": "summon_undead",
+      "entity": "minecraft:zombie",
+      "count": 2,
+      "duration_ticks": 750
+    }
+  ],
+  "self": {
+    "mode": "summon",
+    "effects": [
+      {
+        "type": "summon_undead",
+        "entity": "minecraft:zombie",
+        "count": 2,
+        "duration_ticks": 750
+      }
+    ]
+  },
+  "primary": "Zombie servants rise from the ground.\nAt the aim point:\n• Summons servants for 37.5 s: zombie ×2",
+  "self_description": "Next to you:\n• Summons servants for 37.5 s: zombie ×2",
+  "balanced": true
+}

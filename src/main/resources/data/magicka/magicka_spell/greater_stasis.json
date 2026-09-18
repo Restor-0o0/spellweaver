@@ -1,0 +1,65 @@
+{
+  "id": "magicka:greater_stasis",
+  "formula": {
+    "cold": 2,
+    "arcane": 2
+  },
+  "name": "Greater Stasis",
+  "tier": "Family Variant",
+  "tags": "CC/DEBUFF/SETUP",
+  "shape": "targeted_explosion",
+  "origin": "aim_hit",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 3.7,
+    "speed": 1.07,
+    "duration_ticks": 240,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.5
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 16,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12
+  },
+  "effects": [
+    {
+      "type": "modify_temperature",
+      "amount": -80
+    },
+    {
+      "type": "deal_damage",
+      "amount": 5.0,
+      "element": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "arcane_unstable",
+      "duration_ticks": 120,
+      "strength": 2
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "modify_temperature",
+        "amount": -80
+      },
+      {
+        "type": "apply_status",
+        "status": "arcane_unstable",
+        "duration_ticks": 120,
+        "strength": 2
+      }
+    ]
+  },
+  "primary": "An explosion at the aim point with a 3.7-block radius (does not hit you):\n• Damage 2.5 ❤ arcane\n• Cold 80: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Arcane instability: −0.5 ❤ every 2 s for 6 s",
+  "self_description": "On you:\n• Cold 80: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Arcane instability: −0.5 ❤ every 2 s for 6 s",
+  "balanced": true
+}

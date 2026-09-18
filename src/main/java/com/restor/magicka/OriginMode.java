@@ -1,0 +1,6 @@
+package com.restor.magicka;
+
+public enum OriginMode {
+    CASTER, CASTER_FEET, CASTER_FRONT, AIM_HIT, AIM_BLOCK, AIM_POINT, TARGET_ENTITY, UNDER_TARGET, CORPSE_TARGET,
+    AIM_SURFACE, AIM_GROUND
+}

@@ -1,0 +1,87 @@
+{
+  "id": "magicka:charged_greater_frostshock_cold2",
+  "formula": {
+    "cold": 2,
+    "lightning": 3
+  },
+  "name": "Charged Greater Frostshock · Cold ×2",
+  "tier": "Generic Fusion",
+  "tags": "CC/DEBUFF/DMG",
+  "shape": "chain",
+  "origin": "aim_hit",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 4.5,
+    "speed": 1.07,
+    "duration_ticks": 300,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 4.93
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 40,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12,
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "modify_temperature",
+      "amount": -72
+    },
+    {
+      "type": "deal_damage",
+      "amount": 12.5,
+      "element": "lightning"
+    },
+    {
+      "type": "add_charge",
+      "amount": 189
+    },
+    {
+      "type": "chain_targets",
+      "count": 16,
+      "range": 8,
+      "amount": 12.6
+    },
+    {
+      "type": "modify_temperature",
+      "amount": -80
+    },
+    {
+      "type": "apply_status",
+      "status": "chilled",
+      "duration_ticks": 180,
+      "strength": 3
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "modify_temperature",
+        "amount": -72
+      },
+      {
+        "type": "deal_damage",
+        "amount": 12.5,
+        "element": "lightning"
+      },
+      {
+        "type": "add_charge",
+        "amount": 189
+      },
+      {
+        "type": "modify_temperature",
+        "amount": -25
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "Lightning shoots from your hand into the creature you aim at (or the first one in your line of sight). In instant mode it strikes twice a second while held. Effects:\n• Damage 6.25 ❤ lightning (lightning ×2 on wet)\n• Cold 72: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Charge 189: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Then the lightning jumps onward: up to 16 targets in a row, jumps up to 8 blocks, 6.3 ❤ and 40 charge each (×2 damage and longer jumps on wet, ×1.5 range in puddles)\n• Cold 80: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Slowness III for 9 s",
+  "self_description": "On you:\n• Damage 6.25 ❤ lightning (lightning ×2 on wet)\n• Cold 72: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Charge 189: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Cold 25: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze"
+}

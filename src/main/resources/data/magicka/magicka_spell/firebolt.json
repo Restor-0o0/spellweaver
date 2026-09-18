@@ -1,0 +1,57 @@
+{
+  "id": "magicka:firebolt",
+  "formula": {
+    "fire": 2
+  },
+  "name": "Firebolt",
+  "tier": "Signature",
+  "tags": "DMG/DOT",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 9,
+  "delivery": {
+    "radius": 2.3,
+    "speed": 1.4,
+    "duration_ticks": 120,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.9
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 3,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 8
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 3.0,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 80
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 3.0,
+        "element": "fire"
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 80
+      }
+    ]
+  },
+  "primary": "A fast fire bolt.\nA projectile flies where you look and strikes the first target. Effects:\n• Damage 1.5 ❤ fire (fire ×0.5 on wet)\n• Heat: sets on fire for 12 s (wet targets just dry off), thaws; melts ice and burns roots",
+  "self_description": "On you:\n• Damage 1.5 ❤ fire (fire ×0.5 on wet)\n• Heat: sets on fire for 12 s (wet targets just dry off), thaws; melts ice and burns roots",
+  "balanced": true
+}

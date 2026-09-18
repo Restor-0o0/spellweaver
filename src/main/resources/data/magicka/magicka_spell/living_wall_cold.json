@@ -1,0 +1,78 @@
+{
+  "id": "magicka:living_wall_cold",
+  "formula": {
+    "earth": 2,
+    "life": 2,
+    "cold": 1
+  },
+  "name": "Living Wall · Cold",
+  "tier": "Generic Fusion",
+  "tags": "BUILD/DEF",
+  "shape": "wall",
+  "origin": "aim_ground",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 5.37,
+    "speed": 1.07,
+    "duration_ticks": 420,
+    "interval_ticks": 20,
+    "gravity": 0.025,
+    "burst_radius": 4.5
+  },
+  "construction": {
+    "material": "root",
+    "budget": 40,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12,
+    "regenerates": true,
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "create_construction"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": -80
+    },
+    {
+      "type": "apply_status",
+      "status": "chilled",
+      "duration_ticks": 180,
+      "strength": 3
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 300,
+        "strength": 3
+      },
+      {
+        "type": "apply_status",
+        "status": "chilled",
+        "duration_ticks": 240,
+        "strength": 2
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 300,
+        "strength": 2
+      },
+      {
+        "type": "modify_temperature",
+        "amount": -25
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "A wall 3 high of 40 blocks at the aim point, extending to the right across your view; damaged blocks regrow. Material: roots: climbable, burn in fire, permanent.",
+  "self_description": "On you:\n• Stone skin (Resistance III) for 15 s\n• Slowness II for 12 s\n• Regeneration: +1 ❤ every 2 s for 15 s\n• Cold 25: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze"
+}

@@ -1,0 +1,61 @@
+{
+  "id": "magicka:soul_storm",
+  "formula": {
+    "lightning": 1,
+    "death": 1
+  },
+  "name": "Soul Storm",
+  "tier": "Signature",
+  "tags": "DMG/CC",
+  "shape": "chain",
+  "origin": "aim_hit",
+  "delivery": {
+    "radius": 3.0,
+    "speed": 0.9,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.0
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 3.0,
+      "element": "lightning"
+    },
+    {
+      "type": "add_charge",
+      "amount": 40
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 75,
+      "strength": 1
+    },
+    {
+      "type": "chain_targets",
+      "count": 4,
+      "range": 5,
+      "amount": 2.0
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "add_charge",
+        "amount": 40
+      },
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 75,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "A lightning of souls leaps from your hand across enemies.\nLightning shoots from your hand into the creature you aim at (or the first one in your line of sight). Effects:\n• Damage 1.5 ❤ lightning (lightning ×2 on wet)\n• Charge 40: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Withering: −0.5 ❤ per second for 3.75 s\n• Then the lightning jumps onward: up to 4 targets in a row, jumps up to 5 blocks, 1 ❤ and 40 charge each (×2 damage and longer jumps on wet, ×1.5 range in puddles)",
+  "self_description": "On you:\n• Charge 40: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Withering: −0.5 ❤ per second for 3.75 s",
+  "balanced": true
+}

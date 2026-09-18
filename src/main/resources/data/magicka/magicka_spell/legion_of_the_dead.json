@@ -1,0 +1,67 @@
+{
+  "id": "magicka:legion_of_the_dead",
+  "formula": {
+    "death": 4
+  },
+  "name": "Legion of the Dead",
+  "tier": "Signature",
+  "tags": "SUMMON",
+  "shape": "summon_object",
+  "origin": "aim_hit",
+  "delivery": {
+    "radius": 1.5,
+    "speed": 0.9,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.0,
+    "object_kind": "undead"
+  },
+  "effects": [
+    {
+      "type": "summon_undead",
+      "entity": "minecraft:zombie",
+      "count": 2,
+      "duration_ticks": 900
+    },
+    {
+      "type": "summon_undead",
+      "entity": "minecraft:skeleton",
+      "count": 2,
+      "duration_ticks": 900
+    },
+    {
+      "type": "summon_undead",
+      "entity": "minecraft:creeper",
+      "count": 2,
+      "duration_ticks": 900
+    }
+  ],
+  "self": {
+    "mode": "summon",
+    "effects": [
+      {
+        "type": "summon_undead",
+        "entity": "minecraft:zombie",
+        "count": 2,
+        "duration_ticks": 900
+      },
+      {
+        "type": "summon_undead",
+        "entity": "minecraft:skeleton",
+        "count": 2,
+        "duration_ticks": 900
+      },
+      {
+        "type": "summon_undead",
+        "entity": "minecraft:creeper",
+        "count": 2,
+        "duration_ticks": 900
+      }
+    ]
+  },
+  "primary": "A whole undead army rises to fight for you.\nAt the aim point:\n• Summons servants for 45 s: zombie ×2, skeleton ×2, creeper ×2",
+  "self_description": "Next to you:\n• Summons servants for 45 s: zombie ×2, skeleton ×2, creeper ×2",
+  "cast_ticks": 26,
+  "balanced": true
+}

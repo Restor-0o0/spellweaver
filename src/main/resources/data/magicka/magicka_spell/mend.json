@@ -1,0 +1,63 @@
+{
+  "id": "magicka:mend",
+  "formula": {
+    "life": 1
+  },
+  "name": "Mend",
+  "tier": "Signature",
+  "tags": "HEAL/BUFF",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 5,
+  "delivery": {
+    "radius": 2.0,
+    "speed": 0.83,
+    "duration_ticks": 140,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 1.8
+  },
+  "construction": {
+    "material": "root",
+    "budget": 1,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 6
+  },
+  "effects": [
+    {
+      "type": "heal",
+      "amount": 2.5
+    },
+    {
+      "type": "apply_status",
+      "status": "regenerating",
+      "duration_ticks": 162,
+      "strength": 1
+    },
+    {
+      "type": "grow_plants",
+      "budget": 2
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "heal",
+        "amount": 2.5
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 162,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "A light healing projectile.\nA projectile flies where you look and strikes the first target. Effects:\n• Heals 1.25 ❤\n• Regeneration: +0.5 ❤ every 2 s for 8.1 s\n• Growth: up to 2 nearby blocks — crops +2 stages, dirt turns to grass, roots grow upward",
+  "self_description": "On you:\n• Heals 1.25 ❤\n• Regeneration: +0.5 ❤ every 2 s for 8.1 s",
+  "balanced": true
+}

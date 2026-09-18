@@ -1,0 +1,96 @@
+{
+  "id": "magicka:living_greater_spring_water2",
+  "formula": {
+    "water": 2,
+    "life": 3
+  },
+  "name": "Living Greater Spring · Water ×2",
+  "tier": "Generic Fusion",
+  "tags": "SETUP/CC/HEAL/BUFF",
+  "shape": "targeted_zone",
+  "origin": "aim_ground",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 6.09,
+    "speed": 1.07,
+    "duration_ticks": 450,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 4.06
+  },
+  "construction": {
+    "material": "root",
+    "budget": 40,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12,
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "set_wet",
+      "duration_ticks": 240
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.27,
+      "lift": 0
+    },
+    {
+      "type": "heal",
+      "amount": 11.0
+    },
+    {
+      "type": "apply_status",
+      "status": "regenerating",
+      "duration_ticks": 300,
+      "strength": 3
+    },
+    {
+      "type": "grow_plants",
+      "budget": 15
+    },
+    {
+      "type": "set_wet",
+      "duration_ticks": 240
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.5,
+      "lift": 0
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 240
+      },
+      {
+        "type": "apply_force",
+        "amount": 0.27,
+        "lift": 0
+      },
+      {
+        "type": "heal",
+        "amount": 11.0
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 300,
+        "strength": 3
+      },
+      {
+        "type": "set_wet",
+        "duration_ticks": 120
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "A zone at the aim point with a 6.09-block radius for 22.5 s. Every second, on everyone inside, including you (damage and control only hit enemies):\n• Soaked for 12 s\n• Light push\n• Heals 5.5 ❤\n• Regeneration: +1.5 ❤ every 2 s for 15 s\n• Growth: up to 15 nearby blocks — crops +2 stages, dirt turns to grass, roots grow upward\n• Knockback",
+  "self_description": "On you:\n• Soaked for 12 s and leaves a puddle\n• Light push\n• Heals 5.5 ❤\n• Regeneration: +1.5 ❤ every 2 s for 15 s\n• Soaked for 6 s and leaves a puddle"
+}

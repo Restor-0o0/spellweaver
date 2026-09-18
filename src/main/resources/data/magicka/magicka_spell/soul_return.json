@@ -1,0 +1,46 @@
+{
+  "id": "magicka:soul_return",
+  "formula": {
+    "life": 1,
+    "death": 1
+  },
+  "name": "Soul Return",
+  "tier": "Signature",
+  "tags": "HEAL/REVIVE",
+  "shape": "direct_target",
+  "origin": "aim_hit",
+  "delivery": {
+    "radius": 4,
+    "speed": 0.9,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.0
+  },
+  "effects": [
+    {
+      "type": "revive",
+      "health_fraction": 0.5
+    },
+    {
+      "type": "heal",
+      "amount": 5.0
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "heal",
+        "amount": 7.5
+      },
+      {
+        "type": "remove_status",
+        "status": "withering"
+      }
+    ]
+  },
+  "primary": "Brings back a fallen player or creature with half health.\nAffects the creature you aim at:\n• Revives the nearest fallen player or creature within 4 blocks with 50% health\n• Heals 2.5 ❤",
+  "self_description": "On you:\n• Heals 3.75 ❤\n• Removes withering",
+  "balanced": true
+}

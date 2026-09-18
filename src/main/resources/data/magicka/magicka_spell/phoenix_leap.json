@@ -1,0 +1,94 @@
+{
+  "id": "magicka:phoenix_leap",
+  "formula": {
+    "fire": 2,
+    "life": 1,
+    "arcane": 1
+  },
+  "name": "Phoenix Leap",
+  "tier": "Signature",
+  "tags": "MOVE/MEME",
+  "shape": "dash",
+  "origin": "caster",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 3.6,
+    "speed": 1.07,
+    "duration_ticks": 220,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.8,
+    "trail": true,
+    "dash_speed": 1.2
+  },
+  "construction": {
+    "material": "root",
+    "budget": 16,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 5.0,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 80
+    },
+    {
+      "type": "heal",
+      "amount": 2.0
+    },
+    {
+      "type": "apply_status",
+      "status": "regenerating",
+      "duration_ticks": 120,
+      "strength": 1
+    },
+    {
+      "type": "grow_plants",
+      "budget": 2
+    },
+    {
+      "type": "deal_damage",
+      "amount": 2.5,
+      "element": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "arcane_unstable",
+      "duration_ticks": 90,
+      "strength": 1
+    },
+    {
+      "type": "revive",
+      "health_fraction": 0.3
+    },
+    {
+      "type": "remove_status",
+      "status": "burning"
+    }
+  ],
+  "self": {
+    "mode": "dash",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 2.5,
+        "element": "fire"
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 25
+      }
+    ]
+  },
+  "primary": "A fiery dash that leaves a burning trail.\nDash where you look. On you:\n• Damage 1.25 ❤ fire (fire ×0.5 on wet)\n• Heat: sets on fire for 3.75 s (wet targets just dry off), thaws; melts ice and burns roots\nFor half a second you leave a trail of 1-block zones lasting 2 s; every second, on everyone inside, including you (damage and control only hit enemies):\n• Damage 2.5 ❤ fire + 1.25 ❤ arcane (fire ×0.5 on wet)\n• Heat: sets on fire for 12 s (wet targets just dry off), thaws; melts ice and burns roots\n• Heals 1 ❤\n• Regeneration: +0.5 ❤ every 2 s for 6 s\n• Growth: up to 2 nearby blocks — crops +2 stages, dirt turns to grass, roots grow upward\n• Arcane instability: −0.25 ❤ every 2 s for 4.5 s\n• Revives the nearest fallen player or creature within 3.6 blocks with 30% health\n• Puts out fire",
+  "self_description": "Dash where you look. On you:\n• Damage 1.25 ❤ fire (fire ×0.5 on wet)\n• Heat: sets on fire for 3.75 s (wet targets just dry off), thaws; melts ice and burns roots\nFor half a second you leave a trail of 1-block zones lasting 2 s; every second, on everyone inside, including you (damage and control only hit enemies):\n• Damage 2.5 ❤ fire + 1.25 ❤ arcane (fire ×0.5 on wet)\n• Heat: sets on fire for 12 s (wet targets just dry off), thaws; melts ice and burns roots\n• Heals 1 ❤\n• Regeneration: +0.5 ❤ every 2 s for 6 s\n• Growth: up to 2 nearby blocks — crops +2 stages, dirt turns to grass, roots grow upward\n• Arcane instability: −0.25 ❤ every 2 s for 4.5 s\n• Revives the nearest fallen player or creature within 3.6 blocks with 30% health\n• Puts out fire",
+  "balanced": true
+}

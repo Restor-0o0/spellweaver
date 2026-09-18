@@ -1,0 +1,71 @@
+{
+  "id": "magicka:magnetic_lash",
+  "formula": {
+    "earth": 1,
+    "lightning": 1,
+    "arcane": 1
+  },
+  "name": "Magnetic Lash",
+  "tier": "Signature",
+  "tags": "CC/DMG",
+  "shape": "projectile",
+  "origin": "aim_hit",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 3.0,
+    "speed": 0.95,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.0
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 3,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 8
+  },
+  "effects": [
+    {
+      "type": "apply_force",
+      "amount": -1.15,
+      "lift": 0.25
+    },
+    {
+      "type": "add_charge",
+      "amount": 40
+    },
+    {
+      "type": "deal_damage",
+      "amount": 2,
+      "element": "lightning"
+    },
+    {
+      "type": "apply_status",
+      "status": "shocked",
+      "duration_ticks": 80,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "add_charge",
+        "amount": 20
+      },
+      {
+        "type": "apply_status",
+        "status": "haste",
+        "duration_ticks": 200,
+        "strength": 2
+      }
+    ]
+  },
+  "primary": "Magnetic Lash. Drags the target to you instead of pushing it away.\n• Pulls the target towards you and lifts it slightly\n• 1 ❤ lightning damage and charge 40\n• Shocked for 4 s",
+  "self_description": "On you: charge 20 and Haste II for 10 s.",
+  "balanced": true
+}

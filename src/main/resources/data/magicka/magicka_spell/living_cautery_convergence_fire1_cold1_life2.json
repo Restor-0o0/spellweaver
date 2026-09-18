@@ -1,0 +1,119 @@
+{
+  "id": "magicka:living_cautery_convergence_fire1_cold1_life2",
+  "formula": {
+    "fire": 1,
+    "cold": 1,
+    "life": 2
+  },
+  "name": "Living Cautery Convergence",
+  "tier": "Family Variant",
+  "tags": "DMG/DOT/CC/DEBUFF/HEAL",
+  "shape": "targeted_zone",
+  "origin": "aim_ground",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 3.8,
+    "speed": 1.07,
+    "duration_ticks": 260,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.2
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 16,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 2.5,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 40
+    },
+    {
+      "type": "modify_temperature",
+      "amount": -40
+    },
+    {
+      "type": "conditional",
+      "condition": "was_frozen",
+      "effects": [
+        {
+          "type": "deal_damage",
+          "amount": 9.5,
+          "element": "thermal"
+        }
+      ]
+    },
+    {
+      "type": "heal",
+      "amount": 4.0
+    },
+    {
+      "type": "apply_status",
+      "status": "regenerating",
+      "duration_ticks": 160,
+      "strength": 2
+    },
+    {
+      "type": "grow_plants",
+      "budget": 4
+    },
+    {
+      "type": "apply_status",
+      "status": "stone_shell",
+      "duration_ticks": 80,
+      "strength": 2
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 2.5,
+        "element": "fire"
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 40
+      },
+      {
+        "type": "modify_temperature",
+        "amount": -40
+      },
+      {
+        "type": "conditional",
+        "condition": "was_frozen",
+        "effects": [
+          {
+            "type": "deal_damage",
+            "amount": 9.5,
+            "element": "thermal"
+          }
+        ]
+      },
+      {
+        "type": "heal",
+        "amount": 4.0
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 160,
+        "strength": 2
+      }
+    ]
+  },
+  "primary": "A zone at the aim point with a 3.8-block radius for 13 s. Every second, on everyone inside, including you (damage and control only hit enemies):\n• Damage 1.25 ❤ fire (fire ×0.5 on wet)\n• Heat: sets on fire for 6 s (wet targets just dry off), thaws; melts ice and burns roots\n• Cold 40: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• If the target is frozen or brittle: damage 4.75 ❤ thermal\n• Heals 2 ❤\n• Regeneration: +1 ❤ every 2 s for 8 s\n• Growth: up to 4 nearby blocks — crops +2 stages, dirt turns to grass, roots grow upward\n• Stone skin (Resistance II) for 4 s",
+  "self_description": "On you:\n• Damage 1.25 ❤ fire (fire ×0.5 on wet)\n• Heat: sets on fire for 6 s (wet targets just dry off), thaws; melts ice and burns roots\n• Cold 40: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• If the target is frozen or brittle: damage 4.75 ❤ thermal\n• Heals 2 ❤\n• Regeneration: +1 ❤ every 2 s for 8 s",
+  "balanced": true
+}

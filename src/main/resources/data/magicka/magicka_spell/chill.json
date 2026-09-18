@@ -1,0 +1,47 @@
+{
+  "id": "magicka:chill",
+  "formula": {
+    "cold": 1
+  },
+  "name": "Chill",
+  "tier": "Signature",
+  "tags": "CC/DEBUFF",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 5,
+  "delivery": {
+    "radius": 1.9,
+    "speed": 0.83,
+    "duration_ticks": 120,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 1.9
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 1,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 6
+  },
+  "effects": [
+    {
+      "type": "modify_temperature",
+      "amount": -40
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "modify_temperature",
+        "amount": -40
+      }
+    ]
+  },
+  "primary": "A light chill that slows the target.\nA projectile flies where you look and strikes the first target. Effects:\n• Cold 40: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze",
+  "self_description": "On you:\n• Cold 40: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze",
+  "balanced": true
+}

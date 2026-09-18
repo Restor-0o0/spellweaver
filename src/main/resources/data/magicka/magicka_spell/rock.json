@@ -1,0 +1,66 @@
+{
+  "id": "magicka:rock",
+  "formula": {
+    "earth": 2
+  },
+  "name": "Rock",
+  "tier": "Signature",
+  "tags": "BREAK",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 9,
+  "delivery": {
+    "radius": 2.3,
+    "speed": 0.91,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0.025,
+    "burst_radius": 2.5
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 3,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 8
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 3.0,
+      "element": "earth"
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.5,
+      "lift": 0.24
+    },
+    {
+      "type": "destroy_blocks",
+      "budget": 6,
+      "radius": 1.0
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 225,
+        "strength": 2
+      },
+      {
+        "type": "apply_status",
+        "status": "chilled",
+        "duration_ticks": 175,
+        "strength": 2
+      }
+    ]
+  },
+  "primary": "A medium rock.\nA projectile flies in an arc where you look and strikes the first target. Effects:\n• Damage 1.5 ❤ earth (earth ×2 on frozen)\n• Knockback\n• Breaks up to 6 blocks within 1 blocks (twice as many if brittle)",
+  "self_description": "On you:\n• Stone skin (Resistance II) for 11.25 s\n• Slowness II for 8.75 s",
+  "balanced": true
+}

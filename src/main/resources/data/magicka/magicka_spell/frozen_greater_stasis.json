@@ -1,0 +1,65 @@
+{
+  "id": "magicka:frozen_greater_stasis",
+  "formula": {
+    "cold": 3,
+    "arcane": 1
+  },
+  "name": "Frozen Greater Stasis",
+  "tier": "Family Variant",
+  "tags": "CC/DEBUFF/SETUP",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 3.7,
+    "speed": 1.07,
+    "duration_ticks": 240,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.3
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 16,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12
+  },
+  "effects": [
+    {
+      "type": "modify_temperature",
+      "amount": -120
+    },
+    {
+      "type": "deal_damage",
+      "amount": 2.5,
+      "element": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "arcane_unstable",
+      "duration_ticks": 90,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "modify_temperature",
+        "amount": -120
+      },
+      {
+        "type": "apply_status",
+        "status": "arcane_unstable",
+        "duration_ticks": 90,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "A projectile flies where you look and strikes the first target. Effects:\n• Damage 1.25 ❤ arcane\n• Cold 120: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Arcane instability: −0.25 ❤ every 2 s for 4.5 s",
+  "self_description": "On you:\n• Cold 120: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Arcane instability: −0.25 ❤ every 2 s for 4.5 s",
+  "balanced": true
+}

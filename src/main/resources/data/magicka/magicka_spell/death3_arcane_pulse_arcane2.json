@@ -1,0 +1,92 @@
+{
+  "id": "magicka:death3_arcane_pulse_arcane2",
+  "formula": {
+    "arcane": 2,
+    "death": 3
+  },
+  "name": "Arcane Pulse · Death ×3 · Arcane ×2",
+  "tier": "Generic Fusion",
+  "tags": "SETUP/DEATH",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 2.75,
+    "speed": 0.83,
+    "duration_ticks": 180,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.04
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 2,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 6,
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 4.5,
+      "element": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "arcane_unstable",
+      "duration_ticks": 135,
+      "strength": 1
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 180,
+      "strength": 3
+    },
+    {
+      "type": "drain_life",
+      "amount": 6.5,
+      "fraction": 0.52
+    },
+    {
+      "type": "deal_damage",
+      "amount": 6,
+      "element": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "arcane_unstable",
+      "duration_ticks": 180,
+      "strength": 3
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "arcane_unstable",
+        "duration_ticks": 135,
+        "strength": 1
+      },
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 90,
+        "strength": 3
+      },
+      {
+        "type": "apply_status",
+        "status": "arcane_unstable",
+        "duration_ticks": 80,
+        "strength": 1
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "A projectile flies where you look and strikes the first target. Effects:\n• Damage 5.25 ❤ arcane\n• Arcane instability: −0.25 ❤ every 2 s for 6.75 s\n• Withering: −1 ❤ per second for 9 s\n• Life drain: 3.25 ❤ damage, you heal 1.69 ❤\n• Arcane instability: −0.75 ❤ every 2 s for 9 s",
+  "self_description": "On you:\n• Arcane instability: −0.25 ❤ every 2 s for 6.75 s\n• Withering: −1 ❤ per second for 4.5 s\n• Arcane instability: −0.25 ❤ every 2 s for 4 s"
+}

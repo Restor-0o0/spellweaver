@@ -1,0 +1,107 @@
+{
+  "id": "magicka:flooded_circuit_death",
+  "formula": {
+    "water": 2,
+    "lightning": 2,
+    "death": 1
+  },
+  "name": "Flooded Circuit · Death",
+  "tier": "Generic Fusion",
+  "tags": "AOE/CC/SETUP",
+  "shape": "targeted_zone",
+  "origin": "aim_ground",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 9,
+    "speed": 1.07,
+    "duration_ticks": 300,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 4.78
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 40,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12,
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "set_wet",
+      "duration_ticks": 330
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.54,
+      "lift": 0
+    },
+    {
+      "type": "deal_damage",
+      "amount": 9.0,
+      "element": "lightning"
+    },
+    {
+      "type": "add_charge",
+      "amount": 126
+    },
+    {
+      "type": "chain_targets",
+      "count": 12,
+      "range": 7,
+      "amount": 9.0
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 180,
+      "strength": 3
+    },
+    {
+      "type": "drain_life",
+      "amount": 5,
+      "fraction": 0.6
+    }
+  ],
+  "self": {
+    "mode": "zone",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 330
+      },
+      {
+        "type": "apply_force",
+        "amount": 0.54,
+        "lift": 0
+      },
+      {
+        "type": "deal_damage",
+        "amount": 9.0,
+        "element": "lightning"
+      },
+      {
+        "type": "add_charge",
+        "amount": 126
+      },
+      {
+        "type": "chain_targets",
+        "count": 12,
+        "range": 7,
+        "amount": 9.0
+      },
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 60,
+        "strength": 1
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "A zone at the aim point with a 9-block radius for 15 s. Every second, on everyone inside except you:\n• Damage 4.5 ❤ lightning (lightning ×2 on wet)\n• Soaked for 16.5 s\n• Knockback\n• Charge 126: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Then the lightning jumps onward: up to 12 targets in a row, jumps up to 7 blocks, 4.5 ❤ and 40 charge each (×2 damage and longer jumps on wet, ×1.5 range in puddles)\n• Withering: −1 ❤ per second for 9 s\n• Life drain: 2.5 ❤ damage, you heal 1.5 ❤",
+  "self_description": "A zone around you with a 9-block radius for 15 s. Every second, on everyone inside, including you:\n• Damage 4.5 ❤ lightning (lightning ×2 on wet)\n• Soaked for 16.5 s\n• Knockback\n• Charge 126: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Then the lightning jumps onward: up to 12 targets in a row, jumps up to 7 blocks, 4.5 ❤ and 40 charge each (×2 damage and longer jumps on wet, ×1.5 range in puddles)\n• Withering: −0.5 ❤ per second for 3 s"
+}

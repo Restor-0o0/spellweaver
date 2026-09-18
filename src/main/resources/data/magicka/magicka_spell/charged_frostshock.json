@@ -1,0 +1,72 @@
+{
+  "id": "magicka:charged_frostshock",
+  "formula": {
+    "cold": 1,
+    "lightning": 2
+  },
+  "name": "Charged Frostshock",
+  "tier": "Family Variant",
+  "tags": "CC/DEBUFF/DMG",
+  "shape": "chain",
+  "origin": "aim_hit",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 2.7,
+    "speed": 0.99,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.9
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 8,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10
+  },
+  "effects": [
+    {
+      "type": "modify_temperature",
+      "amount": -40
+    },
+    {
+      "type": "deal_damage",
+      "amount": 3.5,
+      "element": "lightning"
+    },
+    {
+      "type": "add_charge",
+      "amount": 70
+    },
+    {
+      "type": "chain_targets",
+      "count": 6,
+      "range": 5,
+      "amount": 3.5
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "modify_temperature",
+        "amount": -40
+      },
+      {
+        "type": "deal_damage",
+        "amount": 3.5,
+        "element": "lightning"
+      },
+      {
+        "type": "add_charge",
+        "amount": 70
+      }
+    ]
+  },
+  "primary": "Lightning shoots from your hand into the creature you aim at (or the first one in your line of sight). Effects:\n• Damage 1.75 ❤ lightning (lightning ×2 on wet)\n• Cold 40: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Charge 70: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Then the lightning jumps onward: up to 6 targets in a row, jumps up to 5 blocks, 1.75 ❤ and 40 charge each (×2 damage and longer jumps on wet, ×1.5 range in puddles)",
+  "self_description": "On you:\n• Damage 1.75 ❤ lightning (lightning ×2 on wet)\n• Cold 40: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Charge 70: weakness, stuns for 1 s at 65 charge (×2 on wet)",
+  "balanced": true
+}

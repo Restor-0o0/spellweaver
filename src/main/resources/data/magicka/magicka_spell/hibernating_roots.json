@@ -1,0 +1,93 @@
+{
+  "id": "magicka:hibernating_roots",
+  "formula": {
+    "cold": 1,
+    "earth": 1,
+    "life": 1,
+    "arcane": 1
+  },
+  "name": "Hibernating Roots",
+  "tier": "Signature",
+  "tags": "CC/DEF",
+  "shape": "growth",
+  "origin": "aim_hit",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 3.7,
+    "speed": 1.07,
+    "duration_ticks": 260,
+    "interval_ticks": 20,
+    "gravity": 0.025,
+    "burst_radius": 3.3
+  },
+  "construction": {
+    "material": "root",
+    "budget": 16,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12,
+    "regenerates": true
+  },
+  "effects": [
+    {
+      "type": "create_construction"
+    },
+    {
+      "type": "apply_status",
+      "status": "rooted",
+      "duration_ticks": 120,
+      "strength": 1
+    },
+    {
+      "type": "apply_status",
+      "status": "brittle",
+      "duration_ticks": 120,
+      "strength": 1
+    },
+    {
+      "type": "apply_status",
+      "status": "stone_shell",
+      "duration_ticks": 60,
+      "strength": 2
+    },
+    {
+      "type": "remove_status",
+      "status": "burning"
+    }
+  ],
+  "self": {
+    "mode": "construct",
+    "effects": [
+      {
+        "type": "create_construction"
+      },
+      {
+        "type": "apply_status",
+        "status": "rooted",
+        "duration_ticks": 120,
+        "strength": 1
+      },
+      {
+        "type": "apply_status",
+        "status": "brittle",
+        "duration_ticks": 120,
+        "strength": 1
+      },
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 60,
+        "strength": 2
+      },
+      {
+        "type": "remove_status",
+        "status": "burning"
+      }
+    ]
+  },
+  "primary": "Roots wrap the target and protect it.\nA 16-block cage around the target; damaged blocks regrow. Material: roots: climbable, burn in fire, permanent. Each block that grows affects creatures near the center:\n• Rooted in place for 6 s\n• Brittle (earth damage ×2) for 6 s\n• Stone skin (Resistance II) for 3 s\n• Puts out fire",
+  "self_description": "A 16-block cage around you; damaged blocks regrow. Material: roots: climbable, burn in fire, permanent. Each block that grows affects you and everyone nearby:\n• Rooted in place for 6 s\n• Brittle (earth damage ×2) for 6 s\n• Stone skin (Resistance II) for 3 s\n• Puts out fire",
+  "balanced": true
+}

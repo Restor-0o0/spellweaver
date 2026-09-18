@@ -1,0 +1,70 @@
+{
+  "id": "magicka:heavy_permafrost_convergence_cold1_earth2_life1",
+  "formula": {
+    "cold": 1,
+    "earth": 2,
+    "life": 1
+  },
+  "name": "Heavy Permafrost Convergence",
+  "tier": "Family Variant",
+  "tags": "CC/DEBUFF/BREAK/HEAL/BUFF",
+  "shape": "growth",
+  "origin": "aim_surface",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 3.6,
+    "speed": 1.07,
+    "duration_ticks": 260,
+    "interval_ticks": 20,
+    "gravity": 0.025,
+    "burst_radius": 3.2
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 16,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12
+  },
+  "effects": [
+    {
+      "type": "create_construction"
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "modify_temperature",
+        "amount": -40
+      },
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 180,
+        "strength": 2
+      },
+      {
+        "type": "apply_status",
+        "status": "chilled",
+        "duration_ticks": 140,
+        "strength": 2
+      },
+      {
+        "type": "heal",
+        "amount": 2.0
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 120,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "A 16-block cage around the target. Material: ice, melts after 30 s. Each block that grows affects creatures near the center:",
+  "self_description": "On you:\n• Cold 40: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Stone skin (Resistance II) for 9 s\n• Slowness II for 7 s\n• Heals 1 ❤\n• Regeneration: +0.5 ❤ every 2 s for 6 s",
+  "balanced": true
+}

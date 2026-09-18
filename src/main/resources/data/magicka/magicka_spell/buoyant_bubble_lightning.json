@@ -1,0 +1,90 @@
+{
+  "id": "magicka:buoyant_bubble_lightning",
+  "formula": {
+    "water": 2,
+    "life": 1,
+    "arcane": 1,
+    "lightning": 1
+  },
+  "name": "Buoyant Bubble · Lightning",
+  "tier": "Generic Fusion",
+  "tags": "MOVE/DEF/MEME",
+  "shape": "summon_object",
+  "origin": "aim_hit",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 6.09,
+    "speed": 1.07,
+    "duration_ticks": 420,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 4.64,
+    "object_kind": "bubble",
+    "lift_ticks": 40
+  },
+  "construction": {
+    "material": "root",
+    "budget": 40,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12,
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "set_wet",
+      "duration_ticks": 90
+    },
+    {
+      "type": "apply_status",
+      "status": "slow_falling",
+      "duration_ticks": 600,
+      "strength": 1
+    },
+    {
+      "type": "apply_status",
+      "status": "regenerating",
+      "duration_ticks": 150,
+      "strength": 1
+    },
+    {
+      "type": "deal_damage",
+      "amount": 6,
+      "element": "lightning"
+    },
+    {
+      "type": "add_charge",
+      "amount": 70
+    }
+  ],
+  "self": {
+    "mode": "summon",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 90
+      },
+      {
+        "type": "apply_status",
+        "status": "slow_falling",
+        "duration_ticks": 600,
+        "strength": 1
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 150,
+        "strength": 1
+      },
+      {
+        "type": "add_charge",
+        "amount": 20
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "The creature you aim at is caught in a bubble and floats up (levitation for 2 s):\n• Damage 3 ❤ lightning (lightning ×2 on wet)\n• Soaked for 4.5 s\n• Slow falling for 30 s\n• Regeneration: +0.5 ❤ every 2 s for 7.5 s\n• Charge 70: weakness, stuns for 1 s at 65 charge (×2 on wet)",
+  "self_description": "You are caught in the bubble yourself and float up (levitation for 2 s):\n• Soaked for 4.5 s\n• Slow falling for 30 s\n• Regeneration: +0.5 ❤ every 2 s for 7.5 s\n• Charge 20: weakness, stuns for 1 s at 65 charge (×2 on wet)"
+}

@@ -1,0 +1,56 @@
+{
+  "id": "magicka:miners_vigor",
+  "formula": {
+    "earth": 1,
+    "lightning": 2
+  },
+  "name": "Miner's Vigor",
+  "tier": "Signature",
+  "tags": "UTIL",
+  "shape": "direct_target",
+  "origin": "aim_hit",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 2.0,
+    "speed": 1.2,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.0
+  },
+  "construction": {},
+  "effects": [
+    {
+      "type": "apply_effect",
+      "effect": "minecraft:haste",
+      "duration_ticks": 2640,
+      "strength": 2
+    },
+    {
+      "type": "apply_effect",
+      "effect": "minecraft:night_vision",
+      "duration_ticks": 660,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "apply_effect",
+        "effect": "minecraft:haste",
+        "duration_ticks": 2640,
+        "strength": 2
+      },
+      {
+        "type": "apply_effect",
+        "effect": "minecraft:night_vision",
+        "duration_ticks": 660,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "Dig faster and see in the mine.\nAffects the creature you aim at, allies included (use Self for yourself):\n• Haste II (faster mining), 132 s\n• Night Vision, 33 s",
+  "self_description": "On you:\n• Haste II (faster mining), 132 s\n• Night Vision, 33 s",
+  "balanced": true
+}

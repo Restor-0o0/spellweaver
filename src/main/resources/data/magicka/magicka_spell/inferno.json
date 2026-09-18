@@ -1,0 +1,57 @@
+{
+  "id": "magicka:inferno",
+  "formula": {
+    "fire": 4
+  },
+  "name": "Inferno",
+  "tier": "Signature",
+  "tags": "DMG/DOT",
+  "shape": "spray",
+  "origin": "caster_front",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 3.3,
+    "speed": 1.07,
+    "duration_ticks": 180,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 4.3
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 16,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 9.5,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 160
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 9.5,
+        "element": "fire"
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 160
+      }
+    ]
+  },
+  "primary": "The most powerful stream of fire.\nA widening stream (up to 3 blocks wide) hits everyone in front of you; in instant mode it keeps going while held:\n• Damage 4.75 ❤ fire (fire ×0.5 on wet)\n• Heat: sets on fire for 24 s (wet targets just dry off), thaws; melts ice and burns roots",
+  "self_description": "On you:\n• Damage 4.75 ❤ fire (fire ×0.5 on wet)\n• Heat: sets on fire for 24 s (wet targets just dry off), thaws; melts ice and burns roots",
+  "balanced": true
+}

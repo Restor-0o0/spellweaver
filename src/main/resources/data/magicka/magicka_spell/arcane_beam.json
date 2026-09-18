@@ -1,0 +1,56 @@
+{
+  "id": "magicka:arcane_beam",
+  "formula": {
+    "arcane": 3
+  },
+  "name": "Arcane Beam",
+  "tier": "Signature",
+  "tags": "SETUP",
+  "shape": "beam",
+  "origin": "aim_hit",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 3.1,
+    "speed": 0.99,
+    "duration_ticks": 180,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.3
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 8,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 5.5,
+      "element": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "arcane_unstable",
+      "duration_ticks": 165,
+      "strength": 3
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "arcane_unstable",
+        "duration_ticks": 165,
+        "strength": 3
+      }
+    ]
+  },
+  "primary": "A focused stream of raw arcane power.\nA beam to the aim point hits everyone along it. In instant mode it keeps firing while held. Effects:\n• Damage 2.75 ❤ arcane\n• Arcane instability: −0.75 ❤ every 2 s for 8.25 s",
+  "self_description": "On you:\n• Arcane instability: −0.75 ❤ every 2 s for 8.25 s",
+  "balanced": true
+}

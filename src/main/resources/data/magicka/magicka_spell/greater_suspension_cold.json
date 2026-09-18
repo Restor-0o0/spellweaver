@@ -1,0 +1,91 @@
+{
+  "id": "magicka:greater_suspension_cold",
+  "formula": {
+    "water": 2,
+    "arcane": 2,
+    "cold": 1
+  },
+  "name": "Greater Suspension · Cold",
+  "tier": "Generic Fusion",
+  "tags": "SETUP/CC",
+  "shape": "targeted_explosion",
+  "origin": "aim_hit",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 5.94,
+    "speed": 1.07,
+    "duration_ticks": 360,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 5.08
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 40,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12,
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "set_wet",
+      "duration_ticks": 330
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.54,
+      "lift": 0
+    },
+    {
+      "type": "deal_damage",
+      "amount": 9.0,
+      "element": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "arcane_unstable",
+      "duration_ticks": 180,
+      "strength": 2
+    },
+    {
+      "type": "modify_temperature",
+      "amount": -80
+    },
+    {
+      "type": "apply_status",
+      "status": "chilled",
+      "duration_ticks": 180,
+      "strength": 3
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 330
+      },
+      {
+        "type": "apply_force",
+        "amount": 0.54,
+        "lift": 0
+      },
+      {
+        "type": "apply_status",
+        "status": "arcane_unstable",
+        "duration_ticks": 180,
+        "strength": 2
+      },
+      {
+        "type": "modify_temperature",
+        "amount": -25
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "An explosion at the aim point with a 5.94-block radius (does not hit you):\n• Damage 4.5 ❤ arcane\n• Soaked for 16.5 s and leaves a puddle\n• Knockback\n• Arcane instability: −0.5 ❤ every 2 s for 9 s\n• Cold 80: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Slowness III for 9 s",
+  "self_description": "On you:\n• Soaked for 16.5 s and leaves a puddle\n• Knockback\n• Arcane instability: −0.5 ❤ every 2 s for 9 s\n• Cold 25: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze"
+}

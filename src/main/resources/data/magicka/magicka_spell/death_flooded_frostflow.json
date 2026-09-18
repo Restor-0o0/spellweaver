@@ -1,0 +1,84 @@
+{
+  "id": "magicka:death_flooded_frostflow",
+  "formula": {
+    "water": 2,
+    "cold": 1,
+    "death": 1
+  },
+  "name": "Flooded Frostflow · Death",
+  "tier": "Generic Fusion",
+  "tags": "SETUP/CC/DEBUFF/BUILD/DEATH",
+  "shape": "targeted_zone",
+  "origin": "aim_ground",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 3.5,
+    "speed": 0.99,
+    "duration_ticks": 220,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.7
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 8,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10
+  },
+  "effects": [
+    {
+      "type": "set_wet",
+      "duration_ticks": 220
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.3,
+      "lift": 0
+    },
+    {
+      "type": "modify_temperature",
+      "amount": -40
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 80,
+      "strength": 1
+    },
+    {
+      "type": "drain_life",
+      "amount": 1.0,
+      "fraction": 0.4
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 220
+      },
+      {
+        "type": "apply_force",
+        "amount": 0.3,
+        "lift": 0
+      },
+      {
+        "type": "modify_temperature",
+        "amount": -40
+      },
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 60,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "A zone at the aim point with a 3.5-block radius for 11 s. Every second, on everyone inside except you:\n• Soaked for 11 s\n• Light push\n• Cold 40: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Withering: −0.5 ❤ per second for 4 s\n• Life drain: 0.5 ❤ damage, you heal 0.2 ❤",
+  "self_description": "On you:\n• Soaked for 11 s and leaves a puddle\n• Light push\n• Cold 40: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Withering: −0.5 ❤ per second for 3 s",
+  "balanced": true
+}

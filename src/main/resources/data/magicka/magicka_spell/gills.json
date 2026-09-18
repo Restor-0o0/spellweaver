@@ -1,0 +1,56 @@
+{
+  "id": "magicka:gills",
+  "formula": {
+    "water": 2,
+    "life": 1
+  },
+  "name": "Gills",
+  "tier": "Signature",
+  "tags": "UTIL",
+  "shape": "direct_target",
+  "origin": "aim_hit",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 2.0,
+    "speed": 1.2,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.0
+  },
+  "construction": {},
+  "effects": [
+    {
+      "type": "apply_effect",
+      "effect": "minecraft:water_breathing",
+      "duration_ticks": 2640,
+      "strength": 1
+    },
+    {
+      "type": "apply_effect",
+      "effect": "minecraft:dolphins_grace",
+      "duration_ticks": 660,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "apply_effect",
+        "effect": "minecraft:water_breathing",
+        "duration_ticks": 2640,
+        "strength": 1
+      },
+      {
+        "type": "apply_effect",
+        "effect": "minecraft:dolphins_grace",
+        "duration_ticks": 660,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "Breathe underwater and swim like a dolphin.\nAffects the creature you aim at, allies included (use Self for yourself):\n• Water Breathing, 132 s\n• Dolphin's Grace (fast swimming), 33 s",
+  "self_description": "On you:\n• Water Breathing, 132 s\n• Dolphin's Grace (fast swimming), 33 s",
+  "balanced": true
+}

@@ -1,0 +1,40 @@
+{
+  "id": "magicka:glowstone",
+  "formula": {
+    "fire": 1,
+    "earth": 1,
+    "life": 1
+  },
+  "name": "Glowstone",
+  "tier": "Signature",
+  "tags": "UTIL",
+  "shape": "direct_target",
+  "origin": "aim_hit",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 2.0,
+    "speed": 1.2,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.0
+  },
+  "construction": {},
+  "effects": [
+    {
+      "type": "place_glowstone"
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "place_glowstone",
+        "offset_y": 2
+      }
+    ]
+  },
+  "primary": "A magic glowstone instead of a torch.\nWhere you look:\n• A magic glowstone block at the aim point: light level 15, needs no support, permanent, drops nothing when broken",
+  "self_description": "Around you:\n• A magic glowstone block above your head: light level 15, needs no support, permanent, drops nothing when broken",
+  "balanced": true
+}

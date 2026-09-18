@@ -1,0 +1,90 @@
+{
+  "id": "magicka:heavy_thunderstone_convergence_water",
+  "formula": {
+    "lightning": 1,
+    "earth": 2,
+    "life": 1,
+    "water": 1
+  },
+  "name": "Heavy Thunderstone Convergence · Water",
+  "tier": "Generic Fusion",
+  "tags": "DMG/CC/BREAK/HEAL/BUFF",
+  "shape": "growth",
+  "origin": "aim_surface",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 4.93,
+    "speed": 1.07,
+    "duration_ticks": 360,
+    "interval_ticks": 20,
+    "gravity": 0.025,
+    "burst_radius": 4.78
+  },
+  "construction": {
+    "material": "root",
+    "budget": 40,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12,
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "create_construction"
+    },
+    {
+      "type": "set_wet",
+      "duration_ticks": 240
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.5,
+      "lift": 0
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 4.5,
+        "element": "lightning"
+      },
+      {
+        "type": "add_charge",
+        "amount": 63
+      },
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 270,
+        "strength": 2
+      },
+      {
+        "type": "apply_status",
+        "status": "chilled",
+        "duration_ticks": 210,
+        "strength": 2
+      },
+      {
+        "type": "heal",
+        "amount": 3.5
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 180,
+        "strength": 1
+      },
+      {
+        "type": "set_wet",
+        "duration_ticks": 120
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "A 40-block cage around the target. Material: roots: climbable, burn in fire, permanent. Each block that grows affects creatures near the center:\n• Soaked for 12 s\n• Knockback",
+  "self_description": "On you:\n• Damage 2.25 ❤ lightning (lightning ×2 on wet)\n• Charge 63: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Stone skin (Resistance II) for 13.5 s\n• Slowness II for 10.5 s\n• Heals 1.75 ❤\n• Regeneration: +0.5 ❤ every 2 s for 9 s\n• Soaked for 6 s and leaves a puddle"
+}

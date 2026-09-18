@@ -1,0 +1,112 @@
+{
+  "id": "magicka:plasma_orb",
+  "formula": {
+    "fire": 1,
+    "lightning": 1,
+    "arcane": 1
+  },
+  "name": "Plasma Orb",
+  "tier": "Signature",
+  "tags": "DMG/AOE/MEME",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 2.8,
+    "speed": 0.3,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.5,
+    "volatile": true
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 8,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 2.0,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 40
+    },
+    {
+      "type": "deal_damage",
+      "amount": 2.0,
+      "element": "lightning"
+    },
+    {
+      "type": "add_charge",
+      "amount": 35
+    },
+    {
+      "type": "chain_targets",
+      "count": 4,
+      "range": 4,
+      "amount": 2.0
+    },
+    {
+      "type": "deal_damage",
+      "amount": 2.0,
+      "element": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "arcane_unstable",
+      "duration_ticks": 99,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 2.0,
+        "element": "fire"
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 40
+      },
+      {
+        "type": "deal_damage",
+        "amount": 2.0,
+        "element": "lightning"
+      },
+      {
+        "type": "add_charge",
+        "amount": 35
+      },
+      {
+        "type": "apply_status",
+        "status": "arcane_unstable",
+        "duration_ticks": 99,
+        "strength": 1
+      },
+      {
+        "type": "delay",
+        "ticks": 40,
+        "effects": [
+          {
+            "type": "deal_damage",
+            "amount": 4.5,
+            "element": "arcane"
+          }
+        ]
+      }
+    ]
+  },
+  "primary": "A slow, unstable orb. Nearby lightning sets it off early.\nA slow orb flies where you look and explodes in a 3.5-block radius on contact, after 4 s of flight, or when chain lightning passes nearby. Effects:\n• Damage 1 ❤ fire + 1 ❤ lightning + 1 ❤ arcane (lightning ×2 on wet, fire ×0.5 on wet)\n• Heat: sets on fire for 6 s (wet targets just dry off), thaws; melts ice and burns roots\n• Charge 35: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Then the lightning jumps onward: up to 4 targets in a row, jumps up to 4 blocks, 1 ❤ and 40 charge each (×2 damage and longer jumps on wet, ×1.5 range in puddles)\n• Arcane instability: −0.25 ❤ every 2 s for 4.95 s",
+  "self_description": "On you:\n• Damage 1 ❤ fire + 1 ❤ lightning (lightning ×2 on wet, fire ×0.5 on wet)\n• Heat: sets on fire for 6 s (wet targets just dry off), thaws; melts ice and burns roots\n• Charge 35: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Arcane instability: −0.25 ❤ every 2 s for 4.95 s\n• 2 s later: damage 2.25 ❤ arcane",
+  "balanced": true
+}

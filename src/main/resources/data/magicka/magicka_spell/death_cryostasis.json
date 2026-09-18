@@ -1,0 +1,96 @@
+{
+  "id": "magicka:death_cryostasis",
+  "formula": {
+    "cold": 1,
+    "life": 1,
+    "death": 1
+  },
+  "name": "Cryostasis · Death",
+  "tier": "Generic Fusion",
+  "tags": "CC/DEBUFF/HEAL/BUFF/DEATH",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 2.6,
+    "speed": 0.91,
+    "duration_ticks": 180,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.2
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 3,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 8
+  },
+  "effects": [
+    {
+      "type": "modify_temperature",
+      "amount": -40
+    },
+    {
+      "type": "heal",
+      "amount": 2.5
+    },
+    {
+      "type": "apply_status",
+      "status": "regenerating",
+      "duration_ticks": 132,
+      "strength": 1
+    },
+    {
+      "type": "grow_plants",
+      "budget": 2
+    },
+    {
+      "type": "apply_status",
+      "status": "stone_shell",
+      "duration_ticks": 88,
+      "strength": 1
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 88,
+      "strength": 1
+    },
+    {
+      "type": "drain_life",
+      "amount": 1.0,
+      "fraction": 0.4
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "modify_temperature",
+        "amount": -40
+      },
+      {
+        "type": "heal",
+        "amount": 2.5
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 132,
+        "strength": 1
+      },
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 66,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "A projectile flies where you look and strikes the first target. Effects:\n• Cold 40: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Heals 1.25 ❤\n• Regeneration: +0.5 ❤ every 2 s for 6.6 s\n• Growth: up to 2 nearby blocks — crops +2 stages, dirt turns to grass, roots grow upward\n• Stone skin (Resistance I) for 4.4 s\n• Withering: −0.5 ❤ per second for 4.4 s\n• Life drain: 0.5 ❤ damage, you heal 0.2 ❤",
+  "self_description": "On you:\n• Cold 40: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Heals 1.25 ❤\n• Regeneration: +0.5 ❤ every 2 s for 6.6 s\n• Withering: −0.5 ❤ per second for 3.3 s",
+  "balanced": true
+}

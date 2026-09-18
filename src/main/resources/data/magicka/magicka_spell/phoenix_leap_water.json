@@ -1,0 +1,109 @@
+{
+  "id": "magicka:phoenix_leap_water",
+  "formula": {
+    "fire": 2,
+    "life": 1,
+    "arcane": 1,
+    "water": 1
+  },
+  "name": "Phoenix Leap · Water",
+  "tier": "Generic Fusion",
+  "tags": "MOVE/MEME",
+  "shape": "dash",
+  "origin": "caster",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 5.22,
+    "speed": 1.07,
+    "duration_ticks": 330,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 5.51,
+    "trail": true,
+    "dash_speed": 1.2
+  },
+  "construction": {
+    "material": "root",
+    "budget": 40,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12,
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 9.0,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 144
+    },
+    {
+      "type": "heal",
+      "amount": 3.5
+    },
+    {
+      "type": "apply_status",
+      "status": "regenerating",
+      "duration_ticks": 180,
+      "strength": 1
+    },
+    {
+      "type": "grow_plants",
+      "budget": 5
+    },
+    {
+      "type": "deal_damage",
+      "amount": 4.5,
+      "element": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "arcane_unstable",
+      "duration_ticks": 135,
+      "strength": 1
+    },
+    {
+      "type": "revive",
+      "health_fraction": 0.39
+    },
+    {
+      "type": "remove_status",
+      "status": "burning"
+    },
+    {
+      "type": "set_wet",
+      "duration_ticks": 240
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.5,
+      "lift": 0
+    }
+  ],
+  "self": {
+    "mode": "dash",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 4.5,
+        "element": "fire"
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 45
+      },
+      {
+        "type": "set_wet",
+        "duration_ticks": 120
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "Dash where you look. On you:\n• Damage 2.25 ❤ fire (fire ×0.5 on wet)\n• Heat: sets on fire for 6.75 s (wet targets just dry off), thaws; melts ice and burns roots\n• Soaked for 6 s and leaves a puddle\nFor half a second you leave a trail of 1-block zones lasting 2 s; every second, on everyone inside, including you (damage and control only hit enemies):\n• Damage 4.5 ❤ fire + 2.25 ❤ arcane (fire ×0.5 on wet)\n• Heat: sets on fire for 21.6 s (wet targets just dry off), thaws; melts ice and burns roots\n• Heals 1.75 ❤\n• Regeneration: +0.5 ❤ every 2 s for 9 s\n• Growth: up to 5 nearby blocks — crops +2 stages, dirt turns to grass, roots grow upward\n• Arcane instability: −0.25 ❤ every 2 s for 6.75 s\n• Revives the nearest fallen player or creature within 5.22 blocks with 39% health\n• Puts out fire\n• Soaked for 12 s\n• Knockback",
+  "self_description": "Dash where you look. On you:\n• Damage 2.25 ❤ fire (fire ×0.5 on wet)\n• Heat: sets on fire for 6.75 s (wet targets just dry off), thaws; melts ice and burns roots\n• Soaked for 6 s and leaves a puddle\nFor half a second you leave a trail of 1-block zones lasting 2 s; every second, on everyone inside, including you (damage and control only hit enemies):\n• Damage 4.5 ❤ fire + 2.25 ❤ arcane (fire ×0.5 on wet)\n• Heat: sets on fire for 21.6 s (wet targets just dry off), thaws; melts ice and burns roots\n• Heals 1.75 ❤\n• Regeneration: +0.5 ❤ every 2 s for 9 s\n• Growth: up to 5 nearby blocks — crops +2 stages, dirt turns to grass, roots grow upward\n• Arcane instability: −0.25 ❤ every 2 s for 6.75 s\n• Revives the nearest fallen player or creature within 5.22 blocks with 39% health\n• Puts out fire\n• Soaked for 12 s\n• Knockback"
+}

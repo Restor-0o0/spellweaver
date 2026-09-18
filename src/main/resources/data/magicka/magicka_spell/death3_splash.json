@@ -1,0 +1,75 @@
+{
+  "id": "magicka:death3_splash",
+  "formula": {
+    "water": 1,
+    "death": 3
+  },
+  "name": "Splash · Death ×3",
+  "tier": "Generic Fusion",
+  "tags": "SETUP/CC/DEATH",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 2.1,
+    "speed": 0.83,
+    "duration_ticks": 120,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 1.9
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 1,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 6
+  },
+  "effects": [
+    {
+      "type": "set_wet",
+      "duration_ticks": 160
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.15,
+      "lift": 0
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 120,
+      "strength": 3
+    },
+    {
+      "type": "drain_life",
+      "amount": 3.5,
+      "fraction": 0.4
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 160
+      },
+      {
+        "type": "apply_force",
+        "amount": 0.15,
+        "lift": 0
+      },
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 60,
+        "strength": 3
+      }
+    ]
+  },
+  "primary": "A projectile flies where you look and strikes the first target. Effects:\n• Soaked for 8 s and leaves a puddle\n• Light push\n• Withering: −1 ❤ per second for 6 s\n• Life drain: 1.75 ❤ damage, you heal 0.7 ❤",
+  "self_description": "On you:\n• Soaked for 8 s and leaves a puddle\n• Light push\n• Withering: −1 ❤ per second for 3 s",
+  "balanced": true
+}

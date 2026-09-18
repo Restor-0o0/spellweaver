@@ -1,0 +1,86 @@
+{
+  "id": "magicka:frozen_ground_fire",
+  "formula": {
+    "water": 1,
+    "cold": 2,
+    "arcane": 1,
+    "fire": 1
+  },
+  "name": "Hoarfrost · Fire",
+  "tier": "Generic Fusion",
+  "tags": "AOE/CC/DMG",
+  "shape": "targeted_zone",
+  "origin": "aim_ground",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 6,
+    "speed": 1.07,
+    "duration_ticks": 240,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 4.78
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 40,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12,
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "modify_temperature",
+      "amount": -63
+    },
+    {
+      "type": "deal_damage",
+      "amount": 4.5,
+      "element": "cold"
+    },
+    {
+      "type": "apply_status",
+      "status": "rooted",
+      "duration_ticks": 30,
+      "strength": 1
+    },
+    {
+      "type": "deal_damage",
+      "amount": 4,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 90
+    }
+  ],
+  "self": {
+    "mode": "zone",
+    "effects": [
+      {
+        "type": "modify_temperature",
+        "amount": -63
+      },
+      {
+        "type": "deal_damage",
+        "amount": 4.5,
+        "element": "cold"
+      },
+      {
+        "type": "apply_status",
+        "status": "rooted",
+        "duration_ticks": 30,
+        "strength": 1
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 30
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "A zone at the aim point with a 6-block radius for 12 s. Every second, on everyone inside except you:\n• Damage 2.25 ❤ cold + 2 ❤ fire (fire ×0.5 on wet)\n• Cold 63: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Rooted in place for 1.5 s\n• Heat: sets on fire for 13.5 s (wet targets just dry off), thaws; melts ice and burns roots",
+  "self_description": "A zone around you with a 6-block radius for 12 s. Every second, on everyone inside, including you:\n• Damage 2.25 ❤ cold\n• Cold 63: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Rooted in place for 1.5 s\n• Heat: sets on fire for 4.5 s (wet targets just dry off), thaws; melts ice and burns roots"
+}

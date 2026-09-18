@@ -1,0 +1,90 @@
+{
+  "id": "magicka:death_miners_vigor_water",
+  "formula": {
+    "earth": 1,
+    "lightning": 2,
+    "death": 1,
+    "water": 1
+  },
+  "name": "Miner's Vigor · Death · Water",
+  "tier": "Generic Fusion",
+  "tags": "UTIL/DEATH",
+  "shape": "direct_target",
+  "origin": "aim_hit",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 2.9,
+    "speed": 1.2,
+    "duration_ticks": 240,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.9
+  },
+  "construction": {
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "apply_effect",
+      "effect": "minecraft:haste",
+      "duration_ticks": 3600,
+      "strength": 2
+    },
+    {
+      "type": "apply_effect",
+      "effect": "minecraft:night_vision",
+      "duration_ticks": 900,
+      "strength": 1
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 120,
+      "strength": 1
+    },
+    {
+      "type": "drain_life",
+      "amount": 2.0,
+      "fraction": 0.52
+    },
+    {
+      "type": "set_wet",
+      "duration_ticks": 240
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.5,
+      "lift": 0
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "apply_effect",
+        "effect": "minecraft:haste",
+        "duration_ticks": 3600,
+        "strength": 2
+      },
+      {
+        "type": "apply_effect",
+        "effect": "minecraft:night_vision",
+        "duration_ticks": 900,
+        "strength": 1
+      },
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 90,
+        "strength": 1
+      },
+      {
+        "type": "set_wet",
+        "duration_ticks": 120
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "Affects the creature you aim at:\n• Haste II (faster mining), 180 s\n• Night Vision, 45 s\n• Withering: −0.5 ❤ per second for 6 s\n• Life drain: 1 ❤ damage, you heal 0.52 ❤\n• Soaked for 12 s and leaves a puddle\n• Knockback",
+  "self_description": "On you:\n• Haste II (faster mining), 180 s\n• Night Vision, 45 s\n• Withering: −0.5 ❤ per second for 4.5 s\n• Soaked for 6 s and leaves a puddle"
+}

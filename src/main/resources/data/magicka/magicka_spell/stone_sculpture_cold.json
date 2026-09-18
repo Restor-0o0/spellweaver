@@ -1,0 +1,60 @@
+{
+  "id": "magicka:stone_sculpture_cold",
+  "formula": {
+    "earth": 4,
+    "cold": 1
+  },
+  "name": "Stone Sculpture · Cold",
+  "tier": "Generic Fusion",
+  "tags": "BUILD",
+  "shape": "wall",
+  "origin": "caster_feet",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 2.9,
+    "speed": 1.2,
+    "duration_ticks": 240,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.9
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 312,
+    "interval_ticks": 1,
+    "batch": 8,
+    "width": 1,
+    "height": 3,
+    "floating": true,
+    "integrity": 12,
+    "template": "custom",
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "create_construction"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": -80
+    },
+    {
+      "type": "apply_status",
+      "status": "chilled",
+      "duration_ticks": 180,
+      "strength": 3
+    }
+  ],
+  "self": {
+    "mode": "construct",
+    "effects": [
+      {
+        "type": "modify_temperature",
+        "amount": -25
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "The shape you drew yourself in a 5×5×5 cube (press K for the shape editor): it is built at the aim point and turns to follow your view; can hang in mid-air without support. Material: magic earth, permanent.",
+  "self_description": "The shape you drew yourself in a 5×5×5 cube (press K for the shape editor): it is built at the aim point and turns to follow your view; can hang in mid-air without support. Material: magic earth, permanent. On you:\n• Cold 25: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze"
+}

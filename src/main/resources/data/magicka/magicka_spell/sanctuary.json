@@ -1,0 +1,104 @@
+{
+  "id": "magicka:sanctuary",
+  "formula": {
+    "life": 3,
+    "arcane": 1
+  },
+  "name": "Sanctuary",
+  "tier": "Signature",
+  "tags": "HEAL/DEF/AOE",
+  "shape": "targeted_zone",
+  "origin": "aim_ground",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 5,
+    "speed": 1.07,
+    "duration_ticks": 240,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.0
+  },
+  "construction": {
+    "material": "root",
+    "budget": 16,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12
+  },
+  "effects": [
+    {
+      "type": "heal",
+      "amount": 6.0
+    },
+    {
+      "type": "apply_status",
+      "status": "regenerating",
+      "duration_ticks": 200,
+      "strength": 3
+    },
+    {
+      "type": "grow_plants",
+      "budget": 6
+    },
+    {
+      "type": "revive",
+      "health_fraction": 0.3
+    },
+    {
+      "type": "remove_status",
+      "status": "burning"
+    },
+    {
+      "type": "apply_status",
+      "status": "stone_shell",
+      "duration_ticks": 60,
+      "strength": 2
+    },
+    {
+      "type": "remove_status",
+      "status": "burning"
+    }
+  ],
+  "self": {
+    "mode": "zone",
+    "effects": [
+      {
+        "type": "heal",
+        "amount": 6.0
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 200,
+        "strength": 3
+      },
+      {
+        "type": "grow_plants",
+        "budget": 6
+      },
+      {
+        "type": "revive",
+        "health_fraction": 0.3
+      },
+      {
+        "type": "remove_status",
+        "status": "burning"
+      },
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 60,
+        "strength": 2
+      },
+      {
+        "type": "remove_status",
+        "status": "burning"
+      }
+    ]
+  },
+  "primary": "A sanctuary that heals, protects and revives the fallen.\nA zone at the aim point with a 5-block radius for 12 s. Every second, on everyone inside, including you (damage and control only hit enemies):\n• Heals 3 ❤\n• Regeneration: +1.5 ❤ every 2 s for 10 s\n• Growth: up to 6 nearby blocks — crops +2 stages, dirt turns to grass, roots grow upward\n• Revives the nearest fallen player or creature within 5 blocks with 30% health\n• Puts out fire\n• Stone skin (Resistance II) for 3 s",
+  "self_description": "A zone around you with a 5-block radius for 12 s. Every second, on everyone inside, including you:\n• Heals 3 ❤\n• Regeneration: +1.5 ❤ every 2 s for 10 s\n• Growth: up to 6 nearby blocks — crops +2 stages, dirt turns to grass, roots grow upward\n• Revives the nearest fallen player or creature within 5 blocks with 30% health\n• Puts out fire\n• Stone skin (Resistance II) for 3 s",
+  "balanced": true
+}

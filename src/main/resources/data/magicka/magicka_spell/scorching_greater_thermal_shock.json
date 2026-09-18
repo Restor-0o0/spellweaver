@@ -1,0 +1,88 @@
+{
+  "id": "magicka:scorching_greater_thermal_shock",
+  "formula": {
+    "fire": 3,
+    "cold": 1
+  },
+  "name": "Scorching Greater Thermal Shock",
+  "tier": "Family Variant",
+  "tags": "DMG/DOT/CC/DEBUFF",
+  "shape": "spray",
+  "origin": "caster_front",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 3.4,
+    "speed": 1.07,
+    "duration_ticks": 200,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 4.0
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 16,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 7.0,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 120
+    },
+    {
+      "type": "modify_temperature",
+      "amount": -40
+    },
+    {
+      "type": "conditional",
+      "condition": "was_frozen",
+      "effects": [
+        {
+          "type": "deal_damage",
+          "amount": 19.0,
+          "element": "thermal"
+        }
+      ]
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 7.0,
+        "element": "fire"
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 120
+      },
+      {
+        "type": "modify_temperature",
+        "amount": -40
+      },
+      {
+        "type": "conditional",
+        "condition": "was_frozen",
+        "effects": [
+          {
+            "type": "deal_damage",
+            "amount": 19.0,
+            "element": "thermal"
+          }
+        ]
+      }
+    ]
+  },
+  "primary": "A widening stream (up to 3 blocks wide) hits everyone in front of you; in instant mode it keeps going while held:\n• Damage 3.5 ❤ fire (fire ×0.5 on wet)\n• Heat: sets on fire for 18 s (wet targets just dry off), thaws; melts ice and burns roots\n• Cold 40: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• If the target is frozen or brittle: damage 9.5 ❤ thermal",
+  "self_description": "On you:\n• Damage 3.5 ❤ fire (fire ×0.5 on wet)\n• Heat: sets on fire for 18 s (wet targets just dry off), thaws; melts ice and burns roots\n• Cold 40: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• If the target is frozen or brittle: damage 9.5 ❤ thermal",
+  "balanced": true
+}

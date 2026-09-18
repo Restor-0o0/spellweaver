@@ -1,0 +1,78 @@
+{
+  "id": "magicka:living_cryostasis",
+  "formula": {
+    "cold": 1,
+    "life": 2
+  },
+  "name": "Living Cryostasis",
+  "tier": "Family Variant",
+  "tags": "CC/DEBUFF/HEAL/BUFF",
+  "shape": "targeted_zone",
+  "origin": "aim_ground",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 3.3,
+    "speed": 0.99,
+    "duration_ticks": 240,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.5
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 8,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10
+  },
+  "effects": [
+    {
+      "type": "modify_temperature",
+      "amount": -40
+    },
+    {
+      "type": "heal",
+      "amount": 4.5
+    },
+    {
+      "type": "apply_status",
+      "status": "regenerating",
+      "duration_ticks": 176,
+      "strength": 2
+    },
+    {
+      "type": "grow_plants",
+      "budget": 4
+    },
+    {
+      "type": "apply_status",
+      "status": "stone_shell",
+      "duration_ticks": 88,
+      "strength": 2
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "modify_temperature",
+        "amount": -40
+      },
+      {
+        "type": "heal",
+        "amount": 4.5
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 176,
+        "strength": 2
+      }
+    ]
+  },
+  "primary": "A zone at the aim point with a 3.3-block radius for 12 s. Every second, on everyone inside, including you (damage and control only hit enemies):\n• Cold 40: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Heals 2.25 ❤\n• Regeneration: +1 ❤ every 2 s for 8.8 s\n• Growth: up to 4 nearby blocks — crops +2 stages, dirt turns to grass, roots grow upward\n• Stone skin (Resistance II) for 4.4 s",
+  "self_description": "On you:\n• Cold 40: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Heals 2.25 ❤\n• Regeneration: +1 ❤ every 2 s for 8.8 s",
+  "balanced": true
+}

@@ -1,0 +1,93 @@
+{
+  "id": "magicka:flooded_greater_suspension_arcane2",
+  "formula": {
+    "water": 3,
+    "arcane": 2
+  },
+  "name": "Flooded Greater Suspension · Arcane ×2",
+  "tier": "Generic Fusion",
+  "tags": "SETUP/CC",
+  "shape": "spray",
+  "origin": "caster_front",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 6.23,
+    "speed": 1.07,
+    "duration_ticks": 390,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 4.78
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 40,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12,
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "set_wet",
+      "duration_ticks": 420
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.81,
+      "lift": 0
+    },
+    {
+      "type": "deal_damage",
+      "amount": 4.5,
+      "element": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "arcane_unstable",
+      "duration_ticks": 135,
+      "strength": 1
+    },
+    {
+      "type": "deal_damage",
+      "amount": 6,
+      "element": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "arcane_unstable",
+      "duration_ticks": 180,
+      "strength": 3
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 420
+      },
+      {
+        "type": "apply_force",
+        "amount": 0.81,
+        "lift": 0
+      },
+      {
+        "type": "apply_status",
+        "status": "arcane_unstable",
+        "duration_ticks": 135,
+        "strength": 1
+      },
+      {
+        "type": "apply_status",
+        "status": "arcane_unstable",
+        "duration_ticks": 80,
+        "strength": 1
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "A widening stream (up to 3 blocks wide) hits everyone in front of you; in instant mode it keeps going while held:\n• Damage 5.25 ❤ arcane\n• Soaked for 21 s and leaves a puddle\n• Knockback\n• Arcane instability: −0.25 ❤ every 2 s for 6.75 s\n• Arcane instability: −0.75 ❤ every 2 s for 9 s",
+  "self_description": "On you:\n• Soaked for 21 s and leaves a puddle\n• Knockback\n• Arcane instability: −0.25 ❤ every 2 s for 6.75 s\n• Arcane instability: −0.25 ❤ every 2 s for 4 s"
+}

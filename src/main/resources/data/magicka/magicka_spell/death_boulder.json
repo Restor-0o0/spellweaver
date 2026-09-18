@@ -1,0 +1,84 @@
+{
+  "id": "magicka:death_boulder",
+  "formula": {
+    "earth": 3,
+    "death": 1
+  },
+  "name": "Boulder · Death",
+  "tier": "Generic Fusion",
+  "tags": "BREAK/DEATH",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 2.8,
+    "speed": 0.99,
+    "duration_ticks": 220,
+    "interval_ticks": 20,
+    "gravity": 0.025,
+    "burst_radius": 3.0
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 8,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 7.0,
+      "element": "earth"
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.75,
+      "lift": 0.36
+    },
+    {
+      "type": "destroy_blocks",
+      "budget": 9,
+      "radius": 1.5
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 80,
+      "strength": 1
+    },
+    {
+      "type": "drain_life",
+      "amount": 1.0,
+      "fraction": 0.4
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 220,
+        "strength": 3
+      },
+      {
+        "type": "apply_status",
+        "status": "chilled",
+        "duration_ticks": 170,
+        "strength": 3
+      },
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 60,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "A projectile flies in an arc where you look and strikes the first target. Effects:\n• Damage 3.5 ❤ earth (earth ×2 on frozen)\n• Knockback\n• Breaks up to 9 blocks within 1.5 blocks (twice as many if brittle)\n• Withering: −0.5 ❤ per second for 4 s\n• Life drain: 0.5 ❤ damage, you heal 0.2 ❤",
+  "self_description": "On you:\n• Stone skin (Resistance III) for 11 s\n• Slowness III for 8.5 s\n• Withering: −0.5 ❤ per second for 3 s",
+  "balanced": true
+}

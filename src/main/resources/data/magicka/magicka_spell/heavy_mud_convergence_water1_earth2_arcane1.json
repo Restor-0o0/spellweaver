@@ -1,0 +1,104 @@
+{
+  "id": "magicka:heavy_mud_convergence_water1_earth2_arcane1",
+  "formula": {
+    "water": 1,
+    "earth": 2,
+    "arcane": 1
+  },
+  "name": "Heavy Mud Convergence",
+  "tier": "Family Variant",
+  "tags": "SETUP/CC/BREAK/BUILD/MOVE",
+  "shape": "summon_object",
+  "origin": "aim_surface",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 3.7,
+    "speed": 1.07,
+    "duration_ticks": 260,
+    "interval_ticks": 20,
+    "gravity": 0.025,
+    "burst_radius": 3.5
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 16,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12
+  },
+  "effects": [
+    {
+      "type": "set_wet",
+      "duration_ticks": 160
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.15,
+      "lift": 0
+    },
+    {
+      "type": "deal_damage",
+      "amount": 5.0,
+      "element": "earth"
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.5,
+      "lift": 0.24
+    },
+    {
+      "type": "deal_damage",
+      "amount": 2.5,
+      "element": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "arcane_unstable",
+      "duration_ticks": 90,
+      "strength": 1
+    },
+    {
+      "type": "apply_status",
+      "status": "rooted",
+      "duration_ticks": 50,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 160
+      },
+      {
+        "type": "apply_force",
+        "amount": 0.15,
+        "lift": 0
+      },
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 180,
+        "strength": 2
+      },
+      {
+        "type": "apply_status",
+        "status": "chilled",
+        "duration_ticks": 140,
+        "strength": 2
+      },
+      {
+        "type": "apply_status",
+        "status": "arcane_unstable",
+        "duration_ticks": 90,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "Places a totem (6 ❤) at the aim point for 13 s. Every second within 3.7 blocks, on everyone, including you:\n• Damage 2.5 ❤ earth + 1.25 ❤ arcane (earth ×2 on frozen)\n• Soaked for 8 s\n• Light push\n• Knockback\n• Arcane instability: −0.25 ❤ every 2 s for 4.5 s\n• Rooted in place for 2.5 s",
+  "self_description": "On you:\n• Soaked for 8 s and leaves a puddle\n• Light push\n• Stone skin (Resistance II) for 9 s\n• Slowness II for 7 s\n• Arcane instability: −0.25 ❤ every 2 s for 4.5 s",
+  "balanced": true
+}

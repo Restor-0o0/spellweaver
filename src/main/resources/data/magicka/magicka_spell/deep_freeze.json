@@ -1,0 +1,47 @@
+{
+  "id": "magicka:deep_freeze",
+  "formula": {
+    "cold": 4
+  },
+  "name": "Deep Freeze",
+  "tier": "Signature",
+  "tags": "CC/DEBUFF",
+  "shape": "burst_projectile",
+  "origin": "caster_front",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 3.7,
+    "speed": 1.07,
+    "duration_ticks": 240,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.5
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 16,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12
+  },
+  "effects": [
+    {
+      "type": "modify_temperature",
+      "amount": -160
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "modify_temperature",
+        "amount": -160
+      }
+    ]
+  },
+  "primary": "An icy shell that freezes everyone around where it lands.\nA projectile flies where you look and explodes in a 2.5-block radius on hit. Effects:\n• Cold 160: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze",
+  "self_description": "On you:\n• Cold 160: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze",
+  "balanced": true
+}

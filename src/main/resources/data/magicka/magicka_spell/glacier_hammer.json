@@ -1,0 +1,93 @@
+{
+  "id": "magicka:glacier_hammer",
+  "formula": {
+    "cold": 2,
+    "earth": 2
+  },
+  "name": "Glacier Hammer",
+  "tier": "Signature",
+  "tags": "DMG/CC/BREAK",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 3.5,
+    "speed": 1.07,
+    "duration_ticks": 240,
+    "interval_ticks": 20,
+    "gravity": 0.025,
+    "burst_radius": 3.3
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 16,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12
+  },
+  "effects": [
+    {
+      "type": "modify_temperature",
+      "amount": -80
+    },
+    {
+      "type": "deal_damage",
+      "amount": 5.0,
+      "element": "earth"
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.5,
+      "lift": 0.24
+    },
+    {
+      "type": "destroy_blocks",
+      "budget": 6,
+      "radius": 1.0
+    },
+    {
+      "type": "apply_status",
+      "status": "rooted",
+      "duration_ticks": 50,
+      "strength": 1
+    },
+    {
+      "type": "apply_status",
+      "status": "brittle",
+      "duration_ticks": 100,
+      "strength": 1
+    },
+    {
+      "type": "brittle_terrain",
+      "radius": 2
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 200,
+        "strength": 3
+      },
+      {
+        "type": "apply_status",
+        "status": "chilled",
+        "duration_ticks": 200,
+        "strength": 5
+      },
+      {
+        "type": "apply_status",
+        "status": "brittle",
+        "duration_ticks": 140,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "A block of glacier ice: knocks down, freezes and makes stone brittle.\nA projectile flies in an arc where you look and strikes the first target. Effects:\n• Damage 2.5 ❤ earth (earth ×2 on frozen)\n• Cold 80: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Knockback\n• Breaks up to 6 blocks within 1 blocks (twice as many if brittle)\n• Rooted in place for 2.5 s\n• Brittle (earth damage ×2) for 5 s\n• Blocks within 2 blocks turn brittle for 8 s",
+  "self_description": "On you:\n• Stone skin (Resistance III) for 10 s\n• Slowness V for 10 s\n• Brittle (earth damage ×2) for 7 s",
+  "balanced": true
+}

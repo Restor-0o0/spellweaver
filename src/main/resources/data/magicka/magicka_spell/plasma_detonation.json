@@ -1,0 +1,100 @@
+{
+  "id": "magicka:plasma_detonation",
+  "formula": {
+    "fire": 2,
+    "lightning": 1,
+    "arcane": 1
+  },
+  "name": "Plasma Detonation",
+  "tier": "Signature",
+  "tags": "DMG/AOE/CC",
+  "shape": "targeted_explosion",
+  "origin": "aim_hit",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 4,
+    "speed": 1.07,
+    "duration_ticks": 200,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 4.0
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 16,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 5.0,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 80
+    },
+    {
+      "type": "deal_damage",
+      "amount": 2.5,
+      "element": "lightning"
+    },
+    {
+      "type": "add_charge",
+      "amount": 35
+    },
+    {
+      "type": "chain_targets",
+      "count": 4,
+      "range": 4,
+      "amount": 2.5
+    },
+    {
+      "type": "deal_damage",
+      "amount": 2.5,
+      "element": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "arcane_unstable",
+      "duration_ticks": 90,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "nova",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 5.0,
+        "element": "fire"
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 80
+      },
+      {
+        "type": "deal_damage",
+        "amount": 2.5,
+        "element": "lightning"
+      },
+      {
+        "type": "add_charge",
+        "amount": 35
+      },
+      {
+        "type": "apply_status",
+        "status": "arcane_unstable",
+        "duration_ticks": 90,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "A plasma blast, especially deadly against wet targets.\nAn explosion at the aim point with a 4-block radius (does not hit you):\n• Damage 2.5 ❤ fire + 1.25 ❤ lightning + 1.25 ❤ arcane (lightning ×2 on wet, fire ×0.5 on wet)\n• Heat: sets on fire for 12 s (wet targets just dry off), thaws; melts ice and burns roots\n• Charge 35: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Then the lightning jumps onward: up to 4 targets in a row, jumps up to 4 blocks, 1.25 ❤ and 40 charge each (×2 damage and longer jumps on wet, ×1.5 range in puddles)\n• Arcane instability: −0.25 ❤ every 2 s for 4.5 s",
+  "self_description": "An explosion around you with a 4-block radius, hitting you as well:\n• Damage 2.5 ❤ fire + 1.25 ❤ lightning (lightning ×2 on wet, fire ×0.5 on wet)\n• Heat: sets on fire for 12 s (wet targets just dry off), thaws; melts ice and burns roots\n• Charge 35: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Arcane instability: −0.25 ❤ every 2 s for 4.5 s",
+  "balanced": true
+}

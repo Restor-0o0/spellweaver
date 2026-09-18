@@ -1,0 +1,115 @@
+{
+  "id": "magicka:death_overcharge",
+  "formula": {
+    "lightning": 1,
+    "life": 1,
+    "arcane": 1,
+    "death": 1
+  },
+  "name": "Overcharge · Death",
+  "tier": "Generic Fusion",
+  "tags": "MOVE/BUFF/MEME/DEATH",
+  "shape": "direct_target",
+  "origin": "aim_hit",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 3.0,
+    "speed": 0.99,
+    "duration_ticks": 200,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.9
+  },
+  "construction": {
+    "material": "root",
+    "budget": 8,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10
+  },
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "haste",
+      "duration_ticks": 100,
+      "strength": 3
+    },
+    {
+      "type": "apply_effect",
+      "effect": "minecraft:jump_boost",
+      "duration_ticks": 100,
+      "strength": 2
+    },
+    {
+      "type": "delay",
+      "ticks": 100,
+      "effects": [
+        {
+          "type": "add_charge",
+          "amount": 60
+        },
+        {
+          "type": "apply_status",
+          "status": "chilled",
+          "duration_ticks": 60,
+          "strength": 2
+        }
+      ]
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 80,
+      "strength": 1
+    },
+    {
+      "type": "drain_life",
+      "amount": 1.0,
+      "fraction": 0.4
+    }
+  ],
+  "self": {
+    "mode": "effects",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "haste",
+        "duration_ticks": 100,
+        "strength": 3
+      },
+      {
+        "type": "apply_effect",
+        "effect": "minecraft:jump_boost",
+        "duration_ticks": 100,
+        "strength": 2
+      },
+      {
+        "type": "delay",
+        "ticks": 100,
+        "effects": [
+          {
+            "type": "add_charge",
+            "amount": 60
+          },
+          {
+            "type": "apply_status",
+            "status": "chilled",
+            "duration_ticks": 60,
+            "strength": 2
+          }
+        ]
+      },
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 60,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "Affects the creature you aim at:\n• Speed IV for 5 s\n• Jump Boost II, 5 s\n• 5 s later: charge 60: weakness, stuns for 1 s at 65 charge (×2 on wet); Slowness II for 3 s\n• Withering: −0.5 ❤ per second for 4 s\n• Life drain: 0.5 ❤ damage, you heal 0.2 ❤",
+  "self_description": "On you:\n• Speed IV for 5 s\n• Jump Boost II, 5 s\n• 5 s later: charge 60: weakness, stuns for 1 s at 65 charge (×2 on wet); Slowness II for 3 s\n• Withering: −0.5 ❤ per second for 3 s",
+  "balanced": true
+}

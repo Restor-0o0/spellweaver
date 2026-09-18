@@ -1,0 +1,57 @@
+{
+  "id": "magicka:jet",
+  "formula": {
+    "water": 2
+  },
+  "name": "Jet",
+  "tier": "Signature",
+  "tags": "SETUP/CC",
+  "shape": "spray",
+  "origin": "caster_front",
+  "cast_ticks": 9,
+  "delivery": {
+    "radius": 2.9,
+    "speed": 0.91,
+    "duration_ticks": 180,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.3
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 3,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 8
+  },
+  "effects": [
+    {
+      "type": "set_wet",
+      "duration_ticks": 275
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.3,
+      "lift": 0
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 275
+      },
+      {
+        "type": "apply_force",
+        "amount": 0.3,
+        "lift": 0
+      }
+    ]
+  },
+  "primary": "A water jet that pushes enemies away.\nA widening stream (up to 3 blocks wide) hits everyone in front of you; in instant mode it keeps going while held:\n• Soaked for 13.75 s and leaves a puddle\n• Light push",
+  "self_description": "On you:\n• Soaked for 13.75 s and leaves a puddle\n• Light push",
+  "balanced": true
+}

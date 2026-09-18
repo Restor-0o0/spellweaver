@@ -1,0 +1,48 @@
+{
+  "id": "magicka:freezing_ray",
+  "formula": {
+    "cold": 3
+  },
+  "name": "Freezing Ray",
+  "tier": "Signature",
+  "tags": "CC/DEBUFF",
+  "shape": "beam",
+  "origin": "caster_front",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 3.1,
+    "speed": 0.99,
+    "duration_ticks": 200,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.7,
+    "beam_width": 0.2
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 8,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10
+  },
+  "effects": [
+    {
+      "type": "modify_temperature",
+      "amount": -60
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "modify_temperature",
+        "amount": -120
+      }
+    ]
+  },
+  "primary": "A ray of cold that gradually freezes its target.\nA beam to the aim point hits everyone along it. In instant mode it keeps firing while held. Effects:\n• Cold 60: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze",
+  "self_description": "On you:\n• Cold 120: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze",
+  "balanced": true
+}

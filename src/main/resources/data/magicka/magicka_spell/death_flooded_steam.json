@@ -1,0 +1,100 @@
+{
+  "id": "magicka:death_flooded_steam",
+  "formula": {
+    "fire": 1,
+    "water": 2,
+    "death": 1
+  },
+  "name": "Flooded Steam · Death",
+  "tier": "Generic Fusion",
+  "tags": "DMG/DOT/SETUP/CC/DEATH",
+  "shape": "spray",
+  "origin": "caster_front",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 3.4,
+    "speed": 0.99,
+    "duration_ticks": 200,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.0
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 8,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10
+  },
+  "effects": [
+    {
+      "type": "set_wet",
+      "duration_ticks": 220
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.3,
+      "lift": 0
+    },
+    {
+      "type": "deal_damage",
+      "amount": 2.5,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 40
+    },
+    {
+      "type": "apply_status",
+      "status": "obscured",
+      "duration_ticks": 50,
+      "strength": 1
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 80,
+      "strength": 1
+    },
+    {
+      "type": "drain_life",
+      "amount": 1.0,
+      "fraction": 0.4
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 220
+      },
+      {
+        "type": "apply_force",
+        "amount": 0.3,
+        "lift": 0
+      },
+      {
+        "type": "deal_damage",
+        "amount": 2.5,
+        "element": "fire"
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 40
+      },
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 60,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "A widening stream (up to 3 blocks wide) hits everyone in front of you; in instant mode it keeps going while held:\n• Damage 1.25 ❤ fire (fire ×0.5 on wet)\n• Soaked for 11 s and leaves a puddle\n• Light push\n• Heat: sets on fire for 6 s (wet targets just dry off), thaws; melts ice and burns roots\n• Blindness for 2.5 s\n• Withering: −0.5 ❤ per second for 4 s\n• Life drain: 0.5 ❤ damage, you heal 0.2 ❤",
+  "self_description": "On you:\n• Damage 1.25 ❤ fire (fire ×0.5 on wet)\n• Soaked for 11 s and leaves a puddle\n• Light push\n• Heat: sets on fire for 6 s (wet targets just dry off), thaws; melts ice and burns roots\n• Withering: −0.5 ❤ per second for 3 s",
+  "balanced": true
+}

@@ -1,0 +1,96 @@
+{
+  "id": "magicka:scorching_greater_steam_water2",
+  "formula": {
+    "fire": 3,
+    "water": 2
+  },
+  "name": "Scorching Greater Steam · Water ×2",
+  "tier": "Generic Fusion",
+  "tags": "DMG/DOT/SETUP/CC",
+  "shape": "spray",
+  "origin": "caster_front",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 5.22,
+    "speed": 1.07,
+    "duration_ticks": 300,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 5.8
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 40,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12,
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "set_wet",
+      "duration_ticks": 240
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.27,
+      "lift": 0
+    },
+    {
+      "type": "deal_damage",
+      "amount": 12.5,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 216
+    },
+    {
+      "type": "apply_status",
+      "status": "obscured",
+      "duration_ticks": 75,
+      "strength": 1
+    },
+    {
+      "type": "set_wet",
+      "duration_ticks": 240
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.5,
+      "lift": 0
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 240
+      },
+      {
+        "type": "apply_force",
+        "amount": 0.27,
+        "lift": 0
+      },
+      {
+        "type": "deal_damage",
+        "amount": 12.5,
+        "element": "fire"
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 216
+      },
+      {
+        "type": "set_wet",
+        "duration_ticks": 120
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "A widening stream (up to 3 blocks wide) hits everyone in front of you; in instant mode it keeps going while held:\n• Damage 6.25 ❤ fire (fire ×0.5 on wet)\n• Soaked for 12 s and leaves a puddle\n• Light push\n• Heat: sets on fire for 32.4 s (wet targets just dry off), thaws; melts ice and burns roots\n• Blindness for 3.75 s\n• Knockback",
+  "self_description": "On you:\n• Damage 6.25 ❤ fire (fire ×0.5 on wet)\n• Soaked for 12 s and leaves a puddle\n• Light push\n• Heat: sets on fire for 32.4 s (wet targets just dry off), thaws; melts ice and burns roots\n• Soaked for 6 s and leaves a puddle"
+}

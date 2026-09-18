@@ -1,0 +1,58 @@
+{
+  "id": "magicka:flame_lance",
+  "formula": {
+    "fire": 3
+  },
+  "name": "Flame Lance",
+  "tier": "Signature",
+  "tags": "DMG/DOT",
+  "shape": "beam",
+  "origin": "caster_front",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 2.8,
+    "speed": 0.99,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.6,
+    "beam_width": 0.3
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 8,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 5.5,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 120
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 5.5,
+        "element": "fire"
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 120
+      }
+    ]
+  },
+  "primary": "A searing beam of flame.\nA beam to the aim point hits everyone along it. In instant mode it keeps firing while held. Effects:\n• Damage 2.75 ❤ fire (fire ×0.5 on wet)\n• Heat: sets on fire for 18 s (wet targets just dry off), thaws; melts ice and burns roots",
+  "self_description": "On you:\n• Damage 2.75 ❤ fire (fire ×0.5 on wet)\n• Heat: sets on fire for 18 s (wet targets just dry off), thaws; melts ice and burns roots",
+  "balanced": true
+}

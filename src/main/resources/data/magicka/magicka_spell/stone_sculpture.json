@@ -1,0 +1,44 @@
+{
+  "id": "magicka:stone_sculpture",
+  "formula": {
+    "earth": 4
+  },
+  "name": "Stone Sculpture",
+  "tier": "Signature",
+  "tags": "BUILD",
+  "shape": "wall",
+  "origin": "caster_feet",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 2.0,
+    "speed": 1.2,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.0
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 125,
+    "interval_ticks": 1,
+    "batch": 8,
+    "width": 1,
+    "height": 3,
+    "floating": true,
+    "integrity": 12,
+    "template": "custom",
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "create_construction"
+    }
+  ],
+  "self": {
+    "mode": "construct",
+    "effects": []
+  },
+  "primary": "Your own shape, cut out of a 5×5×5 block of earth.\nThe shape you drew yourself in a 5×5×5 cube (press K for the shape editor): it is built at the aim point and turns to follow your view; can hang in mid-air without support. Material: magic earth, permanent.",
+  "self_description": "The shape you drew yourself in a 5×5×5 cube (press K for the shape editor): it is built at the aim point and turns to follow your view; can hang in mid-air without support. Material: magic earth, permanent. No extra effects.",
+  "balanced": true
+}

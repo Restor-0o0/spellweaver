@@ -1,0 +1,54 @@
+{
+  "id": "magicka:resurrection",
+  "formula": {
+    "life": 2,
+    "death": 1
+  },
+  "name": "Resurrection",
+  "tier": "Signature",
+  "tags": "HEAL/REVIVE",
+  "shape": "direct_target",
+  "origin": "aim_hit",
+  "delivery": {
+    "radius": 6,
+    "speed": 0.9,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.0
+  },
+  "effects": [
+    {
+      "type": "revive",
+      "health_fraction": 1.0
+    },
+    {
+      "type": "heal",
+      "amount": 9.0
+    },
+    {
+      "type": "apply_status",
+      "status": "regenerating",
+      "duration_ticks": 176,
+      "strength": 2
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "heal",
+        "amount": 11.5
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 176,
+        "strength": 2
+      }
+    ]
+  },
+  "primary": "Fully brings the fallen back to life.\nAffects the creature you aim at:\n• Revives the nearest fallen player or creature within 6 blocks with 100% health\n• Heals 4.5 ❤\n• Regeneration: +1 ❤ every 2 s for 8.8 s",
+  "self_description": "On you:\n• Heals 5.75 ❤\n• Regeneration: +1 ❤ every 2 s for 8.8 s",
+  "balanced": true
+}

@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "magicka:magic_earth",
+    "magicka:magic_ice",
+    "magicka:magic_arcane",
+    "magicka:magic_glowstone",
+    "magicka:magic_copper",
+    "magicka:magic_tesla_coil"
+  ]
+}

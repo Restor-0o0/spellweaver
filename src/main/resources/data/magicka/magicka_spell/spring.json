@@ -1,0 +1,82 @@
+{
+  "id": "magicka:spring",
+  "formula": {
+    "water": 1,
+    "life": 1
+  },
+  "name": "Spring",
+  "tier": "Signature",
+  "tags": "SETUP/CC/HEAL/BUFF",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 9,
+  "delivery": {
+    "radius": 2.8,
+    "speed": 0.91,
+    "duration_ticks": 180,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.2
+  },
+  "construction": {
+    "material": "root",
+    "budget": 3,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 8
+  },
+  "effects": [
+    {
+      "type": "set_wet",
+      "duration_ticks": 200
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.15,
+      "lift": 0
+    },
+    {
+      "type": "heal",
+      "amount": 2.5
+    },
+    {
+      "type": "apply_status",
+      "status": "regenerating",
+      "duration_ticks": 150,
+      "strength": 1
+    },
+    {
+      "type": "grow_plants",
+      "budget": 2
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 200
+      },
+      {
+        "type": "apply_force",
+        "amount": 0.15,
+        "lift": 0
+      },
+      {
+        "type": "heal",
+        "amount": 2.5
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 150,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "Healing water.\nA projectile flies where you look and strikes the first target. Effects:\n• Soaked for 10 s and leaves a puddle\n• Light push\n• Heals 1.25 ❤\n• Regeneration: +0.5 ❤ every 2 s for 7.5 s\n• Growth: up to 2 nearby blocks — crops +2 stages, dirt turns to grass, roots grow upward",
+  "self_description": "On you:\n• Soaked for 10 s and leaves a puddle\n• Light push\n• Heals 1.25 ❤\n• Regeneration: +0.5 ❤ every 2 s for 7.5 s",
+  "balanced": true
+}

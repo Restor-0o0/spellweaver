@@ -1,0 +1,66 @@
+{
+  "id": "magicka:death_freezing_ray",
+  "formula": {
+    "cold": 3,
+    "death": 1
+  },
+  "name": "Freezing Ray · Death",
+  "tier": "Generic Fusion",
+  "tags": "CC/DEBUFF/DEATH",
+  "shape": "beam",
+  "origin": "caster_front",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 3.1,
+    "speed": 0.99,
+    "duration_ticks": 200,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.7,
+    "beam_width": 0.2
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 8,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10
+  },
+  "effects": [
+    {
+      "type": "modify_temperature",
+      "amount": -60
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 80,
+      "strength": 1
+    },
+    {
+      "type": "drain_life",
+      "amount": 1.0,
+      "fraction": 0.4
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "modify_temperature",
+        "amount": -120
+      },
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 60,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "A beam to the aim point hits everyone along it. In instant mode it keeps firing while held. Effects:\n• Cold 60: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Withering: −0.5 ❤ per second for 4 s\n• Life drain: 0.5 ❤ damage, you heal 0.2 ❤",
+  "self_description": "On you:\n• Cold 120: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Withering: −0.5 ❤ per second for 3 s",
+  "balanced": true
+}

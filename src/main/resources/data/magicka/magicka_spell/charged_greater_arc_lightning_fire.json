@@ -1,0 +1,96 @@
+{
+  "id": "magicka:charged_greater_arc_lightning_fire",
+  "formula": {
+    "lightning": 3,
+    "arcane": 1,
+    "fire": 1
+  },
+  "name": "Charged Greater Arc Lightning · Fire",
+  "tier": "Generic Fusion",
+  "tags": "DMG/CC/SETUP",
+  "shape": "chain",
+  "origin": "aim_hit",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 4.5,
+    "speed": 1.07,
+    "duration_ticks": 300,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 5.22
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 40,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12,
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 12.5,
+      "element": "lightning"
+    },
+    {
+      "type": "add_charge",
+      "amount": 189
+    },
+    {
+      "type": "chain_targets",
+      "count": 16,
+      "range": 8,
+      "amount": 12.6
+    },
+    {
+      "type": "deal_damage",
+      "amount": 4.5,
+      "element": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "arcane_unstable",
+      "duration_ticks": 135,
+      "strength": 1
+    },
+    {
+      "type": "deal_damage",
+      "amount": 4,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 90
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 12.5,
+        "element": "lightning"
+      },
+      {
+        "type": "add_charge",
+        "amount": 189
+      },
+      {
+        "type": "apply_status",
+        "status": "arcane_unstable",
+        "duration_ticks": 135,
+        "strength": 1
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 30
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "Lightning shoots from your hand into the creature you aim at (or the first one in your line of sight). In instant mode it strikes twice a second while held. Effects:\n• Damage 6.25 ❤ lightning + 2.25 ❤ arcane + 2 ❤ fire (lightning ×2 on wet, fire ×0.5 on wet)\n• Charge 189: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Then the lightning jumps onward: up to 16 targets in a row, jumps up to 8 blocks, 6.3 ❤ and 40 charge each (×2 damage and longer jumps on wet, ×1.5 range in puddles)\n• Arcane instability: −0.25 ❤ every 2 s for 6.75 s\n• Heat: sets on fire for 13.5 s (wet targets just dry off), thaws; melts ice and burns roots",
+  "self_description": "On you:\n• Damage 6.25 ❤ lightning (lightning ×2 on wet)\n• Charge 189: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Arcane instability: −0.25 ❤ every 2 s for 6.75 s\n• Heat: sets on fire for 4.5 s (wet targets just dry off), thaws; melts ice and burns roots"
+}

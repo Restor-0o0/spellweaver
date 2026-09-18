@@ -1,0 +1,42 @@
+{
+  "id": "magicka:stone_platform",
+  "formula": {
+    "earth": 2,
+    "arcane": 1
+  },
+  "name": "Stone Platform",
+  "tier": "Signature",
+  "tags": "BUILD/MOVE",
+  "shape": "platform",
+  "origin": "aim_surface",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 2.9,
+    "speed": 0.99,
+    "duration_ticks": 200,
+    "interval_ticks": 20,
+    "gravity": 0.025,
+    "burst_radius": 3.1
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 9,
+    "interval_ticks": 4,
+    "width": 3,
+    "height": 3,
+    "floating": false,
+    "integrity": 10
+  },
+  "effects": [
+    {
+      "type": "create_construction"
+    }
+  ],
+  "self": {
+    "mode": "construct",
+    "effects": []
+  },
+  "primary": "A 3×3 stone platform on a surface.\nA 3×3 platform at the aim point. Material: magic earth, permanent.",
+  "self_description": "A 3×3 platform at your feet. Material: magic earth, permanent. No extra effects.",
+  "balanced": true
+}

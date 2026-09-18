@@ -1,0 +1,43 @@
+{
+  "id": "magicka:lantern_trail",
+  "formula": {
+    "fire": 1,
+    "life": 1,
+    "arcane": 1
+  },
+  "name": "Lantern Trail",
+  "tier": "Signature",
+  "tags": "UTIL",
+  "shape": "direct_target",
+  "origin": "aim_hit",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 2.0,
+    "speed": 1.2,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.0
+  },
+  "construction": {},
+  "effects": [
+    {
+      "type": "light_path",
+      "spacing": 6,
+      "count": 10
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "light_ring",
+        "radius": 6,
+        "count": 8
+      }
+    ]
+  },
+  "primary": "Marks your way through a cave with a chain of lights.\nWhere you look:\n• A chain of wisps from you to the aim point every 6 blocks, up to 10; light level 15, permanent",
+  "self_description": "Around you:\n• 8 wisps in a 6-block circle around you; light level 15, permanent",
+  "balanced": true
+}

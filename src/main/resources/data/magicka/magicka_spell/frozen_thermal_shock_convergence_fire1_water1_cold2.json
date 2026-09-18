@@ -1,0 +1,113 @@
+{
+  "id": "magicka:frozen_thermal_shock_convergence_fire1_water1_cold2",
+  "formula": {
+    "fire": 1,
+    "water": 1,
+    "cold": 2
+  },
+  "name": "Frozen Thermal Shock Convergence",
+  "tier": "Family Variant",
+  "tags": "DMG/DOT/SETUP/CC/DEBUFF",
+  "shape": "targeted_zone",
+  "origin": "aim_ground",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 3.8,
+    "speed": 1.07,
+    "duration_ticks": 240,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.4
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 16,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12
+  },
+  "effects": [
+    {
+      "type": "set_wet",
+      "duration_ticks": 160
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.15,
+      "lift": 0
+    },
+    {
+      "type": "deal_damage",
+      "amount": 2.5,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 40
+    },
+    {
+      "type": "modify_temperature",
+      "amount": -80
+    },
+    {
+      "type": "conditional",
+      "condition": "was_frozen",
+      "effects": [
+        {
+          "type": "deal_damage",
+          "amount": 14.5,
+          "element": "thermal"
+        }
+      ]
+    },
+    {
+      "type": "apply_status",
+      "status": "obscured",
+      "duration_ticks": 50,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 160
+      },
+      {
+        "type": "apply_force",
+        "amount": 0.15,
+        "lift": 0
+      },
+      {
+        "type": "deal_damage",
+        "amount": 2.5,
+        "element": "fire"
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 40
+      },
+      {
+        "type": "modify_temperature",
+        "amount": -80
+      },
+      {
+        "type": "conditional",
+        "condition": "was_frozen",
+        "effects": [
+          {
+            "type": "deal_damage",
+            "amount": 14.5,
+            "element": "thermal"
+          }
+        ]
+      }
+    ]
+  },
+  "primary": "A zone at the aim point with a 3.8-block radius for 12 s. Every second, on everyone inside except you:\n• Damage 1.25 ❤ fire (fire ×0.5 on wet)\n• Soaked for 8 s\n• Light push\n• Heat: sets on fire for 6 s (wet targets just dry off), thaws; melts ice and burns roots\n• Cold 80: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• If the target is frozen or brittle: damage 7.25 ❤ thermal\n• Blindness for 2.5 s",
+  "self_description": "On you:\n• Damage 1.25 ❤ fire (fire ×0.5 on wet)\n• Soaked for 8 s and leaves a puddle\n• Light push\n• Heat: sets on fire for 6 s (wet targets just dry off), thaws; melts ice and burns roots\n• Cold 80: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• If the target is frozen or brittle: damage 7.25 ❤ thermal",
+  "balanced": true
+}

@@ -1,0 +1,57 @@
+{
+  "id": "magicka:ember",
+  "formula": {
+    "fire": 1
+  },
+  "name": "Ember",
+  "tier": "Signature",
+  "tags": "DMG/DOT",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 5,
+  "delivery": {
+    "radius": 1.8,
+    "speed": 0.83,
+    "duration_ticks": 100,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.2
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 1,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 6
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 1.0,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 40
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 1.0,
+        "element": "fire"
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 40
+      }
+    ]
+  },
+  "primary": "A small fire projectile.\nA projectile flies where you look and strikes the first target. Effects:\n• Damage 0.5 ❤ fire (fire ×0.5 on wet)\n• Heat: sets on fire for 6 s (wet targets just dry off), thaws; melts ice and burns roots",
+  "self_description": "On you:\n• Damage 0.5 ❤ fire (fire ×0.5 on wet)\n• Heat: sets on fire for 6 s (wet targets just dry off), thaws; melts ice and burns roots",
+  "balanced": true
+}

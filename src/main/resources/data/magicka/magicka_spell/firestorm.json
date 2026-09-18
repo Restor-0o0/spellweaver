@@ -1,0 +1,63 @@
+{
+  "id": "magicka:firestorm",
+  "formula": {
+    "arcane": 1,
+    "fire": 3,
+    "lightning": 1
+  },
+  "incantation": "71141",
+  "name": "Firestorm",
+  "tier": "Signature",
+  "tags": "DMG/DOT/AOE",
+  "shape": "targeted_zone",
+  "origin": "aim_hit",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 9.0,
+    "speed": 1.0,
+    "duration_ticks": 320,
+    "interval_ticks": 12,
+    "gravity": 0,
+    "burst_radius": 9.0
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 15.5,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 220
+    },
+    {
+      "type": "apply_status",
+      "status": "obscured",
+      "duration_ticks": 120,
+      "strength": 1
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.4,
+      "lift": 0.3
+    }
+  ],
+  "self": {
+    "mode": "zone",
+    "effects": [
+      {
+        "type": "modify_temperature",
+        "amount": 60
+      },
+      {
+        "type": "apply_status",
+        "status": "haste",
+        "duration_ticks": 300,
+        "strength": 3
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "The sky burns: fire keeps falling on the chosen spot for thirteen seconds.\nA zone at the aim point with a 9-block radius for 16 s. Every second, on everyone inside except you:\n• Damage 7.75 ❤ fire (fire ×0.5 on wet)\n• Heat: sets on fire for 33 s (wet targets just dry off), thaws; melts ice and burns roots\n• Blindness for 6 s\n• Light push",
+  "self_description": "A zone around you with a 9-block radius for 16 s. Every second, on everyone inside, including you:\n• Heat: sets on fire for 9 s (wet targets just dry off), thaws; melts ice and burns roots\n• Speed IV for 15 s"
+}

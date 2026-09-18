@@ -1,0 +1,91 @@
+{
+  "id": "magicka:magma_boulder",
+  "formula": {
+    "fire": 2,
+    "earth": 2
+  },
+  "name": "Magma Boulder",
+  "tier": "Signature",
+  "tags": "DMG/BREAK/AOE",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 3.3,
+    "speed": 1.07,
+    "duration_ticks": 220,
+    "interval_ticks": 20,
+    "gravity": 0.025,
+    "burst_radius": 3,
+    "shards": 3
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 16,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 5.0,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 80
+    },
+    {
+      "type": "deal_damage",
+      "amount": 5.0,
+      "element": "earth"
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.5,
+      "lift": 0.24
+    },
+    {
+      "type": "destroy_blocks",
+      "budget": 6,
+      "radius": 1.0
+    },
+    {
+      "type": "spawn_zone",
+      "duration_ticks": 100,
+      "radius": 2
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 5.0,
+        "element": "fire"
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 80
+      },
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 180,
+        "strength": 2
+      },
+      {
+        "type": "apply_status",
+        "status": "chilled",
+        "duration_ticks": 140,
+        "strength": 2
+      }
+    ]
+  },
+  "primary": "A huge magma boulder that leaves a hot patch and shards.\nA projectile flies in an arc where you look and explodes in a 3-block radius on hit. 3 shards scatter around with the same effects on creatures they touch. Effects:\n• Damage 2.5 ❤ fire + 2.5 ❤ earth (fire ×0.5 on wet, earth ×2 on frozen)\n• Heat: sets on fire for 12 s (wet targets just dry off), thaws; melts ice and burns roots\n• Knockback\n• Breaks up to 6 blocks within 1 blocks (twice as many if brittle)\n• Leaves a 2-block zone for 5 s that repeats these effects every second",
+  "self_description": "On you:\n• Damage 2.5 ❤ fire (fire ×0.5 on wet)\n• Heat: sets on fire for 12 s (wet targets just dry off), thaws; melts ice and burns roots\n• Stone skin (Resistance II) for 9 s\n• Slowness II for 7 s",
+  "balanced": true
+}

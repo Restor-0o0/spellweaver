@@ -1,0 +1,43 @@
+{
+  "id": "magicka:floating_platform",
+  "formula": {
+    "earth": 2,
+    "arcane": 2
+  },
+  "name": "Floating Platform",
+  "tier": "Signature",
+  "tags": "BUILD/MOVE",
+  "shape": "platform",
+  "origin": "caster",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 3.5,
+    "speed": 1.07,
+    "duration_ticks": 240,
+    "interval_ticks": 20,
+    "gravity": 0.025,
+    "burst_radius": 3.7
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 9,
+    "interval_ticks": 4,
+    "width": 3,
+    "height": 3,
+    "floating": true,
+    "integrity": 12,
+    "under_caster": true
+  },
+  "effects": [
+    {
+      "type": "create_construction"
+    }
+  ],
+  "self": {
+    "mode": "construct",
+    "effects": []
+  },
+  "primary": "A 3×3 platform right under your feet, even mid-jump or mid-fall.\nA 3×3 platform right under your feet, even in mid-air. Material: magic earth, permanent.",
+  "self_description": "A 3×3 platform right under your feet, even in mid-air. Material: magic earth, permanent. No extra effects.",
+  "balanced": true
+}

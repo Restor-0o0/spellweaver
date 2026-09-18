@@ -1,0 +1,82 @@
+{
+  "id": "magicka:earthquake",
+  "formula": {
+    "earth": 3,
+    "fire": 1,
+    "cold": 1
+  },
+  "incantation": "55135",
+  "name": "Earthquake",
+  "tier": "Signature",
+  "tags": "DMG/BREAK/AOE",
+  "shape": "targeted_zone",
+  "origin": "aim_hit",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 9.0,
+    "speed": 1.0,
+    "duration_ticks": 220,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 9.0
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 18.0,
+      "element": "earth"
+    },
+    {
+      "type": "brittle_terrain",
+      "radius": 9
+    },
+    {
+      "type": "destroy_blocks",
+      "budget": 24,
+      "radius": 2.5
+    },
+    {
+      "type": "heave_blocks",
+      "budget": 60,
+      "radius": 9,
+      "lift": 0.75
+    },
+    {
+      "type": "apply_status",
+      "status": "rooted",
+      "duration_ticks": 160,
+      "strength": 1
+    },
+    {
+      "type": "apply_status",
+      "status": "brittle",
+      "duration_ticks": 320,
+      "strength": 1
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.8,
+      "lift": 0.5
+    }
+  ],
+  "self": {
+    "mode": "zone",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 300,
+        "strength": 3
+      },
+      {
+        "type": "apply_status",
+        "status": "rooted",
+        "duration_ticks": 40,
+        "strength": 1
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "The ground rears up: rock crumbles and everyone inside is pinned down.\nA zone at the aim point with a 9-block radius for 11 s. Every second, on everyone inside except you:\n• Damage 9 ❤ earth (earth ×2 on frozen)\n• Blocks within 3 blocks turn brittle for 8 s\n• Breaks up to 24 blocks within 2.5 blocks (twice as many if brittle)\n• Heaves the ground: up to 60 blocks within 9 blocks fly up, hurt on the way and crash back down, burying whatever stands below\n• Rooted in place for 8 s\n• Brittle (earth damage ×2) for 16 s\n• Launches upward",
+  "self_description": "A zone around you with a 9-block radius for 11 s. Every second, on everyone inside, including you:\n• Stone skin (Resistance III) for 15 s\n• Rooted in place for 2 s"
+}

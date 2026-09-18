@@ -1,0 +1,94 @@
+{
+  "id": "magicka:healing_spring",
+  "formula": {
+    "water": 1,
+    "life": 2,
+    "arcane": 1
+  },
+  "name": "Healing Spring",
+  "tier": "Signature",
+  "tags": "HEAL/BUILD/SETUP",
+  "shape": "summon_object",
+  "origin": "aim_ground",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 4,
+    "speed": 1.07,
+    "duration_ticks": 300,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.1,
+    "object_kind": "healer",
+    "object_health": 12
+  },
+  "construction": {
+    "material": "root",
+    "budget": 16,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12
+  },
+  "effects": [
+    {
+      "type": "set_wet",
+      "duration_ticks": 160
+    },
+    {
+      "type": "heal",
+      "amount": 4.0
+    },
+    {
+      "type": "apply_status",
+      "status": "regenerating",
+      "duration_ticks": 160,
+      "strength": 2
+    },
+    {
+      "type": "grow_plants",
+      "budget": 4
+    },
+    {
+      "type": "revive",
+      "health_fraction": 0.3
+    },
+    {
+      "type": "remove_status",
+      "status": "burning"
+    }
+  ],
+  "self": {
+    "mode": "summon",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 160
+      },
+      {
+        "type": "apply_force",
+        "amount": 0.15,
+        "lift": 0
+      },
+      {
+        "type": "heal",
+        "amount": 4.0
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 160,
+        "strength": 2
+      },
+      {
+        "type": "apply_status",
+        "status": "arcane_unstable",
+        "duration_ticks": 90,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "A spring totem heals everyone nearby and can bring back the fallen.\nPlaces a totem (6 ❤) at the aim point for 15 s. Every second within 4 blocks, on everyone, including you:\n• Soaked for 8 s\n• Heals 2 ❤\n• Regeneration: +1 ❤ every 2 s for 8 s\n• Growth: up to 4 nearby blocks — crops +2 stages, dirt turns to grass, roots grow upward\n• Revives the nearest fallen player or creature within 4 blocks with 30% health\n• Puts out fire",
+  "self_description": "The totem appears at your feet. Every second within 4 blocks, on everyone, including you:\n• Soaked for 8 s\n• Light push\n• Heals 2 ❤\n• Regeneration: +1 ❤ every 2 s for 8 s\n• Arcane instability: −0.25 ❤ every 2 s for 4.5 s",
+  "balanced": true
+}

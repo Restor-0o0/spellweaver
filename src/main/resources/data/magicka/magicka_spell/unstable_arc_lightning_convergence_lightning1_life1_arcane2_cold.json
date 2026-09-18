@@ -1,0 +1,130 @@
+{
+  "id": "magicka:unstable_arc_lightning_convergence_lightning1_life1_arcane2_cold",
+  "formula": {
+    "lightning": 1,
+    "life": 1,
+    "arcane": 2,
+    "cold": 1
+  },
+  "name": "Unstable Arc Lightning Convergence · Cold",
+  "tier": "Generic Fusion",
+  "tags": "DMG/CC/HEAL/BUFF/SETUP",
+  "shape": "targeted_explosion",
+  "origin": "aim_hit",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 5.22,
+    "speed": 1.07,
+    "duration_ticks": 360,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 5.08
+  },
+  "construction": {
+    "material": "root",
+    "budget": 40,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12,
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 4.5,
+      "element": "lightning"
+    },
+    {
+      "type": "add_charge",
+      "amount": 63
+    },
+    {
+      "type": "chain_targets",
+      "count": 8,
+      "range": 6,
+      "amount": 4.5
+    },
+    {
+      "type": "heal",
+      "amount": 3.5
+    },
+    {
+      "type": "apply_status",
+      "status": "regenerating",
+      "duration_ticks": 180,
+      "strength": 1
+    },
+    {
+      "type": "grow_plants",
+      "budget": 5
+    },
+    {
+      "type": "deal_damage",
+      "amount": 9.0,
+      "element": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "arcane_unstable",
+      "duration_ticks": 180,
+      "strength": 2
+    },
+    {
+      "type": "revive",
+      "health_fraction": 0.39
+    },
+    {
+      "type": "remove_status",
+      "status": "burning"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": -80
+    },
+    {
+      "type": "apply_status",
+      "status": "chilled",
+      "duration_ticks": 180,
+      "strength": 3
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 4.5,
+        "element": "lightning"
+      },
+      {
+        "type": "add_charge",
+        "amount": 63
+      },
+      {
+        "type": "heal",
+        "amount": 3.5
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 180,
+        "strength": 1
+      },
+      {
+        "type": "apply_status",
+        "status": "arcane_unstable",
+        "duration_ticks": 180,
+        "strength": 2
+      },
+      {
+        "type": "modify_temperature",
+        "amount": -25
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "An explosion at the aim point with a 5.22-block radius (does not hit you):\n• Damage 2.25 ❤ lightning + 4.5 ❤ arcane (lightning ×2 on wet)\n• Charge 63: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Then the lightning jumps onward: up to 8 targets in a row, jumps up to 6 blocks, 2.25 ❤ and 40 charge each (×2 damage and longer jumps on wet, ×1.5 range in puddles)\n• Heals 1.75 ❤\n• Regeneration: +0.5 ❤ every 2 s for 9 s\n• Growth: up to 5 nearby blocks — crops +2 stages, dirt turns to grass, roots grow upward\n• Arcane instability: −0.5 ❤ every 2 s for 9 s\n• Revives the nearest fallen player or creature within 5.22 blocks with 39% health\n• Puts out fire\n• Cold 80: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Slowness III for 9 s",
+  "self_description": "On you:\n• Damage 2.25 ❤ lightning (lightning ×2 on wet)\n• Charge 63: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Heals 1.75 ❤\n• Regeneration: +0.5 ❤ every 2 s for 9 s\n• Arcane instability: −0.5 ❤ every 2 s for 9 s\n• Cold 25: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze"
+}

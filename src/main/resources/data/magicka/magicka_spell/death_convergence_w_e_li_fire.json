@@ -1,0 +1,155 @@
+{
+  "id": "magicka:death_convergence_w_e_li_fire",
+  "formula": {
+    "water": 1,
+    "earth": 1,
+    "life": 1,
+    "death": 1,
+    "fire": 1
+  },
+  "name": "Convergence W / E / Li · Death · Fire",
+  "tier": "Generic Fusion",
+  "tags": "SETUP/CC/BREAK/HEAL/BUFF/DEATH",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 4.78,
+    "speed": 0.99,
+    "duration_ticks": 360,
+    "interval_ticks": 20,
+    "gravity": 0.025,
+    "burst_radius": 3.92
+  },
+  "construction": {
+    "material": "root",
+    "budget": 20,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10,
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "set_wet",
+      "duration_ticks": 240
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.27,
+      "lift": 0
+    },
+    {
+      "type": "deal_damage",
+      "amount": 4.5,
+      "element": "earth"
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.45,
+      "lift": 0.18
+    },
+    {
+      "type": "destroy_blocks",
+      "budget": 8,
+      "radius": 0.72
+    },
+    {
+      "type": "heal",
+      "amount": 3.5
+    },
+    {
+      "type": "apply_status",
+      "status": "regenerating",
+      "duration_ticks": 180,
+      "strength": 1
+    },
+    {
+      "type": "grow_plants",
+      "budget": 5
+    },
+    {
+      "type": "apply_status",
+      "status": "rooted",
+      "duration_ticks": 60,
+      "strength": 1
+    },
+    {
+      "type": "apply_status",
+      "status": "rooted",
+      "duration_ticks": 90,
+      "strength": 1
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 120,
+      "strength": 1
+    },
+    {
+      "type": "drain_life",
+      "amount": 2.0,
+      "fraction": 0.52
+    },
+    {
+      "type": "deal_damage",
+      "amount": 4,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 90
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 240
+      },
+      {
+        "type": "apply_force",
+        "amount": 0.27,
+        "lift": 0
+      },
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 210,
+        "strength": 1
+      },
+      {
+        "type": "apply_status",
+        "status": "chilled",
+        "duration_ticks": 165,
+        "strength": 1
+      },
+      {
+        "type": "heal",
+        "amount": 3.5
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 180,
+        "strength": 1
+      },
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 90,
+        "strength": 1
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 30
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "A projectile flies in an arc where you look and strikes the first target. Effects:\n• Damage 2.25 ❤ earth + 2 ❤ fire (fire ×0.5 on wet, earth ×2 on frozen)\n• Soaked for 12 s and leaves a puddle\n• Light push\n• Knockback\n• Breaks up to 8 blocks within 0.72 blocks (twice as many if brittle)\n• Heals 1.75 ❤\n• Regeneration: +0.5 ❤ every 2 s for 9 s\n• Growth: up to 5 nearby blocks — crops +2 stages, dirt turns to grass, roots grow upward\n• Rooted in place for 3 s\n• Rooted in place for 4.5 s\n• Withering: −0.5 ❤ per second for 6 s\n• Life drain: 1 ❤ damage, you heal 0.52 ❤\n• Heat: sets on fire for 13.5 s (wet targets just dry off), thaws; melts ice and burns roots",
+  "self_description": "On you:\n• Soaked for 12 s and leaves a puddle\n• Light push\n• Stone skin (Resistance I) for 10.5 s\n• Slowness I for 8.25 s\n• Heals 1.75 ❤\n• Regeneration: +0.5 ❤ every 2 s for 9 s\n• Withering: −0.5 ❤ per second for 4.5 s\n• Heat: sets on fire for 4.5 s (wet targets just dry off), thaws; melts ice and burns roots"
+}

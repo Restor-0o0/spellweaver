@@ -1,0 +1,112 @@
+{
+  "id": "magicka:volcanic_vent",
+  "formula": {
+    "fire": 2,
+    "earth": 1,
+    "arcane": 1
+  },
+  "name": "Volcanic Vent",
+  "tier": "Signature",
+  "tags": "AOE/DOT/BREAK",
+  "shape": "targeted_zone",
+  "origin": "aim_ground",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 3,
+    "speed": 1.07,
+    "duration_ticks": 120,
+    "interval_ticks": 20,
+    "gravity": 0.025,
+    "burst_radius": 4.0,
+    "shards": 2
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 16,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 5.0,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 80
+    },
+    {
+      "type": "deal_damage",
+      "amount": 2.5,
+      "element": "earth"
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.25,
+      "lift": 0.12
+    },
+    {
+      "type": "deal_damage",
+      "amount": 2.5,
+      "element": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "arcane_unstable",
+      "duration_ticks": 90,
+      "strength": 1
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.1,
+      "lift": 0.9
+    }
+  ],
+  "self": {
+    "mode": "zone",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 5.0,
+        "element": "fire"
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 80
+      },
+      {
+        "type": "deal_damage",
+        "amount": 2.5,
+        "element": "earth"
+      },
+      {
+        "type": "apply_force",
+        "amount": 0.25,
+        "lift": 0.12
+      },
+      {
+        "type": "deal_damage",
+        "amount": 2.5,
+        "element": "arcane"
+      },
+      {
+        "type": "apply_status",
+        "status": "arcane_unstable",
+        "duration_ticks": 90,
+        "strength": 1
+      },
+      {
+        "type": "apply_force",
+        "amount": 0.1,
+        "lift": 0.9
+      }
+    ]
+  },
+  "primary": "The ground erupts with heat and launches enemies.\nA zone at the aim point with a 3-block radius for 6 s. Every second, on everyone inside except you:\n• Damage 2.5 ❤ fire + 1.25 ❤ earth + 1.25 ❤ arcane (fire ×0.5 on wet, earth ×2 on frozen)\n• Heat: sets on fire for 12 s (wet targets just dry off), thaws; melts ice and burns roots\n• Light push\n• Arcane instability: −0.25 ❤ every 2 s for 4.5 s\n• Launches upward",
+  "self_description": "A zone around you with a 3-block radius for 6 s. Every second, on everyone inside, including you:\n• Damage 2.5 ❤ fire + 1.25 ❤ earth + 1.25 ❤ arcane (fire ×0.5 on wet, earth ×2 on frozen)\n• Heat: sets on fire for 12 s (wet targets just dry off), thaws; melts ice and burns roots\n• Light push\n• Arcane instability: −0.25 ❤ every 2 s for 4.5 s\n• Launches upward",
+  "balanced": true
+}

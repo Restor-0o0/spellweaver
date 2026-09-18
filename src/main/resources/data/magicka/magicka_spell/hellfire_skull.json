@@ -1,0 +1,56 @@
+{
+  "id": "magicka:hellfire_skull",
+  "formula": {
+    "fire": 1,
+    "death": 1
+  },
+  "name": "Hellfire Skull",
+  "tier": "Signature",
+  "tags": "DMG/DOT",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "delivery": {
+    "radius": 3.0,
+    "speed": 1.1,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.0
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 3.5,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 40
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 125,
+      "strength": 2
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 1.5,
+        "element": "fire"
+      },
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 75,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "A burning skull: fire and withering.\nA projectile flies where you look and strikes the first target. Effects:\n• Damage 1.75 ❤ fire (fire ×0.5 on wet)\n• Heat: sets on fire for 6 s (wet targets just dry off), thaws; melts ice and burns roots\n• Withering: −0.75 ❤ per second for 6.25 s",
+  "self_description": "On you:\n• Damage 0.75 ❤ fire (fire ×0.5 on wet)\n• Withering: −0.5 ❤ per second for 3.75 s",
+  "balanced": true
+}

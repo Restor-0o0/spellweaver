@@ -1,0 +1,61 @@
+{
+  "id": "magicka:slanted_wall_fire",
+  "formula": {
+    "earth": 1,
+    "life": 1,
+    "arcane": 2,
+    "fire": 1
+  },
+  "name": "Slanted Wall · Fire",
+  "tier": "Generic Fusion",
+  "tags": "BUILD",
+  "shape": "wall",
+  "origin": "caster_feet",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 2.9,
+    "speed": 1.2,
+    "duration_ticks": 240,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.9
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 200,
+    "interval_ticks": 1,
+    "batch": 6,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12,
+    "template": "slope",
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "create_construction"
+    },
+    {
+      "type": "deal_damage",
+      "amount": 4,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 90
+    }
+  ],
+  "self": {
+    "mode": "construct",
+    "effects": [
+      {
+        "type": "modify_temperature",
+        "amount": 30
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "A 5-wide wall at 45°: its base stands at the aim point and it rises toward you like an awning, covering you from the front and from the sky; it turns to any angle and the slope is solid with no gaps. Material: magic earth, permanent.",
+  "self_description": "A 5-wide wall at 45°: its base stands at the aim point and it rises toward you like an awning, covering you from the front and from the sky; it turns to any angle and the slope is solid with no gaps. Material: magic earth, permanent. On you:\n• Heat: sets on fire for 4.5 s (wet targets just dry off), thaws; melts ice and burns roots"
+}

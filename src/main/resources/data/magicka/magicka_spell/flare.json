@@ -1,0 +1,47 @@
+{
+  "id": "magicka:flare",
+  "formula": {
+    "fire": 1,
+    "arcane": 1
+  },
+  "name": "Flare",
+  "tier": "Signature",
+  "tags": "UTIL",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 9,
+  "delivery": {
+    "radius": 2.0,
+    "speed": 1.4,
+    "duration_ticks": 200,
+    "interval_ticks": 20,
+    "gravity": 0.03,
+    "burst_radius": 3.0,
+    "lobbed": true
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 3,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 8
+  },
+  "effects": [
+    {
+      "type": "place_light"
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "place_light"
+      }
+    ]
+  },
+  "primary": "Flare. A burning ember you simply throw.\n• Flies in an arc as far as you can throw it and sticks where it lands\n• Light level 15, stays until something breaks it\n• No damage and no marking — just light for a dark cave",
+  "self_description": "On you: the flare drops at your feet and lights the ground around you.",
+  "balanced": true
+}

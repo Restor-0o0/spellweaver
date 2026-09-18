@@ -1,0 +1,58 @@
+{
+  "id": "magicka:doom",
+  "formula": {
+    "lightning": 1,
+    "death": 2
+  },
+  "name": "Doom",
+  "tier": "Signature",
+  "tags": "DMG/DEBUFF",
+  "shape": "direct_target",
+  "origin": "aim_hit",
+  "delivery": {
+    "radius": 3.0,
+    "speed": 0.9,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.0
+  },
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 66,
+      "strength": 1
+    },
+    {
+      "type": "delay",
+      "ticks": 60,
+      "effects": [
+        {
+          "type": "deal_damage",
+          "amount": 12.5,
+          "element": "death"
+        }
+      ]
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "delay",
+        "ticks": 60,
+        "effects": [
+          {
+            "type": "deal_damage",
+            "amount": 5.5,
+            "element": "death"
+          }
+        ]
+      }
+    ]
+  },
+  "primary": "A mark of death: after 3 seconds the target takes massive damage.\nAffects the creature you aim at:\n• Withering: −0.5 ❤ per second for 3.3 s\n• 3 s later: damage 6.25 ❤ death",
+  "self_description": "On you:\n• 3 s later: damage 2.75 ❤ death",
+  "balanced": true
+}

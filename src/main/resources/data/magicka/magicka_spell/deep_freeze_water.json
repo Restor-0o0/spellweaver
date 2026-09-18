@@ -1,0 +1,62 @@
+{
+  "id": "magicka:deep_freeze_water",
+  "formula": {
+    "cold": 4,
+    "water": 1
+  },
+  "name": "Deep Freeze · Water",
+  "tier": "Generic Fusion",
+  "tags": "CC/DEBUFF",
+  "shape": "burst_projectile",
+  "origin": "caster_front",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 5.37,
+    "speed": 1.07,
+    "duration_ticks": 360,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.62
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 40,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12,
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "modify_temperature",
+      "amount": -288
+    },
+    {
+      "type": "set_wet",
+      "duration_ticks": 240
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.5,
+      "lift": 0
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "modify_temperature",
+        "amount": -288
+      },
+      {
+        "type": "set_wet",
+        "duration_ticks": 120
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "A projectile flies where you look and explodes in a 3.62-block radius on hit. Effects:\n• Cold 288: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Soaked for 12 s and leaves a puddle\n• Knockback",
+  "self_description": "On you:\n• Cold 288: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Soaked for 6 s and leaves a puddle"
+}

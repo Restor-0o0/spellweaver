@@ -1,0 +1,52 @@
+{
+  "id": "magicka:fire_ward",
+  "formula": {
+    "fire": 2,
+    "life": 1
+  },
+  "name": "Fire Ward",
+  "tier": "Signature",
+  "tags": "UTIL",
+  "shape": "direct_target",
+  "origin": "aim_hit",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 2.0,
+    "speed": 1.2,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.0
+  },
+  "construction": {},
+  "effects": [
+    {
+      "type": "remove_status",
+      "status": "burning"
+    },
+    {
+      "type": "apply_effect",
+      "effect": "minecraft:fire_resistance",
+      "duration_ticks": 1320,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "remove_status",
+        "status": "burning"
+      },
+      {
+        "type": "apply_effect",
+        "effect": "minecraft:fire_resistance",
+        "duration_ticks": 1320,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "Puts out flames and protects from fire and lava.\nAffects the creature you aim at, allies included (use Self for yourself):\n• Puts out fire\n• Fire Resistance (immune to fire and lava), 66 s",
+  "self_description": "On you:\n• Puts out fire\n• Fire Resistance (immune to fire and lava), 66 s",
+  "balanced": true
+}

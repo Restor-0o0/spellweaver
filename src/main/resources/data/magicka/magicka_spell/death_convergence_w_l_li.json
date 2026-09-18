@@ -1,0 +1,125 @@
+{
+  "id": "magicka:death_convergence_w_l_li",
+  "formula": {
+    "water": 1,
+    "lightning": 1,
+    "life": 1,
+    "death": 1
+  },
+  "name": "Convergence W / L / Li · Death",
+  "tier": "Generic Fusion",
+  "tags": "SETUP/CC/DMG/HEAL/BUFF/DEATH",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 3.2,
+    "speed": 0.99,
+    "duration_ticks": 200,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.7
+  },
+  "construction": {
+    "material": "root",
+    "budget": 8,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10
+  },
+  "effects": [
+    {
+      "type": "set_wet",
+      "duration_ticks": 160
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.15,
+      "lift": 0
+    },
+    {
+      "type": "deal_damage",
+      "amount": 2.5,
+      "element": "lightning"
+    },
+    {
+      "type": "add_charge",
+      "amount": 35
+    },
+    {
+      "type": "chain_targets",
+      "count": 4,
+      "range": 4,
+      "amount": 2.5
+    },
+    {
+      "type": "heal",
+      "amount": 2.0
+    },
+    {
+      "type": "apply_status",
+      "status": "regenerating",
+      "duration_ticks": 120,
+      "strength": 1
+    },
+    {
+      "type": "grow_plants",
+      "budget": 2
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 80,
+      "strength": 1
+    },
+    {
+      "type": "drain_life",
+      "amount": 1.0,
+      "fraction": 0.4
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 160
+      },
+      {
+        "type": "apply_force",
+        "amount": 0.15,
+        "lift": 0
+      },
+      {
+        "type": "deal_damage",
+        "amount": 2.5,
+        "element": "lightning"
+      },
+      {
+        "type": "add_charge",
+        "amount": 35
+      },
+      {
+        "type": "heal",
+        "amount": 2.0
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 120,
+        "strength": 1
+      },
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 60,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "A projectile flies where you look and strikes the first target. Effects:\n• Damage 1.25 ❤ lightning (lightning ×2 on wet)\n• Soaked for 8 s and leaves a puddle\n• Light push\n• Charge 35: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Then the lightning jumps onward: up to 4 targets in a row, jumps up to 4 blocks, 1.25 ❤ and 40 charge each (×2 damage and longer jumps on wet, ×1.5 range in puddles)\n• Heals 1 ❤\n• Regeneration: +0.5 ❤ every 2 s for 6 s\n• Growth: up to 2 nearby blocks — crops +2 stages, dirt turns to grass, roots grow upward\n• Withering: −0.5 ❤ per second for 4 s\n• Life drain: 0.5 ❤ damage, you heal 0.2 ❤",
+  "self_description": "On you:\n• Damage 1.25 ❤ lightning (lightning ×2 on wet)\n• Soaked for 8 s and leaves a puddle\n• Light push\n• Charge 35: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Heals 1 ❤\n• Regeneration: +0.5 ❤ every 2 s for 6 s\n• Withering: −0.5 ❤ per second for 3 s",
+  "balanced": true
+}

@@ -1,0 +1,105 @@
+{
+  "id": "magicka:death_charged_frostshock_fire",
+  "formula": {
+    "cold": 1,
+    "lightning": 2,
+    "death": 1,
+    "fire": 1
+  },
+  "name": "Charged Frostshock · Death · Fire",
+  "tier": "Generic Fusion",
+  "tags": "CC/DEBUFF/DMG/DEATH",
+  "shape": "chain",
+  "origin": "aim_hit",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 3.92,
+    "speed": 0.99,
+    "duration_ticks": 240,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 4.21
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 20,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10,
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "modify_temperature",
+      "amount": -72
+    },
+    {
+      "type": "deal_damage",
+      "amount": 9.0,
+      "element": "lightning"
+    },
+    {
+      "type": "add_charge",
+      "amount": 126
+    },
+    {
+      "type": "chain_targets",
+      "count": 12,
+      "range": 7,
+      "amount": 9.0
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 120,
+      "strength": 1
+    },
+    {
+      "type": "drain_life",
+      "amount": 2.0,
+      "fraction": 0.52
+    },
+    {
+      "type": "deal_damage",
+      "amount": 4,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 90
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "modify_temperature",
+        "amount": -72
+      },
+      {
+        "type": "deal_damage",
+        "amount": 9.0,
+        "element": "lightning"
+      },
+      {
+        "type": "add_charge",
+        "amount": 126
+      },
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 90,
+        "strength": 1
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 30
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "Lightning shoots from your hand into the creature you aim at (or the first one in your line of sight). In instant mode it strikes twice a second while held. Effects:\n• Damage 4.5 ❤ lightning + 2 ❤ fire (lightning ×2 on wet, fire ×0.5 on wet)\n• Cold 72: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Charge 126: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Then the lightning jumps onward: up to 12 targets in a row, jumps up to 7 blocks, 4.5 ❤ and 40 charge each (×2 damage and longer jumps on wet, ×1.5 range in puddles)\n• Withering: −0.5 ❤ per second for 6 s\n• Life drain: 1 ❤ damage, you heal 0.52 ❤\n• Heat: sets on fire for 13.5 s (wet targets just dry off), thaws; melts ice and burns roots",
+  "self_description": "On you:\n• Damage 4.5 ❤ lightning (lightning ×2 on wet)\n• Cold 72: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Charge 126: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Withering: −0.5 ❤ per second for 4.5 s\n• Heat: sets on fire for 4.5 s (wet targets just dry off), thaws; melts ice and burns roots"
+}

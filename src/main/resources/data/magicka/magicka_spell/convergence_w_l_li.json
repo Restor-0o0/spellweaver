@@ -1,0 +1,107 @@
+{
+  "id": "magicka:convergence_w_l_li",
+  "formula": {
+    "water": 1,
+    "lightning": 1,
+    "life": 1
+  },
+  "name": "Convergence W / L / Li",
+  "tier": "Generic Fusion",
+  "tags": "SETUP/CC/DMG/HEAL/BUFF",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 3.2,
+    "speed": 0.99,
+    "duration_ticks": 200,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.7
+  },
+  "construction": {
+    "material": "root",
+    "budget": 8,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10
+  },
+  "effects": [
+    {
+      "type": "set_wet",
+      "duration_ticks": 176
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.15,
+      "lift": 0
+    },
+    {
+      "type": "deal_damage",
+      "amount": 2.0,
+      "element": "lightning"
+    },
+    {
+      "type": "add_charge",
+      "amount": 35
+    },
+    {
+      "type": "chain_targets",
+      "count": 4,
+      "range": 4,
+      "amount": 2.0
+    },
+    {
+      "type": "heal",
+      "amount": 2.5
+    },
+    {
+      "type": "apply_status",
+      "status": "regenerating",
+      "duration_ticks": 132,
+      "strength": 1
+    },
+    {
+      "type": "grow_plants",
+      "budget": 2
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 176
+      },
+      {
+        "type": "apply_force",
+        "amount": 0.15,
+        "lift": 0
+      },
+      {
+        "type": "deal_damage",
+        "amount": 2.0,
+        "element": "lightning"
+      },
+      {
+        "type": "add_charge",
+        "amount": 35
+      },
+      {
+        "type": "heal",
+        "amount": 2.5
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 132,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "A projectile flies where you look and strikes the first target. Effects:\n• Damage 1 ❤ lightning (lightning ×2 on wet)\n• Soaked for 8.8 s and leaves a puddle\n• Light push\n• Charge 35: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Then the lightning jumps onward: up to 4 targets in a row, jumps up to 4 blocks, 1 ❤ and 40 charge each (×2 damage and longer jumps on wet, ×1.5 range in puddles)\n• Heals 1.25 ❤\n• Regeneration: +0.5 ❤ every 2 s for 6.6 s\n• Growth: up to 2 nearby blocks — crops +2 stages, dirt turns to grass, roots grow upward",
+  "self_description": "On you:\n• Damage 1 ❤ lightning (lightning ×2 on wet)\n• Soaked for 8.8 s and leaves a puddle\n• Light push\n• Charge 35: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Heals 1.25 ❤\n• Regeneration: +0.5 ❤ every 2 s for 6.6 s",
+  "balanced": true
+}

@@ -1,0 +1,66 @@
+{
+  "id": "magicka:frostflow",
+  "formula": {
+    "water": 1,
+    "cold": 1
+  },
+  "name": "Frostflow",
+  "tier": "Signature",
+  "tags": "SETUP/CC/DEBUFF",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 9,
+  "delivery": {
+    "radius": 2.7,
+    "speed": 0.91,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.3
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 3,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 8
+  },
+  "effects": [
+    {
+      "type": "set_wet",
+      "duration_ticks": 200
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.15,
+      "lift": 0
+    },
+    {
+      "type": "modify_temperature",
+      "amount": -40
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 200
+      },
+      {
+        "type": "apply_force",
+        "amount": 0.15,
+        "lift": 0
+      },
+      {
+        "type": "modify_temperature",
+        "amount": -40
+      }
+    ]
+  },
+  "primary": "Icy water: soak and freeze at once.\nA projectile flies where you look and strikes the first target. Effects:\n• Soaked for 10 s and leaves a puddle\n• Light push\n• Cold 40: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze",
+  "self_description": "On you:\n• Soaked for 10 s and leaves a puddle\n• Light push\n• Cold 40: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze",
+  "balanced": true
+}

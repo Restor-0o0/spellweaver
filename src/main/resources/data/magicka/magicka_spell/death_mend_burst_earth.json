@@ -1,0 +1,109 @@
+{
+  "id": "magicka:death_mend_burst_earth",
+  "formula": {
+    "life": 2,
+    "arcane": 1,
+    "death": 1,
+    "earth": 1
+  },
+  "name": "Mend Burst · Death · Earth",
+  "tier": "Generic Fusion",
+  "tags": "HEAL/AOE/DEATH",
+  "shape": "targeted_explosion",
+  "origin": "aim_hit",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 6,
+    "speed": 0.99,
+    "duration_ticks": 330,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.92
+  },
+  "construction": {
+    "material": "root",
+    "budget": 20,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10,
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "heal",
+      "amount": 7.0
+    },
+    {
+      "type": "apply_status",
+      "status": "regenerating",
+      "duration_ticks": 240,
+      "strength": 2
+    },
+    {
+      "type": "grow_plants",
+      "budget": 10
+    },
+    {
+      "type": "revive",
+      "health_fraction": 0.39
+    },
+    {
+      "type": "remove_status",
+      "status": "burning"
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 120,
+      "strength": 1
+    },
+    {
+      "type": "drain_life",
+      "amount": 2.0,
+      "fraction": 0.52
+    },
+    {
+      "type": "deal_damage",
+      "amount": 6,
+      "element": "earth"
+    },
+    {
+      "type": "apply_status",
+      "status": "brittle",
+      "duration_ticks": 180,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "heal",
+        "amount": 11.0
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 180,
+        "strength": 2
+      },
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 90,
+        "strength": 1
+      },
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 200,
+        "strength": 3
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "An explosion at the aim point with a 6-block radius (does not hit you):\n• Damage 3 ❤ earth (earth ×2 on frozen)\n• Heals 3.5 ❤\n• Regeneration: +1 ❤ every 2 s for 12 s\n• Growth: up to 10 nearby blocks — crops +2 stages, dirt turns to grass, roots grow upward\n• Revives the nearest fallen player or creature within 6 blocks with 39% health\n• Puts out fire\n• Withering: −0.5 ❤ per second for 6 s\n• Life drain: 1 ❤ damage, you heal 0.52 ❤\n• Brittle (earth damage ×2) for 9 s",
+  "self_description": "On you:\n• Heals 5.5 ❤\n• Regeneration: +1 ❤ every 2 s for 9 s\n• Withering: −0.5 ❤ per second for 4.5 s\n• Stone skin (Resistance III) for 10 s"
+}

@@ -1,0 +1,82 @@
+{
+  "id": "magicka:stormwater",
+  "formula": {
+    "water": 1,
+    "lightning": 1
+  },
+  "name": "Stormwater",
+  "tier": "Signature",
+  "tags": "SETUP/CC/DMG",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 9,
+  "delivery": {
+    "radius": 2.5,
+    "speed": 0.91,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.4
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 3,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 8
+  },
+  "effects": [
+    {
+      "type": "set_wet",
+      "duration_ticks": 200
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.15,
+      "lift": 0
+    },
+    {
+      "type": "deal_damage",
+      "amount": 1.5,
+      "element": "lightning"
+    },
+    {
+      "type": "add_charge",
+      "amount": 35
+    },
+    {
+      "type": "chain_targets",
+      "count": 4,
+      "range": 4,
+      "amount": 1.5
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 200
+      },
+      {
+        "type": "apply_force",
+        "amount": 0.15,
+        "lift": 0
+      },
+      {
+        "type": "deal_damage",
+        "amount": 1.5,
+        "element": "lightning"
+      },
+      {
+        "type": "add_charge",
+        "amount": 35
+      }
+    ]
+  },
+  "primary": "A wet shock: water amplifies lightning.\nA projectile flies where you look and strikes the first target. Effects:\n• Damage 0.75 ❤ lightning (lightning ×2 on wet)\n• Soaked for 10 s and leaves a puddle\n• Light push\n• Charge 35: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Then the lightning jumps onward: up to 4 targets in a row, jumps up to 4 blocks, 0.75 ❤ and 40 charge each (×2 damage and longer jumps on wet, ×1.5 range in puddles)",
+  "self_description": "On you:\n• Damage 0.75 ❤ lightning (lightning ×2 on wet)\n• Soaked for 10 s and leaves a puddle\n• Light push\n• Charge 35: weakness, stuns for 1 s at 65 charge (×2 on wet)",
+  "balanced": true
+}

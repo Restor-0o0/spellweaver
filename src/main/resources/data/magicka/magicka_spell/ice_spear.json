@@ -1,0 +1,89 @@
+{
+  "id": "magicka:ice_spear",
+  "formula": {
+    "cold": 2,
+    "earth": 1
+  },
+  "name": "Ice Spear",
+  "tier": "Signature",
+  "tags": "DMG/CC",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 3.0,
+    "speed": 0.99,
+    "duration_ticks": 200,
+    "interval_ticks": 20,
+    "gravity": 0.025,
+    "burst_radius": 2.8
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 8,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10
+  },
+  "effects": [
+    {
+      "type": "modify_temperature",
+      "amount": -80
+    },
+    {
+      "type": "deal_damage",
+      "amount": 2.0,
+      "element": "earth"
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.25,
+      "lift": 0.12
+    },
+    {
+      "type": "destroy_blocks",
+      "budget": 3,
+      "radius": 0.5
+    },
+    {
+      "type": "apply_status",
+      "status": "rooted",
+      "duration_ticks": 55,
+      "strength": 1
+    },
+    {
+      "type": "apply_status",
+      "status": "brittle",
+      "duration_ticks": 110,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 176,
+        "strength": 2
+      },
+      {
+        "type": "apply_status",
+        "status": "chilled",
+        "duration_ticks": 176,
+        "strength": 3
+      },
+      {
+        "type": "apply_status",
+        "status": "brittle",
+        "duration_ticks": 110,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "An ice spear that pins the target in place.\nA projectile flies in an arc where you look and strikes the first target. Effects:\n• Damage 1 ❤ earth (earth ×2 on frozen)\n• Cold 80: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Light push\n• Breaks up to 3 blocks within 0.5 blocks (twice as many if brittle)\n• Rooted in place for 2.75 s\n• Brittle (earth damage ×2) for 5.5 s",
+  "self_description": "On you:\n• Stone skin (Resistance II) for 8.8 s\n• Slowness III for 8.8 s\n• Brittle (earth damage ×2) for 5.5 s",
+  "balanced": true
+}

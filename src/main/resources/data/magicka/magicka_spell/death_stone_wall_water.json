@@ -1,0 +1,78 @@
+{
+  "id": "magicka:death_stone_wall_water",
+  "formula": {
+    "earth": 1,
+    "arcane": 2,
+    "death": 1,
+    "water": 1
+  },
+  "name": "Stone Wall · Death · Water",
+  "tier": "Generic Fusion",
+  "tags": "BUILD/DEATH",
+  "shape": "wall",
+  "origin": "caster_feet",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 2.9,
+    "speed": 1.2,
+    "duration_ticks": 240,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.9
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 275,
+    "interval_ticks": 1,
+    "batch": 6,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12,
+    "template": "wall",
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "create_construction"
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 120,
+      "strength": 1
+    },
+    {
+      "type": "drain_life",
+      "amount": 2.0,
+      "fraction": 0.52
+    },
+    {
+      "type": "set_wet",
+      "duration_ticks": 240
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.5,
+      "lift": 0
+    }
+  ],
+  "self": {
+    "mode": "construct",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 90,
+        "strength": 1
+      },
+      {
+        "type": "set_wet",
+        "duration_ticks": 120
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "A 5×3 wall at the aim point, across your view at any angle, each column settling on the ground. Look up to raise a gabled tent roof over you instead, 9 wide and 5 long with open ends. Material: magic earth, permanent.",
+  "self_description": "A 5×3 wall at the aim point, across your view at any angle, each column settling on the ground. Look up to raise a gabled tent roof over you instead, 9 wide and 5 long with open ends. Material: magic earth, permanent. On you:\n• Withering: −0.5 ❤ per second for 4.5 s\n• Soaked for 6 s and leaves a puddle"
+}

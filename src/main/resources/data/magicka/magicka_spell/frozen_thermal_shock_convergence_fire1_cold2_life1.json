@@ -1,0 +1,119 @@
+{
+  "id": "magicka:frozen_thermal_shock_convergence_fire1_cold2_life1",
+  "formula": {
+    "fire": 1,
+    "cold": 2,
+    "life": 1
+  },
+  "name": "Frozen Thermal Shock Convergence",
+  "tier": "Family Variant",
+  "tags": "DMG/DOT/CC/DEBUFF/HEAL",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 3.7,
+    "speed": 1.07,
+    "duration_ticks": 240,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.3
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 16,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 2.5,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 40
+    },
+    {
+      "type": "modify_temperature",
+      "amount": -80
+    },
+    {
+      "type": "conditional",
+      "condition": "was_frozen",
+      "effects": [
+        {
+          "type": "deal_damage",
+          "amount": 14.5,
+          "element": "thermal"
+        }
+      ]
+    },
+    {
+      "type": "heal",
+      "amount": 2.0
+    },
+    {
+      "type": "apply_status",
+      "status": "regenerating",
+      "duration_ticks": 120,
+      "strength": 1
+    },
+    {
+      "type": "grow_plants",
+      "budget": 2
+    },
+    {
+      "type": "apply_status",
+      "status": "stone_shell",
+      "duration_ticks": 80,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 2.5,
+        "element": "fire"
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 40
+      },
+      {
+        "type": "modify_temperature",
+        "amount": -80
+      },
+      {
+        "type": "conditional",
+        "condition": "was_frozen",
+        "effects": [
+          {
+            "type": "deal_damage",
+            "amount": 14.5,
+            "element": "thermal"
+          }
+        ]
+      },
+      {
+        "type": "heal",
+        "amount": 2.0
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 120,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "A projectile flies where you look and strikes the first target. Effects:\n• Damage 1.25 ❤ fire (fire ×0.5 on wet)\n• Heat: sets on fire for 6 s (wet targets just dry off), thaws; melts ice and burns roots\n• Cold 80: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• If the target is frozen or brittle: damage 7.25 ❤ thermal\n• Heals 1 ❤\n• Regeneration: +0.5 ❤ every 2 s for 6 s\n• Growth: up to 2 nearby blocks — crops +2 stages, dirt turns to grass, roots grow upward\n• Stone skin (Resistance I) for 4 s",
+  "self_description": "On you:\n• Damage 1.25 ❤ fire (fire ×0.5 on wet)\n• Heat: sets on fire for 6 s (wet targets just dry off), thaws; melts ice and burns roots\n• Cold 80: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• If the target is frozen or brittle: damage 7.25 ❤ thermal\n• Heals 1 ❤\n• Regeneration: +0.5 ❤ every 2 s for 6 s",
+  "balanced": true
+}

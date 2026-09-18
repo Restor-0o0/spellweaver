@@ -1,0 +1,121 @@
+{
+  "id": "magicka:scorching_thermal_shock_convergence_fire2_cold1_arcane1_water",
+  "formula": {
+    "fire": 2,
+    "cold": 1,
+    "arcane": 1,
+    "water": 1
+  },
+  "name": "Scorching Thermal Shock Convergence · Water",
+  "tier": "Generic Fusion",
+  "tags": "DMG/DOT/CC/DEBUFF/SETUP",
+  "shape": "burst_projectile",
+  "origin": "caster_front",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 5.08,
+    "speed": 1.07,
+    "duration_ticks": 300,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 5.65
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 40,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12,
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 9.0,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 144
+    },
+    {
+      "type": "modify_temperature",
+      "amount": -72
+    },
+    {
+      "type": "conditional",
+      "condition": "was_frozen",
+      "effects": [
+        {
+          "type": "deal_damage",
+          "amount": 26.0,
+          "element": "thermal"
+        }
+      ]
+    },
+    {
+      "type": "deal_damage",
+      "amount": 4.5,
+      "element": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "arcane_unstable",
+      "duration_ticks": 135,
+      "strength": 1
+    },
+    {
+      "type": "set_wet",
+      "duration_ticks": 240
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.5,
+      "lift": 0
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 9.0,
+        "element": "fire"
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 144
+      },
+      {
+        "type": "modify_temperature",
+        "amount": -72
+      },
+      {
+        "type": "conditional",
+        "condition": "was_frozen",
+        "effects": [
+          {
+            "type": "deal_damage",
+            "amount": 26.0,
+            "element": "thermal"
+          }
+        ]
+      },
+      {
+        "type": "apply_status",
+        "status": "arcane_unstable",
+        "duration_ticks": 135,
+        "strength": 1
+      },
+      {
+        "type": "set_wet",
+        "duration_ticks": 120
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "A projectile flies where you look and explodes in a 5.65-block radius on hit. Effects:\n• Damage 4.5 ❤ fire + 2.25 ❤ arcane (fire ×0.5 on wet)\n• Heat: sets on fire for 21.6 s (wet targets just dry off), thaws; melts ice and burns roots\n• Cold 72: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• If the target is frozen or brittle: damage 13 ❤ thermal\n• Arcane instability: −0.25 ❤ every 2 s for 6.75 s\n• Soaked for 12 s and leaves a puddle\n• Knockback",
+  "self_description": "On you:\n• Damage 4.5 ❤ fire (fire ×0.5 on wet)\n• Heat: sets on fire for 21.6 s (wet targets just dry off), thaws; melts ice and burns roots\n• Cold 72: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• If the target is frozen or brittle: damage 13 ❤ thermal\n• Arcane instability: −0.25 ❤ every 2 s for 6.75 s\n• Soaked for 6 s and leaves a puddle"
+}

@@ -1,0 +1,65 @@
+{
+  "id": "magicka:thunder_lance",
+  "formula": {
+    "lightning": 4
+  },
+  "name": "Thunder Lance",
+  "tier": "Signature",
+  "tags": "DMG/CC",
+  "shape": "chain",
+  "origin": "aim_hit",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 2.9,
+    "speed": 1.07,
+    "duration_ticks": 180,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.5,
+    "pierce": true,
+    "beam_width": 0.3
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 16,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 12.0,
+      "element": "lightning"
+    },
+    {
+      "type": "add_charge",
+      "amount": 140
+    },
+    {
+      "type": "chain_targets",
+      "count": 3,
+      "range": 5,
+      "amount": 5.0
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 9.5,
+        "element": "lightning"
+      },
+      {
+        "type": "add_charge",
+        "amount": 140
+      }
+    ]
+  },
+  "primary": "Lightning pierces everyone in a line and chains onward.\nLightning shoots from your hand straight to the aim point, striking everyone along the line, then chains on from the last one. In instant mode it strikes twice a second while held. Effects:\n• Damage 6 ❤ lightning (lightning ×2 on wet)\n• Charge 140: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Then the lightning jumps onward: up to 3 targets in a row, jumps up to 5 blocks, 2.5 ❤ and 40 charge each (×2 damage and longer jumps on wet, ×1.5 range in puddles)",
+  "self_description": "On you:\n• Damage 4.75 ❤ lightning (lightning ×2 on wet)\n• Charge 140: weakness, stuns for 1 s at 65 charge (×2 on wet)",
+  "balanced": true
+}

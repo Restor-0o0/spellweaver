@@ -1,0 +1,75 @@
+{
+  "id": "magicka:heavy_permafrost",
+  "formula": {
+    "cold": 1,
+    "earth": 2
+  },
+  "name": "Heavy Permafrost",
+  "tier": "Family Variant",
+  "tags": "CC/DEBUFF/BREAK",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 2.9,
+    "speed": 0.99,
+    "duration_ticks": 200,
+    "interval_ticks": 20,
+    "gravity": 0.025,
+    "burst_radius": 2.9
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 8,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10
+  },
+  "effects": [
+    {
+      "type": "modify_temperature",
+      "amount": -40
+    },
+    {
+      "type": "deal_damage",
+      "amount": 3.5,
+      "element": "earth"
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.5,
+      "lift": 0.24
+    },
+    {
+      "type": "destroy_blocks",
+      "budget": 6,
+      "radius": 1.0
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "modify_temperature",
+        "amount": -40
+      },
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 198,
+        "strength": 2
+      },
+      {
+        "type": "apply_status",
+        "status": "chilled",
+        "duration_ticks": 154,
+        "strength": 2
+      }
+    ]
+  },
+  "primary": "A projectile flies in an arc where you look and strikes the first target. Effects:\n• Damage 1.75 ❤ earth (earth ×2 on frozen)\n• Cold 40: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Knockback\n• Breaks up to 6 blocks within 1 blocks (twice as many if brittle)",
+  "self_description": "On you:\n• Cold 40: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Stone skin (Resistance II) for 9.9 s\n• Slowness II for 7.7 s",
+  "balanced": true
+}

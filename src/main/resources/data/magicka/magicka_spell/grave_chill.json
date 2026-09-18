@@ -1,0 +1,55 @@
+{
+  "id": "magicka:grave_chill",
+  "formula": {
+    "cold": 1,
+    "death": 1
+  },
+  "name": "Grave Chill",
+  "tier": "Signature",
+  "tags": "CC/DOT",
+  "shape": "targeted_zone",
+  "origin": "aim_hit",
+  "delivery": {
+    "radius": 3.0,
+    "speed": 0.9,
+    "duration_ticks": 120,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.0
+  },
+  "effects": [
+    {
+      "type": "modify_temperature",
+      "amount": -30
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 75,
+      "strength": 1
+    },
+    {
+      "type": "deal_damage",
+      "amount": 0.5,
+      "element": "death"
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "modify_temperature",
+        "amount": -30
+      },
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 75,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "Grave cold: slows, freezes and withers.\nA zone at the aim point with a 3-block radius for 6 s. Every second, on everyone inside except you:\n• Damage 0.25 ❤ death\n• Cold 30: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Withering: −0.5 ❤ per second for 3.75 s",
+  "self_description": "On you:\n• Cold 30: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Withering: −0.5 ❤ per second for 3.75 s",
+  "balanced": true
+}

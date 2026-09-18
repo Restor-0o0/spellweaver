@@ -1,0 +1,58 @@
+{
+  "id": "magicka:thunderstorm",
+  "formula": {
+    "water": 1,
+    "arcane": 1,
+    "lightning": 3
+  },
+  "incantation": "27444",
+  "name": "Thunderstorm",
+  "tier": "Signature",
+  "tags": "DMG/CHAIN/AOE",
+  "shape": "chain",
+  "origin": "aim_hit",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 9.0,
+    "speed": 1.0,
+    "duration_ticks": 200,
+    "interval_ticks": 15,
+    "gravity": 0,
+    "burst_radius": 9.0
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 18.0,
+      "element": "lightning"
+    },
+    {
+      "type": "add_charge",
+      "amount": 160
+    },
+    {
+      "type": "chain_targets",
+      "count": 12,
+      "range": 10,
+      "amount": 11.5
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "add_charge",
+        "amount": 40
+      },
+      {
+        "type": "apply_status",
+        "status": "haste",
+        "duration_ticks": 300,
+        "strength": 3
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "Lightning jumps from enemy to enemy until it runs out of targets.\nLightning shoots from your hand into the creature you aim at (or the first one in your line of sight). In instant mode it strikes twice a second while held. Effects:\n• Damage 9 ❤ lightning (lightning ×2 on wet)\n• Charge 160: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Then the lightning jumps onward: up to 12 targets in a row, jumps up to 10 blocks, 5.75 ❤ and 40 charge each (×2 damage and longer jumps on wet, ×1.5 range in puddles)",
+  "self_description": "On you:\n• Charge 40: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Speed IV for 15 s"
+}

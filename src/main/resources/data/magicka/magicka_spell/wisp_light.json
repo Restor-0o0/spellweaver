@@ -1,0 +1,39 @@
+{
+  "id": "magicka:wisp_light",
+  "formula": {
+    "life": 1,
+    "arcane": 2
+  },
+  "name": "Wisp Light",
+  "tier": "Signature",
+  "tags": "UTIL",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 2.0,
+    "speed": 1.2,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.0
+  },
+  "construction": {},
+  "effects": [
+    {
+      "type": "place_light"
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "place_light",
+        "offset_y": 2
+      }
+    ]
+  },
+  "primary": "A tiny light that stays wherever it lands.\nA wisp flies where you look until it touches a block or creature. Effects:\n• A glowing wisp where it lands: light level 15, floats in the air, permanent, removed with a hit",
+  "self_description": "Around you:\n• A glowing wisp above your head: light level 15, floats in the air, permanent, removed with a hit",
+  "balanced": true
+}

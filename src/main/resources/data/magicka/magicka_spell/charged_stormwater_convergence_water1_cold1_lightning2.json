@@ -1,0 +1,91 @@
+{
+  "id": "magicka:charged_stormwater_convergence_water1_cold1_lightning2",
+  "formula": {
+    "water": 1,
+    "cold": 1,
+    "lightning": 2
+  },
+  "name": "Charged Stormwater Convergence",
+  "tier": "Family Variant",
+  "tags": "SETUP/CC/DEBUFF/DMG/BUILD",
+  "shape": "targeted_zone",
+  "origin": "aim_ground",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 3.5,
+    "speed": 1.07,
+    "duration_ticks": 220,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.3
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 16,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12
+  },
+  "effects": [
+    {
+      "type": "set_wet",
+      "duration_ticks": 160
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.15,
+      "lift": 0
+    },
+    {
+      "type": "modify_temperature",
+      "amount": -40
+    },
+    {
+      "type": "deal_damage",
+      "amount": 5.0,
+      "element": "lightning"
+    },
+    {
+      "type": "add_charge",
+      "amount": 70
+    },
+    {
+      "type": "chain_targets",
+      "count": 6,
+      "range": 5,
+      "amount": 5.0
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 160
+      },
+      {
+        "type": "apply_force",
+        "amount": 0.15,
+        "lift": 0
+      },
+      {
+        "type": "modify_temperature",
+        "amount": -40
+      },
+      {
+        "type": "deal_damage",
+        "amount": 5.0,
+        "element": "lightning"
+      },
+      {
+        "type": "add_charge",
+        "amount": 70
+      }
+    ]
+  },
+  "primary": "A zone at the aim point with a 3.5-block radius for 11 s. Every second, on everyone inside except you:\n• Damage 2.5 ❤ lightning (lightning ×2 on wet)\n• Soaked for 8 s\n• Light push\n• Cold 40: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Charge 70: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Then the lightning jumps onward: up to 6 targets in a row, jumps up to 5 blocks, 2.5 ❤ and 40 charge each (×2 damage and longer jumps on wet, ×1.5 range in puddles)",
+  "self_description": "On you:\n• Damage 2.5 ❤ lightning (lightning ×2 on wet)\n• Soaked for 8 s and leaves a puddle\n• Light push\n• Cold 40: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Charge 70: weakness, stuns for 1 s at 65 charge (×2 on wet)",
+  "balanced": true
+}

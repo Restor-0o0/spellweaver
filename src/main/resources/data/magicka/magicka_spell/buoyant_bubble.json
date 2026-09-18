@@ -1,0 +1,75 @@
+{
+  "id": "magicka:buoyant_bubble",
+  "formula": {
+    "water": 2,
+    "life": 1,
+    "arcane": 1
+  },
+  "name": "Buoyant Bubble",
+  "tier": "Signature",
+  "tags": "MOVE/DEF/MEME",
+  "shape": "summon_object",
+  "origin": "aim_hit",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 4.2,
+    "speed": 1.07,
+    "duration_ticks": 280,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.2,
+    "object_kind": "bubble",
+    "lift_ticks": 40
+  },
+  "construction": {
+    "material": "root",
+    "budget": 16,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12
+  },
+  "effects": [
+    {
+      "type": "set_wet",
+      "duration_ticks": 60
+    },
+    {
+      "type": "apply_status",
+      "status": "slow_falling",
+      "duration_ticks": 400,
+      "strength": 1
+    },
+    {
+      "type": "apply_status",
+      "status": "regenerating",
+      "duration_ticks": 100,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "summon",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 60
+      },
+      {
+        "type": "apply_status",
+        "status": "slow_falling",
+        "duration_ticks": 400,
+        "strength": 1
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 100,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "A bubble gently lifts one target and softens its fall.\nThe creature you aim at is caught in a bubble and floats up (levitation for 2 s):\n• Soaked for 3 s\n• Slow falling for 20 s\n• Regeneration: +0.5 ❤ every 2 s for 5 s",
+  "self_description": "You are caught in the bubble yourself and float up (levitation for 2 s):\n• Soaked for 3 s\n• Slow falling for 20 s\n• Regeneration: +0.5 ❤ every 2 s for 5 s",
+  "balanced": true
+}

@@ -1,0 +1,61 @@
+{
+  "id": "magicka:ice_wall_water",
+  "formula": {
+    "cold": 1,
+    "earth": 2,
+    "arcane": 1,
+    "water": 1
+  },
+  "name": "Ice Wall · Water",
+  "tier": "Generic Fusion",
+  "tags": "BUILD",
+  "shape": "wall",
+  "origin": "caster_feet",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 2.9,
+    "speed": 1.2,
+    "duration_ticks": 240,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.9
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 275,
+    "interval_ticks": 1,
+    "batch": 6,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10,
+    "template": "wall",
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "create_construction"
+    },
+    {
+      "type": "set_wet",
+      "duration_ticks": 240
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.5,
+      "lift": 0
+    }
+  ],
+  "self": {
+    "mode": "construct",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 120
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "A 5×3 wall at the aim point, across your view at any angle, each column settling on the ground. Look up to raise a gabled tent roof over you instead, 9 wide and 5 long with open ends. Material: ice, melts after 30 s.",
+  "self_description": "A 5×3 wall at the aim point, across your view at any angle, each column settling on the ground. Look up to raise a gabled tent roof over you instead, 9 wide and 5 long with open ends. Material: ice, melts after 30 s. On you:\n• Soaked for 6 s and leaves a puddle"
+}

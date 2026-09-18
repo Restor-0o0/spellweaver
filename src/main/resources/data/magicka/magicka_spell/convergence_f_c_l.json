@@ -1,0 +1,113 @@
+{
+  "id": "magicka:convergence_f_c_l",
+  "formula": {
+    "fire": 1,
+    "cold": 1,
+    "lightning": 1
+  },
+  "name": "Convergence F / C / L",
+  "tier": "Generic Fusion",
+  "tags": "DMG/DOT/CC/DEBUFF",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 2.8,
+    "speed": 0.99,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.1
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 8,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 2.0,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 40
+    },
+    {
+      "type": "modify_temperature",
+      "amount": -40
+    },
+    {
+      "type": "conditional",
+      "condition": "was_frozen",
+      "effects": [
+        {
+          "type": "deal_damage",
+          "amount": 7.0,
+          "element": "thermal"
+        }
+      ]
+    },
+    {
+      "type": "deal_damage",
+      "amount": 2.0,
+      "element": "lightning"
+    },
+    {
+      "type": "add_charge",
+      "amount": 35
+    },
+    {
+      "type": "chain_targets",
+      "count": 4,
+      "range": 4,
+      "amount": 2.0
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 2.0,
+        "element": "fire"
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 40
+      },
+      {
+        "type": "modify_temperature",
+        "amount": -40
+      },
+      {
+        "type": "conditional",
+        "condition": "was_frozen",
+        "effects": [
+          {
+            "type": "deal_damage",
+            "amount": 7.0,
+            "element": "thermal"
+          }
+        ]
+      },
+      {
+        "type": "deal_damage",
+        "amount": 2.0,
+        "element": "lightning"
+      },
+      {
+        "type": "add_charge",
+        "amount": 35
+      }
+    ]
+  },
+  "primary": "A projectile flies where you look and strikes the first target. Effects:\n• Damage 1 ❤ fire + 1 ❤ lightning (lightning ×2 on wet, fire ×0.5 on wet)\n• Heat: sets on fire for 6 s (wet targets just dry off), thaws; melts ice and burns roots\n• Cold 40: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• If the target is frozen or brittle: damage 3.5 ❤ thermal\n• Charge 35: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Then the lightning jumps onward: up to 4 targets in a row, jumps up to 4 blocks, 1 ❤ and 40 charge each (×2 damage and longer jumps on wet, ×1.5 range in puddles)",
+  "self_description": "On you:\n• Damage 1 ❤ fire + 1 ❤ lightning (lightning ×2 on wet, fire ×0.5 on wet)\n• Heat: sets on fire for 6 s (wet targets just dry off), thaws; melts ice and burns roots\n• Cold 40: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• If the target is frozen or brittle: damage 3.5 ❤ thermal\n• Charge 35: weakness, stuns for 1 s at 65 charge (×2 on wet)",
+  "balanced": true
+}

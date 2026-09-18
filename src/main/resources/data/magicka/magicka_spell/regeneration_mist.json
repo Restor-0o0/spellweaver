@@ -1,0 +1,105 @@
+{
+  "id": "magicka:regeneration_mist",
+  "formula": {
+    "water": 1,
+    "life": 1,
+    "arcane": 1
+  },
+  "name": "Regeneration Mist",
+  "tier": "Signature",
+  "tags": "HEAL/AOE/SETUP",
+  "shape": "targeted_zone",
+  "origin": "aim_ground",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 4.5,
+    "speed": 0.99,
+    "duration_ticks": 200,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.8
+  },
+  "construction": {
+    "material": "root",
+    "budget": 8,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10
+  },
+  "effects": [
+    {
+      "type": "set_wet",
+      "duration_ticks": 176
+    },
+    {
+      "type": "heal",
+      "amount": 2.5
+    },
+    {
+      "type": "apply_status",
+      "status": "regenerating",
+      "duration_ticks": 132,
+      "strength": 1
+    },
+    {
+      "type": "grow_plants",
+      "budget": 2
+    },
+    {
+      "type": "revive",
+      "health_fraction": 0.3
+    },
+    {
+      "type": "remove_status",
+      "status": "burning"
+    },
+    {
+      "type": "apply_status",
+      "status": "obscured",
+      "duration_ticks": 44,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "zone",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 176
+      },
+      {
+        "type": "heal",
+        "amount": 2.5
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 132,
+        "strength": 1
+      },
+      {
+        "type": "grow_plants",
+        "budget": 2
+      },
+      {
+        "type": "revive",
+        "health_fraction": 0.3
+      },
+      {
+        "type": "remove_status",
+        "status": "burning"
+      },
+      {
+        "type": "apply_status",
+        "status": "obscured",
+        "duration_ticks": 44,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "A healing mist that obscures vision.\nA zone at the aim point with a 4.5-block radius for 10 s. Every second, on everyone inside, including you (damage and control only hit enemies):\n• Soaked for 8.8 s\n• Heals 1.25 ❤\n• Regeneration: +0.5 ❤ every 2 s for 6.6 s\n• Growth: up to 2 nearby blocks — crops +2 stages, dirt turns to grass, roots grow upward\n• Revives the nearest fallen player or creature within 4.5 blocks with 30% health\n• Puts out fire\n• Blindness for 2.2 s",
+  "self_description": "A zone around you with a 4.5-block radius for 10 s. Every second, on everyone inside, including you:\n• Soaked for 8.8 s\n• Heals 1.25 ❤\n• Regeneration: +0.5 ❤ every 2 s for 6.6 s\n• Growth: up to 2 nearby blocks — crops +2 stages, dirt turns to grass, roots grow upward\n• Revives the nearest fallen player or creature within 4.5 blocks with 30% health\n• Puts out fire\n• Blindness for 2.2 s",
+  "balanced": true
+}

@@ -1,0 +1,59 @@
+{
+  "id": "magicka:death_douse",
+  "formula": {
+    "water": 1,
+    "cold": 1,
+    "life": 1,
+    "death": 1
+  },
+  "name": "Douse · Death",
+  "tier": "Generic Fusion",
+  "tags": "UTIL/DEATH",
+  "shape": "direct_target",
+  "origin": "aim_hit",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 2.0,
+    "speed": 1.2,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.0
+  },
+  "construction": {},
+  "effects": [
+    {
+      "type": "extinguish",
+      "radius": 6
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 80,
+      "strength": 1
+    },
+    {
+      "type": "drain_life",
+      "amount": 1.0,
+      "fraction": 0.4
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "extinguish",
+        "radius": 6
+      },
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 60,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "Affects the creature you aim at:\n• Puts out fire within 6 blocks: burning blocks and every creature, you included\n• Withering: −0.5 ❤ per second for 4 s\n• Life drain: 0.5 ❤ damage, you heal 0.2 ❤",
+  "self_description": "On you:\n• Puts out fire within 6 blocks: burning blocks and every creature, you included\n• Withering: −0.5 ❤ per second for 3 s",
+  "balanced": true
+}

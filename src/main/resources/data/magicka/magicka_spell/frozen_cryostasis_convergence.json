@@ -1,0 +1,104 @@
+{
+  "id": "magicka:frozen_cryostasis_convergence",
+  "formula": {
+    "cold": 2,
+    "life": 1,
+    "arcane": 1
+  },
+  "name": "Frozen Cryostasis Convergence",
+  "tier": "Family Variant",
+  "tags": "CC/DEBUFF/HEAL/BUFF/SETUP",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 3.8,
+    "speed": 1.07,
+    "duration_ticks": 240,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.2
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 16,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12
+  },
+  "effects": [
+    {
+      "type": "modify_temperature",
+      "amount": -80
+    },
+    {
+      "type": "heal",
+      "amount": 2.0
+    },
+    {
+      "type": "apply_status",
+      "status": "regenerating",
+      "duration_ticks": 120,
+      "strength": 1
+    },
+    {
+      "type": "grow_plants",
+      "budget": 2
+    },
+    {
+      "type": "deal_damage",
+      "amount": 2.5,
+      "element": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "arcane_unstable",
+      "duration_ticks": 90,
+      "strength": 1
+    },
+    {
+      "type": "apply_status",
+      "status": "stone_shell",
+      "duration_ticks": 80,
+      "strength": 1
+    },
+    {
+      "type": "revive",
+      "health_fraction": 0.3
+    },
+    {
+      "type": "remove_status",
+      "status": "burning"
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "modify_temperature",
+        "amount": -80
+      },
+      {
+        "type": "heal",
+        "amount": 2.0
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 120,
+        "strength": 1
+      },
+      {
+        "type": "apply_status",
+        "status": "arcane_unstable",
+        "duration_ticks": 90,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "A projectile flies where you look and strikes the first target. Effects:\n• Damage 1.25 ❤ arcane\n• Cold 80: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Heals 1 ❤\n• Regeneration: +0.5 ❤ every 2 s for 6 s\n• Growth: up to 2 nearby blocks — crops +2 stages, dirt turns to grass, roots grow upward\n• Arcane instability: −0.25 ❤ every 2 s for 4.5 s\n• Stone skin (Resistance I) for 4 s\n• Revives the nearest fallen player or creature within 3.8 blocks with 30% health\n• Puts out fire",
+  "self_description": "On you:\n• Cold 80: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Heals 1 ❤\n• Regeneration: +0.5 ❤ every 2 s for 6 s\n• Arcane instability: −0.25 ❤ every 2 s for 4.5 s",
+  "balanced": true
+}

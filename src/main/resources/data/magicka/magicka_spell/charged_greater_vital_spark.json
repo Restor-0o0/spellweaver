@@ -1,0 +1,88 @@
+{
+  "id": "magicka:charged_greater_vital_spark",
+  "formula": {
+    "lightning": 3,
+    "life": 1
+  },
+  "name": "Charged Greater Vital Spark",
+  "tier": "Family Variant",
+  "tags": "DMG/CC/HEAL/BUFF",
+  "shape": "chain",
+  "origin": "aim_hit",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 3.2,
+    "speed": 1.07,
+    "duration_ticks": 200,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.3
+  },
+  "construction": {
+    "material": "root",
+    "budget": 16,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 7.0,
+      "element": "lightning"
+    },
+    {
+      "type": "add_charge",
+      "amount": 105
+    },
+    {
+      "type": "chain_targets",
+      "count": 8,
+      "range": 6,
+      "amount": 7.0
+    },
+    {
+      "type": "heal",
+      "amount": 2.0
+    },
+    {
+      "type": "apply_status",
+      "status": "regenerating",
+      "duration_ticks": 120,
+      "strength": 1
+    },
+    {
+      "type": "grow_plants",
+      "budget": 2
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 7.0,
+        "element": "lightning"
+      },
+      {
+        "type": "add_charge",
+        "amount": 105
+      },
+      {
+        "type": "heal",
+        "amount": 2.0
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 120,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "Lightning shoots from your hand into the creature you aim at (or the first one in your line of sight). In instant mode it strikes twice a second while held. Effects:\n• Damage 3.5 ❤ lightning (lightning ×2 on wet)\n• Charge 105: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Then the lightning jumps onward: up to 8 targets in a row, jumps up to 6 blocks, 3.5 ❤ and 40 charge each (×2 damage and longer jumps on wet, ×1.5 range in puddles)\n• Heals 1 ❤\n• Regeneration: +0.5 ❤ every 2 s for 6 s\n• Growth: up to 2 nearby blocks — crops +2 stages, dirt turns to grass, roots grow upward",
+  "self_description": "On you:\n• Damage 3.5 ❤ lightning (lightning ×2 on wet)\n• Charge 105: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Heals 1 ❤\n• Regeneration: +0.5 ❤ every 2 s for 6 s",
+  "balanced": true
+}

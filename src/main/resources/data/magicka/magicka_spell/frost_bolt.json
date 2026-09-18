@@ -1,0 +1,47 @@
+{
+  "id": "magicka:frost_bolt",
+  "formula": {
+    "cold": 2
+  },
+  "name": "Frost Bolt",
+  "tier": "Signature",
+  "tags": "CC/DEBUFF",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 9,
+  "delivery": {
+    "radius": 2.5,
+    "speed": 0.91,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.3
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 3,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 8
+  },
+  "effects": [
+    {
+      "type": "modify_temperature",
+      "amount": -80
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "modify_temperature",
+        "amount": -80
+      }
+    ]
+  },
+  "primary": "A frost projectile.\nA projectile flies where you look and strikes the first target. Effects:\n• Cold 80: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze",
+  "self_description": "On you:\n• Cold 80: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze",
+  "balanced": true
+}

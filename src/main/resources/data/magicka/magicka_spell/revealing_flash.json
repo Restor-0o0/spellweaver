@@ -1,0 +1,42 @@
+{
+  "id": "magicka:revealing_flash",
+  "formula": {
+    "lightning": 1,
+    "arcane": 2
+  },
+  "name": "Revealing Flash",
+  "tier": "Signature",
+  "tags": "UTIL",
+  "shape": "direct_target",
+  "origin": "aim_hit",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 2.0,
+    "speed": 1.2,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.0
+  },
+  "construction": {},
+  "effects": [
+    {
+      "type": "reveal",
+      "radius": 24,
+      "duration_ticks": 600
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "reveal",
+        "radius": 32,
+        "duration_ticks": 600
+      }
+    ]
+  },
+  "primary": "A flash that shows every enemy around through walls.\nWhere you look:\n• Highlights everyone you can harm within 24 blocks, visible through walls for 30 s",
+  "self_description": "Around you:\n• Highlights everyone you can harm within 32 blocks, visible through walls for 30 s",
+  "balanced": true
+}

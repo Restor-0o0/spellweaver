@@ -1,0 +1,82 @@
+{
+  "id": "magicka:flooded_steam",
+  "formula": {
+    "fire": 1,
+    "water": 2
+  },
+  "name": "Flooded Steam",
+  "tier": "Family Variant",
+  "tags": "DMG/DOT/SETUP/CC",
+  "shape": "spray",
+  "origin": "caster_front",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 3.4,
+    "speed": 0.99,
+    "duration_ticks": 200,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.0
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 8,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10
+  },
+  "effects": [
+    {
+      "type": "set_wet",
+      "duration_ticks": 242
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.3,
+      "lift": 0
+    },
+    {
+      "type": "deal_damage",
+      "amount": 2.0,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 40
+    },
+    {
+      "type": "apply_status",
+      "status": "obscured",
+      "duration_ticks": 55,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 242
+      },
+      {
+        "type": "apply_force",
+        "amount": 0.3,
+        "lift": 0
+      },
+      {
+        "type": "deal_damage",
+        "amount": 2.0,
+        "element": "fire"
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 40
+      }
+    ]
+  },
+  "primary": "A widening stream (up to 3 blocks wide) hits everyone in front of you; in instant mode it keeps going while held:\n• Damage 1 ❤ fire (fire ×0.5 on wet)\n• Soaked for 12.1 s and leaves a puddle\n• Light push\n• Heat: sets on fire for 6 s (wet targets just dry off), thaws; melts ice and burns roots\n• Blindness for 2.75 s",
+  "self_description": "On you:\n• Damage 1 ❤ fire (fire ×0.5 on wet)\n• Soaked for 12.1 s and leaves a puddle\n• Light push\n• Heat: sets on fire for 6 s (wet targets just dry off), thaws; melts ice and burns roots",
+  "balanced": true
+}

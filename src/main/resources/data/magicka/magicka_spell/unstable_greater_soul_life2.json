@@ -1,0 +1,110 @@
+{
+  "id": "magicka:unstable_greater_soul_life2",
+  "formula": {
+    "life": 2,
+    "arcane": 3
+  },
+  "name": "Unstable Greater Soul · Life ×2",
+  "tier": "Generic Fusion",
+  "tags": "HEAL/BUFF/SETUP",
+  "shape": "targeted_explosion",
+  "origin": "aim_hit",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 5.51,
+    "speed": 1.07,
+    "duration_ticks": 360,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 5.22
+  },
+  "construction": {
+    "material": "root",
+    "budget": 40,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12,
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "heal",
+      "amount": 3.5
+    },
+    {
+      "type": "apply_status",
+      "status": "regenerating",
+      "duration_ticks": 180,
+      "strength": 1
+    },
+    {
+      "type": "grow_plants",
+      "budget": 5
+    },
+    {
+      "type": "deal_damage",
+      "amount": 12.5,
+      "element": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "arcane_unstable",
+      "duration_ticks": 225,
+      "strength": 3
+    },
+    {
+      "type": "revive",
+      "health_fraction": 0.39
+    },
+    {
+      "type": "remove_status",
+      "status": "burning"
+    },
+    {
+      "type": "heal",
+      "amount": 8
+    },
+    {
+      "type": "apply_status",
+      "status": "regenerating",
+      "duration_ticks": 200,
+      "strength": 3
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "heal",
+        "amount": 3.5
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 180,
+        "strength": 1
+      },
+      {
+        "type": "apply_status",
+        "status": "arcane_unstable",
+        "duration_ticks": 225,
+        "strength": 3
+      },
+      {
+        "type": "heal",
+        "amount": 8
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 200,
+        "strength": 3
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "An explosion at the aim point with a 5.51-block radius (does not hit you):\n• Damage 6.25 ❤ arcane\n• Heals 1.75 ❤\n• Regeneration: +0.5 ❤ every 2 s for 9 s\n• Growth: up to 5 nearby blocks — crops +2 stages, dirt turns to grass, roots grow upward\n• Arcane instability: −0.75 ❤ every 2 s for 11.25 s\n• Revives the nearest fallen player or creature within 5.51 blocks with 39% health\n• Puts out fire\n• Heals 4 ❤\n• Regeneration: +1.5 ❤ every 2 s for 10 s",
+  "self_description": "On you:\n• Heals 1.75 ❤\n• Regeneration: +0.5 ❤ every 2 s for 9 s\n• Arcane instability: −0.75 ❤ every 2 s for 11.25 s\n• Heals 4 ❤\n• Regeneration: +1.5 ❤ every 2 s for 10 s"
+}

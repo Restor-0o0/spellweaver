@@ -1,0 +1,58 @@
+{
+  "id": "magicka:death_ray",
+  "formula": {
+    "arcane": 1,
+    "death": 1
+  },
+  "name": "Death Ray",
+  "tier": "Signature",
+  "tags": "DMG/HEAL",
+  "shape": "beam",
+  "origin": "caster_front",
+  "delivery": {
+    "radius": 3.0,
+    "speed": 0.9,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.0
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 2.0,
+      "element": "arcane"
+    },
+    {
+      "type": "drain_life",
+      "amount": 0.5,
+      "fraction": 0.5
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 50,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "arcane_unstable",
+        "duration_ticks": 100,
+        "strength": 1
+      },
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 75,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "A ray of death that drains life while you hold it.\nA beam to the aim point hits everyone along it. In instant mode it keeps firing while held. Effects:\n• Damage 1 ❤ arcane\n• Life drain: 0.25 ❤ damage, you heal 0.12 ❤\n• Withering: −0.5 ❤ per second for 2.5 s",
+  "self_description": "On you:\n• Arcane instability: −0.25 ❤ every 2 s for 5 s\n• Withering: −0.5 ❤ per second for 3.75 s",
+  "balanced": true
+}

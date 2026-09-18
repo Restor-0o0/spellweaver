@@ -1,0 +1,95 @@
+{
+  "id": "magicka:convergence_w_c_e",
+  "formula": {
+    "water": 1,
+    "cold": 1,
+    "earth": 1
+  },
+  "name": "Convergence W / C / E",
+  "tier": "Generic Fusion",
+  "tags": "SETUP/CC/DEBUFF/BREAK/BUILD",
+  "shape": "targeted_zone",
+  "origin": "aim_ground",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 3.2,
+    "speed": 0.99,
+    "duration_ticks": 220,
+    "interval_ticks": 20,
+    "gravity": 0.025,
+    "burst_radius": 2.8
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 8,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10
+  },
+  "effects": [
+    {
+      "type": "set_wet",
+      "duration_ticks": 176
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.15,
+      "lift": 0
+    },
+    {
+      "type": "modify_temperature",
+      "amount": -40
+    },
+    {
+      "type": "deal_damage",
+      "amount": 2.0,
+      "element": "earth"
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.25,
+      "lift": 0.12
+    },
+    {
+      "type": "apply_status",
+      "status": "rooted",
+      "duration_ticks": 44,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 176
+      },
+      {
+        "type": "apply_force",
+        "amount": 0.15,
+        "lift": 0
+      },
+      {
+        "type": "modify_temperature",
+        "amount": -40
+      },
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 154,
+        "strength": 1
+      },
+      {
+        "type": "apply_status",
+        "status": "chilled",
+        "duration_ticks": 121,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "A zone at the aim point with a 3.2-block radius for 11 s. Every second, on everyone inside except you:\n• Damage 1 ❤ earth (earth ×2 on frozen)\n• Soaked for 8.8 s\n• Light push\n• Cold 40: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Rooted in place for 2.2 s",
+  "self_description": "On you:\n• Soaked for 8.8 s and leaves a puddle\n• Light push\n• Cold 40: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Stone skin (Resistance I) for 7.7 s\n• Slowness I for 6.05 s",
+  "balanced": true
+}

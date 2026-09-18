@@ -1,0 +1,75 @@
+{
+  "id": "magicka:unstable_greater_witchfire",
+  "formula": {
+    "fire": 1,
+    "arcane": 3
+  },
+  "name": "Unstable Greater Witchfire",
+  "tier": "Family Variant",
+  "tags": "DMG/DOT/SETUP",
+  "shape": "targeted_explosion",
+  "origin": "aim_hit",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 3.6,
+    "speed": 1.07,
+    "duration_ticks": 200,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 4.0
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 16,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 2.5,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 40
+    },
+    {
+      "type": "deal_damage",
+      "amount": 7.0,
+      "element": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "arcane_unstable",
+      "duration_ticks": 150,
+      "strength": 3
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 2.5,
+        "element": "fire"
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 40
+      },
+      {
+        "type": "apply_status",
+        "status": "arcane_unstable",
+        "duration_ticks": 150,
+        "strength": 3
+      }
+    ]
+  },
+  "primary": "An explosion at the aim point with a 3.6-block radius (does not hit you):\n• Damage 1.25 ❤ fire + 3.5 ❤ arcane (fire ×0.5 on wet)\n• Heat: sets on fire for 6 s (wet targets just dry off), thaws; melts ice and burns roots\n• Arcane instability: −0.75 ❤ every 2 s for 7.5 s",
+  "self_description": "On you:\n• Damage 1.25 ❤ fire (fire ×0.5 on wet)\n• Heat: sets on fire for 6 s (wet targets just dry off), thaws; melts ice and burns roots\n• Arcane instability: −0.75 ❤ every 2 s for 7.5 s",
+  "balanced": true
+}

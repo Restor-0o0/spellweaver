@@ -1,0 +1,46 @@
+{
+  "id": "magicka:slanted_wall",
+  "formula": {
+    "earth": 1,
+    "life": 1,
+    "arcane": 2
+  },
+  "name": "Slanted Wall",
+  "tier": "Signature",
+  "tags": "BUILD",
+  "shape": "wall",
+  "origin": "caster_feet",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 2.0,
+    "speed": 1.2,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.0
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 80,
+    "interval_ticks": 1,
+    "batch": 6,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12,
+    "template": "slope",
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "create_construction"
+    }
+  ],
+  "self": {
+    "mode": "construct",
+    "effects": []
+  },
+  "primary": "Covers you from the front and above: arrows and fireballs from the sky hit the stone.\nA 5-wide wall at 45°: its base stands at the aim point and it rises toward you like an awning, covering you from the front and from the sky; it turns to any angle and the slope is solid with no gaps. Material: magic earth, permanent.",
+  "self_description": "A 5-wide wall at 45°: its base stands at the aim point and it rises toward you like an awning, covering you from the front and from the sky; it turns to any angle and the slope is solid with no gaps. Material: magic earth, permanent. No extra effects.",
+  "balanced": true
+}

@@ -1,0 +1,82 @@
+{
+  "id": "magicka:scorching_greater_steam",
+  "formula": {
+    "fire": 3,
+    "water": 1
+  },
+  "name": "Scorching Greater Steam",
+  "tier": "Family Variant",
+  "tags": "DMG/DOT/SETUP/CC",
+  "shape": "spray",
+  "origin": "caster_front",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 3.6,
+    "speed": 1.07,
+    "duration_ticks": 200,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 4.0
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 16,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12
+  },
+  "effects": [
+    {
+      "type": "set_wet",
+      "duration_ticks": 160
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.15,
+      "lift": 0
+    },
+    {
+      "type": "deal_damage",
+      "amount": 7.0,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 120
+    },
+    {
+      "type": "apply_status",
+      "status": "obscured",
+      "duration_ticks": 50,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 160
+      },
+      {
+        "type": "apply_force",
+        "amount": 0.15,
+        "lift": 0
+      },
+      {
+        "type": "deal_damage",
+        "amount": 7.0,
+        "element": "fire"
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 120
+      }
+    ]
+  },
+  "primary": "A widening stream (up to 3 blocks wide) hits everyone in front of you; in instant mode it keeps going while held:\n• Damage 3.5 ❤ fire (fire ×0.5 on wet)\n• Soaked for 8 s and leaves a puddle\n• Light push\n• Heat: sets on fire for 18 s (wet targets just dry off), thaws; melts ice and burns roots\n• Blindness for 2.5 s",
+  "self_description": "On you:\n• Damage 3.5 ❤ fire (fire ×0.5 on wet)\n• Soaked for 8 s and leaves a puddle\n• Light push\n• Heat: sets on fire for 18 s (wet targets just dry off), thaws; melts ice and burns roots",
+  "balanced": true
+}

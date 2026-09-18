@@ -1,0 +1,107 @@
+{
+  "id": "magicka:living_spring_convergence_water1_lightning1_life2",
+  "formula": {
+    "water": 1,
+    "lightning": 1,
+    "life": 2
+  },
+  "name": "Living Spring Convergence",
+  "tier": "Family Variant",
+  "tags": "SETUP/CC/DMG/HEAL/BUFF",
+  "shape": "targeted_zone",
+  "origin": "aim_ground",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 3.9,
+    "speed": 1.07,
+    "duration_ticks": 260,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.0
+  },
+  "construction": {
+    "material": "root",
+    "budget": 16,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12
+  },
+  "effects": [
+    {
+      "type": "set_wet",
+      "duration_ticks": 160
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.15,
+      "lift": 0
+    },
+    {
+      "type": "deal_damage",
+      "amount": 2.5,
+      "element": "lightning"
+    },
+    {
+      "type": "add_charge",
+      "amount": 35
+    },
+    {
+      "type": "chain_targets",
+      "count": 4,
+      "range": 4,
+      "amount": 2.5
+    },
+    {
+      "type": "heal",
+      "amount": 4.0
+    },
+    {
+      "type": "apply_status",
+      "status": "regenerating",
+      "duration_ticks": 160,
+      "strength": 2
+    },
+    {
+      "type": "grow_plants",
+      "budget": 4
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 160
+      },
+      {
+        "type": "apply_force",
+        "amount": 0.15,
+        "lift": 0
+      },
+      {
+        "type": "deal_damage",
+        "amount": 2.5,
+        "element": "lightning"
+      },
+      {
+        "type": "add_charge",
+        "amount": 35
+      },
+      {
+        "type": "heal",
+        "amount": 4.0
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 160,
+        "strength": 2
+      }
+    ]
+  },
+  "primary": "A zone at the aim point with a 3.9-block radius for 13 s. Every second, on everyone inside, including you (damage and control only hit enemies):\n• Damage 1.25 ❤ lightning (lightning ×2 on wet)\n• Soaked for 8 s\n• Light push\n• Charge 35: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Then the lightning jumps onward: up to 4 targets in a row, jumps up to 4 blocks, 1.25 ❤ and 40 charge each (×2 damage and longer jumps on wet, ×1.5 range in puddles)\n• Heals 2 ❤\n• Regeneration: +1 ❤ every 2 s for 8 s\n• Growth: up to 4 nearby blocks — crops +2 stages, dirt turns to grass, roots grow upward",
+  "self_description": "On you:\n• Damage 1.25 ❤ lightning (lightning ×2 on wet)\n• Soaked for 8 s and leaves a puddle\n• Light push\n• Charge 35: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Heals 2 ❤\n• Regeneration: +1 ❤ every 2 s for 8 s",
+  "balanced": true
+}

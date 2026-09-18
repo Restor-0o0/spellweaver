@@ -1,0 +1,61 @@
+{
+  "id": "magicka:font_of_life",
+  "formula": {
+    "water": 1,
+    "life": 3,
+    "arcane": 1
+  },
+  "incantation": "26766",
+  "name": "Font of Life",
+  "tier": "Signature",
+  "tags": "HEAL/REVIVE/AOE",
+  "shape": "targeted_zone",
+  "origin": "aim_hit",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 9.0,
+    "speed": 1.0,
+    "duration_ticks": 400,
+    "interval_ticks": 15,
+    "gravity": 0,
+    "burst_radius": 9.0
+  },
+  "effects": [
+    {
+      "type": "heal",
+      "amount": 18.0
+    },
+    {
+      "type": "apply_status",
+      "status": "regenerating",
+      "duration_ticks": 400,
+      "strength": 4
+    },
+    {
+      "type": "revive",
+      "health_fraction": 1.0
+    },
+    {
+      "type": "grow_plants",
+      "budget": 96
+    }
+  ],
+  "self": {
+    "mode": "zone",
+    "effects": [
+      {
+        "type": "heal",
+        "amount": 20.0
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 400,
+        "strength": 4
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "A spring of life heals allies for fifteen seconds and puts the fallen back on their feet.\nA zone at the aim point with a 9-block radius for 20 s. Every second, on everyone inside, including you (damage and control only hit enemies):\n• Heals 9 ❤\n• Regeneration: +2 ❤ every 2 s for 20 s\n• Revives the nearest fallen player or creature within 9 blocks with 100% health\n• Growth: up to 96 nearby blocks — crops +2 stages, dirt turns to grass, roots grow upward",
+  "self_description": "A zone around you with a 9-block radius for 20 s. Every second, on everyone inside, including you:\n• Heals 10 ❤\n• Regeneration: +2 ❤ every 2 s for 20 s"
+}

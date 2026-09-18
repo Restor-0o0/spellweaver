@@ -1,0 +1,82 @@
+{
+  "id": "magicka:cautery",
+  "formula": {
+    "fire": 1,
+    "life": 1
+  },
+  "name": "Cautery",
+  "tier": "Signature",
+  "tags": "DMG/DOT/HEAL/BUFF",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 9,
+  "delivery": {
+    "radius": 2.5,
+    "speed": 0.91,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.5
+  },
+  "construction": {
+    "material": "root",
+    "budget": 3,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 8
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 1.5,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 40
+    },
+    {
+      "type": "heal",
+      "amount": 2.5
+    },
+    {
+      "type": "apply_status",
+      "status": "regenerating",
+      "duration_ticks": 150,
+      "strength": 1
+    },
+    {
+      "type": "grow_plants",
+      "budget": 2
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 1.5,
+        "element": "fire"
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 40
+      },
+      {
+        "type": "heal",
+        "amount": 2.5
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 150,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "Heals with fire: seals wounds but burns.\nA projectile flies where you look and strikes the first target. Effects:\n• Damage 0.75 ❤ fire (fire ×0.5 on wet)\n• Heat: sets on fire for 6 s (wet targets just dry off), thaws; melts ice and burns roots\n• Heals 1.25 ❤\n• Regeneration: +0.5 ❤ every 2 s for 7.5 s\n• Growth: up to 2 nearby blocks — crops +2 stages, dirt turns to grass, roots grow upward",
+  "self_description": "On you:\n• Damage 0.75 ❤ fire (fire ×0.5 on wet)\n• Heat: sets on fire for 6 s (wet targets just dry off), thaws; melts ice and burns roots\n• Heals 1.25 ❤\n• Regeneration: +0.5 ❤ every 2 s for 7.5 s",
+  "balanced": true
+}

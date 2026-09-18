@@ -1,0 +1,55 @@
+{
+  "id": "magicka:plague_mist",
+  "formula": {
+    "water": 1,
+    "death": 1
+  },
+  "name": "Plague Mist",
+  "tier": "Signature",
+  "tags": "DOT/DEBUFF",
+  "shape": "spray",
+  "origin": "caster_front",
+  "delivery": {
+    "radius": 3.0,
+    "speed": 0.9,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.0
+  },
+  "effects": [
+    {
+      "type": "set_wet",
+      "duration_ticks": 150
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 75,
+      "strength": 1
+    },
+    {
+      "type": "deal_damage",
+      "amount": 0.5,
+      "element": "death"
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 150
+      },
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 75,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "A stream of plague water.\nA widening stream (up to 3 blocks wide) hits everyone in front of you; in instant mode it keeps going while held:\n• Damage 0.25 ❤ death\n• Soaked for 7.5 s and leaves a puddle\n• Withering: −0.5 ❤ per second for 3.75 s",
+  "self_description": "On you:\n• Soaked for 7.5 s and leaves a puddle\n• Withering: −0.5 ❤ per second for 3.75 s",
+  "balanced": true
+}

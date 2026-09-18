@@ -1,0 +1,70 @@
+{
+  "id": "magicka:absolute_zero",
+  "formula": {
+    "cold": 3,
+    "water": 1,
+    "death": 1
+  },
+  "incantation": "32338",
+  "name": "Absolute Zero",
+  "tier": "Signature",
+  "tags": "CC/DMG/AOE",
+  "shape": "burst_projectile",
+  "origin": "aim_hit",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 9.0,
+    "speed": 1.1,
+    "duration_ticks": 300,
+    "interval_ticks": 15,
+    "gravity": 0,
+    "burst_radius": 9.0
+  },
+  "effects": [
+    {
+      "type": "modify_temperature",
+      "amount": -240
+    },
+    {
+      "type": "apply_status",
+      "status": "chilled",
+      "duration_ticks": 320,
+      "strength": 5
+    },
+    {
+      "type": "apply_status",
+      "status": "rooted",
+      "duration_ticks": 200,
+      "strength": 1
+    },
+    {
+      "type": "apply_status",
+      "status": "brittle",
+      "duration_ticks": 320,
+      "strength": 1
+    },
+    {
+      "type": "deal_damage",
+      "amount": 11.5,
+      "element": "cold"
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 300,
+        "strength": 3
+      },
+      {
+        "type": "modify_temperature",
+        "amount": -60
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "Everything within five blocks freezes solid and stops moving.\nA projectile flies where you look and explodes in a 9-block radius on hit. Effects:\n• Damage 5.75 ❤ cold\n• Cold 240: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Slowness V for 16 s\n• Rooted in place for 10 s\n• Brittle (earth damage ×2) for 16 s",
+  "self_description": "On you:\n• Stone skin (Resistance III) for 15 s\n• Cold 60: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze"
+}

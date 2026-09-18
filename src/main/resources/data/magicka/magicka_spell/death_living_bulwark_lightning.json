@@ -1,0 +1,96 @@
+{
+  "id": "magicka:death_living_bulwark_lightning",
+  "formula": {
+    "earth": 1,
+    "life": 1,
+    "arcane": 1,
+    "death": 1,
+    "lightning": 1
+  },
+  "name": "Living Bulwark · Death · Lightning",
+  "tier": "Generic Fusion",
+  "tags": "BUILD/DEF/HEAL/DEATH",
+  "shape": "wall",
+  "origin": "aim_ground",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 4.5,
+    "speed": 0.99,
+    "duration_ticks": 330,
+    "interval_ticks": 20,
+    "gravity": 0.025,
+    "burst_radius": 4.21
+  },
+  "construction": {
+    "material": "root",
+    "budget": 20,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10,
+    "regenerates": true,
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "create_construction"
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 120,
+      "strength": 1
+    },
+    {
+      "type": "drain_life",
+      "amount": 2.0,
+      "fraction": 0.52
+    },
+    {
+      "type": "deal_damage",
+      "amount": 6,
+      "element": "lightning"
+    },
+    {
+      "type": "add_charge",
+      "amount": 70
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 300,
+        "strength": 3
+      },
+      {
+        "type": "apply_status",
+        "status": "chilled",
+        "duration_ticks": 240,
+        "strength": 2
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 300,
+        "strength": 2
+      },
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 90,
+        "strength": 1
+      },
+      {
+        "type": "add_charge",
+        "amount": 20
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "A wall 3 high of 20 blocks at the aim point, extending to the right across your view; damaged blocks regrow. Material: roots: climbable, burn in fire, permanent.",
+  "self_description": "On you:\n• Stone skin (Resistance III) for 15 s\n• Slowness II for 12 s\n• Regeneration: +1 ❤ every 2 s for 15 s\n• Withering: −0.5 ❤ per second for 4.5 s\n• Charge 20: weakness, stuns for 1 s at 65 charge (×2 on wet)"
+}

@@ -1,0 +1,66 @@
+{
+  "id": "magicka:flooded_greater_frostflow",
+  "formula": {
+    "water": 3,
+    "cold": 1
+  },
+  "name": "Flooded Greater Frostflow",
+  "tier": "Family Variant",
+  "tags": "SETUP/CC/DEBUFF/BUILD",
+  "shape": "targeted_zone",
+  "origin": "aim_ground",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 4.3,
+    "speed": 1.07,
+    "duration_ticks": 280,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.1
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 16,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12
+  },
+  "effects": [
+    {
+      "type": "set_wet",
+      "duration_ticks": 280
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.44999999999999996,
+      "lift": 0
+    },
+    {
+      "type": "modify_temperature",
+      "amount": -40
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 280
+      },
+      {
+        "type": "apply_force",
+        "amount": 0.44999999999999996,
+        "lift": 0
+      },
+      {
+        "type": "modify_temperature",
+        "amount": -40
+      }
+    ]
+  },
+  "primary": "A zone at the aim point with a 4.3-block radius for 14 s. Every second, on everyone inside except you:\n• Soaked for 14 s\n• Light push\n• Cold 40: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze",
+  "self_description": "On you:\n• Soaked for 14 s and leaves a puddle\n• Light push\n• Cold 40: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze",
+  "balanced": true
+}

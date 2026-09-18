@@ -1,0 +1,103 @@
+{
+  "id": "magicka:charged_frostshock_convergence_cold1_lightning2_life1",
+  "formula": {
+    "cold": 1,
+    "lightning": 2,
+    "life": 1
+  },
+  "name": "Charged Frostshock Convergence",
+  "tier": "Family Variant",
+  "tags": "CC/DEBUFF/DMG/HEAL/BUFF",
+  "shape": "chain",
+  "origin": "aim_hit",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 3.4,
+    "speed": 1.07,
+    "duration_ticks": 220,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.2
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 16,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12
+  },
+  "effects": [
+    {
+      "type": "modify_temperature",
+      "amount": -40
+    },
+    {
+      "type": "deal_damage",
+      "amount": 5.0,
+      "element": "lightning"
+    },
+    {
+      "type": "add_charge",
+      "amount": 70
+    },
+    {
+      "type": "chain_targets",
+      "count": 6,
+      "range": 5,
+      "amount": 5.0
+    },
+    {
+      "type": "heal",
+      "amount": 2.0
+    },
+    {
+      "type": "apply_status",
+      "status": "regenerating",
+      "duration_ticks": 120,
+      "strength": 1
+    },
+    {
+      "type": "grow_plants",
+      "budget": 2
+    },
+    {
+      "type": "apply_status",
+      "status": "stone_shell",
+      "duration_ticks": 80,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "modify_temperature",
+        "amount": -40
+      },
+      {
+        "type": "deal_damage",
+        "amount": 5.0,
+        "element": "lightning"
+      },
+      {
+        "type": "add_charge",
+        "amount": 70
+      },
+      {
+        "type": "heal",
+        "amount": 2.0
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 120,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "Lightning shoots from your hand into the creature you aim at (or the first one in your line of sight). In instant mode it strikes twice a second while held. Effects:\n• Damage 2.5 ❤ lightning (lightning ×2 on wet)\n• Cold 40: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Charge 70: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Then the lightning jumps onward: up to 6 targets in a row, jumps up to 5 blocks, 2.5 ❤ and 40 charge each (×2 damage and longer jumps on wet, ×1.5 range in puddles)\n• Heals 1 ❤\n• Regeneration: +0.5 ❤ every 2 s for 6 s\n• Growth: up to 2 nearby blocks — crops +2 stages, dirt turns to grass, roots grow upward\n• Stone skin (Resistance I) for 4 s",
+  "self_description": "On you:\n• Damage 2.5 ❤ lightning (lightning ×2 on wet)\n• Cold 40: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Charge 70: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Heals 1 ❤\n• Regeneration: +0.5 ❤ every 2 s for 6 s",
+  "balanced": true
+}

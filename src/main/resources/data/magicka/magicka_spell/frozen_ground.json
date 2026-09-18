@@ -1,0 +1,71 @@
+{
+  "id": "magicka:frozen_ground",
+  "formula": {
+    "water": 1,
+    "cold": 2,
+    "arcane": 1
+  },
+  "name": "Hoarfrost",
+  "tier": "Signature",
+  "tags": "AOE/CC/DMG",
+  "shape": "targeted_zone",
+  "origin": "aim_ground",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 4,
+    "speed": 1.07,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.3
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 16,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12
+  },
+  "effects": [
+    {
+      "type": "modify_temperature",
+      "amount": -35
+    },
+    {
+      "type": "deal_damage",
+      "amount": 2.5,
+      "element": "cold"
+    },
+    {
+      "type": "apply_status",
+      "status": "rooted",
+      "duration_ticks": 20,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "zone",
+    "effects": [
+      {
+        "type": "modify_temperature",
+        "amount": -35
+      },
+      {
+        "type": "deal_damage",
+        "amount": 2.5,
+        "element": "cold"
+      },
+      {
+        "type": "apply_status",
+        "status": "rooted",
+        "duration_ticks": 20,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "Biting frost that chills, hurts and grips everyone in the zone, leaving no ice.\nA zone at the aim point with a 4-block radius for 8 s. Every second, on everyone inside except you:\n• Damage 1.25 ❤ cold\n• Cold 35: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Rooted in place for 1 s",
+  "self_description": "A zone around you with a 4-block radius for 8 s. Every second, on everyone inside, including you:\n• Damage 1.25 ❤ cold\n• Cold 35: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Rooted in place for 1 s",
+  "balanced": true
+}

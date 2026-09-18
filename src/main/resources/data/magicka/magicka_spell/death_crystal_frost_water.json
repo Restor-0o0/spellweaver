@@ -1,0 +1,96 @@
+{
+  "id": "magicka:death_crystal_frost_water",
+  "formula": {
+    "cold": 1,
+    "earth": 1,
+    "arcane": 1,
+    "death": 1,
+    "water": 1
+  },
+  "name": "Crystal Frost · Death · Water",
+  "tier": "Generic Fusion",
+  "tags": "DMG/BUILD/CC/DEATH",
+  "shape": "summon_object",
+  "origin": "aim_surface",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 4.35,
+    "speed": 0.99,
+    "duration_ticks": 300,
+    "interval_ticks": 20,
+    "gravity": 0.025,
+    "burst_radius": 4.35,
+    "object_kind": "anchor"
+  },
+  "construction": {
+    "material": "arcane",
+    "budget": 20,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": true,
+    "integrity": 10,
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "create_construction"
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 120,
+      "strength": 1
+    },
+    {
+      "type": "drain_life",
+      "amount": 2.0,
+      "fraction": 0.52
+    },
+    {
+      "type": "set_wet",
+      "duration_ticks": 240
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.5,
+      "lift": 0
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 240,
+        "strength": 2
+      },
+      {
+        "type": "apply_status",
+        "status": "chilled",
+        "duration_ticks": 180,
+        "strength": 2
+      },
+      {
+        "type": "apply_status",
+        "status": "brittle",
+        "duration_ticks": 180,
+        "strength": 1
+      },
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 90,
+        "strength": 1
+      },
+      {
+        "type": "set_wet",
+        "duration_ticks": 120
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "A floating 20-block column at the aim point. Material: arcane crystal, fades after 20 s.",
+  "self_description": "On you:\n• Stone skin (Resistance II) for 12 s\n• Slowness II for 9 s\n• Brittle (earth damage ×2) for 9 s\n• Withering: −0.5 ❤ per second for 4.5 s\n• Soaked for 6 s and leaves a puddle"
+}

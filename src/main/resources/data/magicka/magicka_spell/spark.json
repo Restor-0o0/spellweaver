@@ -1,0 +1,63 @@
+{
+  "id": "magicka:spark",
+  "formula": {
+    "lightning": 1
+  },
+  "name": "Spark",
+  "tier": "Signature",
+  "tags": "DMG/CC",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 5,
+  "delivery": {
+    "radius": 1.7,
+    "speed": 0.83,
+    "duration_ticks": 100,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.0
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 1,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 6
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 1.0,
+      "element": "lightning"
+    },
+    {
+      "type": "add_charge",
+      "amount": 35
+    },
+    {
+      "type": "chain_targets",
+      "count": 4,
+      "range": 4,
+      "amount": 1.0
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 1.0,
+        "element": "lightning"
+      },
+      {
+        "type": "add_charge",
+        "amount": 35
+      }
+    ]
+  },
+  "primary": "A small spark that jumps between targets.\nA projectile flies where you look and strikes the first target. Effects:\n• Damage 0.5 ❤ lightning (lightning ×2 on wet)\n• Charge 35: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Then the lightning jumps onward: up to 4 targets in a row, jumps up to 4 blocks, 0.5 ❤ and 40 charge each (×2 damage and longer jumps on wet, ×1.5 range in puddles)",
+  "self_description": "On you:\n• Damage 0.5 ❤ lightning (lightning ×2 on wet)\n• Charge 35: weakness, stuns for 1 s at 65 charge (×2 on wet)",
+  "balanced": true
+}

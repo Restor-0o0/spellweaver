@@ -1,0 +1,109 @@
+{
+  "id": "magicka:charged_greater_thunderstone_earth2",
+  "formula": {
+    "lightning": 3,
+    "earth": 2
+  },
+  "name": "Charged Greater Thunderstone · Earth ×2",
+  "tier": "Generic Fusion",
+  "tags": "DMG/CC/BREAK",
+  "shape": "chain",
+  "origin": "aim_hit",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 4.35,
+    "speed": 1.07,
+    "duration_ticks": 300,
+    "interval_ticks": 20,
+    "gravity": 0.025,
+    "burst_radius": 5.08
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 40,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12,
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 12.5,
+      "element": "lightning"
+    },
+    {
+      "type": "add_charge",
+      "amount": 189
+    },
+    {
+      "type": "chain_targets",
+      "count": 16,
+      "range": 8,
+      "amount": 12.6
+    },
+    {
+      "type": "deal_damage",
+      "amount": 4.5,
+      "element": "earth"
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.45,
+      "lift": 0.18
+    },
+    {
+      "type": "destroy_blocks",
+      "budget": 8,
+      "radius": 0.72
+    },
+    {
+      "type": "deal_damage",
+      "amount": 6,
+      "element": "earth"
+    },
+    {
+      "type": "apply_status",
+      "status": "brittle",
+      "duration_ticks": 180,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 12.5,
+        "element": "lightning"
+      },
+      {
+        "type": "add_charge",
+        "amount": 189
+      },
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 210,
+        "strength": 1
+      },
+      {
+        "type": "apply_status",
+        "status": "chilled",
+        "duration_ticks": 165,
+        "strength": 1
+      },
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 200,
+        "strength": 3
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "Lightning shoots from your hand into the creature you aim at (or the first one in your line of sight). In instant mode it strikes twice a second while held. Effects:\n• Damage 6.25 ❤ lightning + 5.25 ❤ earth (lightning ×2 on wet, earth ×2 on frozen)\n• Charge 189: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Then the lightning jumps onward: up to 16 targets in a row, jumps up to 8 blocks, 6.3 ❤ and 40 charge each (×2 damage and longer jumps on wet, ×1.5 range in puddles)\n• Knockback\n• Breaks up to 8 blocks within 0.72 blocks (twice as many if brittle)\n• Brittle (earth damage ×2) for 9 s",
+  "self_description": "On you:\n• Damage 6.25 ❤ lightning (lightning ×2 on wet)\n• Charge 189: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Stone skin (Resistance I) for 10.5 s\n• Slowness I for 8.25 s\n• Stone skin (Resistance III) for 10 s"
+}

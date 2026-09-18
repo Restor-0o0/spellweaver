@@ -1,0 +1,81 @@
+{
+  "id": "magicka:death_bolt",
+  "formula": {
+    "lightning": 2,
+    "death": 1
+  },
+  "name": "Bolt · Death",
+  "tier": "Generic Fusion",
+  "tags": "DMG/CC/DEATH",
+  "shape": "chain",
+  "origin": "aim_hit",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 2.1,
+    "speed": 0.91,
+    "duration_ticks": 120,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.5
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 3,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 8
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 3.5,
+      "element": "lightning"
+    },
+    {
+      "type": "add_charge",
+      "amount": 70
+    },
+    {
+      "type": "chain_targets",
+      "count": 3,
+      "range": 4,
+      "amount": 2.5
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 88,
+      "strength": 1
+    },
+    {
+      "type": "drain_life",
+      "amount": 1.0,
+      "fraction": 0.4
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 3.5,
+        "element": "lightning"
+      },
+      {
+        "type": "add_charge",
+        "amount": 70
+      },
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 66,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "Lightning shoots from your hand into the creature you aim at (or the first one in your line of sight). Effects:\n• Damage 1.75 ❤ lightning (lightning ×2 on wet)\n• Charge 70: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Then the lightning jumps onward: up to 3 targets in a row, jumps up to 4 blocks, 1.25 ❤ and 40 charge each (×2 damage and longer jumps on wet, ×1.5 range in puddles)\n• Withering: −0.5 ❤ per second for 4.4 s\n• Life drain: 0.5 ❤ damage, you heal 0.2 ❤",
+  "self_description": "On you:\n• Damage 1.75 ❤ lightning (lightning ×2 on wet)\n• Charge 70: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Withering: −0.5 ❤ per second for 3.3 s",
+  "balanced": true
+}

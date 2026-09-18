@@ -1,0 +1,57 @@
+{
+  "id": "magicka:torrent",
+  "formula": {
+    "water": 3
+  },
+  "name": "Torrent",
+  "tier": "Signature",
+  "tags": "SETUP/CC",
+  "shape": "spray",
+  "origin": "caster_front",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 3.7,
+    "speed": 0.99,
+    "duration_ticks": 240,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.7
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 8,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10
+  },
+  "effects": [
+    {
+      "type": "set_wet",
+      "duration_ticks": 308
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.44999999999999996,
+      "lift": 0
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 308
+      },
+      {
+        "type": "apply_force",
+        "amount": 0.44999999999999996,
+        "lift": 0
+      }
+    ]
+  },
+  "primary": "A strong water torrent.\nA widening stream (up to 3 blocks wide) hits everyone in front of you; in instant mode it keeps going while held:\n• Soaked for 15.4 s and leaves a puddle\n• Light push",
+  "self_description": "On you:\n• Soaked for 15.4 s and leaves a puddle\n• Light push",
+  "balanced": true
+}

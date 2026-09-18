@@ -1,0 +1,80 @@
+{
+  "id": "magicka:greater_stasis_lightning",
+  "formula": {
+    "cold": 2,
+    "arcane": 2,
+    "lightning": 1
+  },
+  "name": "Greater Stasis · Lightning",
+  "tier": "Generic Fusion",
+  "tags": "CC/DEBUFF/SETUP",
+  "shape": "targeted_explosion",
+  "origin": "aim_hit",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 5.37,
+    "speed": 1.07,
+    "duration_ticks": 360,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 5.08
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 40,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12,
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "modify_temperature",
+      "amount": -144
+    },
+    {
+      "type": "deal_damage",
+      "amount": 9.0,
+      "element": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "arcane_unstable",
+      "duration_ticks": 180,
+      "strength": 2
+    },
+    {
+      "type": "deal_damage",
+      "amount": 6,
+      "element": "lightning"
+    },
+    {
+      "type": "add_charge",
+      "amount": 70
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "modify_temperature",
+        "amount": -144
+      },
+      {
+        "type": "apply_status",
+        "status": "arcane_unstable",
+        "duration_ticks": 180,
+        "strength": 2
+      },
+      {
+        "type": "add_charge",
+        "amount": 20
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "An explosion at the aim point with a 5.37-block radius (does not hit you):\n• Damage 4.5 ❤ arcane + 3 ❤ lightning (lightning ×2 on wet)\n• Cold 144: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Arcane instability: −0.5 ❤ every 2 s for 9 s\n• Charge 70: weakness, stuns for 1 s at 65 charge (×2 on wet)",
+  "self_description": "On you:\n• Cold 144: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Arcane instability: −0.5 ❤ every 2 s for 9 s\n• Charge 20: weakness, stuns for 1 s at 65 charge (×2 on wet)"
+}

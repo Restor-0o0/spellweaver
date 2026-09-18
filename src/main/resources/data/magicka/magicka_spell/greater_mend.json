@@ -1,0 +1,63 @@
+{
+  "id": "magicka:greater_mend",
+  "formula": {
+    "life": 4
+  },
+  "name": "Greater Mend",
+  "tier": "Signature",
+  "tags": "HEAL/BUFF",
+  "shape": "targeted_zone",
+  "origin": "aim_ground",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 5,
+    "speed": 1.07,
+    "duration_ticks": 100,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.7
+  },
+  "construction": {
+    "material": "root",
+    "budget": 16,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12
+  },
+  "effects": [
+    {
+      "type": "heal",
+      "amount": 8.0
+    },
+    {
+      "type": "apply_status",
+      "status": "regenerating",
+      "duration_ticks": 240,
+      "strength": 4
+    },
+    {
+      "type": "grow_plants",
+      "budget": 8
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "heal",
+        "amount": 8.0
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 240,
+        "strength": 4
+      }
+    ]
+  },
+  "primary": "A short but most powerful healing zone.\nA zone at the aim point with a 5-block radius for 5 s. Every second, on everyone inside, including you (damage and control only hit enemies):\n• Heals 4 ❤\n• Regeneration: +2 ❤ every 2 s for 12 s\n• Growth: up to 8 nearby blocks — crops +2 stages, dirt turns to grass, roots grow upward",
+  "self_description": "On you:\n• Heals 4 ❤\n• Regeneration: +2 ❤ every 2 s for 12 s",
+  "balanced": true
+}

@@ -1,0 +1,130 @@
+{
+  "id": "magicka:death_overcharge_fire",
+  "formula": {
+    "lightning": 1,
+    "life": 1,
+    "arcane": 1,
+    "death": 1,
+    "fire": 1
+  },
+  "name": "Overcharge · Death · Fire",
+  "tier": "Generic Fusion",
+  "tags": "MOVE/BUFF/MEME/DEATH",
+  "shape": "direct_target",
+  "origin": "aim_hit",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 4.35,
+    "speed": 0.99,
+    "duration_ticks": 300,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 4.21
+  },
+  "construction": {
+    "material": "root",
+    "budget": 20,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10,
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "haste",
+      "duration_ticks": 150,
+      "strength": 3
+    },
+    {
+      "type": "apply_effect",
+      "effect": "minecraft:jump_boost",
+      "duration_ticks": 150,
+      "strength": 2
+    },
+    {
+      "type": "delay",
+      "ticks": 100,
+      "effects": [
+        {
+          "type": "add_charge",
+          "amount": 108
+        },
+        {
+          "type": "apply_status",
+          "status": "chilled",
+          "duration_ticks": 90,
+          "strength": 2
+        }
+      ]
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 120,
+      "strength": 1
+    },
+    {
+      "type": "drain_life",
+      "amount": 2.0,
+      "fraction": 0.52
+    },
+    {
+      "type": "deal_damage",
+      "amount": 4,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 90
+    }
+  ],
+  "self": {
+    "mode": "effects",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "haste",
+        "duration_ticks": 150,
+        "strength": 3
+      },
+      {
+        "type": "apply_effect",
+        "effect": "minecraft:jump_boost",
+        "duration_ticks": 150,
+        "strength": 2
+      },
+      {
+        "type": "delay",
+        "ticks": 100,
+        "effects": [
+          {
+            "type": "add_charge",
+            "amount": 108
+          },
+          {
+            "type": "apply_status",
+            "status": "chilled",
+            "duration_ticks": 90,
+            "strength": 2
+          }
+        ]
+      },
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 90,
+        "strength": 1
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 30
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "Affects the creature you aim at:\n• Damage 2 ❤ fire (fire ×0.5 on wet)\n• Speed IV for 7.5 s\n• Jump Boost II, 7.5 s\n• 5 s later: charge 108: weakness, stuns for 1 s at 65 charge (×2 on wet); Slowness II for 4.5 s\n• Withering: −0.5 ❤ per second for 6 s\n• Life drain: 1 ❤ damage, you heal 0.52 ❤\n• Heat: sets on fire for 13.5 s (wet targets just dry off), thaws; melts ice and burns roots",
+  "self_description": "On you:\n• Speed IV for 7.5 s\n• Jump Boost II, 7.5 s\n• 5 s later: charge 108: weakness, stuns for 1 s at 65 charge (×2 on wet); Slowness II for 4.5 s\n• Withering: −0.5 ❤ per second for 4.5 s\n• Heat: sets on fire for 4.5 s (wet targets just dry off), thaws; melts ice and burns roots"
+}

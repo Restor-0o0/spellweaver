@@ -1,0 +1,110 @@
+{
+  "id": "magicka:volatile_magma_core",
+  "formula": {
+    "fire": 1,
+    "earth": 1,
+    "arcane": 1
+  },
+  "name": "Volatile Magma Core",
+  "tier": "Signature",
+  "tags": "DMG/AOE/BREAK",
+  "shape": "burst_projectile",
+  "origin": "caster_front",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 2.9,
+    "speed": 0.99,
+    "duration_ticks": 180,
+    "interval_ticks": 20,
+    "gravity": 0.025,
+    "burst_radius": 3.5,
+    "delay_ticks": 12,
+    "shards": 4
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 8,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 2.0,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 40
+    },
+    {
+      "type": "deal_damage",
+      "amount": 2.0,
+      "element": "earth"
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.25,
+      "lift": 0.12
+    },
+    {
+      "type": "destroy_blocks",
+      "budget": 3,
+      "radius": 0.5
+    },
+    {
+      "type": "deal_damage",
+      "amount": 2.0,
+      "element": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "arcane_unstable",
+      "duration_ticks": 99,
+      "strength": 1
+    },
+    {
+      "type": "spawn_zone",
+      "duration_ticks": 100,
+      "radius": 2
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 2.0,
+        "element": "fire"
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 40
+      },
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 154,
+        "strength": 1
+      },
+      {
+        "type": "apply_status",
+        "status": "chilled",
+        "duration_ticks": 121,
+        "strength": 1
+      },
+      {
+        "type": "apply_status",
+        "status": "arcane_unstable",
+        "duration_ticks": 99,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "A magma core that bursts into shards and leaves a hot patch.\nA projectile flies in an arc where you look and explodes in a 3.5-block radius on hit. The explosion comes 0.6 s after impact. 4 shards scatter around with the same effects on creatures they touch. Effects:\n• Damage 1 ❤ fire + 1 ❤ earth + 1 ❤ arcane (fire ×0.5 on wet, earth ×2 on frozen)\n• Heat: sets on fire for 6 s (wet targets just dry off), thaws; melts ice and burns roots\n• Light push\n• Breaks up to 3 blocks within 0.5 blocks (twice as many if brittle)\n• Arcane instability: −0.25 ❤ every 2 s for 4.95 s\n• Leaves a 2-block zone for 5 s that repeats these effects every second",
+  "self_description": "On you:\n• Damage 1 ❤ fire (fire ×0.5 on wet)\n• Heat: sets on fire for 6 s (wet targets just dry off), thaws; melts ice and burns roots\n• Stone skin (Resistance I) for 7.7 s\n• Slowness I for 6.05 s\n• Arcane instability: −0.25 ❤ every 2 s for 4.95 s",
+  "balanced": true
+}

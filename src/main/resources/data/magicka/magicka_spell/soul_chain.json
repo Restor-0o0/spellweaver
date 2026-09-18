@@ -1,0 +1,66 @@
+{
+  "id": "magicka:soul_chain",
+  "formula": {
+    "life": 1,
+    "arcane": 1,
+    "death": 1
+  },
+  "name": "Soul Chain",
+  "tier": "Signature",
+  "tags": "DMG/HEAL",
+  "shape": "chain",
+  "origin": "aim_hit",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 5.0,
+    "speed": 0.95,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.0
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 3,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 8
+  },
+  "effects": [
+    {
+      "type": "drain_life",
+      "amount": 3,
+      "fraction": 0.8
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 120,
+      "strength": 1
+    },
+    {
+      "type": "chain_targets",
+      "count": 4,
+      "range": 5,
+      "amount": 2
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "heal",
+        "amount": 4
+      },
+      {
+        "type": "remove_status",
+        "status": "withering"
+      }
+    ]
+  },
+  "primary": "Soul Chain. A thread of stolen life runs from target to target.\n• Drains 1.5 ❤ from the first target and heals you for 1.2 ❤\n• Withering for 6 s\n• Jumps to 4 targets within 5 blocks, 1 ❤ each",
+  "self_description": "On you: heals 2 ❤ and clears withering.",
+  "balanced": true
+}

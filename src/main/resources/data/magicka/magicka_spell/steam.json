@@ -1,0 +1,82 @@
+{
+  "id": "magicka:steam",
+  "formula": {
+    "fire": 1,
+    "water": 1
+  },
+  "name": "Steam",
+  "tier": "Signature",
+  "tags": "DMG/DOT/SETUP/CC",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 9,
+  "delivery": {
+    "radius": 2.6,
+    "speed": 0.91,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.6
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 3,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 8
+  },
+  "effects": [
+    {
+      "type": "set_wet",
+      "duration_ticks": 200
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.15,
+      "lift": 0
+    },
+    {
+      "type": "deal_damage",
+      "amount": 1.5,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 40
+    },
+    {
+      "type": "apply_status",
+      "status": "obscured",
+      "duration_ticks": 62,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 200
+      },
+      {
+        "type": "apply_force",
+        "amount": 0.15,
+        "lift": 0
+      },
+      {
+        "type": "deal_damage",
+        "amount": 1.5,
+        "element": "fire"
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 40
+      }
+    ]
+  },
+  "primary": "A cloud of hot steam.\nA projectile flies where you look and strikes the first target. Effects:\n• Damage 0.75 ❤ fire (fire ×0.5 on wet)\n• Soaked for 10 s and leaves a puddle\n• Light push\n• Heat: sets on fire for 6 s (wet targets just dry off), thaws; melts ice and burns roots\n• Blindness for 3.1 s",
+  "self_description": "On you:\n• Damage 0.75 ❤ fire (fire ×0.5 on wet)\n• Soaked for 10 s and leaves a puddle\n• Light push\n• Heat: sets on fire for 6 s (wet targets just dry off), thaws; melts ice and burns roots",
+  "balanced": true
+}

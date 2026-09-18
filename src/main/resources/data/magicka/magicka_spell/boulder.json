@@ -1,0 +1,66 @@
+{
+  "id": "magicka:boulder",
+  "formula": {
+    "earth": 3
+  },
+  "name": "Boulder",
+  "tier": "Signature",
+  "tags": "BREAK",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 2.8,
+    "speed": 0.99,
+    "duration_ticks": 220,
+    "interval_ticks": 20,
+    "gravity": 0.025,
+    "burst_radius": 3.0
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 8,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 5.5,
+      "element": "earth"
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.75,
+      "lift": 0.36
+    },
+    {
+      "type": "destroy_blocks",
+      "budget": 9,
+      "radius": 1.5
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 242,
+        "strength": 3
+      },
+      {
+        "type": "apply_status",
+        "status": "chilled",
+        "duration_ticks": 187,
+        "strength": 3
+      }
+    ]
+  },
+  "primary": "A heavy boulder that smashes and knocks back.\nA projectile flies in an arc where you look and strikes the first target. Effects:\n• Damage 2.75 ❤ earth (earth ×2 on frozen)\n• Knockback\n• Breaks up to 9 blocks within 1.5 blocks (twice as many if brittle)",
+  "self_description": "On you:\n• Stone skin (Resistance III) for 12.1 s\n• Slowness III for 9.35 s",
+  "balanced": true
+}

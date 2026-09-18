@@ -1,0 +1,108 @@
+{
+  "id": "magicka:greater_soul_death",
+  "formula": {
+    "life": 2,
+    "arcane": 2,
+    "death": 1
+  },
+  "name": "Greater Soul · Death",
+  "tier": "Generic Fusion",
+  "tags": "HEAL/BUFF/SETUP",
+  "shape": "targeted_zone",
+  "origin": "aim_ground",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 5.65,
+    "speed": 1.07,
+    "duration_ticks": 390,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 4.78
+  },
+  "construction": {
+    "material": "root",
+    "budget": 40,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12,
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "heal",
+      "amount": 7.0
+    },
+    {
+      "type": "apply_status",
+      "status": "regenerating",
+      "duration_ticks": 240,
+      "strength": 2
+    },
+    {
+      "type": "grow_plants",
+      "budget": 10
+    },
+    {
+      "type": "deal_damage",
+      "amount": 9.0,
+      "element": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "arcane_unstable",
+      "duration_ticks": 180,
+      "strength": 2
+    },
+    {
+      "type": "revive",
+      "health_fraction": 0.39
+    },
+    {
+      "type": "remove_status",
+      "status": "burning"
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 180,
+      "strength": 3
+    },
+    {
+      "type": "drain_life",
+      "amount": 5,
+      "fraction": 0.6
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "heal",
+        "amount": 7.0
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 240,
+        "strength": 2
+      },
+      {
+        "type": "apply_status",
+        "status": "arcane_unstable",
+        "duration_ticks": 180,
+        "strength": 2
+      },
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 60,
+        "strength": 1
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "A zone at the aim point with a 5.65-block radius for 19.5 s. Every second, on everyone inside, including you (damage and control only hit enemies):\n• Damage 4.5 ❤ arcane\n• Heals 3.5 ❤\n• Regeneration: +1 ❤ every 2 s for 12 s\n• Growth: up to 10 nearby blocks — crops +2 stages, dirt turns to grass, roots grow upward\n• Arcane instability: −0.5 ❤ every 2 s for 9 s\n• Revives the nearest fallen player or creature within 5.65 blocks with 39% health\n• Puts out fire\n• Withering: −1 ❤ per second for 9 s\n• Life drain: 2.5 ❤ damage, you heal 1.5 ❤",
+  "self_description": "On you:\n• Heals 3.5 ❤\n• Regeneration: +1 ❤ every 2 s for 12 s\n• Arcane instability: −0.5 ❤ every 2 s for 9 s\n• Withering: −0.5 ❤ per second for 3 s"
+}

@@ -1,0 +1,81 @@
+{
+  "id": "magicka:arc_lightning",
+  "formula": {
+    "lightning": 1,
+    "arcane": 1
+  },
+  "name": "Arc Lightning",
+  "tier": "Signature",
+  "tags": "DMG/CC/SETUP",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 9,
+  "delivery": {
+    "radius": 2.3,
+    "speed": 0.91,
+    "duration_ticks": 140,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.6
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 3,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 8
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 1.5,
+      "element": "lightning"
+    },
+    {
+      "type": "add_charge",
+      "amount": 35
+    },
+    {
+      "type": "chain_targets",
+      "count": 4,
+      "range": 4,
+      "amount": 1.5
+    },
+    {
+      "type": "deal_damage",
+      "amount": 1.5,
+      "element": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "arcane_unstable",
+      "duration_ticks": 112,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 1.5,
+        "element": "lightning"
+      },
+      {
+        "type": "add_charge",
+        "amount": 35
+      },
+      {
+        "type": "apply_status",
+        "status": "arcane_unstable",
+        "duration_ticks": 112,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "A bolt of arcane electricity that seeks out its next victim.\nA projectile flies where you look and strikes the first target. Effects:\n• Damage 0.75 ❤ lightning + 0.75 ❤ arcane (lightning ×2 on wet)\n• Charge 35: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Then the lightning jumps onward: up to 4 targets in a row, jumps up to 4 blocks, 0.75 ❤ and 40 charge each (×2 damage and longer jumps on wet, ×1.5 range in puddles)\n• Arcane instability: −0.25 ❤ every 2 s for 5.6 s",
+  "self_description": "On you:\n• Damage 0.75 ❤ lightning (lightning ×2 on wet)\n• Charge 35: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Arcane instability: −0.25 ❤ every 2 s for 5.6 s",
+  "balanced": true
+}

@@ -1,0 +1,63 @@
+{
+  "id": "magicka:crystal_frost",
+  "formula": {
+    "cold": 1,
+    "earth": 1,
+    "arcane": 1
+  },
+  "name": "Crystal Frost",
+  "tier": "Signature",
+  "tags": "DMG/BUILD/CC",
+  "shape": "summon_object",
+  "origin": "aim_surface",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 3.0,
+    "speed": 0.99,
+    "duration_ticks": 200,
+    "interval_ticks": 20,
+    "gravity": 0.025,
+    "burst_radius": 3.0,
+    "object_kind": "anchor"
+  },
+  "construction": {
+    "material": "arcane",
+    "budget": 8,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": true,
+    "integrity": 10
+  },
+  "effects": [
+    {
+      "type": "create_construction"
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 176,
+        "strength": 2
+      },
+      {
+        "type": "apply_status",
+        "status": "chilled",
+        "duration_ticks": 132,
+        "strength": 2
+      },
+      {
+        "type": "apply_status",
+        "status": "brittle",
+        "duration_ticks": 132,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "A small floating crystal you can stand on.\nA floating 8-block column at the aim point. Material: arcane crystal, fades after 20 s.",
+  "self_description": "On you:\n• Stone skin (Resistance II) for 8.8 s\n• Slowness II for 6.6 s\n• Brittle (earth damage ×2) for 6.6 s",
+  "balanced": true
+}

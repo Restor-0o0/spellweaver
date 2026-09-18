@@ -1,0 +1,46 @@
+{
+  "id": "magicka:earthen_redoubt",
+  "formula": {
+    "water": 1,
+    "earth": 1,
+    "arcane": 2
+  },
+  "name": "Earthen Redoubt",
+  "tier": "Signature",
+  "tags": "BUILD",
+  "shape": "wall",
+  "origin": "caster_feet",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 2.0,
+    "speed": 1.2,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.0
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 80,
+    "interval_ticks": 1,
+    "batch": 6,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12,
+    "template": "redoubt",
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "create_construction"
+    }
+  ],
+  "self": {
+    "mode": "construct",
+    "effects": []
+  },
+  "primary": "A half ring of earth covers your front and flanks.\nA 2-high half ring of wall with a 3-block radius facing the aim point: the top of the arc stands where you aim, each column settling on the ground. Material: magic earth, permanent.",
+  "self_description": "A 2-high half ring of wall with a 3-block radius facing the aim point: the top of the arc stands where you aim, each column settling on the ground. Material: magic earth, permanent. No extra effects.",
+  "balanced": true
+}

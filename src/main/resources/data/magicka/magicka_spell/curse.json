@@ -1,0 +1,93 @@
+{
+  "id": "magicka:curse",
+  "formula": {
+    "arcane": 2,
+    "death": 1
+  },
+  "name": "Curse",
+  "tier": "Signature",
+  "tags": "DEBUFF/DMG",
+  "shape": "direct_target",
+  "origin": "aim_hit",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 4.0,
+    "speed": 0.95,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.0
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 3,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 8
+  },
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 220,
+      "strength": 2
+    },
+    {
+      "type": "apply_status",
+      "status": "arcane_unstable",
+      "duration_ticks": 220,
+      "strength": 2
+    },
+    {
+      "type": "apply_effect",
+      "effect": "minecraft:weakness",
+      "duration_ticks": 220,
+      "strength": 2
+    },
+    {
+      "type": "apply_effect",
+      "effect": "minecraft:slowness",
+      "duration_ticks": 220,
+      "strength": 1
+    },
+    {
+      "type": "apply_effect",
+      "effect": "minecraft:mining_fatigue",
+      "duration_ticks": 220,
+      "strength": 1
+    },
+    {
+      "type": "drain_life",
+      "amount": 2,
+      "fraction": 1.0
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "apply_effect",
+        "effect": "minecraft:strength",
+        "duration_ticks": 400,
+        "strength": 2
+      },
+      {
+        "type": "apply_effect",
+        "effect": "minecraft:speed",
+        "duration_ticks": 400,
+        "strength": 1
+      },
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 160,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "Curse. A hex settles on the target instead of a burst of damage.\n• Withering 11 s and arcane instability 11 s\n• Weakness II, Slowness and Mining Fatigue for 11 s\n• Drains 1 ❤ and heals you for the same",
+  "self_description": "On you: a bargain — Strength II and Speed for 20 s, paid for with withering for 8 s.",
+  "balanced": true
+}

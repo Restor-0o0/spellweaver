@@ -1,0 +1,63 @@
+{
+  "id": "magicka:regenerate",
+  "formula": {
+    "life": 3
+  },
+  "name": "Regenerate",
+  "tier": "Signature",
+  "tags": "HEAL/BUFF",
+  "shape": "targeted_zone",
+  "origin": "aim_ground",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 3,
+    "speed": 0.99,
+    "duration_ticks": 240,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.4
+  },
+  "construction": {
+    "material": "root",
+    "budget": 8,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10
+  },
+  "effects": [
+    {
+      "type": "heal",
+      "amount": 2.5
+    },
+    {
+      "type": "apply_status",
+      "status": "regenerating",
+      "duration_ticks": 132,
+      "strength": 3
+    },
+    {
+      "type": "grow_plants",
+      "budget": 6
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "heal",
+        "amount": 7.0
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 220,
+        "strength": 3
+      }
+    ]
+  },
+  "primary": "A long-lasting zone of gentle healing.\nA zone at the aim point with a 3-block radius for 12 s. Every second, on everyone inside, including you (damage and control only hit enemies):\n• Heals 1.25 ❤\n• Regeneration: +1.5 ❤ every 2 s for 6.6 s\n• Growth: up to 6 nearby blocks — crops +2 stages, dirt turns to grass, roots grow upward",
+  "self_description": "On you:\n• Heals 3.5 ❤\n• Regeneration: +1.5 ❤ every 2 s for 11 s",
+  "balanced": true
+}

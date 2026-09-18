@@ -1,0 +1,43 @@
+{
+  "id": "magicka:moving_bastion",
+  "formula": {
+    "earth": 2,
+    "life": 1,
+    "arcane": 1
+  },
+  "name": "Moving Bastion",
+  "tier": "Signature",
+  "tags": "MOVE/DEF/BUILD",
+  "shape": "platform",
+  "origin": "under_target",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 3.6,
+    "speed": 1.07,
+    "duration_ticks": 260,
+    "interval_ticks": 20,
+    "gravity": 0.025,
+    "burst_radius": 3.4
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 5,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12
+  },
+  "effects": [
+    {
+      "type": "create_construction"
+    }
+  ],
+  "self": {
+    "mode": "construct",
+    "effects": []
+  },
+  "primary": "A stone pillar rises under the target and lifts it up.\nA 5-block pillar grows under the creature you aim at and lifts it. Material: magic earth, permanent.",
+  "self_description": "A 5-block pillar at your feet that lifts whoever stands on it. Material: magic earth, permanent. No extra effects.",
+  "balanced": true
+}

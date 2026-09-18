@@ -1,0 +1,90 @@
+{
+  "id": "magicka:heavy_greater_permafrost_cold2",
+  "formula": {
+    "cold": 2,
+    "earth": 3
+  },
+  "name": "Heavy Greater Permafrost · Cold ×2",
+  "tier": "Generic Fusion",
+  "tags": "CC/DEBUFF/BREAK",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 4.93,
+    "speed": 1.07,
+    "duration_ticks": 390,
+    "interval_ticks": 20,
+    "gravity": 0.025,
+    "burst_radius": 4.93
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 40,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12,
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "modify_temperature",
+      "amount": -72
+    },
+    {
+      "type": "deal_damage",
+      "amount": 12.5,
+      "element": "earth"
+    },
+    {
+      "type": "apply_force",
+      "amount": 1.35,
+      "lift": 0.54
+    },
+    {
+      "type": "destroy_blocks",
+      "budget": 22,
+      "radius": 2.17
+    },
+    {
+      "type": "modify_temperature",
+      "amount": -80
+    },
+    {
+      "type": "apply_status",
+      "status": "chilled",
+      "duration_ticks": 180,
+      "strength": 3
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "modify_temperature",
+        "amount": -72
+      },
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 330,
+        "strength": 3
+      },
+      {
+        "type": "apply_status",
+        "status": "chilled",
+        "duration_ticks": 255,
+        "strength": 3
+      },
+      {
+        "type": "modify_temperature",
+        "amount": -25
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "A projectile flies in an arc where you look and strikes the first target. Effects:\n• Damage 6.25 ❤ earth (earth ×2 on frozen)\n• Cold 72: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Launches upward\n• Breaks up to 22 blocks within 2.17 blocks (twice as many if brittle)\n• Cold 80: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Slowness III for 9 s",
+  "self_description": "On you:\n• Cold 72: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Stone skin (Resistance III) for 16.5 s\n• Slowness III for 12.75 s\n• Cold 25: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze"
+}

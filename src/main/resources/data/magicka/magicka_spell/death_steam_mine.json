@@ -1,0 +1,118 @@
+{
+  "id": "magicka:death_steam_mine",
+  "formula": {
+    "fire": 1,
+    "water": 1,
+    "arcane": 1,
+    "death": 1
+  },
+  "name": "Steam Mine · Death",
+  "tier": "Generic Fusion",
+  "tags": "AOE/SETUP/DEATH",
+  "shape": "mine",
+  "origin": "aim_hit",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 2.5,
+    "speed": 0.99,
+    "duration_ticks": 600,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.2
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 8,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10
+  },
+  "effects": [
+    {
+      "type": "set_wet",
+      "duration_ticks": 160
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.15,
+      "lift": 0
+    },
+    {
+      "type": "deal_damage",
+      "amount": 2.5,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 40
+    },
+    {
+      "type": "deal_damage",
+      "amount": 2.5,
+      "element": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "arcane_unstable",
+      "duration_ticks": 90,
+      "strength": 1
+    },
+    {
+      "type": "apply_status",
+      "status": "obscured",
+      "duration_ticks": 50,
+      "strength": 1
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 80,
+      "strength": 1
+    },
+    {
+      "type": "drain_life",
+      "amount": 1.0,
+      "fraction": 0.4
+    }
+  ],
+  "self": {
+    "mode": "nova",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 160
+      },
+      {
+        "type": "apply_force",
+        "amount": 0.15,
+        "lift": 0
+      },
+      {
+        "type": "deal_damage",
+        "amount": 2.5,
+        "element": "fire"
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 40
+      },
+      {
+        "type": "apply_status",
+        "status": "arcane_unstable",
+        "duration_ticks": 90,
+        "strength": 1
+      },
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 60,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "A mine at the aim point for 30 s: arms in 1 s and explodes in a 2.5-block radius when an enemy comes near:\n• Damage 1.25 ❤ fire + 1.25 ❤ arcane (fire ×0.5 on wet)\n• Soaked for 8 s and leaves a puddle\n• Light push\n• Heat: sets on fire for 6 s (wet targets just dry off), thaws; melts ice and burns roots\n• Arcane instability: −0.25 ❤ every 2 s for 4.5 s\n• Blindness for 2.5 s\n• Withering: −0.5 ❤ per second for 4 s\n• Life drain: 0.5 ❤ damage, you heal 0.2 ❤",
+  "self_description": "An explosion around you with a 2.5-block radius, hitting you as well:\n• Damage 1.25 ❤ fire (fire ×0.5 on wet)\n• Soaked for 8 s and leaves a puddle\n• Light push\n• Heat: sets on fire for 6 s (wet targets just dry off), thaws; melts ice and burns roots\n• Arcane instability: −0.25 ❤ every 2 s for 4.5 s\n• Withering: −0.5 ❤ per second for 3 s",
+  "balanced": true
+}

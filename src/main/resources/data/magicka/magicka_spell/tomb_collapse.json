@@ -1,0 +1,58 @@
+{
+  "id": "magicka:tomb_collapse",
+  "formula": {
+    "earth": 2,
+    "death": 1
+  },
+  "name": "Tomb Collapse",
+  "tier": "Signature",
+  "tags": "DMG/BREAK/AOE",
+  "shape": "targeted_explosion",
+  "origin": "aim_hit",
+  "delivery": {
+    "radius": 3.0,
+    "speed": 0.9,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.0
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 4.5,
+      "element": "earth"
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 88,
+      "strength": 1
+    },
+    {
+      "type": "destroy_blocks",
+      "budget": 14,
+      "radius": 2.5
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 176,
+        "strength": 2
+      },
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 66,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "Collapses a tomb: breaks blocks, strikes and withers.\nAn explosion at the aim point with a 3-block radius (does not hit you):\n• Damage 2.25 ❤ earth (earth ×2 on frozen)\n• Withering: −0.5 ❤ per second for 4.4 s\n• Breaks up to 14 blocks within 2.5 blocks (twice as many if brittle)",
+  "self_description": "On you:\n• Stone skin (Resistance II) for 8.8 s\n• Withering: −0.5 ❤ per second for 3.3 s",
+  "balanced": true
+}

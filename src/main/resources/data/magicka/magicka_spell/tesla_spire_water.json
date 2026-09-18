@@ -1,0 +1,71 @@
+{
+  "id": "magicka:tesla_spire_water",
+  "formula": {
+    "lightning": 1,
+    "earth": 2,
+    "arcane": 1,
+    "water": 1
+  },
+  "name": "Tesla Spire · Water",
+  "tier": "Generic Fusion",
+  "tags": "BUILD/DMG/AOE",
+  "shape": "pillar",
+  "origin": "aim_ground",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 12,
+    "speed": 1.07,
+    "duration_ticks": 900,
+    "interval_ticks": 20,
+    "gravity": 0.025,
+    "burst_radius": 5.22,
+    "tesla": true,
+    "targets": 3
+  },
+  "construction": {
+    "material": "copper",
+    "budget": 12,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12,
+    "lifetime_ticks": 600,
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "create_construction"
+    },
+    {
+      "type": "deal_damage",
+      "amount": 9.0,
+      "element": "lightning"
+    },
+    {
+      "type": "add_charge",
+      "amount": 63
+    },
+    {
+      "type": "set_wet",
+      "duration_ticks": 240
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.5,
+      "lift": 0
+    }
+  ],
+  "self": {
+    "mode": "construct",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 120
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "A copper tower of 11 blocks topped with a Tesla coil at the aim point. Material: magic copper, fades after 30 s. While the tower stands (up to 45 s), the coil zaps up to 3 nearest visible enemies within 12 blocks every 1 s:\n• Damage 4.5 ❤ lightning (lightning ×2 on wet)\n• Charge 63: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Soaked for 12 s and leaves a puddle\n• Knockback",
+  "self_description": "A copper tower of 11 blocks topped with a Tesla coil at your feet. Material: magic copper, fades after 30 s. The tower lifts you up; every 1 s the coil zaps up to 3 enemies within 12 blocks:\n• Damage 4.5 ❤ lightning (lightning ×2 on wet)\n• Charge 63: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Soaked for 12 s and leaves a puddle\n• Knockback"
+}

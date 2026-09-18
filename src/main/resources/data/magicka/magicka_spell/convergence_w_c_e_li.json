@@ -1,0 +1,132 @@
+{
+  "id": "magicka:convergence_w_c_e_li",
+  "formula": {
+    "water": 1,
+    "cold": 1,
+    "earth": 1,
+    "life": 1
+  },
+  "name": "Convergence W / C / E / Li",
+  "tier": "Generic Fusion",
+  "tags": "SETUP/CC/DEBUFF/BREAK/HEAL",
+  "shape": "targeted_zone",
+  "origin": "aim_ground",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 3.9,
+    "speed": 1.07,
+    "duration_ticks": 280,
+    "interval_ticks": 20,
+    "gravity": 0.025,
+    "burst_radius": 3.1
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 16,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12
+  },
+  "effects": [
+    {
+      "type": "set_wet",
+      "duration_ticks": 160
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.15,
+      "lift": 0
+    },
+    {
+      "type": "modify_temperature",
+      "amount": -40
+    },
+    {
+      "type": "deal_damage",
+      "amount": 2.5,
+      "element": "earth"
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.25,
+      "lift": 0.12
+    },
+    {
+      "type": "heal",
+      "amount": 2.0
+    },
+    {
+      "type": "apply_status",
+      "status": "regenerating",
+      "duration_ticks": 120,
+      "strength": 1
+    },
+    {
+      "type": "grow_plants",
+      "budget": 2
+    },
+    {
+      "type": "apply_status",
+      "status": "rooted",
+      "duration_ticks": 40,
+      "strength": 1
+    },
+    {
+      "type": "apply_status",
+      "status": "rooted",
+      "duration_ticks": 60,
+      "strength": 1
+    },
+    {
+      "type": "apply_status",
+      "status": "stone_shell",
+      "duration_ticks": 80,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 160
+      },
+      {
+        "type": "apply_force",
+        "amount": 0.15,
+        "lift": 0
+      },
+      {
+        "type": "modify_temperature",
+        "amount": -40
+      },
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 140,
+        "strength": 1
+      },
+      {
+        "type": "apply_status",
+        "status": "chilled",
+        "duration_ticks": 110,
+        "strength": 1
+      },
+      {
+        "type": "heal",
+        "amount": 2.0
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 120,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "A zone at the aim point with a 3.9-block radius for 14 s. Every second, on everyone inside, including you (damage and control only hit enemies):\n• Damage 1.25 ❤ earth (earth ×2 on frozen)\n• Soaked for 8 s\n• Light push\n• Cold 40: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Heals 1 ❤\n• Regeneration: +0.5 ❤ every 2 s for 6 s\n• Growth: up to 2 nearby blocks — crops +2 stages, dirt turns to grass, roots grow upward\n• Rooted in place for 2 s\n• Rooted in place for 3 s\n• Stone skin (Resistance I) for 4 s",
+  "self_description": "On you:\n• Soaked for 8 s and leaves a puddle\n• Light push\n• Cold 40: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Stone skin (Resistance I) for 7 s\n• Slowness I for 5.5 s\n• Heals 1 ❤\n• Regeneration: +0.5 ❤ every 2 s for 6 s",
+  "balanced": true
+}

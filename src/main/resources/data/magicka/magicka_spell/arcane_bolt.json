@@ -1,0 +1,56 @@
+{
+  "id": "magicka:arcane_bolt",
+  "formula": {
+    "arcane": 2
+  },
+  "name": "Arcane Bolt",
+  "tier": "Signature",
+  "tags": "SETUP",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 9,
+  "delivery": {
+    "radius": 2.5,
+    "speed": 1.5,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.7
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 3,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 8
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 3.0,
+      "element": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "arcane_unstable",
+      "duration_ticks": 150,
+      "strength": 2
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "arcane_unstable",
+        "duration_ticks": 150,
+        "strength": 2
+      }
+    ]
+  },
+  "primary": "A fast arcane bolt for precise strikes.\nA projectile flies where you look and strikes the first target. Effects:\n• Damage 1.5 ❤ arcane\n• Arcane instability: −0.5 ❤ every 2 s for 7.5 s",
+  "self_description": "On you:\n• Arcane instability: −0.5 ❤ every 2 s for 7.5 s",
+  "balanced": true
+}

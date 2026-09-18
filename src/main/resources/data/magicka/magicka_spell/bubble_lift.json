@@ -1,0 +1,63 @@
+{
+  "id": "magicka:bubble_lift",
+  "formula": {
+    "water": 2,
+    "arcane": 1
+  },
+  "name": "Bubble Lift",
+  "tier": "Signature",
+  "tags": "MOVE/CC/MEME",
+  "shape": "summon_object",
+  "origin": "aim_ground",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 3,
+    "speed": 0.99,
+    "duration_ticks": 220,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.9,
+    "object_kind": "bubble",
+    "area": true,
+    "lift_ticks": 60
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 8,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10
+  },
+  "effects": [
+    {
+      "type": "set_wet",
+      "duration_ticks": 88
+    },
+    {
+      "type": "apply_status",
+      "status": "slow_falling",
+      "duration_ticks": 176,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "summon",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 88
+      },
+      {
+        "type": "apply_status",
+        "status": "slow_falling",
+        "duration_ticks": 176,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "Bubbles lift everyone in an area into the air.\nEveryone within 3 blocks of the aim point (except you) is caught in bubbles and floats up (levitation for 3 s):\n• Soaked for 4.4 s\n• Slow falling for 8.8 s",
+  "self_description": "Everyone within 3 blocks of you, you included, is caught in bubbles and floats up (levitation for 3 s):\n• Soaked for 4.4 s\n• Slow falling for 8.8 s",
+  "balanced": true
+}

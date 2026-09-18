@@ -1,0 +1,63 @@
+{
+  "id": "magicka:sheepocalypse",
+  "formula": {
+    "earth": 1,
+    "life": 2,
+    "death": 2
+  },
+  "name": "Sheepocalypse",
+  "tier": "Signature",
+  "tags": "CC/AOE",
+  "shape": "targeted_zone",
+  "origin": "aim_hit",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 6.0,
+    "speed": 0.95,
+    "duration_ticks": 200,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.0
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 3,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 8
+  },
+  "effects": [
+    {
+      "type": "polymorph",
+      "entity": "minecraft:sheep",
+      "duration_ticks": 900
+    },
+    {
+      "type": "apply_status",
+      "status": "slow_falling",
+      "duration_ticks": 300,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "zone",
+    "effects": [
+      {
+        "type": "polymorph",
+        "entity": "minecraft:sheep",
+        "duration_ticks": 300
+      },
+      {
+        "type": "apply_status",
+        "status": "slow_falling",
+        "duration_ticks": 300,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "Sheepocalypse. A pasture opens up where you aim and everything in it turns into livestock.\n• Everyone inside a 6 block radius becomes a sheep for 45 s\n• The zone keeps working for 10 s, so latecomers get their wool too\n• Health stays the same and any damage breaks the shape — the flock is still dangerous",
+  "self_description": "On you: the pasture opens around you, you get 15 s of sheep and slow falling.",
+  "balanced": true
+}

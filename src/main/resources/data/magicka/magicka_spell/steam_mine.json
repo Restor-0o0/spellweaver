@@ -1,0 +1,100 @@
+{
+  "id": "magicka:steam_mine",
+  "formula": {
+    "fire": 1,
+    "water": 1,
+    "arcane": 1
+  },
+  "name": "Steam Mine",
+  "tier": "Signature",
+  "tags": "AOE/SETUP",
+  "shape": "mine",
+  "origin": "aim_hit",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 2.5,
+    "speed": 0.99,
+    "duration_ticks": 600,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.2
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 8,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10
+  },
+  "effects": [
+    {
+      "type": "set_wet",
+      "duration_ticks": 176
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.15,
+      "lift": 0
+    },
+    {
+      "type": "deal_damage",
+      "amount": 2.0,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 40
+    },
+    {
+      "type": "deal_damage",
+      "amount": 2.0,
+      "element": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "arcane_unstable",
+      "duration_ticks": 99,
+      "strength": 1
+    },
+    {
+      "type": "apply_status",
+      "status": "obscured",
+      "duration_ticks": 55,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "nova",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 176
+      },
+      {
+        "type": "apply_force",
+        "amount": 0.15,
+        "lift": 0
+      },
+      {
+        "type": "deal_damage",
+        "amount": 2.0,
+        "element": "fire"
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 40
+      },
+      {
+        "type": "apply_status",
+        "status": "arcane_unstable",
+        "duration_ticks": 99,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "A steam mine that bursts when an enemy comes close.\nA mine at the aim point for 30 s: arms in 1 s and explodes in a 2.5-block radius when an enemy comes near:\n• Damage 1 ❤ fire + 1 ❤ arcane (fire ×0.5 on wet)\n• Soaked for 8.8 s and leaves a puddle\n• Light push\n• Heat: sets on fire for 6 s (wet targets just dry off), thaws; melts ice and burns roots\n• Arcane instability: −0.25 ❤ every 2 s for 4.95 s\n• Blindness for 2.75 s",
+  "self_description": "An explosion around you with a 2.5-block radius, hitting you as well:\n• Damage 1 ❤ fire (fire ×0.5 on wet)\n• Soaked for 8.8 s and leaves a puddle\n• Light push\n• Heat: sets on fire for 6 s (wet targets just dry off), thaws; melts ice and burns roots\n• Arcane instability: −0.25 ❤ every 2 s for 4.95 s",
+  "balanced": true
+}

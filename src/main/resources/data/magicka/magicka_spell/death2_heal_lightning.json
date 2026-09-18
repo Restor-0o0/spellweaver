@@ -1,0 +1,96 @@
+{
+  "id": "magicka:death2_heal_lightning",
+  "formula": {
+    "life": 2,
+    "death": 2,
+    "lightning": 1
+  },
+  "name": "Heal · Death ×2 · Lightning",
+  "tier": "Generic Fusion",
+  "tags": "HEAL/BUFF/DEATH",
+  "shape": "direct_target",
+  "origin": "aim_hit",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 3.92,
+    "speed": 0.91,
+    "duration_ticks": 300,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.04
+  },
+  "construction": {
+    "material": "root",
+    "budget": 8,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 8,
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "heal",
+      "amount": 7.0
+    },
+    {
+      "type": "apply_status",
+      "status": "regenerating",
+      "duration_ticks": 240,
+      "strength": 2
+    },
+    {
+      "type": "grow_plants",
+      "budget": 10
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 150,
+      "strength": 2
+    },
+    {
+      "type": "drain_life",
+      "amount": 4.5,
+      "fraction": 0.52
+    },
+    {
+      "type": "deal_damage",
+      "amount": 6,
+      "element": "lightning"
+    },
+    {
+      "type": "add_charge",
+      "amount": 70
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "heal",
+        "amount": 7.0
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 240,
+        "strength": 2
+      },
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 90,
+        "strength": 2
+      },
+      {
+        "type": "add_charge",
+        "amount": 20
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "Affects the creature you aim at:\n• Damage 3 ❤ lightning (lightning ×2 on wet)\n• Heals 3.5 ❤\n• Regeneration: +1 ❤ every 2 s for 12 s\n• Growth: up to 10 nearby blocks — crops +2 stages, dirt turns to grass, roots grow upward\n• Withering: −0.75 ❤ per second for 7.5 s\n• Life drain: 2.25 ❤ damage, you heal 1.17 ❤\n• Charge 70: weakness, stuns for 1 s at 65 charge (×2 on wet)",
+  "self_description": "On you:\n• Heals 3.5 ❤\n• Regeneration: +1 ❤ every 2 s for 12 s\n• Withering: −0.75 ❤ per second for 4.5 s\n• Charge 20: weakness, stuns for 1 s at 65 charge (×2 on wet)"
+}

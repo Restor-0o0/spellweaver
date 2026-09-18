@@ -1,0 +1,108 @@
+{
+  "id": "magicka:death_heavy_permafrost_fire",
+  "formula": {
+    "cold": 1,
+    "earth": 2,
+    "death": 1,
+    "fire": 1
+  },
+  "name": "Heavy Permafrost · Death · Fire",
+  "tier": "Generic Fusion",
+  "tags": "CC/DEBUFF/BREAK/DEATH",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 4.21,
+    "speed": 0.99,
+    "duration_ticks": 300,
+    "interval_ticks": 20,
+    "gravity": 0.025,
+    "burst_radius": 4.21
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 20,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10,
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "modify_temperature",
+      "amount": -72
+    },
+    {
+      "type": "deal_damage",
+      "amount": 9.0,
+      "element": "earth"
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.9,
+      "lift": 0.36
+    },
+    {
+      "type": "destroy_blocks",
+      "budget": 15,
+      "radius": 1.45
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 120,
+      "strength": 1
+    },
+    {
+      "type": "drain_life",
+      "amount": 2.0,
+      "fraction": 0.52
+    },
+    {
+      "type": "deal_damage",
+      "amount": 4,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 90
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "modify_temperature",
+        "amount": -72
+      },
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 270,
+        "strength": 2
+      },
+      {
+        "type": "apply_status",
+        "status": "chilled",
+        "duration_ticks": 210,
+        "strength": 2
+      },
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 90,
+        "strength": 1
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 30
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "A projectile flies in an arc where you look and strikes the first target. Effects:\n• Damage 4.5 ❤ earth + 2 ❤ fire (fire ×0.5 on wet, earth ×2 on frozen)\n• Cold 72: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Knockback\n• Breaks up to 15 blocks within 1.45 blocks (twice as many if brittle)\n• Withering: −0.5 ❤ per second for 6 s\n• Life drain: 1 ❤ damage, you heal 0.52 ❤\n• Heat: sets on fire for 13.5 s (wet targets just dry off), thaws; melts ice and burns roots",
+  "self_description": "On you:\n• Cold 72: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Stone skin (Resistance II) for 13.5 s\n• Slowness II for 10.5 s\n• Withering: −0.5 ❤ per second for 4.5 s\n• Heat: sets on fire for 4.5 s (wet targets just dry off), thaws; melts ice and burns roots"
+}

@@ -1,0 +1,97 @@
+{
+  "id": "magicka:overcharge",
+  "formula": {
+    "lightning": 1,
+    "life": 1,
+    "arcane": 1
+  },
+  "name": "Overcharge",
+  "tier": "Signature",
+  "tags": "MOVE/BUFF/MEME",
+  "shape": "direct_target",
+  "origin": "aim_hit",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 3.0,
+    "speed": 0.99,
+    "duration_ticks": 200,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.9
+  },
+  "construction": {
+    "material": "root",
+    "budget": 8,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10
+  },
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "haste",
+      "duration_ticks": 110,
+      "strength": 3
+    },
+    {
+      "type": "apply_effect",
+      "effect": "minecraft:jump_boost",
+      "duration_ticks": 110,
+      "strength": 2
+    },
+    {
+      "type": "delay",
+      "ticks": 100,
+      "effects": [
+        {
+          "type": "add_charge",
+          "amount": 60
+        },
+        {
+          "type": "apply_status",
+          "status": "chilled",
+          "duration_ticks": 66,
+          "strength": 2
+        }
+      ]
+    }
+  ],
+  "self": {
+    "mode": "effects",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "haste",
+        "duration_ticks": 110,
+        "strength": 3
+      },
+      {
+        "type": "apply_effect",
+        "effect": "minecraft:jump_boost",
+        "duration_ticks": 110,
+        "strength": 2
+      },
+      {
+        "type": "delay",
+        "ticks": 100,
+        "effects": [
+          {
+            "type": "add_charge",
+            "amount": 60
+          },
+          {
+            "type": "apply_status",
+            "status": "chilled",
+            "duration_ticks": 66,
+            "strength": 2
+          }
+        ]
+      }
+    ]
+  },
+  "primary": "A sharp burst: Speed IV and jump boost, then an electric recoil.\nAffects the creature you aim at:\n• Speed IV for 5.5 s\n• Jump Boost II, 5.5 s\n• 5 s later: charge 60: weakness, stuns for 1 s at 65 charge (×2 on wet); Slowness II for 3.3 s",
+  "self_description": "On you:\n• Speed IV for 5.5 s\n• Jump Boost II, 5.5 s\n• 5 s later: charge 60: weakness, stuns for 1 s at 65 charge (×2 on wet); Slowness II for 3.3 s",
+  "balanced": true
+}

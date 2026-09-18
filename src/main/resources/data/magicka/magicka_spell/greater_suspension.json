@@ -1,0 +1,75 @@
+{
+  "id": "magicka:greater_suspension",
+  "formula": {
+    "water": 2,
+    "arcane": 2
+  },
+  "name": "Greater Suspension",
+  "tier": "Family Variant",
+  "tags": "SETUP/CC",
+  "shape": "targeted_explosion",
+  "origin": "aim_hit",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 4.1,
+    "speed": 1.07,
+    "duration_ticks": 240,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.5
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 16,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12
+  },
+  "effects": [
+    {
+      "type": "set_wet",
+      "duration_ticks": 220
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.3,
+      "lift": 0
+    },
+    {
+      "type": "deal_damage",
+      "amount": 5.0,
+      "element": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "arcane_unstable",
+      "duration_ticks": 120,
+      "strength": 2
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 220
+      },
+      {
+        "type": "apply_force",
+        "amount": 0.3,
+        "lift": 0
+      },
+      {
+        "type": "apply_status",
+        "status": "arcane_unstable",
+        "duration_ticks": 120,
+        "strength": 2
+      }
+    ]
+  },
+  "primary": "An explosion at the aim point with a 4.1-block radius (does not hit you):\n• Damage 2.5 ❤ arcane\n• Soaked for 11 s and leaves a puddle\n• Light push\n• Arcane instability: −0.5 ❤ every 2 s for 6 s",
+  "self_description": "On you:\n• Soaked for 11 s and leaves a puddle\n• Light push\n• Arcane instability: −0.5 ❤ every 2 s for 6 s",
+  "balanced": true
+}

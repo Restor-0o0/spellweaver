@@ -1,0 +1,55 @@
+{
+  "id": "magicka:tesla_spire",
+  "formula": {
+    "lightning": 1,
+    "earth": 2,
+    "arcane": 1
+  },
+  "name": "Tesla Spire",
+  "tier": "Signature",
+  "tags": "BUILD/DMG/AOE",
+  "shape": "pillar",
+  "origin": "aim_ground",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 8,
+    "speed": 1.07,
+    "duration_ticks": 600,
+    "interval_ticks": 20,
+    "gravity": 0.025,
+    "burst_radius": 3.6,
+    "tesla": true,
+    "targets": 3
+  },
+  "construction": {
+    "material": "copper",
+    "budget": 5,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12,
+    "lifetime_ticks": 600
+  },
+  "effects": [
+    {
+      "type": "create_construction"
+    },
+    {
+      "type": "deal_damage",
+      "amount": 5.0,
+      "element": "lightning"
+    },
+    {
+      "type": "add_charge",
+      "amount": 35
+    }
+  ],
+  "self": {
+    "mode": "construct",
+    "effects": []
+  },
+  "primary": "A copper tower with a coil that zaps nearby enemies on its own.\nA copper tower of 4 blocks topped with a Tesla coil at the aim point. Material: magic copper, fades after 30 s. While the tower stands (up to 30 s), the coil zaps up to 3 nearest visible enemies within 8 blocks every 1 s:\n• Damage 2.5 ❤ lightning (lightning ×2 on wet)\n• Charge 35: weakness, stuns for 1 s at 65 charge (×2 on wet)",
+  "self_description": "A copper tower of 4 blocks topped with a Tesla coil at your feet. Material: magic copper, fades after 30 s. The tower lifts you up; every 1 s the coil zaps up to 3 enemies within 8 blocks:\n• Damage 2.5 ❤ lightning (lightning ×2 on wet)\n• Charge 35: weakness, stuns for 1 s at 65 charge (×2 on wet)",
+  "balanced": true
+}

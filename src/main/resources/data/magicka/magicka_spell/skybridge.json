@@ -1,0 +1,61 @@
+{
+  "id": "magicka:skybridge",
+  "formula": {
+    "earth": 3,
+    "arcane": 1
+  },
+  "name": "Skybridge",
+  "tier": "Signature",
+  "tags": "BUILD/MOVE",
+  "shape": "bridge",
+  "origin": "aim_hit",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 3.4,
+    "speed": 1.07,
+    "duration_ticks": 240,
+    "interval_ticks": 20,
+    "gravity": 0.025,
+    "burst_radius": 3.6
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 16,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": true,
+    "integrity": 12
+  },
+  "effects": [
+    {
+      "type": "create_construction"
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 220,
+        "strength": 3
+      },
+      {
+        "type": "apply_status",
+        "status": "chilled",
+        "duration_ticks": 170,
+        "strength": 3
+      },
+      {
+        "type": "apply_status",
+        "status": "arcane_unstable",
+        "duration_ticks": 90,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "A stone bridge that floats in the air and follows your gaze.\nA 16-block bridge forward from the aim point; look up or down to slope it; can hang in mid-air without support. Material: magic earth, permanent.",
+  "self_description": "On you:\n• Stone skin (Resistance III) for 11 s\n• Slowness III for 8.5 s\n• Arcane instability: −0.25 ❤ every 2 s for 4.5 s",
+  "balanced": true
+}

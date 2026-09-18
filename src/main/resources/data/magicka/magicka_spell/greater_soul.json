@@ -1,0 +1,89 @@
+{
+  "id": "magicka:greater_soul",
+  "formula": {
+    "life": 2,
+    "arcane": 2
+  },
+  "name": "Greater Soul",
+  "tier": "Family Variant",
+  "tags": "HEAL/BUFF/SETUP",
+  "shape": "targeted_zone",
+  "origin": "aim_ground",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 3.9,
+    "speed": 1.07,
+    "duration_ticks": 260,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.3
+  },
+  "construction": {
+    "material": "root",
+    "budget": 16,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12
+  },
+  "effects": [
+    {
+      "type": "heal",
+      "amount": 4.0
+    },
+    {
+      "type": "apply_status",
+      "status": "regenerating",
+      "duration_ticks": 160,
+      "strength": 2
+    },
+    {
+      "type": "grow_plants",
+      "budget": 4
+    },
+    {
+      "type": "deal_damage",
+      "amount": 5.0,
+      "element": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "arcane_unstable",
+      "duration_ticks": 120,
+      "strength": 2
+    },
+    {
+      "type": "revive",
+      "health_fraction": 0.3
+    },
+    {
+      "type": "remove_status",
+      "status": "burning"
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "heal",
+        "amount": 4.0
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 160,
+        "strength": 2
+      },
+      {
+        "type": "apply_status",
+        "status": "arcane_unstable",
+        "duration_ticks": 120,
+        "strength": 2
+      }
+    ]
+  },
+  "primary": "A zone at the aim point with a 3.9-block radius for 13 s. Every second, on everyone inside, including you (damage and control only hit enemies):\n• Damage 2.5 ❤ arcane\n• Heals 2 ❤\n• Regeneration: +1 ❤ every 2 s for 8 s\n• Growth: up to 4 nearby blocks — crops +2 stages, dirt turns to grass, roots grow upward\n• Arcane instability: −0.5 ❤ every 2 s for 6 s\n• Revives the nearest fallen player or creature within 3.9 blocks with 30% health\n• Puts out fire",
+  "self_description": "On you:\n• Heals 2 ❤\n• Regeneration: +1 ❤ every 2 s for 8 s\n• Arcane instability: −0.5 ❤ every 2 s for 6 s",
+  "balanced": true
+}

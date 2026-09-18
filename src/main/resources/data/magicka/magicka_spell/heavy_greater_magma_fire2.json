@@ -1,0 +1,99 @@
+{
+  "id": "magicka:heavy_greater_magma_fire2",
+  "formula": {
+    "fire": 2,
+    "earth": 3
+  },
+  "name": "Heavy Greater Magma · Fire ×2",
+  "tier": "Generic Fusion",
+  "tags": "DMG/DOT/BREAK",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 4.78,
+    "speed": 1.07,
+    "duration_ticks": 360,
+    "interval_ticks": 20,
+    "gravity": 0.025,
+    "burst_radius": 5.37
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 40,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12,
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 4.5,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 72
+    },
+    {
+      "type": "deal_damage",
+      "amount": 12.5,
+      "element": "earth"
+    },
+    {
+      "type": "apply_force",
+      "amount": 1.35,
+      "lift": 0.54
+    },
+    {
+      "type": "destroy_blocks",
+      "budget": 22,
+      "radius": 2.17
+    },
+    {
+      "type": "deal_damage",
+      "amount": 4,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 90
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 4.5,
+        "element": "fire"
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 72
+      },
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 330,
+        "strength": 3
+      },
+      {
+        "type": "apply_status",
+        "status": "chilled",
+        "duration_ticks": 255,
+        "strength": 3
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 30
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "A projectile flies in an arc where you look and strikes the first target. Effects:\n• Damage 4.25 ❤ fire + 6.25 ❤ earth (fire ×0.5 on wet, earth ×2 on frozen)\n• Heat: sets on fire for 10.8 s (wet targets just dry off), thaws; melts ice and burns roots\n• Launches upward\n• Breaks up to 22 blocks within 2.17 blocks (twice as many if brittle)\n• Heat: sets on fire for 13.5 s (wet targets just dry off), thaws; melts ice and burns roots",
+  "self_description": "On you:\n• Damage 2.25 ❤ fire (fire ×0.5 on wet)\n• Heat: sets on fire for 10.8 s (wet targets just dry off), thaws; melts ice and burns roots\n• Stone skin (Resistance III) for 16.5 s\n• Slowness III for 12.75 s\n• Heat: sets on fire for 4.5 s (wet targets just dry off), thaws; melts ice and burns roots"
+}

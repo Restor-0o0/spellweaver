@@ -1,0 +1,63 @@
+{
+  "id": "magicka:fork",
+  "formula": {
+    "lightning": 3
+  },
+  "name": "Fork",
+  "tier": "Signature",
+  "tags": "DMG/CC",
+  "shape": "chain",
+  "origin": "aim_hit",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 2.5,
+    "speed": 0.99,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.0
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 8,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 5.5,
+      "element": "lightning"
+    },
+    {
+      "type": "add_charge",
+      "amount": 105
+    },
+    {
+      "type": "chain_targets",
+      "count": 6,
+      "range": 5,
+      "amount": 2.5
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 5.5,
+        "element": "lightning"
+      },
+      {
+        "type": "add_charge",
+        "amount": 105
+      }
+    ]
+  },
+  "primary": "Lightning from your hand that forks through a crowd.\nLightning shoots from your hand into the creature you aim at (or the first one in your line of sight). Effects:\n• Damage 2.75 ❤ lightning (lightning ×2 on wet)\n• Charge 105: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Then the lightning jumps onward: up to 6 targets in a row, jumps up to 5 blocks, 1.25 ❤ and 40 charge each (×2 damage and longer jumps on wet, ×1.5 range in puddles)",
+  "self_description": "On you:\n• Damage 2.75 ❤ lightning (lightning ×2 on wet)\n• Charge 105: weakness, stuns for 1 s at 65 charge (×2 on wet)",
+  "balanced": true
+}

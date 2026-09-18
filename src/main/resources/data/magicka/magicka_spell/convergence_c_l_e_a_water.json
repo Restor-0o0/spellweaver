@@ -1,0 +1,133 @@
+{
+  "id": "magicka:convergence_c_l_e_a_water",
+  "formula": {
+    "cold": 1,
+    "lightning": 1,
+    "earth": 1,
+    "arcane": 1,
+    "water": 1
+  },
+  "name": "Convergence C / L / E / A · Water",
+  "tier": "Generic Fusion",
+  "tags": "CC/DEBUFF/DMG/BREAK/SETUP",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 4.93,
+    "speed": 1.07,
+    "duration_ticks": 330,
+    "interval_ticks": 20,
+    "gravity": 0.025,
+    "burst_radius": 5.08
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 40,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12,
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "modify_temperature",
+      "amount": -72
+    },
+    {
+      "type": "deal_damage",
+      "amount": 4.5,
+      "element": "lightning"
+    },
+    {
+      "type": "add_charge",
+      "amount": 63
+    },
+    {
+      "type": "chain_targets",
+      "count": 8,
+      "range": 6,
+      "amount": 4.5
+    },
+    {
+      "type": "deal_damage",
+      "amount": 4.5,
+      "element": "earth"
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.45,
+      "lift": 0.18
+    },
+    {
+      "type": "destroy_blocks",
+      "budget": 8,
+      "radius": 0.72
+    },
+    {
+      "type": "deal_damage",
+      "amount": 4.5,
+      "element": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "arcane_unstable",
+      "duration_ticks": 135,
+      "strength": 1
+    },
+    {
+      "type": "set_wet",
+      "duration_ticks": 240
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.5,
+      "lift": 0
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "modify_temperature",
+        "amount": -72
+      },
+      {
+        "type": "deal_damage",
+        "amount": 4.5,
+        "element": "lightning"
+      },
+      {
+        "type": "add_charge",
+        "amount": 63
+      },
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 210,
+        "strength": 1
+      },
+      {
+        "type": "apply_status",
+        "status": "chilled",
+        "duration_ticks": 165,
+        "strength": 1
+      },
+      {
+        "type": "apply_status",
+        "status": "arcane_unstable",
+        "duration_ticks": 135,
+        "strength": 1
+      },
+      {
+        "type": "set_wet",
+        "duration_ticks": 120
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "A projectile flies in an arc where you look and strikes the first target. Effects:\n• Damage 2.25 ❤ lightning + 2.25 ❤ earth + 2.25 ❤ arcane (lightning ×2 on wet, earth ×2 on frozen)\n• Cold 72: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Charge 63: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Then the lightning jumps onward: up to 8 targets in a row, jumps up to 6 blocks, 2.25 ❤ and 40 charge each (×2 damage and longer jumps on wet, ×1.5 range in puddles)\n• Knockback\n• Breaks up to 8 blocks within 0.72 blocks (twice as many if brittle)\n• Arcane instability: −0.25 ❤ every 2 s for 6.75 s\n• Soaked for 12 s and leaves a puddle",
+  "self_description": "On you:\n• Damage 2.25 ❤ lightning (lightning ×2 on wet)\n• Cold 72: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Charge 63: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Stone skin (Resistance I) for 10.5 s\n• Slowness I for 8.25 s\n• Arcane instability: −0.25 ❤ every 2 s for 6.75 s\n• Soaked for 6 s and leaves a puddle"
+}

@@ -1,0 +1,93 @@
+{
+  "id": "magicka:death3_arcane_pulse_earth",
+  "formula": {
+    "arcane": 1,
+    "death": 3,
+    "earth": 1
+  },
+  "name": "Arcane Pulse · Death ×3 · Earth",
+  "tier": "Generic Fusion",
+  "tags": "SETUP/DEATH",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 2.75,
+    "speed": 0.83,
+    "duration_ticks": 180,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.04
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 2,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 6,
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 4.5,
+      "element": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "arcane_unstable",
+      "duration_ticks": 135,
+      "strength": 1
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 180,
+      "strength": 3
+    },
+    {
+      "type": "drain_life",
+      "amount": 6.5,
+      "fraction": 0.52
+    },
+    {
+      "type": "deal_damage",
+      "amount": 6,
+      "element": "earth"
+    },
+    {
+      "type": "apply_status",
+      "status": "brittle",
+      "duration_ticks": 180,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "arcane_unstable",
+        "duration_ticks": 135,
+        "strength": 1
+      },
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 90,
+        "strength": 3
+      },
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 200,
+        "strength": 3
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "A projectile flies where you look and strikes the first target. Effects:\n• Damage 2.25 ❤ arcane + 3 ❤ earth (earth ×2 on frozen)\n• Arcane instability: −0.25 ❤ every 2 s for 6.75 s\n• Withering: −1 ❤ per second for 9 s\n• Life drain: 3.25 ❤ damage, you heal 1.69 ❤\n• Brittle (earth damage ×2) for 9 s",
+  "self_description": "On you:\n• Arcane instability: −0.25 ❤ every 2 s for 6.75 s\n• Withering: −1 ❤ per second for 4.5 s\n• Stone skin (Resistance III) for 10 s"
+}

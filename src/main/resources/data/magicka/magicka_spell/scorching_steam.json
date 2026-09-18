@@ -1,0 +1,82 @@
+{
+  "id": "magicka:scorching_steam",
+  "formula": {
+    "fire": 2,
+    "water": 1
+  },
+  "name": "Scorching Steam",
+  "tier": "Family Variant",
+  "tags": "DMG/DOT/SETUP/CC",
+  "shape": "spray",
+  "origin": "caster_front",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 3.1,
+    "speed": 0.99,
+    "duration_ticks": 180,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.3
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 8,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10
+  },
+  "effects": [
+    {
+      "type": "set_wet",
+      "duration_ticks": 176
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.15,
+      "lift": 0
+    },
+    {
+      "type": "deal_damage",
+      "amount": 3.5,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 80
+    },
+    {
+      "type": "apply_status",
+      "status": "obscured",
+      "duration_ticks": 55,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 176
+      },
+      {
+        "type": "apply_force",
+        "amount": 0.15,
+        "lift": 0
+      },
+      {
+        "type": "deal_damage",
+        "amount": 3.5,
+        "element": "fire"
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 80
+      }
+    ]
+  },
+  "primary": "A widening stream (up to 3 blocks wide) hits everyone in front of you; in instant mode it keeps going while held:\n• Damage 1.75 ❤ fire (fire ×0.5 on wet)\n• Soaked for 8.8 s and leaves a puddle\n• Light push\n• Heat: sets on fire for 12 s (wet targets just dry off), thaws; melts ice and burns roots\n• Blindness for 2.75 s",
+  "self_description": "On you:\n• Damage 1.75 ❤ fire (fire ×0.5 on wet)\n• Soaked for 8.8 s and leaves a puddle\n• Light push\n• Heat: sets on fire for 12 s (wet targets just dry off), thaws; melts ice and burns roots",
+  "balanced": true
+}

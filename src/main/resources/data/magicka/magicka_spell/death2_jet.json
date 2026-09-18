@@ -1,0 +1,75 @@
+{
+  "id": "magicka:death2_jet",
+  "formula": {
+    "water": 2,
+    "death": 2
+  },
+  "name": "Jet · Death ×2",
+  "tier": "Generic Fusion",
+  "tags": "SETUP/CC/DEATH",
+  "shape": "spray",
+  "origin": "caster_front",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 2.9,
+    "speed": 0.91,
+    "duration_ticks": 180,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.3
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 3,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 8
+  },
+  "effects": [
+    {
+      "type": "set_wet",
+      "duration_ticks": 220
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.3,
+      "lift": 0
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 100,
+      "strength": 2
+    },
+    {
+      "type": "drain_life",
+      "amount": 2.5,
+      "fraction": 0.4
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 220
+      },
+      {
+        "type": "apply_force",
+        "amount": 0.3,
+        "lift": 0
+      },
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 60,
+        "strength": 2
+      }
+    ]
+  },
+  "primary": "A widening stream (up to 3 blocks wide) hits everyone in front of you; in instant mode it keeps going while held:\n• Soaked for 11 s and leaves a puddle\n• Light push\n• Withering: −0.75 ❤ per second for 5 s\n• Life drain: 1.25 ❤ damage, you heal 0.5 ❤",
+  "self_description": "On you:\n• Soaked for 11 s and leaves a puddle\n• Light push\n• Withering: −0.75 ❤ per second for 3 s",
+  "balanced": true
+}

@@ -1,0 +1,81 @@
+{
+  "id": "magicka:death2_mend",
+  "formula": {
+    "life": 1,
+    "death": 2
+  },
+  "name": "Mend · Death ×2",
+  "tier": "Generic Fusion",
+  "tags": "HEAL/BUFF/DEATH",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 2.0,
+    "speed": 0.83,
+    "duration_ticks": 140,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 1.8
+  },
+  "construction": {
+    "material": "root",
+    "budget": 1,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 6
+  },
+  "effects": [
+    {
+      "type": "heal",
+      "amount": 2.5
+    },
+    {
+      "type": "apply_status",
+      "status": "regenerating",
+      "duration_ticks": 132,
+      "strength": 1
+    },
+    {
+      "type": "grow_plants",
+      "budget": 2
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 110,
+      "strength": 2
+    },
+    {
+      "type": "drain_life",
+      "amount": 2.0,
+      "fraction": 0.4
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "heal",
+        "amount": 2.5
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 132,
+        "strength": 1
+      },
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 66,
+        "strength": 2
+      }
+    ]
+  },
+  "primary": "A projectile flies where you look and strikes the first target. Effects:\n• Heals 1.25 ❤\n• Regeneration: +0.5 ❤ every 2 s for 6.6 s\n• Growth: up to 2 nearby blocks — crops +2 stages, dirt turns to grass, roots grow upward\n• Withering: −0.75 ❤ per second for 5.5 s\n• Life drain: 1 ❤ damage, you heal 0.4 ❤",
+  "self_description": "On you:\n• Heals 1.25 ❤\n• Regeneration: +0.5 ❤ every 2 s for 6.6 s\n• Withering: −0.75 ❤ per second for 3.3 s",
+  "balanced": true
+}

@@ -1,0 +1,116 @@
+{
+  "id": "magicka:heavy_magma_convergence_fire1_water1_earth2",
+  "formula": {
+    "fire": 1,
+    "water": 1,
+    "earth": 2
+  },
+  "name": "Heavy Magma Convergence",
+  "tier": "Family Variant",
+  "tags": "DMG/DOT/SETUP/CC/BREAK",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 3.6,
+    "speed": 1.07,
+    "duration_ticks": 240,
+    "interval_ticks": 20,
+    "gravity": 0.025,
+    "burst_radius": 3.6
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 16,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12
+  },
+  "effects": [
+    {
+      "type": "set_wet",
+      "duration_ticks": 160
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.15,
+      "lift": 0
+    },
+    {
+      "type": "deal_damage",
+      "amount": 2.5,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 40
+    },
+    {
+      "type": "deal_damage",
+      "amount": 5.0,
+      "element": "earth"
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.5,
+      "lift": 0.24
+    },
+    {
+      "type": "destroy_blocks",
+      "budget": 6,
+      "radius": 1.0
+    },
+    {
+      "type": "apply_status",
+      "status": "rooted",
+      "duration_ticks": 50,
+      "strength": 1
+    },
+    {
+      "type": "apply_status",
+      "status": "obscured",
+      "duration_ticks": 50,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 160
+      },
+      {
+        "type": "apply_force",
+        "amount": 0.15,
+        "lift": 0
+      },
+      {
+        "type": "deal_damage",
+        "amount": 2.5,
+        "element": "fire"
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 40
+      },
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 180,
+        "strength": 2
+      },
+      {
+        "type": "apply_status",
+        "status": "chilled",
+        "duration_ticks": 140,
+        "strength": 2
+      }
+    ]
+  },
+  "primary": "A projectile flies in an arc where you look and strikes the first target. Effects:\n• Damage 1.25 ❤ fire + 2.5 ❤ earth (fire ×0.5 on wet, earth ×2 on frozen)\n• Soaked for 8 s and leaves a puddle\n• Light push\n• Heat: sets on fire for 6 s (wet targets just dry off), thaws; melts ice and burns roots\n• Knockback\n• Breaks up to 6 blocks within 1 blocks (twice as many if brittle)\n• Rooted in place for 2.5 s\n• Blindness for 2.5 s",
+  "self_description": "On you:\n• Damage 1.25 ❤ fire (fire ×0.5 on wet)\n• Soaked for 8 s and leaves a puddle\n• Light push\n• Heat: sets on fire for 6 s (wet targets just dry off), thaws; melts ice and burns roots\n• Stone skin (Resistance II) for 9 s\n• Slowness II for 7 s",
+  "balanced": true
+}

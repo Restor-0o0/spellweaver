@@ -1,0 +1,67 @@
+{
+  "id": "magicka:thorn_spike",
+  "formula": {
+    "earth": 1,
+    "life": 2
+  },
+  "name": "Thorn Spike",
+  "tier": "Signature",
+  "tags": "BUILD/DMG/CC",
+  "shape": "spike",
+  "origin": "caster_feet",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 3.0,
+    "speed": 0.95,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.0
+  },
+  "construction": {
+    "material": "root",
+    "budget": 10,
+    "interval_ticks": 1,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 8,
+    "impale_damage": 4
+  },
+  "effects": [
+    {
+      "type": "create_construction"
+    },
+    {
+      "type": "deal_damage",
+      "amount": 3,
+      "element": "earth"
+    },
+    {
+      "type": "apply_status",
+      "status": "rooted",
+      "duration_ticks": 90,
+      "strength": 2
+    }
+  ],
+  "self": {
+    "mode": "construct",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 160,
+        "strength": 2
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 160,
+        "strength": 2
+      }
+    ]
+  },
+  "primary": "Thorn Spike. A spike of living wood bursts out of the ground at the aim point.\n• Impales for 2 ❤ on the way up\n• 1.5 ❤ earth damage and roots for 4.5 s\n• The spike stays and can be climbed",
+  "self_description": "On you: the spike grows from your feet, plus a bark shell and regeneration for 8 s.",
+  "balanced": true
+}

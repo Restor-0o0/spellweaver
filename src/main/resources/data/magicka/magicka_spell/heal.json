@@ -1,0 +1,63 @@
+{
+  "id": "magicka:heal",
+  "formula": {
+    "life": 2
+  },
+  "name": "Heal",
+  "tier": "Signature",
+  "tags": "HEAL/BUFF",
+  "shape": "direct_target",
+  "origin": "aim_hit",
+  "cast_ticks": 9,
+  "delivery": {
+    "radius": 2.7,
+    "speed": 0.91,
+    "duration_ticks": 200,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.1
+  },
+  "construction": {
+    "material": "root",
+    "budget": 3,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 8
+  },
+  "effects": [
+    {
+      "type": "heal",
+      "amount": 5.0
+    },
+    {
+      "type": "apply_status",
+      "status": "regenerating",
+      "duration_ticks": 200,
+      "strength": 2
+    },
+    {
+      "type": "grow_plants",
+      "budget": 4
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "heal",
+        "amount": 5.0
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 200,
+        "strength": 2
+      }
+    ]
+  },
+  "primary": "Heals the creature you aim at.\nAffects the creature you aim at:\n• Heals 2.5 ❤\n• Regeneration: +1 ❤ every 2 s for 10 s\n• Growth: up to 4 nearby blocks — crops +2 stages, dirt turns to grass, roots grow upward",
+  "self_description": "On you:\n• Heals 2.5 ❤\n• Regeneration: +1 ❤ every 2 s for 10 s",
+  "balanced": true
+}

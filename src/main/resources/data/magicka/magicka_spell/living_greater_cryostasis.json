@@ -1,0 +1,78 @@
+{
+  "id": "magicka:living_greater_cryostasis",
+  "formula": {
+    "cold": 1,
+    "life": 3
+  },
+  "name": "Living Greater Cryostasis",
+  "tier": "Family Variant",
+  "tags": "CC/DEBUFF/HEAL/BUFF",
+  "shape": "targeted_zone",
+  "origin": "aim_ground",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 4.0,
+    "speed": 1.07,
+    "duration_ticks": 280,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.8
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 16,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12
+  },
+  "effects": [
+    {
+      "type": "modify_temperature",
+      "amount": -40
+    },
+    {
+      "type": "heal",
+      "amount": 6.0
+    },
+    {
+      "type": "apply_status",
+      "status": "regenerating",
+      "duration_ticks": 200,
+      "strength": 3
+    },
+    {
+      "type": "grow_plants",
+      "budget": 6
+    },
+    {
+      "type": "apply_status",
+      "status": "stone_shell",
+      "duration_ticks": 80,
+      "strength": 3
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "modify_temperature",
+        "amount": -40
+      },
+      {
+        "type": "heal",
+        "amount": 6.0
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 200,
+        "strength": 3
+      }
+    ]
+  },
+  "primary": "A zone at the aim point with a 4-block radius for 14 s. Every second, on everyone inside, including you (damage and control only hit enemies):\n• Cold 40: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Heals 3 ❤\n• Regeneration: +1.5 ❤ every 2 s for 10 s\n• Growth: up to 6 nearby blocks — crops +2 stages, dirt turns to grass, roots grow upward\n• Stone skin (Resistance III) for 4 s",
+  "self_description": "On you:\n• Cold 40: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Heals 3 ❤\n• Regeneration: +1.5 ❤ every 2 s for 10 s",
+  "balanced": true
+}

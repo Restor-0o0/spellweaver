@@ -1,0 +1,106 @@
+{
+  "id": "magicka:greater_thunderstone_fire",
+  "formula": {
+    "lightning": 2,
+    "earth": 2,
+    "fire": 1
+  },
+  "name": "Greater Thunderstone · Fire",
+  "tier": "Generic Fusion",
+  "tags": "DMG/CC/BREAK",
+  "shape": "chain",
+  "origin": "aim_hit",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 4.5,
+    "speed": 1.07,
+    "duration_ticks": 330,
+    "interval_ticks": 20,
+    "gravity": 0.025,
+    "burst_radius": 5.08
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 40,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12,
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 9.0,
+      "element": "lightning"
+    },
+    {
+      "type": "add_charge",
+      "amount": 126
+    },
+    {
+      "type": "chain_targets",
+      "count": 12,
+      "range": 7,
+      "amount": 9.0
+    },
+    {
+      "type": "deal_damage",
+      "amount": 9.0,
+      "element": "earth"
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.9,
+      "lift": 0.36
+    },
+    {
+      "type": "destroy_blocks",
+      "budget": 15,
+      "radius": 1.45
+    },
+    {
+      "type": "deal_damage",
+      "amount": 4,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 90
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 9.0,
+        "element": "lightning"
+      },
+      {
+        "type": "add_charge",
+        "amount": 126
+      },
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 270,
+        "strength": 2
+      },
+      {
+        "type": "apply_status",
+        "status": "chilled",
+        "duration_ticks": 210,
+        "strength": 2
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 30
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "Lightning shoots from your hand into the creature you aim at (or the first one in your line of sight). In instant mode it strikes twice a second while held. Effects:\n• Damage 4.5 ❤ lightning + 4.5 ❤ earth + 2 ❤ fire (lightning ×2 on wet, fire ×0.5 on wet, earth ×2 on frozen)\n• Charge 126: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Then the lightning jumps onward: up to 12 targets in a row, jumps up to 7 blocks, 4.5 ❤ and 40 charge each (×2 damage and longer jumps on wet, ×1.5 range in puddles)\n• Knockback\n• Breaks up to 15 blocks within 1.45 blocks (twice as many if brittle)\n• Heat: sets on fire for 13.5 s (wet targets just dry off), thaws; melts ice and burns roots",
+  "self_description": "On you:\n• Damage 4.5 ❤ lightning (lightning ×2 on wet)\n• Charge 126: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Stone skin (Resistance II) for 13.5 s\n• Slowness II for 10.5 s\n• Heat: sets on fire for 4.5 s (wet targets just dry off), thaws; melts ice and burns roots"
+}

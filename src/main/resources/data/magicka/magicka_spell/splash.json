@@ -1,0 +1,57 @@
+{
+  "id": "magicka:splash",
+  "formula": {
+    "water": 1
+  },
+  "name": "Splash",
+  "tier": "Signature",
+  "tags": "SETUP/CC",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 5,
+  "delivery": {
+    "radius": 2.1,
+    "speed": 0.83,
+    "duration_ticks": 120,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 1.9
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 1,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 6
+  },
+  "effects": [
+    {
+      "type": "set_wet",
+      "duration_ticks": 216
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.15,
+      "lift": 0
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 216
+      },
+      {
+        "type": "apply_force",
+        "amount": 0.15,
+        "lift": 0
+      }
+    ]
+  },
+  "primary": "A splash of water.\nA projectile flies where you look and strikes the first target. Effects:\n• Soaked for 10.8 s and leaves a puddle\n• Light push",
+  "self_description": "On you:\n• Soaked for 10.8 s and leaves a puddle\n• Light push",
+  "balanced": true
+}

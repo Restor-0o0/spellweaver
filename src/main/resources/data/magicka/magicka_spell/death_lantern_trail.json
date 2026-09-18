@@ -1,0 +1,61 @@
+{
+  "id": "magicka:death_lantern_trail",
+  "formula": {
+    "fire": 1,
+    "life": 1,
+    "arcane": 1,
+    "death": 1
+  },
+  "name": "Lantern Trail · Death",
+  "tier": "Generic Fusion",
+  "tags": "UTIL/DEATH",
+  "shape": "direct_target",
+  "origin": "aim_hit",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 2.0,
+    "speed": 1.2,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.0
+  },
+  "construction": {},
+  "effects": [
+    {
+      "type": "light_path",
+      "spacing": 6,
+      "count": 10
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 80,
+      "strength": 1
+    },
+    {
+      "type": "drain_life",
+      "amount": 1.0,
+      "fraction": 0.4
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "light_ring",
+        "radius": 6,
+        "count": 8
+      },
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 60,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "Affects the creature you aim at:\n• A chain of wisps from you to the aim point every 6 blocks, up to 10; light level 15, permanent\n• Withering: −0.5 ❤ per second for 4 s\n• Life drain: 0.5 ❤ damage, you heal 0.2 ❤",
+  "self_description": "On you:\n• 8 wisps in a 6-block circle around you; light level 15, permanent\n• Withering: −0.5 ❤ per second for 3 s",
+  "balanced": true
+}

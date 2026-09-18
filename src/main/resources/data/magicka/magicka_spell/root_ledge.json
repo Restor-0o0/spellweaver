@@ -1,0 +1,43 @@
+{
+  "id": "magicka:root_ledge",
+  "formula": {
+    "earth": 2,
+    "life": 1
+  },
+  "name": "Climbing Roots",
+  "tier": "Signature",
+  "tags": "BUILD/MOVE",
+  "shape": "pillar",
+  "origin": "aim_surface",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 3.0,
+    "speed": 0.99,
+    "duration_ticks": 220,
+    "interval_ticks": 20,
+    "gravity": 0.025,
+    "burst_radius": 2.8
+  },
+  "construction": {
+    "material": "root",
+    "budget": 8,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10,
+    "regenerates": true
+  },
+  "effects": [
+    {
+      "type": "create_construction"
+    }
+  ],
+  "self": {
+    "mode": "construct",
+    "effects": []
+  },
+  "primary": "A column of roots you can climb up.\nA 8-block pillar at the aim point; damaged blocks regrow. Material: roots: climbable, burn in fire, permanent.",
+  "self_description": "A 8-block pillar at your feet; damaged blocks regrow. Material: roots: climbable, burn in fire, permanent. No extra effects.",
+  "balanced": true
+}

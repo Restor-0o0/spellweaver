@@ -1,0 +1,51 @@
+{
+  "id": "magicka:hex",
+  "formula": {
+    "water": 1,
+    "life": 1,
+    "death": 1
+  },
+  "name": "Hex",
+  "tier": "Signature",
+  "tags": "CC",
+  "shape": "direct_target",
+  "origin": "aim_hit",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 3.0,
+    "speed": 0.95,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.0
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 3,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 8
+  },
+  "effects": [
+    {
+      "type": "polymorph",
+      "entity": "minecraft:frog",
+      "duration_ticks": 600
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "polymorph",
+        "entity": "minecraft:frog",
+        "duration_ticks": 200
+      }
+    ]
+  },
+  "primary": "Hex. The target becomes a frog for 30 s.\n• Keeps its own health, so a tough mob stays a tough frog\n• Any damage that lands breaks the shape and brings the mob back\n• Works on players too; only bosses are immune",
+  "self_description": "On you: you become a frog yourself for 10 s. No hands, no spells, just croaking.",
+  "balanced": true
+}

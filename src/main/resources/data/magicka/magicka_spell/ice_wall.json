@@ -1,0 +1,46 @@
+{
+  "id": "magicka:ice_wall",
+  "formula": {
+    "cold": 1,
+    "earth": 2,
+    "arcane": 1
+  },
+  "name": "Ice Wall",
+  "tier": "Signature",
+  "tags": "BUILD",
+  "shape": "wall",
+  "origin": "caster_feet",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 2.0,
+    "speed": 1.2,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.0
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 110,
+    "interval_ticks": 1,
+    "batch": 6,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10,
+    "template": "wall",
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "create_construction"
+    }
+  ],
+  "self": {
+    "mode": "construct",
+    "effects": []
+  },
+  "primary": "Quick cover that melts away on its own.\nA 5×3 wall at the aim point, across your view at any angle, each column settling on the ground. Look up to raise a gabled tent roof over you instead, 9 wide and 5 long with open ends. Material: ice, melts after 30 s.",
+  "self_description": "A 5×3 wall at the aim point, across your view at any angle, each column settling on the ground. Look up to raise a gabled tent roof over you instead, 9 wide and 5 long with open ends. Material: ice, melts after 30 s. No extra effects.",
+  "balanced": true
+}

@@ -1,0 +1,60 @@
+{
+  "id": "magicka:death_revealing_flash",
+  "formula": {
+    "lightning": 1,
+    "arcane": 2,
+    "death": 1
+  },
+  "name": "Revealing Flash · Death",
+  "tier": "Generic Fusion",
+  "tags": "UTIL/DEATH",
+  "shape": "direct_target",
+  "origin": "aim_hit",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 2.0,
+    "speed": 1.2,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.0
+  },
+  "construction": {},
+  "effects": [
+    {
+      "type": "reveal",
+      "radius": 24,
+      "duration_ticks": 600
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 80,
+      "strength": 1
+    },
+    {
+      "type": "drain_life",
+      "amount": 1.0,
+      "fraction": 0.4
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "reveal",
+        "radius": 32,
+        "duration_ticks": 600
+      },
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 60,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "Affects the creature you aim at:\n• Highlights everyone you can harm within 24 blocks, visible through walls for 30 s\n• Withering: −0.5 ❤ per second for 4 s\n• Life drain: 0.5 ❤ damage, you heal 0.2 ❤",
+  "self_description": "On you:\n• Highlights everyone you can harm within 32 blocks, visible through walls for 30 s\n• Withering: −0.5 ❤ per second for 3 s",
+  "balanced": true
+}

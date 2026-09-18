@@ -1,0 +1,97 @@
+{
+  "id": "magicka:haste_surge",
+  "formula": {
+    "lightning": 1,
+    "life": 2,
+    "arcane": 1
+  },
+  "name": "Haste Surge",
+  "tier": "Signature",
+  "tags": "MOVE/BUFF",
+  "shape": "direct_target",
+  "origin": "aim_hit",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 3.7,
+    "speed": 1.07,
+    "duration_ticks": 240,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.2
+  },
+  "construction": {
+    "material": "root",
+    "budget": 16,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12
+  },
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "haste",
+      "duration_ticks": 300,
+      "strength": 2
+    },
+    {
+      "type": "apply_effect",
+      "effect": "minecraft:haste",
+      "duration_ticks": 300,
+      "strength": 2
+    },
+    {
+      "type": "delay",
+      "ticks": 300,
+      "effects": [
+        {
+          "type": "add_charge",
+          "amount": 30
+        },
+        {
+          "type": "apply_status",
+          "status": "chilled",
+          "duration_ticks": 40,
+          "strength": 1
+        }
+      ]
+    }
+  ],
+  "self": {
+    "mode": "effects",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "haste",
+        "duration_ticks": 300,
+        "strength": 2
+      },
+      {
+        "type": "apply_effect",
+        "effect": "minecraft:haste",
+        "duration_ticks": 300,
+        "strength": 2
+      },
+      {
+        "type": "delay",
+        "ticks": 300,
+        "effects": [
+          {
+            "type": "add_charge",
+            "amount": 30
+          },
+          {
+            "type": "apply_status",
+            "status": "chilled",
+            "duration_ticks": 40,
+            "strength": 1
+          }
+        ]
+      }
+    ]
+  },
+  "primary": "A long boost to speed and mining, with a mild recoil at the end.\nAffects the creature you aim at:\n• Speed III for 15 s\n• Haste II (faster mining), 15 s\n• 15 s later: charge 30: weakness, stuns for 1 s at 65 charge (×2 on wet); Slowness I for 2 s",
+  "self_description": "On you:\n• Speed III for 15 s\n• Haste II (faster mining), 15 s\n• 15 s later: charge 30: weakness, stuns for 1 s at 65 charge (×2 on wet); Slowness I for 2 s",
+  "balanced": true
+}

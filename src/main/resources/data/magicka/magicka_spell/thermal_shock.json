@@ -1,0 +1,88 @@
+{
+  "id": "magicka:thermal_shock",
+  "formula": {
+    "fire": 1,
+    "cold": 1
+  },
+  "name": "Thermal Shock",
+  "tier": "Signature",
+  "tags": "DMG/DOT/CC/DEBUFF",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 9,
+  "delivery": {
+    "radius": 2.4,
+    "speed": 0.91,
+    "duration_ticks": 140,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.6
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 3,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 8
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 1.5,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 40
+    },
+    {
+      "type": "modify_temperature",
+      "amount": -40
+    },
+    {
+      "type": "conditional",
+      "condition": "was_frozen",
+      "effects": [
+        {
+          "type": "deal_damage",
+          "amount": 5.5,
+          "element": "thermal"
+        }
+      ]
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 1.5,
+        "element": "fire"
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 40
+      },
+      {
+        "type": "modify_temperature",
+        "amount": -40
+      },
+      {
+        "type": "conditional",
+        "condition": "was_frozen",
+        "effects": [
+          {
+            "type": "deal_damage",
+            "amount": 5.5,
+            "element": "thermal"
+          }
+        ]
+      }
+    ]
+  },
+  "primary": "Heat and cold at once: massive damage to frozen targets.\nA projectile flies where you look and strikes the first target. Effects:\n• Damage 0.75 ❤ fire (fire ×0.5 on wet)\n• Heat: sets on fire for 6 s (wet targets just dry off), thaws; melts ice and burns roots\n• Cold 40: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• If the target is frozen or brittle: damage 2.75 ❤ thermal",
+  "self_description": "On you:\n• Damage 0.75 ❤ fire (fire ×0.5 on wet)\n• Heat: sets on fire for 6 s (wet targets just dry off), thaws; melts ice and burns roots\n• Cold 40: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• If the target is frozen or brittle: damage 2.75 ❤ thermal",
+  "balanced": true
+}

@@ -1,0 +1,108 @@
+{
+  "id": "magicka:glacier_hammer_lightning",
+  "formula": {
+    "cold": 2,
+    "earth": 2,
+    "lightning": 1
+  },
+  "name": "Glacier Hammer · Lightning",
+  "tier": "Generic Fusion",
+  "tags": "DMG/CC/BREAK",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 5.08,
+    "speed": 1.07,
+    "duration_ticks": 360,
+    "interval_ticks": 20,
+    "gravity": 0.025,
+    "burst_radius": 4.78
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 40,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12,
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "modify_temperature",
+      "amount": -144
+    },
+    {
+      "type": "deal_damage",
+      "amount": 9.0,
+      "element": "earth"
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.9,
+      "lift": 0.36
+    },
+    {
+      "type": "destroy_blocks",
+      "budget": 15,
+      "radius": 1.45
+    },
+    {
+      "type": "apply_status",
+      "status": "rooted",
+      "duration_ticks": 75,
+      "strength": 1
+    },
+    {
+      "type": "apply_status",
+      "status": "brittle",
+      "duration_ticks": 150,
+      "strength": 1
+    },
+    {
+      "type": "brittle_terrain",
+      "radius": 3
+    },
+    {
+      "type": "deal_damage",
+      "amount": 6,
+      "element": "lightning"
+    },
+    {
+      "type": "add_charge",
+      "amount": 70
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 300,
+        "strength": 3
+      },
+      {
+        "type": "apply_status",
+        "status": "chilled",
+        "duration_ticks": 300,
+        "strength": 5
+      },
+      {
+        "type": "apply_status",
+        "status": "brittle",
+        "duration_ticks": 210,
+        "strength": 1
+      },
+      {
+        "type": "add_charge",
+        "amount": 20
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "A projectile flies in an arc where you look and strikes the first target. Effects:\n• Damage 4.5 ❤ earth + 3 ❤ lightning (lightning ×2 on wet, earth ×2 on frozen)\n• Cold 144: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Knockback\n• Breaks up to 15 blocks within 1.45 blocks (twice as many if brittle)\n• Rooted in place for 3.75 s\n• Brittle (earth damage ×2) for 7.5 s\n• Blocks within 3 blocks turn brittle for 8 s\n• Charge 70: weakness, stuns for 1 s at 65 charge (×2 on wet)",
+  "self_description": "On you:\n• Stone skin (Resistance III) for 15 s\n• Slowness V for 15 s\n• Brittle (earth damage ×2) for 10.5 s\n• Charge 20: weakness, stuns for 1 s at 65 charge (×2 on wet)"
+}

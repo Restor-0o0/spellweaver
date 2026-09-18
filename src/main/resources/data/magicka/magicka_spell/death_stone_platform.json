@@ -1,0 +1,61 @@
+{
+  "id": "magicka:death_stone_platform",
+  "formula": {
+    "earth": 2,
+    "arcane": 1,
+    "death": 1
+  },
+  "name": "Stone Platform · Death",
+  "tier": "Generic Fusion",
+  "tags": "BUILD/MOVE/DEATH",
+  "shape": "platform",
+  "origin": "aim_surface",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 2.9,
+    "speed": 0.99,
+    "duration_ticks": 200,
+    "interval_ticks": 20,
+    "gravity": 0.025,
+    "burst_radius": 3.1
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 9,
+    "interval_ticks": 4,
+    "width": 3,
+    "height": 3,
+    "floating": false,
+    "integrity": 10
+  },
+  "effects": [
+    {
+      "type": "create_construction"
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 80,
+      "strength": 1
+    },
+    {
+      "type": "drain_life",
+      "amount": 1.0,
+      "fraction": 0.4
+    }
+  ],
+  "self": {
+    "mode": "construct",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 60,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "A 3×3 platform at the aim point. Material: magic earth, permanent.",
+  "self_description": "A 3×3 platform at your feet. Material: magic earth, permanent. On you:\n• Withering: −0.5 ❤ per second for 3 s",
+  "balanced": true
+}

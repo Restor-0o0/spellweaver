@@ -1,0 +1,90 @@
+{
+  "id": "magicka:arcane_detonation",
+  "formula": {
+    "fire": 1,
+    "arcane": 2
+  },
+  "name": "Arcane Detonation",
+  "tier": "Signature",
+  "tags": "DMG/AOE/CC",
+  "shape": "targeted_explosion",
+  "origin": "aim_hit",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 3.5,
+    "speed": 0.99,
+    "duration_ticks": 180,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.4
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 8,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 2.0,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 40
+    },
+    {
+      "type": "deal_damage",
+      "amount": 3.5,
+      "element": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "arcane_unstable",
+      "duration_ticks": 132,
+      "strength": 2
+    },
+    {
+      "type": "apply_force",
+      "amount": 1.2,
+      "lift": 0.3
+    }
+  ],
+  "self": {
+    "mode": "nova",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 2.0,
+        "element": "fire"
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 40
+      },
+      {
+        "type": "deal_damage",
+        "amount": 3.5,
+        "element": "arcane"
+      },
+      {
+        "type": "apply_status",
+        "status": "arcane_unstable",
+        "duration_ticks": 132,
+        "strength": 2
+      },
+      {
+        "type": "apply_force",
+        "amount": 1.2,
+        "lift": 0.3
+      }
+    ]
+  },
+  "primary": "An arcane blast with a heavy shockwave that scatters enemies.\nAn explosion at the aim point with a 3.5-block radius (does not hit you):\n• Damage 1 ❤ fire + 1.75 ❤ arcane (fire ×0.5 on wet)\n• Heat: sets on fire for 6 s (wet targets just dry off), thaws; melts ice and burns roots\n• Arcane instability: −0.5 ❤ every 2 s for 6.6 s\n• Strong knockback",
+  "self_description": "An explosion around you with a 3.5-block radius, hitting you as well:\n• Damage 1 ❤ fire + 1.75 ❤ arcane (fire ×0.5 on wet)\n• Heat: sets on fire for 6 s (wet targets just dry off), thaws; melts ice and burns roots\n• Arcane instability: −0.5 ❤ every 2 s for 6.6 s\n• Strong knockback",
+  "balanced": true
+}

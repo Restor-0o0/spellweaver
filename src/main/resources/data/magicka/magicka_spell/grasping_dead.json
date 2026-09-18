@@ -1,0 +1,59 @@
+{
+  "id": "magicka:grasping_dead",
+  "formula": {
+    "earth": 1,
+    "death": 1
+  },
+  "name": "Grasping Dead",
+  "tier": "Signature",
+  "tags": "CC/DOT",
+  "shape": "targeted_zone",
+  "origin": "aim_hit",
+  "delivery": {
+    "radius": 2.5,
+    "speed": 0.9,
+    "duration_ticks": 100,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.0
+  },
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "rooted",
+      "duration_ticks": 38,
+      "strength": 1
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 100,
+      "strength": 1
+    },
+    {
+      "type": "deal_damage",
+      "amount": 1.5,
+      "element": "earth"
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 200,
+        "strength": 2
+      },
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 75,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "Dead hands rise from the ground to hold and wither enemies.\nA zone at the aim point with a 2.5-block radius for 5 s. Every second, on everyone inside except you:\n• Damage 0.75 ❤ earth (earth ×2 on frozen)\n• Rooted in place for 1.9 s\n• Withering: −0.5 ❤ per second for 5 s",
+  "self_description": "On you:\n• Stone skin (Resistance II) for 10 s\n• Withering: −0.5 ❤ per second for 3.75 s",
+  "balanced": true
+}

@@ -1,0 +1,102 @@
+{
+  "id": "magicka:static_stasis",
+  "formula": {
+    "cold": 1,
+    "lightning": 1,
+    "arcane": 2
+  },
+  "name": "Static Stasis",
+  "tier": "Signature",
+  "tags": "AOE/CC",
+  "shape": "targeted_zone",
+  "origin": "aim_ground",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 5,
+    "speed": 1.07,
+    "duration_ticks": 200,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.6,
+    "slow_projectiles": true
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 16,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12
+  },
+  "effects": [
+    {
+      "type": "modify_temperature",
+      "amount": -40
+    },
+    {
+      "type": "deal_damage",
+      "amount": 2.5,
+      "element": "lightning"
+    },
+    {
+      "type": "add_charge",
+      "amount": 35
+    },
+    {
+      "type": "chain_targets",
+      "count": 4,
+      "range": 4,
+      "amount": 2.5
+    },
+    {
+      "type": "deal_damage",
+      "amount": 5.0,
+      "element": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "arcane_unstable",
+      "duration_ticks": 120,
+      "strength": 2
+    }
+  ],
+  "self": {
+    "mode": "zone",
+    "effects": [
+      {
+        "type": "modify_temperature",
+        "amount": -40
+      },
+      {
+        "type": "deal_damage",
+        "amount": 2.5,
+        "element": "lightning"
+      },
+      {
+        "type": "add_charge",
+        "amount": 35
+      },
+      {
+        "type": "chain_targets",
+        "count": 4,
+        "range": 4,
+        "amount": 2.5
+      },
+      {
+        "type": "deal_damage",
+        "amount": 5.0,
+        "element": "arcane"
+      },
+      {
+        "type": "apply_status",
+        "status": "arcane_unstable",
+        "duration_ticks": 120,
+        "strength": 2
+      }
+    ]
+  },
+  "primary": "A stasis field crackling with lightning.\nA zone at the aim point with a 5-block radius for 10 s (projectiles inside slow down). Every second, on everyone inside except you:\n• Damage 1.25 ❤ lightning + 2.5 ❤ arcane (lightning ×2 on wet)\n• Cold 40: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Charge 35: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Then the lightning jumps onward: up to 4 targets in a row, jumps up to 4 blocks, 1.25 ❤ and 40 charge each (×2 damage and longer jumps on wet, ×1.5 range in puddles)\n• Arcane instability: −0.5 ❤ every 2 s for 6 s",
+  "self_description": "A zone around you with a 5-block radius for 10 s. Every second, on everyone inside, including you:\n• Damage 1.25 ❤ lightning + 2.5 ❤ arcane (lightning ×2 on wet)\n• Cold 40: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Charge 35: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Then the lightning jumps onward: up to 4 targets in a row, jumps up to 4 blocks, 1.25 ❤ and 40 charge each (×2 damage and longer jumps on wet, ×1.5 range in puddles)\n• Arcane instability: −0.5 ❤ every 2 s for 6 s",
+  "balanced": true
+}

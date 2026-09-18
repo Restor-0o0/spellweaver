@@ -1,0 +1,73 @@
+{
+  "id": "magicka:singularity",
+  "formula": {
+    "arcane": 3,
+    "cold": 1,
+    "death": 1
+  },
+  "incantation": "73877",
+  "name": "Singularity",
+  "tier": "Signature",
+  "tags": "DMG/CC/AOE",
+  "shape": "targeted_zone",
+  "origin": "aim_hit",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 9.0,
+    "speed": 1.0,
+    "duration_ticks": 240,
+    "interval_ticks": 12,
+    "gravity": 0,
+    "burst_radius": 9.0
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 19.5,
+      "element": "arcane"
+    },
+    {
+      "type": "apply_force",
+      "amount": -2.6,
+      "lift": 0.25
+    },
+    {
+      "type": "apply_status",
+      "status": "arcane_unstable",
+      "duration_ticks": 300,
+      "strength": 4
+    },
+    {
+      "type": "apply_status",
+      "status": "levitating",
+      "duration_ticks": 140,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "zone",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "arcane_unstable",
+        "duration_ticks": 120,
+        "strength": 2
+      },
+      {
+        "type": "apply_status",
+        "status": "levitating",
+        "duration_ticks": 100,
+        "strength": 1
+      },
+      {
+        "type": "apply_status",
+        "status": "slow_falling",
+        "duration_ticks": 300,
+        "strength": 1
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "A point of collapsing space drags everything alive inward and tears it apart.\nA zone at the aim point with a 9-block radius for 12 s. Every second, on everyone inside except you:\n• Damage 9.75 ❤ arcane\n• Light push\n• Arcane instability: −1 ❤ every 2 s for 15 s\n• Levitation for 7 s",
+  "self_description": "A zone around you with a 9-block radius for 12 s. Every second, on everyone inside, including you:\n• Arcane instability: −0.5 ❤ every 2 s for 6 s\n• Levitation for 5 s\n• Slow falling for 15 s"
+}

@@ -1,0 +1,75 @@
+{
+  "id": "magicka:flooded_greater_suspension",
+  "formula": {
+    "water": 3,
+    "arcane": 1
+  },
+  "name": "Flooded Greater Suspension",
+  "tier": "Family Variant",
+  "tags": "SETUP/CC",
+  "shape": "spray",
+  "origin": "caster_front",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 4.3,
+    "speed": 1.07,
+    "duration_ticks": 260,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.3
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 16,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12
+  },
+  "effects": [
+    {
+      "type": "set_wet",
+      "duration_ticks": 280
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.44999999999999996,
+      "lift": 0
+    },
+    {
+      "type": "deal_damage",
+      "amount": 2.5,
+      "element": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "arcane_unstable",
+      "duration_ticks": 90,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 280
+      },
+      {
+        "type": "apply_force",
+        "amount": 0.44999999999999996,
+        "lift": 0
+      },
+      {
+        "type": "apply_status",
+        "status": "arcane_unstable",
+        "duration_ticks": 90,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "A widening stream (up to 3 blocks wide) hits everyone in front of you; in instant mode it keeps going while held:\n• Damage 1.25 ❤ arcane\n• Soaked for 14 s and leaves a puddle\n• Light push\n• Arcane instability: −0.25 ❤ every 2 s for 4.5 s",
+  "self_description": "On you:\n• Soaked for 14 s and leaves a puddle\n• Light push\n• Arcane instability: −0.25 ❤ every 2 s for 4.5 s",
+  "balanced": true
+}

@@ -1,0 +1,44 @@
+{
+  "id": "magicka:cats_eye",
+  "formula": {
+    "life": 1,
+    "lightning": 2
+  },
+  "name": "Cat's Eye",
+  "tier": "Signature",
+  "tags": "UTIL",
+  "shape": "direct_target",
+  "origin": "aim_hit",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 2.0,
+    "speed": 1.2,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.0
+  },
+  "construction": {},
+  "effects": [
+    {
+      "type": "apply_effect",
+      "effect": "minecraft:night_vision",
+      "duration_ticks": 3960,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "apply_effect",
+        "effect": "minecraft:night_vision",
+        "duration_ticks": 3960,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "Darkness no longer gets in the way.\nAffects the creature you aim at, allies included (use Self for yourself):\n• Night Vision, 198 s",
+  "self_description": "On you:\n• Night Vision, 198 s",
+  "balanced": true
+}

@@ -1,0 +1,88 @@
+{
+  "id": "magicka:flooded_circuit",
+  "formula": {
+    "water": 2,
+    "lightning": 2
+  },
+  "name": "Flooded Circuit",
+  "tier": "Signature",
+  "tags": "AOE/CC/SETUP",
+  "shape": "targeted_zone",
+  "origin": "aim_ground",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 6,
+    "speed": 1.07,
+    "duration_ticks": 200,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.3
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 16,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12
+  },
+  "effects": [
+    {
+      "type": "set_wet",
+      "duration_ticks": 220
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.3,
+      "lift": 0
+    },
+    {
+      "type": "deal_damage",
+      "amount": 5.0,
+      "element": "lightning"
+    },
+    {
+      "type": "add_charge",
+      "amount": 70
+    },
+    {
+      "type": "chain_targets",
+      "count": 6,
+      "range": 5,
+      "amount": 5.0
+    }
+  ],
+  "self": {
+    "mode": "zone",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 220
+      },
+      {
+        "type": "apply_force",
+        "amount": 0.3,
+        "lift": 0
+      },
+      {
+        "type": "deal_damage",
+        "amount": 5.0,
+        "element": "lightning"
+      },
+      {
+        "type": "add_charge",
+        "amount": 70
+      },
+      {
+        "type": "chain_targets",
+        "count": 6,
+        "range": 5,
+        "amount": 5.0
+      }
+    ]
+  },
+  "primary": "A huge electrified pool. Careful: you can end up in it too.\nA zone at the aim point with a 6-block radius for 10 s. Every second, on everyone inside except you:\n• Damage 2.5 ❤ lightning (lightning ×2 on wet)\n• Soaked for 11 s\n• Light push\n• Charge 70: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Then the lightning jumps onward: up to 6 targets in a row, jumps up to 5 blocks, 2.5 ❤ and 40 charge each (×2 damage and longer jumps on wet, ×1.5 range in puddles)",
+  "self_description": "A zone around you with a 6-block radius for 10 s. Every second, on everyone inside, including you:\n• Damage 2.5 ❤ lightning (lightning ×2 on wet)\n• Soaked for 11 s\n• Light push\n• Charge 70: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Then the lightning jumps onward: up to 6 targets in a row, jumps up to 5 blocks, 2.5 ❤ and 40 charge each (×2 damage and longer jumps on wet, ×1.5 range in puddles)",
+  "balanced": true
+}

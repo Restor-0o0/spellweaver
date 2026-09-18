@@ -1,0 +1,78 @@
+{
+  "id": "magicka:arcane_lance_earth",
+  "formula": {
+    "arcane": 4,
+    "earth": 1
+  },
+  "name": "Arcane Lance · Earth",
+  "tier": "Generic Fusion",
+  "tags": "SETUP",
+  "shape": "beam",
+  "origin": "aim_hit",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 5.37,
+    "speed": 1.07,
+    "duration_ticks": 330,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 5.65,
+    "beam_width": 0.35,
+    "end_burst": 2.5
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 40,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12,
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 21.5,
+      "element": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "arcane_unstable",
+      "duration_ticks": 270,
+      "strength": 4
+    },
+    {
+      "type": "deal_damage",
+      "amount": 6,
+      "element": "earth"
+    },
+    {
+      "type": "apply_status",
+      "status": "brittle",
+      "duration_ticks": 180,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "arcane_unstable",
+        "duration_ticks": 270,
+        "strength": 4
+      },
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 200,
+        "strength": 3
+      }
+    ]
+  },
+  "cast_mode": "instant",
+  "balanced": true,
+  "primary": "An instant beam to the aim point hits everyone along it and explodes at the end in a 2.5-block radius. Effects:\n• Damage 10.75 ❤ arcane + 3 ❤ earth (earth ×2 on frozen)\n• Arcane instability: −1 ❤ every 2 s for 13.5 s\n• Brittle (earth damage ×2) for 9 s",
+  "self_description": "On you:\n• Arcane instability: −1 ❤ every 2 s for 13.5 s\n• Stone skin (Resistance III) for 10 s"
+}

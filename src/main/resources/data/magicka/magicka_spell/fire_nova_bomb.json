@@ -1,0 +1,75 @@
+{
+  "id": "magicka:fire_nova_bomb",
+  "formula": {
+    "fire": 2,
+    "arcane": 2
+  },
+  "name": "Fire Nova Bomb",
+  "tier": "Signature",
+  "tags": "DMG/AOE/DOT",
+  "shape": "burst_projectile",
+  "origin": "caster_front",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 3.5,
+    "speed": 1.07,
+    "duration_ticks": 200,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 5
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 16,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 5.0,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 80
+    },
+    {
+      "type": "deal_damage",
+      "amount": 5.0,
+      "element": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "arcane_unstable",
+      "duration_ticks": 120,
+      "strength": 2
+    }
+  ],
+  "self": {
+    "mode": "nova",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 5.0,
+        "element": "fire"
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 80
+      },
+      {
+        "type": "apply_status",
+        "status": "arcane_unstable",
+        "duration_ticks": 120,
+        "strength": 2
+      }
+    ]
+  },
+  "primary": "A fire bomb that bursts into a wide ring of flame.\nA projectile flies where you look and explodes in a 5-block radius on hit. Effects:\n• Damage 2.5 ❤ fire + 2.5 ❤ arcane (fire ×0.5 on wet)\n• Heat: sets on fire for 12 s (wet targets just dry off), thaws; melts ice and burns roots\n• Arcane instability: −0.5 ❤ every 2 s for 6 s",
+  "self_description": "An explosion around you with a 3.5-block radius, hitting you as well:\n• Damage 2.5 ❤ fire (fire ×0.5 on wet)\n• Heat: sets on fire for 12 s (wet targets just dry off), thaws; melts ice and burns roots\n• Arcane instability: −0.5 ❤ every 2 s for 6 s",
+  "balanced": true
+}

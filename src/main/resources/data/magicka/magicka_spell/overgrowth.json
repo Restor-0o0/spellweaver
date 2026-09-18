@@ -1,0 +1,65 @@
+{
+  "id": "magicka:overgrowth",
+  "formula": {
+    "water": 1,
+    "earth": 1,
+    "life": 1
+  },
+  "name": "Overgrowth",
+  "tier": "Signature",
+  "tags": "CC/BUILD/HEAL",
+  "shape": "targeted_zone",
+  "origin": "aim_hit",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 3.5,
+    "speed": 0.95,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.0
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 3,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 8
+  },
+  "effects": [
+    {
+      "type": "grow_plants",
+      "budget": 16
+    },
+    {
+      "type": "apply_status",
+      "status": "rooted",
+      "duration_ticks": 120,
+      "strength": 2
+    },
+    {
+      "type": "set_wet",
+      "duration_ticks": 160
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "grow_plants",
+        "budget": 16
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 200,
+        "strength": 2
+      }
+    ]
+  },
+  "primary": "Overgrowth. A thicket erupts from the ground and holds everything in it.\n• Plants in a 3.5 block radius grow at once\n• Everyone inside is rooted for 6 s and soaked\n• The zone keeps working for 8 s",
+  "self_description": "On you: the thicket grows around you and you regenerate for 10 s.",
+  "balanced": true
+}

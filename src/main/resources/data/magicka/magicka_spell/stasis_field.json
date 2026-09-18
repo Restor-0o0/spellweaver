@@ -1,0 +1,68 @@
+{
+  "id": "magicka:stasis_field",
+  "formula": {
+    "cold": 2,
+    "arcane": 1
+  },
+  "name": "Stasis Field",
+  "tier": "Signature",
+  "tags": "AOE/CC",
+  "shape": "targeted_zone",
+  "origin": "aim_ground",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 4,
+    "speed": 0.99,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 2.9,
+    "slow_projectiles": true
+  },
+  "construction": {
+    "material": "ice",
+    "budget": 8,
+    "interval_ticks": 2,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10
+  },
+  "effects": [
+    {
+      "type": "modify_temperature",
+      "amount": -80
+    },
+    {
+      "type": "deal_damage",
+      "amount": 2.0,
+      "element": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "arcane_unstable",
+      "duration_ticks": 99,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "chilled",
+        "duration_ticks": 132,
+        "strength": 4
+      },
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 132,
+        "strength": 2
+      }
+    ]
+  },
+  "primary": "A field that slows creatures and projectiles.\nA zone at the aim point with a 4-block radius for 8 s (projectiles inside slow down). Every second, on everyone inside except you:\n• Damage 1 ❤ arcane\n• Cold 80: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Arcane instability: −0.25 ❤ every 2 s for 4.95 s",
+  "self_description": "On you:\n• Slowness IV for 6.6 s\n• Stone skin (Resistance II) for 6.6 s",
+  "balanced": true
+}

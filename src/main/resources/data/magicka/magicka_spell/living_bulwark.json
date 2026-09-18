@@ -1,0 +1,63 @@
+{
+  "id": "magicka:living_bulwark",
+  "formula": {
+    "earth": 1,
+    "life": 1,
+    "arcane": 1
+  },
+  "name": "Living Bulwark",
+  "tier": "Signature",
+  "tags": "BUILD/DEF/HEAL",
+  "shape": "wall",
+  "origin": "aim_ground",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 3.1,
+    "speed": 0.99,
+    "duration_ticks": 220,
+    "interval_ticks": 20,
+    "gravity": 0.025,
+    "burst_radius": 2.9
+  },
+  "construction": {
+    "material": "root",
+    "budget": 8,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10,
+    "regenerates": true
+  },
+  "effects": [
+    {
+      "type": "create_construction"
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 220,
+        "strength": 3
+      },
+      {
+        "type": "apply_status",
+        "status": "chilled",
+        "duration_ticks": 176,
+        "strength": 2
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 220,
+        "strength": 2
+      }
+    ]
+  },
+  "primary": "A small root wall for cover.\nA wall 3 high of 8 blocks at the aim point, extending to the right across your view; damaged blocks regrow. Material: roots: climbable, burn in fire, permanent.",
+  "self_description": "On you:\n• Stone skin (Resistance III) for 11 s\n• Slowness II for 8.8 s\n• Regeneration: +1 ❤ every 2 s for 11 s",
+  "balanced": true
+}

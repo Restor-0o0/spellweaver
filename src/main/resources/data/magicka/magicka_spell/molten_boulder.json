@@ -1,0 +1,91 @@
+{
+  "id": "magicka:molten_boulder",
+  "formula": {
+    "fire": 1,
+    "earth": 2
+  },
+  "name": "Molten Boulder",
+  "tier": "Signature",
+  "tags": "DMG/BREAK/DOT",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 2.8,
+    "speed": 0.99,
+    "duration_ticks": 200,
+    "interval_ticks": 20,
+    "gravity": 0.025,
+    "burst_radius": 2,
+    "shards": 3
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 8,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 2.0,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 40
+    },
+    {
+      "type": "deal_damage",
+      "amount": 3.5,
+      "element": "earth"
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.5,
+      "lift": 0.24
+    },
+    {
+      "type": "destroy_blocks",
+      "budget": 6,
+      "radius": 1.0
+    },
+    {
+      "type": "spawn_zone",
+      "duration_ticks": 100,
+      "radius": 2
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 2.0,
+        "element": "fire"
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 40
+      },
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 198,
+        "strength": 2
+      },
+      {
+        "type": "apply_status",
+        "status": "chilled",
+        "duration_ticks": 154,
+        "strength": 2
+      }
+    ]
+  },
+  "primary": "A hot boulder with shards and a hot patch.\nA projectile flies in an arc where you look and explodes in a 2-block radius on hit. 3 shards scatter around with the same effects on creatures they touch. Effects:\n• Damage 1 ❤ fire + 1.75 ❤ earth (fire ×0.5 on wet, earth ×2 on frozen)\n• Heat: sets on fire for 6 s (wet targets just dry off), thaws; melts ice and burns roots\n• Knockback\n• Breaks up to 6 blocks within 1 blocks (twice as many if brittle)\n• Leaves a 2-block zone for 5 s that repeats these effects every second",
+  "self_description": "On you:\n• Damage 1 ❤ fire (fire ×0.5 on wet)\n• Heat: sets on fire for 6 s (wet targets just dry off), thaws; melts ice and burns roots\n• Stone skin (Resistance II) for 9.9 s\n• Slowness II for 7.7 s",
+  "balanced": true
+}

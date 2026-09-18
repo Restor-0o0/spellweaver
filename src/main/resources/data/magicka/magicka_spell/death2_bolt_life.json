@@ -1,0 +1,103 @@
+{
+  "id": "magicka:death2_bolt_life",
+  "formula": {
+    "lightning": 2,
+    "death": 2,
+    "life": 1
+  },
+  "name": "Bolt · Death ×2 · Life",
+  "tier": "Generic Fusion",
+  "tags": "DMG/CC/DEATH",
+  "shape": "chain",
+  "origin": "aim_hit",
+  "cast_ticks": 27,
+  "delivery": {
+    "radius": 3.04,
+    "speed": 0.91,
+    "duration_ticks": 180,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.62
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 8,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 8,
+    "uncapped": true
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 9.0,
+      "element": "lightning"
+    },
+    {
+      "type": "add_charge",
+      "amount": 126
+    },
+    {
+      "type": "chain_targets",
+      "count": 6,
+      "range": 6,
+      "amount": 6.3
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 150,
+      "strength": 2
+    },
+    {
+      "type": "drain_life",
+      "amount": 4.5,
+      "fraction": 0.52
+    },
+    {
+      "type": "heal",
+      "amount": 8
+    },
+    {
+      "type": "apply_status",
+      "status": "regenerating",
+      "duration_ticks": 200,
+      "strength": 3
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 9.0,
+        "element": "lightning"
+      },
+      {
+        "type": "add_charge",
+        "amount": 126
+      },
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 90,
+        "strength": 2
+      },
+      {
+        "type": "heal",
+        "amount": 8
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 200,
+        "strength": 3
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "Lightning shoots from your hand into the creature you aim at (or the first one in your line of sight). In instant mode it strikes twice a second while held. Effects:\n• Damage 4.5 ❤ lightning (lightning ×2 on wet)\n• Charge 126: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Then the lightning jumps onward: up to 6 targets in a row, jumps up to 6 blocks, 3.15 ❤ and 40 charge each (×2 damage and longer jumps on wet, ×1.5 range in puddles)\n• Withering: −0.75 ❤ per second for 7.5 s\n• Life drain: 2.25 ❤ damage, you heal 1.17 ❤\n• Heals 4 ❤\n• Regeneration: +1.5 ❤ every 2 s for 10 s",
+  "self_description": "On you:\n• Damage 4.5 ❤ lightning (lightning ×2 on wet)\n• Charge 126: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Withering: −0.75 ❤ per second for 4.5 s\n• Heals 4 ❤\n• Regeneration: +1.5 ❤ every 2 s for 10 s"
+}

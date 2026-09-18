@@ -1,0 +1,91 @@
+{
+  "id": "magicka:heavy_thunderstone",
+  "formula": {
+    "lightning": 1,
+    "earth": 2
+  },
+  "name": "Heavy Thunderstone",
+  "tier": "Family Variant",
+  "tags": "DMG/CC/BREAK",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 2.7,
+    "speed": 0.99,
+    "duration_ticks": 200,
+    "interval_ticks": 20,
+    "gravity": 0.025,
+    "burst_radius": 3.0
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 8,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 10
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 2.0,
+      "element": "lightning"
+    },
+    {
+      "type": "add_charge",
+      "amount": 35
+    },
+    {
+      "type": "chain_targets",
+      "count": 4,
+      "range": 4,
+      "amount": 2.0
+    },
+    {
+      "type": "deal_damage",
+      "amount": 3.5,
+      "element": "earth"
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.5,
+      "lift": 0.24
+    },
+    {
+      "type": "destroy_blocks",
+      "budget": 6,
+      "radius": 1.0
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 2.0,
+        "element": "lightning"
+      },
+      {
+        "type": "add_charge",
+        "amount": 35
+      },
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 198,
+        "strength": 2
+      },
+      {
+        "type": "apply_status",
+        "status": "chilled",
+        "duration_ticks": 154,
+        "strength": 2
+      }
+    ]
+  },
+  "primary": "A projectile flies in an arc where you look and strikes the first target. Effects:\n• Damage 1 ❤ lightning + 1.75 ❤ earth (lightning ×2 on wet, earth ×2 on frozen)\n• Charge 35: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Then the lightning jumps onward: up to 4 targets in a row, jumps up to 4 blocks, 1 ❤ and 40 charge each (×2 damage and longer jumps on wet, ×1.5 range in puddles)\n• Knockback\n• Breaks up to 6 blocks within 1 blocks (twice as many if brittle)",
+  "self_description": "On you:\n• Damage 1 ❤ lightning (lightning ×2 on wet)\n• Charge 35: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Stone skin (Resistance II) for 9.9 s\n• Slowness II for 7.7 s",
+  "balanced": true
+}

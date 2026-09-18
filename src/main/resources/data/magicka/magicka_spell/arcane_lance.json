@@ -1,0 +1,59 @@
+{
+  "id": "magicka:arcane_lance",
+  "formula": {
+    "arcane": 4
+  },
+  "name": "Arcane Lance",
+  "tier": "Signature",
+  "tags": "SETUP",
+  "shape": "beam",
+  "origin": "aim_hit",
+  "cast_ticks": 20,
+  "delivery": {
+    "radius": 3.7,
+    "speed": 1.07,
+    "duration_ticks": 220,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.9,
+    "beam_width": 0.35,
+    "end_burst": 2.5
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 16,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 12
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 12.0,
+      "element": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "arcane_unstable",
+      "duration_ticks": 180,
+      "strength": 4
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "arcane_unstable",
+        "duration_ticks": 180,
+        "strength": 4
+      }
+    ]
+  },
+  "primary": "An instant arcane beam that detonates where it ends.\nAn instant beam to the aim point hits everyone along it and explodes at the end in a 2.5-block radius. Effects:\n• Damage 6 ❤ arcane\n• Arcane instability: −1 ❤ every 2 s for 9 s",
+  "self_description": "On you:\n• Arcane instability: −1 ❤ every 2 s for 9 s",
+  "cast_mode": "instant",
+  "balanced": true
+}

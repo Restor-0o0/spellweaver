@@ -1,0 +1,84 @@
+{
+  "id": "magicka:shatter_bolt",
+  "formula": {
+    "fire": 1,
+    "cold": 1,
+    "arcane": 1
+  },
+  "name": "Shatter Bolt",
+  "tier": "Signature",
+  "tags": "DMG/SETUP",
+  "shape": "projectile",
+  "origin": "aim_hit",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 3.0,
+    "speed": 0.95,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.0
+  },
+  "construction": {
+    "material": "earth",
+    "budget": 3,
+    "interval_ticks": 4,
+    "width": 1,
+    "height": 3,
+    "floating": false,
+    "integrity": 8
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 3,
+      "element": "cold"
+    },
+    {
+      "type": "apply_status",
+      "status": "brittle",
+      "duration_ticks": 120,
+      "strength": 2
+    },
+    {
+      "type": "conditional",
+      "condition": "brittle",
+      "effects": [
+        {
+          "type": "deal_damage",
+          "amount": 6,
+          "element": "arcane"
+        },
+        {
+          "type": "apply_force",
+          "amount": 0.8,
+          "lift": 0.3
+        }
+      ]
+    },
+    {
+      "type": "brittle_terrain",
+      "radius": 2.5
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "brittle",
+        "duration_ticks": 80,
+        "strength": 1
+      },
+      {
+        "type": "apply_status",
+        "status": "chilled",
+        "duration_ticks": 120,
+        "strength": 2
+      }
+    ]
+  },
+  "primary": "Shatter Bolt. Makes the target brittle, then shatters whatever is already brittle.\n• 1.5 ❤ cold damage and brittle for 6 s\n• A target that was already brittle or frozen takes another 3 ❤ arcane and is thrown back\n• Weakens stone in a 2.5 block radius",
+  "self_description": "On you: brittle for 4 s and chilled for 6 s.",
+  "balanced": true
+}
