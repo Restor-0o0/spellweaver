@@ -1,0 +1,50 @@
+{
+  "id": "magicka:quen",
+  "formula": {
+    "lightning": 1,
+    "earth": 1,
+    "life": 1
+  },
+  "name": "Quen",
+  "tier": "Signature",
+  "tags": "DEF",
+  "shape": "nova",
+  "origin": "caster",
+  "cast_mode": "instant",
+  "delivery": {
+    "legend": "quen",
+    "duration_ticks": 400
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 2,
+      "element": "lightning"
+    },
+    {
+      "type": "apply_status",
+      "status": "shocked",
+      "duration_ticks": 20,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "legend",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 2,
+        "element": "lightning"
+      },
+      {
+        "type": "apply_status",
+        "status": "shocked",
+        "duration_ticks": 20,
+        "strength": 1
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "The Witcher's protective sign. An amber shield surrounds you for 20 s:\n• Absorbs 4 ❤ of damage\n• Whoever hits the shield within 8 blocks gets a spark back: damage 1 ❤ lightning and shock\nThe shield fades when it has absorbed everything.",
+  "self_description": "Quen always shields you."
+}

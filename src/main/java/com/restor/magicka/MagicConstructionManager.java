@@ -223,7 +223,7 @@ public final class MagicConstructionManager extends SavedData {
         Vec3 push=build.plan.heading().scale(build.instant ? 1.1 : .7).add(0,.25,0);
         for (var entity:player.serverLevel().getEntitiesOfClass(LivingEntity.class,new AABB(pos),LivingEntity::isAlive)) {
             if (entity==player || !EffectGraph.canHarm(player,entity) || !build.impaled.add(entity.getUUID())) continue;
-            if (damage>0) entity.hurt(player.damageSources().indirectMagic(player,player),(float)(build.instant ? damage*1.5 : damage));
+            if (damage>0) com.restor.magicka.enemy.MagicEnemies.hurt(entity,player.damageSources().indirectMagic(player,player),(float)(build.instant ? damage*1.5 : damage),player,build.spell,MagicStatuses.has(entity,MagicStatuses.Status.FROZEN) || MagicStatuses.has(entity,MagicStatuses.Status.BRITTLE));
             MagicStatuses.apply(entity,MagicStatuses.Status.CHILLED,60,1);
             entity.push(push.x,push.y,push.z);entity.hurtMarked=true;
         }

@@ -35,7 +35,7 @@ public final class EffectGraph {
         return MagicConfig.FRIENDLY_FIRE.get() || (!(target instanceof Player) && !caster.isAlliedTo(target) && !target.isAlliedTo(caster));
     }
     public static boolean ally(ServerPlayer caster, LivingEntity target) {
-        return target == caster || UndeadMinions.ownedBy(target, caster) || target.isAlliedTo(caster) || caster.isAlliedTo(target) || target instanceof Player;
+        return target == caster || UndeadMinions.ownedBy(target, caster) || LegendMagic.charmedBy(target, caster) || target.isAlliedTo(caster) || caster.isAlliedTo(target) || target instanceof Player;
     }
     public static void entity(ServerPlayer caster, LivingEntity target, SpellDefinition spell, List<JsonObject> graph, Vec3 origin, boolean self) {
         if (!target.isAlive() || target.isSpectator()) return;
@@ -43,7 +43,7 @@ public final class EffectGraph {
         float damage = executeEntity(caster,target,spell,graph,origin,self,frozen);
         if (damage > 0 && canHarm(caster,target)) {
             if (target instanceof Player && target != caster) damage *= MagicConfig.PLAYER_DAMAGE.get().floatValue();
-            target.hurt(target == caster ? caster.damageSources().magic() : caster.damageSources().indirectMagic(caster,caster),damage);
+            com.restor.magicka.enemy.MagicEnemies.hurt(target,target == caster ? caster.damageSources().magic() : caster.damageSources().indirectMagic(caster,caster),damage,caster,spell,frozen);
         }
     }
     private static float executeEntity(ServerPlayer caster, LivingEntity target, SpellDefinition spell, List<JsonObject> graph, Vec3 origin, boolean self, boolean frozen) {
@@ -58,18 +58,18 @@ public final class EffectGraph {
                     double multiplier = element.equals("lightning") && MagicStatuses.has(target,MagicStatuses.Status.WET) ? 2 : element.equals("earth") && frozen ? 2 : element.equals("fire") && MagicStatuses.has(target,MagicStatuses.Status.WET) ? .5 : 1;
                     damage += (float)(amount*multiplier);
                 }
-                case "heal" -> target.heal((float)amount);
+                case "heal" -> target.heal(MagicGear.heal(caster,target,(float)amount));
                 case "drain_life" -> {
                     if (!canHarm(caster,target) || target == caster) break;
                     damage += (float)amount;
                     caster.heal((float)(amount*number(node,"fraction",.5)));
                 }
                 case "set_wet" -> MagicStatuses.apply(target,MagicStatuses.Status.WET,ticks,1);
-                case "modify_temperature" -> { if (canHarm(caster,target)) MagicStatuses.temperature(target,amount); }
-                case "add_charge" -> { if (canHarm(caster,target)) MagicStatuses.charge(target,amount); }
+                case "modify_temperature" -> { if (canHarm(caster,target) && !MagicGear.blocked(caster,target,type,amount)) MagicStatuses.temperature(target,amount); }
+                case "add_charge" -> { if (canHarm(caster,target) && !MagicGear.blocked(caster,target,type,amount)) MagicStatuses.charge(target,amount); }
                 case "apply_status" -> {
                     String status = text(node,"status","");
-                    if (Set.of("regenerating","stone_shell","slow_falling","haste").contains(status) || canHarm(caster,target)) MagicStatuses.apply(target,status,ticks,strength);
+                    if (Set.of("regenerating","stone_shell","slow_falling","haste").contains(status) || canHarm(caster,target)) { MagicStatuses.apply(target,status,ticks,strength); MagicGear.status(caster,target,status); }
                 }
                 case "apply_effect" -> SupportMagic.effect(caster,target,text(node,"effect",""),ticks,strength);
                 case "polymorph" -> PolymorphManager.apply(caster,target,text(node,"entity","minecraft:sheep"),ticks);
@@ -99,7 +99,7 @@ public final class EffectGraph {
                 SupportMagic.extinguish(caster,point,Math.clamp(spell.number("radius",2),2,4));
                 if (allowSpawn) SpellRuntime.wetZone(caster,point,Math.min(2,spell.number("radius",1)),(int)number(node,"duration_ticks",160));
             }
-            case "destroy_blocks" -> WorldMagic.destroy(caster,point,(int)number(node,"budget",1),number(node,"radius",1));
+            case "destroy_blocks" -> WorldMagic.destroy(caster,point,(int)number(node,"budget",1),number(node,"radius",1),spell.ultimate());
             case "heave_blocks" -> WorldMagic.heave(caster,point,(int)number(node,"budget",8),number(node,"radius",3),number(node,"lift",.6));
             case "brittle_terrain" -> WorldMagic.brittle(caster,point,number(node,"radius",2));
             case "grow_plants" -> WorldMagic.grow(caster,point,(int)number(node,"budget",1));

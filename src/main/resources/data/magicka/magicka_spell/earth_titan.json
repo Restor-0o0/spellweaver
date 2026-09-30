@@ -1,0 +1,59 @@
+{
+  "id": "magicka:earth_titan",
+  "formula": {
+    "earth": 4,
+    "arcane": 1
+  },
+  "incantation": "55575",
+  "name": "Stone Titan",
+  "tier": "Signature",
+  "tags": "SUMMON/DMG/AOE",
+  "shape": "targeted_zone",
+  "origin": "aim_hit",
+  "cast_ticks": 27,
+  "cast_mode": "epic",
+  "delivery": {
+    "epic": "titan",
+    "element": "earth",
+    "duration_ticks": 240,
+    "slam": [
+      {
+        "type": "deal_damage",
+        "amount": 12,
+        "element": "earth"
+      },
+      {
+        "type": "apply_status",
+        "status": "stunned",
+        "duration_ticks": 30,
+        "strength": 1
+      }
+    ]
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 12,
+      "element": "earth"
+    },
+    {
+      "type": "apply_force",
+      "amount": 1,
+      "lift": 0.4
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 400,
+        "strength": 3
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "A giant stone titan rises waist-deep from the ground at the aimed spot and fights from there while you keep the channel.\nUltimate channel: just stand still for up to 12 s. Stepping aside breaks the channel and the titan sinks back underground; instant mode does not apply. Needs open sky above the aimed spot.\nIt picks foes within 20 blocks and, about every 1.5 s, either hurls boulders that shatter within 2.2 blocks: damage 6 ❤ earth, knockback;\nor slams the ground with both fists, which heaves the ground in a mound; everyone within 5 blocks takes 6 ❤ earth and is stunned for 1.5 s.",
+  "self_description": "On you:\n• Stone skin (resistance III), 20 s"
+}

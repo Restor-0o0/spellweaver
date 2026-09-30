@@ -1,0 +1,60 @@
+{
+  "id": "magicka:death_elemental",
+  "formula": {
+    "arcane": 1,
+    "death": 3
+  },
+  "name": "Death Elemental",
+  "tier": "Signature",
+  "tags": "SUMMON",
+  "shape": "summon_object",
+  "origin": "caster_front",
+  "cast_ticks": 20,
+  "delivery": {
+    "object_kind": "elemental",
+    "element": "death",
+    "duration_ticks": 1200
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 3,
+      "element": "death"
+    },
+    {
+      "type": "drain_life",
+      "amount": 2,
+      "fraction": 0.5
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 60,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "summon",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 3,
+        "element": "death"
+      },
+      {
+        "type": "drain_life",
+        "amount": 2,
+        "fraction": 0.5
+      },
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 60,
+        "strength": 1
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "A death elemental appears in front of you and follows you for 60 s. At most 2 elementals serve you at once: a third one replaces the oldest. It attacks monsters nearby and whoever fights you, and never harms you or your allies.\nA hooded wraith that floats next to you and drains life every 1.3 s from up to 13 blocks. The drain never misses and heals the wraith by 1 ❤:\n• Damage 1.5 ❤ death\n• Life drain: 1 ❤ damage, you heal 0.5 ❤\n• Withering for 3 s",
+  "self_description": "The elemental appears right next to you."
+}

@@ -1,0 +1,65 @@
+{
+  "id": "magicka:life_titan",
+  "formula": {
+    "earth": 1,
+    "life": 3,
+    "arcane": 1
+  },
+  "incantation": "56676",
+  "name": "Grove Titan",
+  "tier": "Signature",
+  "tags": "SUMMON/DMG/AOE",
+  "shape": "targeted_zone",
+  "origin": "aim_hit",
+  "cast_ticks": 27,
+  "cast_mode": "epic",
+  "delivery": {
+    "epic": "titan",
+    "element": "life",
+    "duration_ticks": 240,
+    "slam": [
+      {
+        "type": "deal_damage",
+        "amount": 4,
+        "element": "earth"
+      },
+      {
+        "type": "apply_status",
+        "status": "rooted",
+        "duration_ticks": 80,
+        "strength": 1
+      }
+    ]
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 5,
+      "element": "earth"
+    },
+    {
+      "type": "apply_status",
+      "status": "rooted",
+      "duration_ticks": 60,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "heal",
+        "amount": 8
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 200,
+        "strength": 2
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "A giant grove titan rises waist-deep from the ground at the aimed spot and fights from there while you keep the channel.\nUltimate channel: just stand still for up to 12 s. Stepping aside breaks the channel and the titan sinks back underground; instant mode does not apply. Needs open sky above the aimed spot.\nIt picks foes within 20 blocks and, about every 1.5 s, either throws seed pods that burst within 2 blocks: damage 2.5 ❤ earth, roots for 3 s;\nor slams the ground with both fists, which grows grass and flowers, heals you and your summons within 7 blocks by 2 ❤ with regeneration; foes within 5 blocks take 2 ❤ earth and are rooted for 4 s.",
+  "self_description": "On you:\n• Heal 4 ❤\n• Regeneration II, 10 s"
+}

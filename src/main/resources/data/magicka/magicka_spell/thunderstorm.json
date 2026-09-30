@@ -8,33 +8,25 @@
   "incantation": "27444",
   "name": "Thunderstorm",
   "tier": "Signature",
-  "tags": "DMG/CHAIN/AOE",
-  "shape": "chain",
+  "tags": "DMG/AOE",
+  "shape": "targeted_zone",
   "origin": "aim_hit",
   "cast_ticks": 27,
+  "cast_mode": "epic",
   "delivery": {
-    "radius": 9.0,
-    "speed": 1.0,
-    "duration_ticks": 200,
-    "interval_ticks": 15,
-    "gravity": 0,
-    "burst_radius": 9.0
+    "epic": "storm",
+    "duration_ticks": 240,
+    "radius": 12.0
   },
   "effects": [
     {
       "type": "deal_damage",
-      "amount": 18.0,
+      "amount": 12,
       "element": "lightning"
     },
     {
       "type": "add_charge",
-      "amount": 160
-    },
-    {
-      "type": "chain_targets",
-      "count": 12,
-      "range": 10,
-      "amount": 11.5
+      "amount": 60
     }
   ],
   "self": {
@@ -53,6 +45,6 @@
     ]
   },
   "balanced": true,
-  "primary": "Lightning jumps from enemy to enemy until it runs out of targets.\nLightning shoots from your hand into the creature you aim at (or the first one in your line of sight). In instant mode it strikes twice a second while held. Effects:\n• Damage 9 ❤ lightning (lightning ×2 on wet)\n• Charge 160: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Then the lightning jumps onward: up to 12 targets in a row, jumps up to 10 blocks, 5.75 ❤ and 40 charge each (×2 damage and longer jumps on wet, ×1.5 range in puddles)",
+  "primary": "A huge thundercloud gathers over the aimed spot, 12 blocks across.\nUltimate channel: just stand still for up to 12 s. Stepping aside breaks the channel; instant mode does not apply. Needs open sky: at least 10 blocks of air above the target, so it fails in caves and under roofs.\nIt rains under the cloud and everyone inside gets wet. Lightning strikes every 0.3–0.7 s, mostly into monsters:\n• Damage 6 ❤ lightning within 2.5 blocks (×2 on wet)\n• Charge 60\n• Sometimes sets the ground on fire and shatters weak blocks: glass, leaves, dirt, sand",
   "self_description": "On you:\n• Charge 40: weakness, stuns for 1 s at 65 charge (×2 on wet)\n• Speed IV for 15 s"
 }

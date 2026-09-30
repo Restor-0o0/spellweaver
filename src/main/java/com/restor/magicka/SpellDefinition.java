@@ -18,8 +18,8 @@ public record SpellDefinition(ResourceLocation id, SpellFormula formula, String 
         if (effects.isEmpty()) throw new IllegalArgumentException(id + ": empty effect graph");
         List<JsonObject> selfEffects = self.has("effects") ? graph(self, "effects") : genericSelf(formula);
         String mode = string(self,"mode","generic");
-        if (!Set.of("generic","effects","nova","dash","zone","summon","construct","meteor").contains(mode)) throw new IllegalArgumentException("Unknown self mode " + mode);
-        if (!Set.of("default","instant","channel").contains(string(json,"cast_mode","default"))) throw new IllegalArgumentException("Unknown cast mode " + string(json,"cast_mode",""));
+        if (!Set.of("generic","effects","nova","dash","zone","summon","construct","meteor","legend").contains(mode)) throw new IllegalArgumentException("Unknown self mode " + mode);
+        if (!Set.of("default","instant","channel","epic").contains(string(json,"cast_mode","default"))) throw new IllegalArgumentException("Unknown cast mode " + string(json,"cast_mode",""));
         String incantation = string(json,"incantation","");
         if (!incantation.isEmpty()) {
             SpellFormula spoken = ritual(id,incantation);
@@ -53,6 +53,7 @@ public record SpellDefinition(ResourceLocation id, SpellFormula formula, String 
     public static JsonObject object(JsonObject json, String key) { return json.has(key) ? json.getAsJsonObject(key).deepCopy() : new JsonObject(); }
     public static String string(JsonObject json, String key, String fallback) { return json.has(key) ? json.get(key).getAsString() : fallback; }
     public String incantation() { return string(source,"incantation",""); }
+    public boolean ultimate() { return !incantation().isEmpty(); }
     /** Ultimates are only unlocked by typing their elements in a fixed order; other spells accept any order. */
     public List<Element> spoken() {
         String order = incantation();
@@ -61,6 +62,12 @@ public record SpellDefinition(ResourceLocation id, SpellFormula formula, String 
         for (int i = 0; i < order.length(); i++) elements.add(Element.values()[order.charAt(i) - '1']);
         return elements;
     }
+    public Formula spokenFormula() {
+        Formula ordered = new Formula();
+        for (Element element : spoken()) ordered.add(element);
+        return ordered;
+    }
+    public int spokenPacked() { return spokenFormula().packed(); }
     private static SpellFormula ritual(ResourceLocation id, String order) {
         Formula formula = new Formula();
         for (int i = 0; i < order.length(); i++) {
@@ -92,6 +99,7 @@ public record SpellDefinition(ResourceLocation id, SpellFormula formula, String 
         if (!mode.equals("default")) return mode.equals("channel");
         return switch(shape) { case BEAM, SPRAY, BRIDGE, STAIR, RAMP, GROWTH -> true; case CHAIN -> formula.size() >= 4; default -> false; };
     }
+    public boolean epic() { return string(source,"cast_mode","default").equals("epic"); }
     public int budget() {
         int budget = integer(construction,"budget", new int[]{0,1,3,8,16,28}[formula.size()],1,4096);
         return construction.has("uncapped") ? budget : Math.min(MagicConfig.MAX_BLOCKS.get(), budget);

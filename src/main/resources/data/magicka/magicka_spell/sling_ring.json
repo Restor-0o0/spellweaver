@@ -1,0 +1,40 @@
+{
+  "id": "magicka:sling_ring",
+  "formula": {
+    "fire": 1,
+    "life": 1,
+    "arcane": 2
+  },
+  "name": "Sling Ring Portal",
+  "tier": "Signature",
+  "tags": "MOVE/UTIL",
+  "shape": "summon_object",
+  "origin": "caster_front",
+  "cast_mode": "instant",
+  "delivery": {
+    "legend": "portal",
+    "duration_ticks": 240
+  },
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "slow_falling",
+      "duration_ticks": 40,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "legend",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "slow_falling",
+        "duration_ticks": 40,
+        "strength": 1
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "Doctor Strange's sling ring. Two rings of orange sparks open for 12 s: one right in front of you, the other at the aimed spot. Anyone who steps into one comes out of the other, you included, and falls slowly for 2 s.",
+  "self_description": "The second ring opens at your respawn point (or world spawn) — a way home."
+}

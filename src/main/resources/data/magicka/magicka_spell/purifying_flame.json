@@ -1,0 +1,64 @@
+{
+  "id": "magicka:purifying_flame",
+  "formula": {
+    "fire": 1,
+    "life": 2
+  },
+  "name": "Purifying Flame",
+  "tier": "Signature",
+  "tags": "DMG/HEAL",
+  "shape": "targeted_zone",
+  "origin": "aim_ground",
+  "cast_mode": "instant",
+  "delivery": {
+    "legend": "purifying_flame",
+    "radius": 5,
+    "duration_ticks": 160,
+    "support": [
+      {
+        "type": "heal",
+        "amount": 2
+      },
+      {
+        "type": "remove_status",
+        "status": "burning"
+      },
+      {
+        "type": "remove_status",
+        "status": "withering"
+      }
+    ]
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 2,
+      "element": "fire"
+    },
+    {
+      "type": "apply_status",
+      "status": "burning",
+      "duration_ticks": 40,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "legend",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 2,
+        "element": "fire"
+      },
+      {
+        "type": "apply_status",
+        "status": "burning",
+        "duration_ticks": 40,
+        "strength": 1
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "A holy fire in the spirit of paladins and clerics. A golden ring of flame burns at the aimed spot for 8 s, radius 5. Every second:\n• Foes: damage 1 ❤ fire and burning for 2 s; undead take it twice\n• You and allies: heal 1 ❤, flames and withering removed",
+  "self_description": "The ring of holy fire burns around you."
+}

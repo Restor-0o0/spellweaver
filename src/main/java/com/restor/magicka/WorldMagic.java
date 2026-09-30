@@ -20,14 +20,24 @@ public final class WorldMagic {
     private static final Map<WeakRock,Long> BRITTLE=new HashMap<>();
     private static boolean brittle(ServerPlayer player,BlockPos pos){return BRITTLE.getOrDefault(new WeakRock(player.level().dimension(),pos),0L)>player.level().getGameTime();}
     public static final TagKey<Block> PROTECTED = TagKey.create(Registries.BLOCK,ResourceLocation.fromNamespaceAndPath(Magicka.ID,"terrain_protected"));
-    public static boolean breakBlock(ServerPlayer player, BlockPos pos) {
-        if (!loose(player,pos)) return false;
+    public static final TagKey<Block> SHATTERABLE = TagKey.create(Registries.BLOCK,ResourceLocation.fromNamespaceAndPath(Magicka.ID,"ultimate_shatterable"));
+    public static boolean breakBlock(ServerPlayer player, BlockPos pos) { return breakBlock(player,pos,false); }
+    public static boolean breakBlock(ServerPlayer player, BlockPos pos, boolean ultimate) {
+        if (!loose(player,pos,ultimate)) return false;
         return player.serverLevel().destroyBlock(pos,false,player);
     }
-    private static boolean loose(ServerPlayer player, BlockPos pos) {
+    public static boolean shatterWeak(ServerPlayer player, BlockPos pos, float hardness) {
+        var world = player.serverLevel(); var state = world.getBlockState(pos);
+        if (state.isAir() || state.getDestroySpeed(world,pos) > hardness) return false;
+        return breakBlock(player,pos);
+    }
+    private static boolean loose(ServerPlayer player, BlockPos pos) { return loose(player,pos,false); }
+    private static boolean loose(ServerPlayer player, BlockPos pos, boolean ultimate) {
         var world = player.serverLevel();
         if (!MagicConfig.TERRAIN_DAMAGE.get() || !WorldPlacement.allowed(player,pos)) return false;
         var state = world.getBlockState(pos);
+        if (ultimate && state.is(SHATTERABLE) && state.getDestroySpeed(world,pos) >= 0)
+            return !NeoForge.EVENT_BUS.post(new BlockEvent.BreakEvent(world,pos,state,player)).isCanceled();
         boolean magic = state.getBlock() instanceof MagicBlocks.TemporaryBlock;
         if (state.isAir() || state.is(PROTECTED) || state.getDestroySpeed(world,pos) < 0 || state.getDestroySpeed(world,pos) > 50 || (!magic && (state.hasBlockEntity() || !state.getFluidState().isEmpty()))) return false;
         return !NeoForge.EVENT_BUS.post(new BlockEvent.BreakEvent(world,pos,state,player)).isCanceled();
@@ -57,17 +67,28 @@ public final class WorldMagic {
         }
         return null;
     }
-    public static void destroy(ServerPlayer player, Vec3 center, int budget, double radius) {
+    public static void destroy(ServerPlayer player, Vec3 center, int budget, double radius) { destroy(player,center,budget,radius,false); }
+    public static void destroy(ServerPlayer player, Vec3 center, int budget, double radius, boolean ultimate) {
         int r = Math.clamp((int)Math.ceil(radius),0,16); BlockPos base = BlockPos.containing(center);
         var positions = new ArrayList<BlockPos>();
         BlockPos.betweenClosed(base.offset(-r,-r,-r),base.offset(r,r,r)).forEach(p -> positions.add(p.immutable()));
         positions.sort(Comparator.comparingDouble(p -> p.distToCenterSqr(center)));
+        double reach = (radius+.8)*(radius+.8);
+        if (ultimate) for (BlockPos pos : positions)
+            if (pos.distToCenterSqr(center) <= reach && player.serverLevel().getBlockState(pos).is(SHATTERABLE)) shatter(player,pos);
         int remaining = Math.clamp(budget,0,4096)*2;
         for (BlockPos pos : positions) {
             if (remaining <= 0) break;
             int cost=brittle(player,pos)?1:2;
-            if (pos.distToCenterSqr(center) <= (radius+.8)*(radius+.8) && breakBlock(player,pos)) remaining-=cost;
+            if (pos.distToCenterSqr(center) <= reach && breakBlock(player,pos,ultimate)) remaining-=cost;
         }
+    }
+    private static void shatter(ServerPlayer player, BlockPos pos) {
+        var world = player.serverLevel();
+        if (!breakBlock(player,pos,true)) return;
+        world.levelEvent(2001,pos,Block.getId(Blocks.SPAWNER.defaultBlockState()));
+        world.sendParticles(ParticleTypes.SOUL,pos.getX()+.5,pos.getY()+.5,pos.getZ()+.5,24,.4,.4,.4,.04);
+        world.playSound(null,pos,net.minecraft.sounds.SoundEvents.RESPAWN_ANCHOR_DEPLETE.value(),net.minecraft.sounds.SoundSource.BLOCKS,1.2F,.7F);
     }
     public static void temperature(ServerPlayer player, Vec3 point, double amount, SpellDefinition spell) {
         var world = player.serverLevel(); BlockPos center = BlockPos.containing(point); int r = Math.clamp(spell.formula().size()-1,1,2);

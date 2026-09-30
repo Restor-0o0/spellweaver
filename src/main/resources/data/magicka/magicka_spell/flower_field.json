@@ -1,0 +1,48 @@
+{
+  "id": "magicka:flower_field",
+  "formula": {
+    "earth": 1,
+    "life": 3
+  },
+  "name": "Field of Flowers",
+  "tier": "Signature",
+  "tags": "HEAL/BUFF/UTIL",
+  "shape": "targeted_zone",
+  "origin": "aim_ground",
+  "cast_mode": "instant",
+  "delivery": {
+    "legend": "flowers",
+    "radius": 7,
+    "duration_ticks": 200
+  },
+  "effects": [
+    {
+      "type": "heal",
+      "amount": 2
+    },
+    {
+      "type": "apply_status",
+      "status": "regenerating",
+      "duration_ticks": 60,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "legend",
+    "effects": [
+      {
+        "type": "heal",
+        "amount": 2
+      },
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 60,
+        "strength": 1
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "Frieren's favourite spell. A wave of flowers blooms around the aimed spot within 7 blocks: poppies, cornflowers, tulips, daisies and more grow on grass and dirt and stay for good. Cherry petals drift over the field for 10 s. Every second you and your allies in the field:\n• Heal 1 ❤\n• Regeneration for 3 s",
+  "self_description": "The field blooms around you."
+}

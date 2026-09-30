@@ -1,0 +1,43 @@
+{
+  "id": "magicka:axii",
+  "formula": {
+    "cold": 1,
+    "lightning": 1,
+    "life": 1
+  },
+  "name": "Axii",
+  "tier": "Signature",
+  "tags": "CC",
+  "shape": "spray",
+  "origin": "caster_front",
+  "cast_mode": "instant",
+  "delivery": {
+    "legend": "axii",
+    "radius": 8,
+    "duration_ticks": 160
+  },
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "stunned",
+      "duration_ticks": 10,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "remove_status",
+        "status": "stunned"
+      },
+      {
+        "type": "heal",
+        "amount": 2
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "The Witcher's sign of the mind. A wave of calm washes over a 50° cone, 8 blocks long. Hostile mobs in it (not bosses) are stunned for 0.5 s and bewitched for 8 s: they won't attack players and turn on other hostile mobs instead.",
+  "self_description": "You calm your own mind: stun removed, heal 1 ❤."
+}

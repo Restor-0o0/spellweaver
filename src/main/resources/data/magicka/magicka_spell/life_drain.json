@@ -1,0 +1,36 @@
+{
+  "id": "magicka:life_drain",
+  "formula": {
+    "life": 1,
+    "death": 2
+  },
+  "name": "Life Drain",
+  "tier": "Signature",
+  "tags": "DMG/HEAL",
+  "shape": "beam",
+  "origin": "caster_front",
+  "cast_mode": "instant",
+  "delivery": {
+    "legend": "life_drain"
+  },
+  "effects": [
+    {
+      "type": "drain_life",
+      "amount": 2,
+      "fraction": 1.0
+    }
+  ],
+  "self": {
+    "mode": "legend",
+    "effects": [
+      {
+        "type": "drain_life",
+        "amount": 2,
+        "fraction": 1.0
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "The classic vampire spell. For 3 s a crimson stream flows from the first foe along your aim (up to 20 blocks) into your hand. Every 0.5 s:\n• Drains 1 ❤ from the victim\n• Heals you by the same amount",
+  "self_description": "Your heart beats loudly for 3 s. Every second each foe within 6 blocks loses 1 ❤ and it flows into you."
+}

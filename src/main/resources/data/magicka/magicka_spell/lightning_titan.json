@@ -1,0 +1,61 @@
+{
+  "id": "magicka:lightning_titan",
+  "formula": {
+    "earth": 1,
+    "lightning": 3,
+    "arcane": 1
+  },
+  "incantation": "54474",
+  "name": "Storm Titan",
+  "tier": "Signature",
+  "tags": "SUMMON/DMG/AOE",
+  "shape": "targeted_zone",
+  "origin": "aim_hit",
+  "cast_ticks": 27,
+  "cast_mode": "epic",
+  "delivery": {
+    "epic": "titan",
+    "element": "lightning",
+    "duration_ticks": 240,
+    "slam": [
+      {
+        "type": "deal_damage",
+        "amount": 6,
+        "element": "lightning"
+      },
+      {
+        "type": "add_charge",
+        "amount": 60
+      }
+    ]
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 8,
+      "element": "lightning"
+    },
+    {
+      "type": "add_charge",
+      "amount": 40
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "add_charge",
+        "amount": 40
+      },
+      {
+        "type": "apply_status",
+        "status": "haste",
+        "duration_ticks": 300,
+        "strength": 3
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "A giant storm titan rises waist-deep from the ground at the aimed spot and fights from there while you keep the channel.\nUltimate channel: just stand still for up to 12 s. Stepping aside breaks the channel and the titan sinks back underground; instant mode does not apply. Needs open sky above the aimed spot.\nIt picks foes within 20 blocks and, about every 1.5 s, either casts chain lightning through up to 3 foes: damage 4 ❤ lightning (×2 on wet), charge 40;\nor slams the ground with both fists, which calls a lightning bolt; everyone within 5 blocks takes 3 ❤ lightning and charge 60.",
+  "self_description": "On you:\n• Charge 40\n• Speed IV, 15 s"
+}

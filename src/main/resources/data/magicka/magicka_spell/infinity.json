@@ -1,0 +1,41 @@
+{
+  "id": "magicka:infinity",
+  "formula": {
+    "cold": 1,
+    "arcane": 1,
+    "death": 1
+  },
+  "name": "Infinity",
+  "tier": "Signature",
+  "tags": "DEF/CC",
+  "shape": "nova",
+  "origin": "caster",
+  "cast_mode": "instant",
+  "delivery": {
+    "legend": "infinity",
+    "radius": 3,
+    "duration_ticks": 100
+  },
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "chilled",
+      "duration_ticks": 40,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "legend",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "chilled",
+        "duration_ticks": 40,
+        "strength": 1
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "Gojo's Limitless from Jujutsu Kaisen. For 5 s an infinite space surrounds you, radius 3:\n• Hostile projectiles freeze in the air and fall when it ends\n• Foes can't come closer than 2 blocks: they are pushed away and chilled for 2 s once a second",
+  "self_description": "Infinity always surrounds you."
+}

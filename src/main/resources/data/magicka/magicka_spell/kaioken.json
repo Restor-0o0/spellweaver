@@ -1,0 +1,43 @@
+{
+  "id": "magicka:kaioken",
+  "formula": {
+    "lightning": 1,
+    "life": 3
+  },
+  "name": "Kaioken",
+  "tier": "Signature",
+  "tags": "BUFF",
+  "shape": "nova",
+  "origin": "caster",
+  "cast_mode": "instant",
+  "delivery": {
+    "legend": "kaioken",
+    "duration_ticks": 400
+  },
+  "effects": [
+    {
+      "type": "heal",
+      "amount": 4
+    },
+    {
+      "type": "add_charge",
+      "amount": 20
+    }
+  ],
+  "self": {
+    "mode": "legend",
+    "effects": [
+      {
+        "type": "heal",
+        "amount": 4
+      },
+      {
+        "type": "add_charge",
+        "amount": 20
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "Goku's technique from Dragon Ball. A red aura flares around you for 20 s:\n• Heal 2 ❤ at once, charge 20\n• Strength II, Jump Boost II, Haste II\n• The strain costs 0.5 ❤ every second, but never takes you below 1 ❤",
+  "self_description": "Kaioken always powers you up."
+}

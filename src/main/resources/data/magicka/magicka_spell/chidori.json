@@ -1,0 +1,51 @@
+{
+  "id": "magicka:chidori",
+  "formula": {
+    "lightning": 2,
+    "arcane": 2
+  },
+  "name": "Chidori",
+  "tier": "Signature",
+  "tags": "DMG/CC/MOVE",
+  "shape": "dash",
+  "origin": "caster_front",
+  "cast_mode": "instant",
+  "delivery": {
+    "legend": "chidori"
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 6,
+      "element": "lightning"
+    },
+    {
+      "type": "add_charge",
+      "amount": 30
+    },
+    {
+      "type": "apply_status",
+      "status": "stunned",
+      "duration_ticks": 30,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "add_charge",
+        "amount": 30
+      },
+      {
+        "type": "apply_status",
+        "status": "haste",
+        "duration_ticks": 160,
+        "strength": 2
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "From Naruto. Lightning chirps like a thousand birds in your hand for 0.3 s, then you dash about 12 blocks forward. Everyone you pass through, once each:\n• Damage 3 ❤ lightning (×2 on wet)\n• Charge 30\n• Stun for 1.5 s\nThe dash stops at a wall; you take no fall damage.",
+  "self_description": "On you:\n• Charge 30\n• Speed III, 8 s"
+}

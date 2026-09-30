@@ -1,0 +1,44 @@
+{
+  "id": "magicka:wellspring",
+  "formula": {
+    "water": 2,
+    "life": 2
+  },
+  "name": "Wellspring",
+  "tier": "Signature",
+  "tags": "HEAL/ZONE",
+  "shape": "targeted_zone",
+  "origin": "aim_ground",
+  "cast_mode": "instant",
+  "delivery": {
+    "legend": "wellspring",
+    "radius": 4,
+    "duration_ticks": 600
+  },
+  "effects": [
+    {
+      "type": "heal",
+      "amount": 2
+    },
+    {
+      "type": "remove_status",
+      "status": "burning"
+    }
+  ],
+  "self": {
+    "mode": "legend",
+    "effects": [
+      {
+        "type": "heal",
+        "amount": 2
+      },
+      {
+        "type": "remove_status",
+        "status": "burning"
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "The healing fountain of RPG bonfires and sanctuaries. A spring of living water gushes at the aimed spot for 30 s. Every 2 s you and allies within 4 blocks:\n• Heal 1 ❤\n• Flames are put out",
+  "self_description": "The spring rises at your feet."
+}

@@ -1,0 +1,59 @@
+{
+  "id": "magicka:mjolnir",
+  "formula": {
+    "lightning": 2,
+    "death": 1
+  },
+  "name": "Mjolnir",
+  "tier": "Signature",
+  "tags": "DMG/CC/MOVE",
+  "shape": "dash",
+  "origin": "caster_front",
+  "cast_mode": "instant",
+  "delivery": {
+    "legend": "mjolnir",
+    "radius": 4
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 6,
+      "element": "lightning"
+    },
+    {
+      "type": "apply_status",
+      "status": "stunned",
+      "duration_ticks": 20,
+      "strength": 1
+    },
+    {
+      "type": "apply_force",
+      "amount": 1.2,
+      "lift": 0.6
+    }
+  ],
+  "self": {
+    "mode": "legend",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 6,
+        "element": "lightning"
+      },
+      {
+        "type": "apply_status",
+        "status": "stunned",
+        "duration_ticks": 20,
+        "strength": 1
+      },
+      {
+        "type": "apply_force",
+        "amount": 1.2,
+        "lift": 0.6
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "Thor's hammer strike. You leap high forward and when you land, lightning strikes where you fell. Foes within 4 blocks:\n• Damage 3 ❤ lightning (×2 on wet)\n• Stun for 1 s\n• Knocked away\nNo fall damage for you.",
+  "self_description": "No leap: lightning strikes at your feet right away."
+}

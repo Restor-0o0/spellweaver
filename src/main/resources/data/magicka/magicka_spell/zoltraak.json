@@ -1,0 +1,37 @@
+{
+  "id": "magicka:zoltraak",
+  "formula": {
+    "arcane": 2,
+    "death": 2
+  },
+  "name": "Zoltraak",
+  "tier": "Signature",
+  "tags": "DMG",
+  "shape": "beam",
+  "origin": "caster_front",
+  "cast_mode": "instant",
+  "delivery": {
+    "legend": "zoltraak"
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 3,
+      "element": "arcane"
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 200,
+        "strength": 2
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "Qual's \"Ordinary Offensive Magic\" from Frieren. Five thin white rays fire one after another from a ring around you toward your aim, up to 40 blocks. Each ray pierces every creature on its path:\n• Damage 1.5 ❤ arcane per ray, up to 7.5 ❤ in total",
+  "self_description": "Defensive magic. On you:\n• Stone skin (resistance II), 10 s"
+}

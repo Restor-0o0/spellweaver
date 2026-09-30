@@ -36,26 +36,30 @@ public final class MagicStats {
         tag.putInt(stat.key(),stat.clamp(value));
         data.put(TAG,tag);CACHE.remove(player.getUUID());sync(player);
     }
-    public static double power(Player player,Stat stat){return get(player)[stat.ordinal()]/100.0;}
+    public static double power(Player player,Stat stat){return MagicGear.total(player)[stat.ordinal()]/100.0;}
     public static void reset(ServerPlayer player){player.getPersistentData().remove(TAG);CACHE.remove(player.getUUID());sync(player);}
-    public static void sync(ServerPlayer player){PacketDistributor.sendToPlayer(player,new MagicNetwork.Stats(get(player)));}
-    public static int minionCap(ServerPlayer owner){return (int)Math.clamp(Math.round(MagicConfig.MAX_MINIONS.get()*Math.max(1,get(owner)[Stat.SUMMONS.ordinal()]/100.0*get(owner)[Stat.DEATH.ordinal()]/100.0)),1,512);}
+    public static void invalidate(ServerPlayer player){CACHE.remove(player.getUUID());sync(player);}
+    public static void sync(ServerPlayer player){PacketDistributor.sendToPlayer(player,new MagicNetwork.Stats(get(player),MagicGear.deltas(player)));}
+    public static int minionCap(ServerPlayer owner){int[] v=MagicGear.total(owner);return (int)Math.clamp(Math.round(MagicConfig.MAX_MINIONS.get()*Math.max(1,v[Stat.SUMMONS.ordinal()]/100.0*v[Stat.DEATH.ordinal()]/100.0)),1,512);}
 
     public static SpellDefinition resolve(ServerPlayer player,SpellFormula key){return apply(player,RecipeRegistry.resolve(key));}
     public static SpellDefinition apply(ServerPlayer player,SpellDefinition base){
         if(base==null)return null;
-        int[] values=get(player);
-        if(Arrays.stream(values).allMatch(v->v==DEFAULT))return base;
         var cache=CACHE.computeIfAbsent(player.getUUID(),id->new HashMap<>());
-        Cached hit=cache.get(base.id().toString()+"|"+base.formula());
+        String key=base.id().toString()+"|"+base.formula();
+        Cached hit=cache.get(key);
         if(hit!=null && hit.base==base)return hit.scaled;
-        SpellDefinition scaled;
-        try{scaled=scale(base,values);}catch(RuntimeException e){scaled=base;}
-        cache.put(base.id().toString()+"|"+base.formula(),new Cached(base,scaled));
+        int[] values=MagicGear.total(player);
+        double bias=MagicGear.castBias(player,base.formula().size());
+        SpellDefinition patched=MagicGear.patch(player,base),scaled;
+        if(patched==base && bias==1 && Arrays.stream(values).allMatch(v->v==DEFAULT))scaled=base;
+        else try{scaled=scale(patched,values,bias);}catch(RuntimeException e){scaled=patched;}
+        cache.put(key,new Cached(base,scaled));
         return scaled;
     }
 
-    static SpellDefinition scale(SpellDefinition base,int[] v){
+    static SpellDefinition scale(SpellDefinition base,int[] v){return scale(base,v,1);}
+    static SpellDefinition scale(SpellDefinition base,int[] v,double bias){
         java.util.function.ToDoubleFunction<Stat> m=s->v[s.ordinal()]/100.0;
         var f=base.formula();
         double power=0;int total=0;
@@ -63,7 +67,7 @@ public final class MagicStats {
         power=total==0?1:power/total;
         double area=m.applyAsDouble(Stat.AREA)*Math.sqrt(power), duration=m.applyAsDouble(Stat.DURATION);
         JsonObject json=base.source().deepCopy();
-        json.addProperty("cast_ticks",Math.clamp(Math.round(base.castTicks()/m.applyAsDouble(Stat.CAST_SPEED)),1,200));
+        json.addProperty("cast_ticks",Math.clamp(Math.round(base.castTicks()*bias/m.applyAsDouble(Stat.CAST_SPEED)),1,200));
         JsonObject d=json.has("delivery")?json.getAsJsonObject("delivery"):new JsonObject();json.add("delivery",d);
         if(!d.has("radius"))d.addProperty("radius",3.0);
         if(!d.has("burst_radius"))d.addProperty("burst_radius",2.0);

@@ -1,0 +1,42 @@
+{
+  "id": "magicka:defibrillator",
+  "formula": {
+    "lightning": 1,
+    "life": 2
+  },
+  "name": "Defibrillator",
+  "tier": "Signature",
+  "tags": "HEAL",
+  "shape": "direct_target",
+  "origin": "aim_hit",
+  "cast_mode": "instant",
+  "delivery": {
+    "legend": "defibrillator"
+  },
+  "effects": [
+    {
+      "type": "heal",
+      "amount": 6
+    },
+    {
+      "type": "add_charge",
+      "amount": 10
+    }
+  ],
+  "self": {
+    "mode": "legend",
+    "effects": [
+      {
+        "type": "heal",
+        "amount": 6
+      },
+      {
+        "type": "add_charge",
+        "amount": 10
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "\"Clear!\" An electric jolt from your palm restarts an ally's heart: the ally you aim at within 24 blocks, otherwise the nearest one within 8, otherwise yourself. The target:\n• Heals 3 ❤, twice as much below 30% health\n• Loses poison and wither\n• Charge 10",
+  "self_description": "The jolt goes into your own chest: heal 3 ❤ (twice below 30% health), poison and wither removed."
+}

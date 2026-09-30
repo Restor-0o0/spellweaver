@@ -1,0 +1,53 @@
+{
+  "id": "magicka:expelliarmus",
+  "formula": {
+    "cold": 1,
+    "arcane": 2
+  },
+  "name": "Expelliarmus",
+  "tier": "Signature",
+  "tags": "CC/UTIL",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_mode": "instant",
+  "delivery": {
+    "legend": "expelliarmus"
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 2,
+      "element": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "stunned",
+      "duration_ticks": 10,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "remove_status",
+        "status": "rooted"
+      },
+      {
+        "type": "remove_status",
+        "status": "stunned"
+      },
+      {
+        "type": "remove_status",
+        "status": "frozen"
+      },
+      {
+        "type": "remove_status",
+        "status": "chilled"
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "From Harry Potter. A fast red bolt flies up to 44 blocks. The first creature hit:\n• Damage 1 ❤ arcane\n• Stun for 0.5 s\n• A monster drops the item from its main hand, and it flies toward you",
+  "self_description": "Breaks what binds you:\n• Removes roots, stun, freezing and chill"
+}

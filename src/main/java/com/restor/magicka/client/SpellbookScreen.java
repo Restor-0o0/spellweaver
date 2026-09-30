@@ -131,7 +131,7 @@ public final class SpellbookScreen extends Screen {
                         .append(MagicClient.castHint("primary")).append("\n").append(entry.primaryDescription()).append("\n\n")
                         .append(MagicClient.castHint("self")).append("\n").append(entry.selfDescription()).append("\n\n")
                         .append(Component.translatable("book.magicka.cast_time",String.format(Locale.ROOT,"%.2f",entry.castTicks()/20.0)))
-                        .append("\n").append(Component.translatable(!entry.channeled()?"book.magicka.mode_instant":entry.shape().construction()?"book.magicka.mode_growth":"book.magicka.mode_channel"));
+                        .append("\n").append(Component.translatable(entry.epic()?"book.magicka.mode_epic":!entry.channeled()?"book.magicka.mode_instant":entry.shape().construction()?"book.magicka.mode_growth":"book.magicka.mode_channel"));
         if(entry!=null && !guide && !entry.incantation().isEmpty())body=Component.literal("").append(body).append("\n\n").append(Component.translatable("book.magicka.incantation"));
         var lines=font.split(body,dw);int visible=Math.max(1,(y+bookHeight-72-textTop)/11);
         scroll=Math.clamp(scroll,0,Math.max(0,lines.size()-visible));
@@ -176,11 +176,11 @@ public final class SpellbookScreen extends Screen {
     @Override public boolean mouseClicked(double mx,double my,int button){
         if(stats)return super.mouseClicked(mx,my,button);
         var list=entries();int slot=slotAt(mx,my);
-        if(slot>=0){if(button==1)assign(slot,0);else if(button==0 && !list.isEmpty())assign(slot,list.get(selected).formula().prepared().packed());return true;}
+        if(slot>=0){if(button==1)assign(slot,0);else if(button==0 && !list.isEmpty())assign(slot,list.get(selected).spokenPacked());return true;}
         if(button==0){
             int index=page*rows+(int)((my-y-LIST_TOP)/23);
-            if(mx>=x+12 && mx<divider-11 && my>=y+LIST_TOP && my<y+LIST_TOP+rows*23 && index<list.size())dragFormula=list.get(index).formula().prepared().packed();
-            else if(mx>divider && my>=y+64 && my<y+130 && !list.isEmpty())dragFormula=list.get(selected).formula().prepared().packed();
+            if(mx>=x+12 && mx<divider-11 && my>=y+LIST_TOP && my<y+LIST_TOP+rows*23 && index<list.size())dragFormula=list.get(index).spokenPacked();
+            else if(mx>divider && my>=y+64 && my<y+130 && !list.isEmpty())dragFormula=list.get(selected).spokenPacked();
             else dragFormula=0;
             dragX=mx;dragY=my;dragging=false;
         }

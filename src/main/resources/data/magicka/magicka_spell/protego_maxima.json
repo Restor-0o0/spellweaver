@@ -1,0 +1,38 @@
+{
+  "id": "magicka:protego_maxima",
+  "formula": {
+    "life": 1,
+    "arcane": 3
+  },
+  "name": "Protego Maxima",
+  "tier": "Signature",
+  "tags": "DEF/CC",
+  "shape": "targeted_zone",
+  "origin": "caster_feet",
+  "cast_mode": "instant",
+  "delivery": {
+    "legend": "protego",
+    "radius": 6,
+    "duration_ticks": 200
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 1,
+      "element": "arcane"
+    }
+  ],
+  "self": {
+    "mode": "legend",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 1,
+        "element": "arcane"
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "The great shield charm from Harry Potter. A golden dome of radius 6 rises where you stand for 10 s:\n• You and allies inside get resistance I\n• Foes can't get in: they are pushed out and take 0.5 ❤ arcane once a second while touching it\n• Hostile projectiles bounce off the dome and now count as yours",
+  "self_description": "A smaller dome of radius 3.5 moves with you."
+}

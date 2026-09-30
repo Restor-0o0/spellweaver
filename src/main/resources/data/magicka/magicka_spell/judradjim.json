@@ -1,0 +1,59 @@
+{
+  "id": "magicka:judradjim",
+  "formula": {
+    "lightning": 1,
+    "earth": 2
+  },
+  "name": "Judradjim",
+  "tier": "Signature",
+  "tags": "DMG/CC",
+  "shape": "targeted_zone",
+  "origin": "aim_ground",
+  "cast_mode": "instant",
+  "delivery": {
+    "legend": "judradjim",
+    "radius": 4
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 8,
+      "element": "lightning"
+    },
+    {
+      "type": "apply_status",
+      "status": "stunned",
+      "duration_ticks": 30,
+      "strength": 1
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.6,
+      "lift": 0.5
+    }
+  ],
+  "self": {
+    "mode": "legend",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 8,
+        "element": "lightning"
+      },
+      {
+        "type": "apply_status",
+        "status": "stunned",
+        "duration_ticks": 30,
+        "strength": 1
+      },
+      {
+        "type": "apply_force",
+        "amount": 0.6,
+        "lift": 0.5
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "The thunder-calling spell from Frieren. A storm cloud gathers over the aimed spot for 1.5 s, then three bolts strike. Foes within 4 blocks:\n• Damage 4 ❤ lightning (×2 on wet)\n• Stun for 1.5 s\n• Knocked back",
+  "self_description": "The storm gathers right above you; you are not hurt."
+}

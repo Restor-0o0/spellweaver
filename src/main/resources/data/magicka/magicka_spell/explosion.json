@@ -1,0 +1,65 @@
+{
+  "id": "magicka:explosion",
+  "formula": {
+    "fire": 3,
+    "arcane": 2
+  },
+  "name": "Explosion",
+  "tier": "Signature",
+  "tags": "DMG/AOE/BREAK",
+  "shape": "targeted_explosion",
+  "origin": "aim_ground",
+  "cast_mode": "instant",
+  "delivery": {
+    "legend": "explosion",
+    "radius": 8
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 24,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 120
+    },
+    {
+      "type": "apply_force",
+      "amount": 2,
+      "lift": 0.8
+    },
+    {
+      "type": "destroy_blocks",
+      "budget": 60,
+      "radius": 4
+    }
+  ],
+  "self": {
+    "mode": "legend",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 24,
+        "element": "fire"
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 120
+      },
+      {
+        "type": "apply_force",
+        "amount": 2,
+        "lift": 0.8
+      },
+      {
+        "type": "destroy_blocks",
+        "budget": 60,
+        "radius": 4
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "Megumin's one and only spell from KonoSuba. Three spinning crimson magic circles stack above the aimed spot for 2 s, then a pillar of light strikes it. Everyone within 8 blocks:\n• Damage 12 ❤ fire\n• Heat 120\n• Thrown far away\nIt blasts a crater of up to 60 blocks and leaves a mushroom cloud.\nThe price: for 8 s you cannot cast any element, get Slowness IV and Weakness II.",
+  "self_description": "The blast goes off at your feet and throws you high into the air with slow falling for 8 s; you take no damage from it. The price is the same."
+}

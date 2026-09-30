@@ -25,6 +25,53 @@ public final class QuickCastGameTests {
         CastingServer.input(p,9);h.assertTrue(CastingServer.snapshot(p).remaining()>0,"Player can cast manually after filling");h.succeed();
     }
     @GameTest(template="empty")
+    public static void presetsPackTheSpokenOrder(GameTestHelper h){
+        var ultimate=RecipeGameTests.spell("Absolute Zero");int packed=ultimate.spokenPacked();
+        h.assertTrue(Formula.unpack(packed).elements().equals(ultimate.spoken()),"Preset keeps the incantation order");
+        h.assertFalse(packed==ultimate.formula().prepared().packed(),"Sorted elements are not the incantation");
+        h.assertTrue(GrimoireState.valid(packed),"Ordered preset passes validation");
+        var state=new GrimoireState();state.assign(0,packed);h.assertTrue(state.slot(0)==packed,"Slot keeps the order it was given");
+        var plain=RecipeGameTests.spell("Firebomb");
+        h.assertTrue(plain.spokenPacked()==plain.formula().prepared().packed(),"Spells without an incantation are unaffected");
+        for(var d:RecipeRegistry.recipes())h.assertTrue(Formula.unpack(d.spokenPacked()).key().equals(d.formula()),"Ordering never changes the spell, "+d.name());
+        h.assertTrue(CastingServer.spoken(ultimate.formula().prepared()).elements().equals(ultimate.spoken()),"Any stored order is filled as the incantation");
+        h.succeed();
+    }
+    @GameTest(template="empty")
+    public static void quickFilledIncantationCastsTheUltimate(GameTestHelper h){
+        var p=RecipeGameTests.caster(h);var ultimate=RecipeGameTests.spell("Absolute Zero");var server=new CastingServer();
+        CastingServer.quickFill(p,ultimate.spokenPacked());
+        for(int i=0;i<ultimate.formula().size()*CastingServer.QUEUE_TICKS_PER_ELEMENT;i++)server.tick(new PlayerTickEvent.Post(p));
+        h.assertTrue(Formula.unpack(CastingServer.snapshot(p).formula()).elements().equals(ultimate.spoken()),"Queue fills in the spoken order");
+        CastingServer.input(p,9);var cast=CastingServer.casting(p);
+        h.assertTrue(cast!=null && cast.id().equals(ultimate.id()),"Preset casts the ultimate, got "+(cast==null?"nothing":cast.name()));
+        h.succeed();
+    }
+    @GameTest(template="empty",timeoutTicks=100)
+    public static void presetsSavedBeforeTheFixStillWork(GameTestHelper h){
+        var errors=new java.util.ArrayList<String>();var server=new CastingServer();
+        for(var ultimate:RecipeRegistry.recipes().stream().filter(d->!d.incantation().isEmpty()).toList()){
+            var p=RecipeGameTests.caster(h);
+            CastingServer.quickFill(p,ultimate.formula().prepared().packed());
+            for(int i=0;i<ultimate.formula().size()*CastingServer.QUEUE_TICKS_PER_ELEMENT;i++)server.tick(new PlayerTickEvent.Post(p));
+            if(!Formula.unpack(CastingServer.snapshot(p).formula()).elements().equals(ultimate.spoken()))errors.add(ultimate.name()+" filled as "+Formula.unpack(CastingServer.snapshot(p).formula()).elements());
+            CastingServer.input(p,9);var cast=CastingServer.casting(p);
+            if(cast==null || !cast.id().equals(ultimate.id()))errors.add(ultimate.name()+" cast as "+(cast==null?"nothing":cast.name()));
+            CastingServer.input(p,12);
+        }
+        if(errors.isEmpty())h.succeed();else h.fail("Presets saved in element order must still cast: "+String.join("; ",errors));
+    }
+    @GameTest(template="empty")
+    public static void typingTheWrongOrderStillFizzles(GameTestHelper h){
+        var p=RecipeGameTests.caster(h);var ultimate=RecipeGameTests.spell("Absolute Zero");
+        CastingServer.input(p,7);
+        for(var e:ultimate.formula().prepared().elements())CastingServer.input(p,e==Element.DEATH?13:e.ordinal());
+        CastingServer.input(p,9);var cast=CastingServer.casting(p);
+        h.assertTrue(cast!=null && !cast.id().equals(ultimate.id()),"Hand-typed wrong order never reaches the ultimate");
+        h.assertTrue(cast.formula().size()==ultimate.formula().size()-1,"Broken incantation drops to the lesser spell, got "+cast.name());
+        h.succeed();
+    }
+    @GameTest(template="empty")
     public static void cancelFillAndProtectCommittedCast(GameTestHelper h){
         var p=RecipeGameTests.caster(h);var other=RecipeGameTests.caster(h);int f=RecipeGameTests.spell("Firebomb").formula().prepared().packed();
         CastingServer.quickFill(p,f);var server=new CastingServer();for(int i=0;i<8;i++)server.tick(new PlayerTickEvent.Post(p));

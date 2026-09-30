@@ -1,0 +1,69 @@
+{
+  "id": "magicka:blizzard",
+  "formula": {
+    "cold": 3,
+    "water": 1,
+    "earth": 1
+  },
+  "incantation": "32353",
+  "name": "Blizzard",
+  "tier": "Signature",
+  "tags": "DMG/CC/AOE",
+  "shape": "targeted_zone",
+  "origin": "aim_hit",
+  "cast_ticks": 27,
+  "cast_mode": "epic",
+  "delivery": {
+    "epic": "blizzard",
+    "duration_ticks": 240,
+    "radius": 11.0,
+    "shard": [
+      {
+        "type": "deal_damage",
+        "amount": 6,
+        "element": "cold"
+      },
+      {
+        "type": "apply_status",
+        "status": "chilled",
+        "duration_ticks": 80,
+        "strength": 3
+      }
+    ]
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 3,
+      "element": "cold"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": -50
+    },
+    {
+      "type": "apply_status",
+      "status": "chilled",
+      "duration_ticks": 60,
+      "strength": 2
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 300,
+        "strength": 3
+      },
+      {
+        "type": "modify_temperature",
+        "amount": -60
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "A snowstorm covers an area 11 blocks across around the aimed spot, and water inside freezes.\nUltimate channel: just stand still for up to 12 s. Stepping aside breaks the channel; instant mode does not apply. Needs open sky: at least 10 blocks of air above the target, so it fails in caves and under roofs.\nOnce a second, everyone in the storm takes:\n• Damage 1.5 ❤ cold\n• Cold 50: slows, freezes at 100 accumulated cold\n• Chill for 3 s\nIcicles fall several times a second. Each one hits within 1.5 blocks for 3 ❤ cold and a strong chill.",
+  "self_description": "On you:\n• Stone skin (resistance III), 15 s\n• Cold 60"
+}

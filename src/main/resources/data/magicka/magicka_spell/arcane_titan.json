@@ -1,0 +1,71 @@
+{
+  "id": "magicka:arcane_titan",
+  "formula": {
+    "earth": 1,
+    "arcane": 4
+  },
+  "incantation": "77577",
+  "name": "Arcane Titan",
+  "tier": "Signature",
+  "tags": "SUMMON/DMG/AOE",
+  "shape": "targeted_zone",
+  "origin": "aim_hit",
+  "cast_ticks": 27,
+  "cast_mode": "epic",
+  "delivery": {
+    "epic": "titan",
+    "element": "arcane",
+    "duration_ticks": 240,
+    "slam": [
+      {
+        "type": "deal_damage",
+        "amount": 10,
+        "element": "arcane"
+      },
+      {
+        "type": "apply_status",
+        "status": "arcane_unstable",
+        "duration_ticks": 100,
+        "strength": 1
+      },
+      {
+        "type": "apply_force",
+        "amount": 0.8,
+        "lift": 0.3
+      }
+    ]
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 8,
+      "element": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "arcane_unstable",
+      "duration_ticks": 80,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "haste",
+        "duration_ticks": 300,
+        "strength": 2
+      },
+      {
+        "type": "apply_status",
+        "status": "slow_falling",
+        "duration_ticks": 300,
+        "strength": 1
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "A giant arcane titan rises waist-deep from the ground at the aimed spot and fights from there while you keep the channel.\nUltimate channel: just stand still for up to 12 s. Stepping aside breaks the channel and the titan sinks back underground; instant mode does not apply. Needs open sky above the aimed spot.\nIt picks foes within 20 blocks and, about every 1.5 s, either fires arcane rays at up to 3 foes at once: damage 4 ❤ arcane, instability;\nor slams the ground with both fists, which unleashes a rune blast; everyone within 5 blocks takes 5 ❤ arcane, instability and knockback.",
+  "self_description": "On you:\n• Speed III, 15 s\n• Slow falling, 15 s"
+}

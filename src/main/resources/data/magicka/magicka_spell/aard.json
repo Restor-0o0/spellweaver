@@ -1,0 +1,49 @@
+{
+  "id": "magicka:aard",
+  "formula": {
+    "water": 1,
+    "earth": 2
+  },
+  "name": "Aard",
+  "tier": "Signature",
+  "tags": "CC/UTIL",
+  "shape": "spray",
+  "origin": "caster_front",
+  "cast_mode": "instant",
+  "delivery": {
+    "legend": "aard",
+    "radius": 8
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 1,
+      "element": "earth"
+    },
+    {
+      "type": "apply_status",
+      "status": "stunned",
+      "duration_ticks": 20,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "legend",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 1,
+        "element": "earth"
+      },
+      {
+        "type": "apply_status",
+        "status": "stunned",
+        "duration_ticks": 20,
+        "strength": 1
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "The Witcher's telekinetic sign. A wave of force sweeps a 70° cone, 8 blocks long. Every foe in it:\n• Damage 0.5 ❤ earth\n• Stun for 1 s\n• Thrown far back\nThe wave also shatters fragile blocks like glass and leaves.",
+  "self_description": "The wave bursts in all directions around you."
+}

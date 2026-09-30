@@ -1,0 +1,57 @@
+{
+  "id": "magicka:water_elemental",
+  "formula": {
+    "water": 2,
+    "arcane": 1,
+    "death": 1
+  },
+  "name": "Water Elemental",
+  "tier": "Signature",
+  "tags": "SUMMON",
+  "shape": "summon_object",
+  "origin": "caster_front",
+  "cast_ticks": 20,
+  "delivery": {
+    "object_kind": "elemental",
+    "element": "water",
+    "duration_ticks": 1200
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 4,
+      "element": "water"
+    },
+    {
+      "type": "set_wet",
+      "duration_ticks": 100
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.5,
+      "lift": 0.2
+    }
+  ],
+  "self": {
+    "mode": "summon",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 4,
+        "element": "water"
+      },
+      {
+        "type": "set_wet",
+        "duration_ticks": 100
+      },
+      {
+        "type": "apply_force",
+        "amount": 0.5,
+        "lift": 0.2
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "A water elemental appears in front of you and follows you for 60 s. At most 2 elementals serve you at once: a third one replaces the oldest. It attacks monsters nearby and whoever fights you, and never harms you or your allies.\nRolls after you as a living wave and throws water orbs every 1.3 s from up to 13 blocks:\n• Damage 2 ❤ water\n• Wet for 5 s\n• Knocks back a little",
+  "self_description": "The elemental appears right next to you."
+}

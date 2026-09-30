@@ -90,6 +90,7 @@ public final class SpellRuntime {
         if(s.origin()!=OriginMode.CASTER && s.origin()!=OriginMode.CASTER_FEET && s.origin()!=OriginMode.CASTER_FRONT){
             LivingEntity aimed=target(p);if(aimed!=null)point=aimed.position();
         }
+        if (LegendMagic.handles(s,self)) { LegendMagic.cast(p,s,self); return; }
         if (self) {
             switch(s.selfMode()) {
                 case "nova" -> impact(p,s,p.position(),s.number("radius",3),true,true);
@@ -267,7 +268,7 @@ public final class SpellRuntime {
     public static void freezeWetZones(ServerPlayer p,Vec3 point,double radius){
         for(Active a:java.util.stream.Stream.concat(ACTIVE.stream(),PENDING.stream()).toList())if(a instanceof Zone z && z.wet && z.p.level()==p.level() && z.point.distanceToSqr(point)<Math.pow(radius+z.radius,2)){z.remaining=0;freezeSurface(p,z.point,z.radius);}
     }
-    private static void freezeSurface(ServerPlayer p,Vec3 point,double radius){
+    static void freezeSurface(ServerPlayer p,Vec3 point,double radius){
         BlockPos center=BlockPos.containing(point); UUID id=UUID.randomUUID();int budget=0,r=(int)Math.ceil(radius),limit=Math.min(2048,(int)(Math.PI*radius*radius*1.5));
         for(BlockPos candidate:BlockPos.betweenClosed(center.offset(-r,-1,-r),center.offset(r,1,r)))if(candidate.distSqr(center)<=radius*radius && budget<limit){
             BlockPos pos=candidate.immutable();var state=p.serverLevel().getBlockState(pos);
@@ -290,10 +291,12 @@ public final class SpellRuntime {
             SpellVfx.cue(p,s,SpellVfx.ARC,from,current,.12,10);
             float damage=amount*(MagicStatuses.has(victim,MagicStatuses.Status.WET)?2:1);
             if(victim instanceof Player)damage*=MagicConfig.PLAYER_DAMAGE.get().floatValue();
-            victim.hurt(p.damageSources().indirectMagic(p,p),damage);MagicStatuses.charge(victim,40);
+            com.restor.magicka.enemy.MagicEnemies.hurt(victim,p.damageSources().indirectMagic(p,p),damage,p,s,false);MagicStatuses.charge(victim,40);
         }
     }
+    static void sustain(ServerPlayer p,java.util.function.IntPredicate step){add(new Active(){int age;public ServerPlayer caster(){return p;}public boolean tick(){return step.test(age++);}});}
     static void repeat(ServerPlayer p,int ticks,java.util.function.IntConsumer step){add(new Active(){int age;public ServerPlayer caster(){return p;}public boolean tick(){step.accept(age);return ++age>=ticks;}});}
+    static void timed(ServerPlayer p,int ticks,java.util.function.IntConsumer step,Runnable end){add(new Active(){int age;boolean done;public ServerPlayer caster(){return p;}public boolean tick(){step.accept(age);return ++age>=ticks;}public void dispose(){if(!done){done=true;end.run();}}});}
     public static void delay(ServerPlayer p,int ticks,Runnable action){add(new Active(){int remaining=Math.clamp(ticks,1,1200);public ServerPlayer caster(){return p;}public boolean tick(){if(--remaining<=0){action.run();return true;}return false;}});}
     private static void meteor(ServerPlayer p,SpellDefinition s,Vec3 point,boolean self){
         SpellVfx.cue(p,s,SpellVfx.TELEGRAPH,point,point,s.number("radius",3),(int)s.number("delay_ticks",12)+12);
@@ -308,6 +311,7 @@ public final class SpellRuntime {
     private static void summon(ServerPlayer p,SpellDefinition s,Vec3 point,boolean self){
         String kind=SpellDefinition.string(s.delivery(),"object_kind","anchor");
         if(kind.equals("anchor")){MagicConstructionManager.start(p,s,self,point);return;}
+        if(kind.equals("elemental")){Elementals.companion(p,s,self?p.position():point);return;}
         if(kind.equals("undead")){var graph=self?s.selfEffects():s.effects();for(var e:near(p,point,s.number("radius",2)))if(e!=p || self)EffectGraph.entity(p,e,s,graph,point,self);EffectGraph.world(p,s,graph,point,self,true);particles(p,s,point,20,.8);return;}
         if(kind.equals("bubble")){
             int lift=(int)s.number("lift_ticks",100);

@@ -1,0 +1,72 @@
+{
+  "id": "magicka:death_titan",
+  "formula": {
+    "earth": 1,
+    "death": 3,
+    "arcane": 1
+  },
+  "incantation": "58878",
+  "name": "Death Titan",
+  "tier": "Signature",
+  "tags": "SUMMON/DMG/AOE",
+  "shape": "targeted_zone",
+  "origin": "aim_hit",
+  "cast_ticks": 27,
+  "cast_mode": "epic",
+  "delivery": {
+    "epic": "titan",
+    "element": "death",
+    "duration_ticks": 240,
+    "slam": [
+      {
+        "type": "deal_damage",
+        "amount": 8,
+        "element": "death"
+      },
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 100,
+        "strength": 2
+      }
+    ]
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 6,
+      "element": "death"
+    },
+    {
+      "type": "drain_life",
+      "amount": 3,
+      "fraction": 0.5
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 80,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 300,
+        "strength": 2
+      },
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 40,
+        "strength": 1
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "A giant death titan rises waist-deep from the ground at the aimed spot and fights from there while you keep the channel.\nUltimate channel: just stand still for up to 12 s. Stepping aside breaks the channel and the titan sinks back underground; instant mode does not apply. Needs open sky above the aimed spot.\nIt picks foes within 20 blocks and, about every 1.5 s, either drains life with a ray: damage 3 ❤ death, life drain 1.5 ❤, withering; heals you by 1 ❤;\nor slams the ground with both fists, which releases a soul nova; everyone within 5 blocks takes 4 ❤ death and strong withering.",
+  "self_description": "On you:\n• Stone skin (resistance II), 15 s\n• Withering, 2 s"
+}

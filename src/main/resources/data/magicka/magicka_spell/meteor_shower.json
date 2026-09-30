@@ -1,0 +1,60 @@
+{
+  "id": "magicka:meteor_shower",
+  "formula": {
+    "fire": 3,
+    "earth": 2
+  },
+  "incantation": "15151",
+  "name": "Meteor Shower",
+  "tier": "Signature",
+  "tags": "DMG/BREAK/AOE",
+  "shape": "targeted_zone",
+  "origin": "aim_hit",
+  "cast_ticks": 27,
+  "cast_mode": "epic",
+  "delivery": {
+    "epic": "meteors",
+    "duration_ticks": 240,
+    "radius": 10.0,
+    "burst_radius": 3.0
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 14,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 140
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.8,
+      "lift": 0.4
+    },
+    {
+      "type": "destroy_blocks",
+      "budget": 2,
+      "radius": 1.2
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "modify_temperature",
+        "amount": 60
+      },
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 300,
+        "strength": 3
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "Burning stones rain down on an area 10 blocks across around the aimed spot.\nUltimate channel: just stand still for up to 12 s. Stepping aside breaks the channel; instant mode does not apply. Needs open sky: at least 10 blocks of air above the target, so it fails in caves and under roofs.\nA meteor falls about three times a second. Each one explodes within 3 blocks:\n• Damage 7 ❤ fire\n• Heat 140: sets targets and the ground on fire\n• Knocks back and leaves a small crater",
+  "self_description": "On you:\n• Heat 60\n• Stone skin (resistance III), 15 s"
+}

@@ -1,0 +1,47 @@
+{
+  "id": "magicka:kamehameha",
+  "formula": {
+    "water": 1,
+    "lightning": 1,
+    "arcane": 2
+  },
+  "name": "Kamehameha",
+  "tier": "Signature",
+  "tags": "DMG/CC",
+  "shape": "beam",
+  "origin": "caster_front",
+  "cast_mode": "instant",
+  "delivery": {
+    "legend": "kamehameha"
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 2,
+      "element": "arcane"
+    },
+    {
+      "type": "deal_damage",
+      "amount": 1,
+      "element": "lightning"
+    }
+  ],
+  "self": {
+    "mode": "legend",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 2,
+        "element": "arcane"
+      },
+      {
+        "type": "deal_damage",
+        "amount": 1,
+        "element": "lightning"
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "From Dragon Ball. \"Ka… me… ha… me…\" — you gather a glowing ball of energy for 1.5 s, then release a thick blue beam that follows your aim for 1.2 s, up to 32 blocks. Every 0.2 s everyone in the beam:\n• Damage 1 ❤ arcane + 0.5 ❤ lightning (×2 on wet)\n• Pushed along the beam",
+  "self_description": "After the charge the beam fires straight down and launches you high into the air with slow falling for 5 s. Whoever stands below takes the beam's damage."
+}

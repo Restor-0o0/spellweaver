@@ -1,0 +1,40 @@
+{
+  "id": "magicka:aura_scale",
+  "formula": {
+    "cold": 1,
+    "lightning": 1,
+    "arcane": 1
+  },
+  "name": "Scale of Obedience",
+  "tier": "Signature",
+  "tags": "CC",
+  "shape": "direct_target",
+  "origin": "aim_hit",
+  "cast_mode": "instant",
+  "delivery": {
+    "legend": "aura_scale",
+    "duration_ticks": 600
+  },
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "stunned",
+      "duration_ticks": 60,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 200,
+        "strength": 1
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "Aura the Guillotine's Scale of Obedience from Frieren. Golden scales weigh your life against the mob you aim at within 24 blocks (bosses are immune):\n• If its health is not greater than yours, it obeys you for 30 s: fights hostile mobs near you and follows you\n• Otherwise the scales tip against you and the mob is only stunned for 3 s",
+  "self_description": "The scales judge you: stone skin (resistance I), 10 s."
+}

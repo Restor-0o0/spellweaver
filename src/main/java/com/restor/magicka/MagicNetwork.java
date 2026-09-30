@@ -45,15 +45,27 @@ public final class MagicNetwork {
         @Override public Type<Shape> type(){return TYPE;}
     }
     public static final java.util.Map<Integer,String> clientShapes=new java.util.HashMap<>();
+    public record Locks(int mask,int ticks) implements CustomPacketPayload {
+        public static final Type<Locks> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(Magicka.ID,"locks"));
+        public static final StreamCodec<RegistryFriendlyByteBuf,Locks> CODEC=StreamCodec.of((b,v)->{b.writeVarInt(v.mask);b.writeVarInt(v.ticks);},b->new Locks(b.readVarInt(),b.readVarInt()));
+        @Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
+    }
+    public static int clientLocks;
+    public static long clientLocksUntil;
     public record Statuses(int entity, int mask) implements CustomPacketPayload {
         public static final Type<Statuses> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(Magicka.ID,"statuses"));
         public static final StreamCodec<RegistryFriendlyByteBuf,Statuses> CODEC=StreamCodec.of((b,v)->{b.writeVarInt(v.entity);b.writeVarInt(v.mask);},b->new Statuses(b.readVarInt(),b.readVarInt()));
         @Override public Type<Statuses> type(){return TYPE;}
     }
-    public record Stats(int[] values) implements CustomPacketPayload {
+    public record Stats(int[] values,int[] gear) implements CustomPacketPayload {
         public static final Type<Stats> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(Magicka.ID,"stats"));
-        public static final StreamCodec<RegistryFriendlyByteBuf,Stats> CODEC=StreamCodec.of((b,v)->{b.writeVarInt(v.values.length);for(int x:v.values)b.writeVarInt(x);},
-                b->{int n=b.readVarInt();if(n<0 || n>64)throw new IllegalArgumentException("Too many stats");int[] v=new int[n];for(int i=0;i<n;i++)v[i]=b.readVarInt();return new Stats(v);});
+        public static final StreamCodec<RegistryFriendlyByteBuf,Stats> CODEC=StreamCodec.of((b,v)->{writeRow(b,v.values);writeRow(b,v.gear);},
+                b->new Stats(readRow(b),readRow(b)));
+        private static void writeRow(RegistryFriendlyByteBuf b,int[] row){b.writeVarInt(row.length);for(int x:row)b.writeVarInt(x+10000);}
+        private static int[] readRow(RegistryFriendlyByteBuf b){
+            int n=b.readVarInt();if(n<0 || n>64)throw new IllegalArgumentException("Too many stats");
+            int[] row=new int[n];for(int i=0;i<n;i++)row[i]=b.readVarInt()-10000;return row;
+        }
         @Override public Type<Stats> type(){return TYPE;}
     }
     public record ShapeGrid(long low, long high) implements CustomPacketPayload {
@@ -73,9 +85,10 @@ public final class MagicNetwork {
         @Override public Type<SetStat> type(){return TYPE;}
     }
     public static int[] clientStats=MagicStats.defaults();
+    public static int[] clientGear=new int[MagicStats.COUNT];
     private static final java.util.List<String> catalogBuffer=new java.util.ArrayList<>();
     public static final java.util.Map<Integer,Integer> clientStatuses=new java.util.HashMap<>();
-    public static void clearClient(){clientState=new State(false,0,0,0,0,0,false,false);clientQueue=new QueueState(0,0);catalogBuffer.clear();clientStatuses.clear();clientShapes.clear();clientConstruction=null;clientStats=MagicStats.defaults();clientPattern=ShapePattern.defaults();RecipeRegistry.resetClient();}
+    public static void clearClient(){clientState=new State(false,0,0,0,0,0,false,false);clientQueue=new QueueState(0,0);catalogBuffer.clear();clientStatuses.clear();clientShapes.clear();clientConstruction=null;clientLocks=0;clientLocksUntil=0;clientStats=MagicStats.defaults();clientGear=new int[MagicStats.COUNT];clientPattern=ShapePattern.defaults();RecipeRegistry.resetClient();}
     public static void construction(ServerPlayer player, java.util.UUID id, int placed, int remaining){
         Formula formula=Formula.unpack(CastingServer.snapshot(player).formula());
         if(!formula.empty()) CastingServer.construction(player,Math.max(0,MagicStats.resolve(player,formula.key()).budget()-remaining));
@@ -98,16 +111,20 @@ public final class MagicNetwork {
     /** Contains no client classes, so the payload handler is safe on dedicated servers. */
     public static State clientState = new State(false, 0, 0, 0, 0, 0, false, false);
     public static void register(RegisterPayloadHandlersEvent event) {
-        var registrar = event.registrar("10");
+        var registrar = event.registrar("11");
         registrar.playToClient(Visual.TYPE,Visual.CODEC,(packet,context)->visualReceiver.accept(packet));
         registrar.playToServer(QuickFill.TYPE,QuickFill.CODEC,(packet,context)->{if(context.player() instanceof ServerPlayer p)CastingServer.quickFill(p,packet.formula);});
+        registrar.playToClient(Locks.TYPE,Locks.CODEC,(packet,context)->{clientLocks=packet.mask;clientLocksUntil=System.currentTimeMillis()+packet.ticks*50L;});
         registrar.playToClient(QueueState.TYPE,QueueState.CODEC,(packet,context)->clientQueue=packet);
         registrar.playToServer(Input.TYPE, Input.CODEC, (packet, context) -> {
             if (context.player() instanceof ServerPlayer player) CastingServer.input(player, packet.action());
         });
         registrar.playToClient(State.TYPE, State.CODEC, (packet, context) -> clientState = packet);
         registrar.playToClient(Construction.TYPE,Construction.CODEC,(packet,context)->clientConstruction=packet);
-        registrar.playToClient(Stats.TYPE,Stats.CODEC,(packet,context)->{int[] v=MagicStats.defaults();System.arraycopy(packet.values,0,v,0,Math.min(v.length,packet.values.length));clientStats=v;});
+        registrar.playToClient(Stats.TYPE,Stats.CODEC,(packet,context)->{
+            int[] v=MagicStats.defaults();System.arraycopy(packet.values,0,v,0,Math.min(v.length,packet.values.length));clientStats=v;
+            int[] g=new int[MagicStats.COUNT];System.arraycopy(packet.gear,0,g,0,Math.min(g.length,packet.gear.length));clientGear=g;
+        });
         registrar.playToClient(ShapeGrid.TYPE,ShapeGrid.CODEC,(packet,context)->clientPattern=ShapePattern.sanitize(packet.low,packet.high));
         registrar.playToServer(SetShapeGrid.TYPE,SetShapeGrid.CODEC,(packet,context)->{if(context.player() instanceof ServerPlayer p)ShapePattern.store(p,packet.low,packet.high);});
         registrar.playToServer(SetStat.TYPE,SetStat.CODEC,(packet,context)->{if(context.player() instanceof ServerPlayer p){if(packet.index<0)MagicStats.reset(p);else MagicStats.set(p,packet.index,packet.value);}});

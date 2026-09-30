@@ -24,7 +24,11 @@ import org.lwjgl.glfw.GLFW;
 @EventBusSubscriber(modid = Magicka.ID, value = Dist.CLIENT)
 public final class MagicClient {
     static {MagicNetwork.visualReceiver=SpellVisuals::receive;}
-    @SubscribeEvent public static void visualsTick(net.neoforged.neoforge.client.event.ClientTickEvent.Post event){SpellVisuals.tick();}
+    @SubscribeEvent public static void visualsTick(net.neoforged.neoforge.client.event.ClientTickEvent.Post event){
+        SpellVisuals.tick();
+        var player=Minecraft.getInstance().player;
+        if(player!=null && MagicNetwork.clientState.channeling() && !directedHeld && player.tickCount%5==0)send(12);
+    }
     @SubscribeEvent public static void visuals(net.neoforged.neoforge.client.event.RenderLevelStageEvent event){
         var mc=Minecraft.getInstance();
         if(event.getStage()!=net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_PARTICLES || mc.level==null)return;
@@ -43,6 +47,7 @@ public final class MagicClient {
     private static final KeyMapping BOOK = key("spellbook", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_B);
     private static final KeyMapping INSTANT = key("instant", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_H);
     private static final KeyMapping SHAPE = key("shape", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_K);
+    private static final KeyMapping LOADOUT = key("loadout", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_J);
     private static final KeyMapping[] QUICK=java.util.stream.IntStream.range(0,4).mapToObj(i->new KeyMapping("key.magicka.quick_"+(i+1),KeyConflictContext.IN_GAME,
             net.neoforged.neoforge.client.settings.KeyModifier.ALT,InputConstants.Type.KEYSYM,GLFW.GLFW_KEY_1+i,"key.categories.magicka")).toArray(KeyMapping[]::new);
     public static Component quickKey(int index){return QUICK[index].getTranslatedKeyMessage();}
@@ -52,6 +57,8 @@ public final class MagicClient {
     public static Component instantKey() { return INSTANT.getTranslatedKeyMessage(); }
     public static boolean bookMatches(int key, int scan) { return BOOK.matches(key, scan); }
     public static boolean shapeMatches(int key, int scan) { return SHAPE.matches(key, scan); }
+    public static Component loadoutKey() { return LOADOUT.getTranslatedKeyMessage(); }
+    public static void openLoadout() { PacketDistributor.sendToServer(new MagicNetwork.Input(14)); }
     public static Component castHint(String intent) {
         return Component.literal((intent.equals("self") ? "Self: " : "Primary: ")).append(intent.equals("self") ? SELF.getTranslatedKeyMessage() : DIRECTED.getTranslatedKeyMessage());
     }
@@ -72,6 +79,7 @@ public final class MagicClient {
         }
         if (matches.test(BOOK)) { Minecraft.getInstance().setScreen(new SpellbookScreen()); return true; }
         if (matches.test(SHAPE)) { Minecraft.getInstance().setScreen(new ShapeEditorScreen()); return true; }
+        if (matches.test(LOADOUT)) { send(14); return true; }
         if (matches.test(SELF) && Minecraft.getInstance().player.getMainHandItem().is(com.restor.magicka.MagicItems.SPELLBOOK.get())) {
             Minecraft.getInstance().setScreen(new SpellbookScreen()); return true;
         }
@@ -92,7 +100,7 @@ public final class MagicClient {
         if (!state.enabled()) return false;
         for (int i = 0; i < ELEMENTS.length; i++) if (matches.test(ELEMENTS[i])) { send(elementAction(Element.values()[i])); return true; }
         if (matches.test(CLEAR)) { send(8); return true; }
-        if (matches.test(DIRECTED)) { send(9); return true; }
+        if (matches.test(DIRECTED)) { directedHeld = true; send(9); return true; }
         if (matches.test(SELF)) { send(10); return true; }
         return false;
     }
@@ -118,8 +126,11 @@ public final class MagicClient {
             key.setDown(false);
         }
     }
+    private static boolean directedHeld;
     private static void release(java.util.function.Predicate<KeyMapping> matches) {
-        if (MagicNetwork.clientState.channeling() && matches.test(DIRECTED)) send(12);
+        if (!matches.test(DIRECTED)) return;
+        directedHeld = false;
+        if (MagicNetwork.clientState.channeling()) send(12);
     }
     @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.HIGHEST)
     public static void keyboard(InputEvent.Key event) {
@@ -175,7 +186,10 @@ public final class MagicClient {
         @SubscribeEvent public static void keys(RegisterKeyMappingsEvent event) {
             for (KeyMapping key : ELEMENTS) event.register(key);
             for(KeyMapping key:QUICK)event.register(key);
-            for (KeyMapping key : new KeyMapping[]{TOGGLE, CLEAR, DIRECTED, SELF, INSTANT, BOOK, SHAPE}) event.register(key);
+            for (KeyMapping key : new KeyMapping[]{TOGGLE, CLEAR, DIRECTED, SELF, INSTANT, BOOK, SHAPE, LOADOUT}) event.register(key);
+        }
+        @SubscribeEvent public static void screens(net.neoforged.neoforge.client.event.RegisterMenuScreensEvent event) {
+            event.register(com.restor.magicka.GearMenu.TYPE.get(), GearScreen::new);
         }
         @SubscribeEvent public static void layers(RegisterGuiLayersEvent event) {
             event.registerAboveAll(ResourceLocation.fromNamespaceAndPath(Magicka.ID, "casting"), (graphics, timer) -> MagicHud.render(graphics));

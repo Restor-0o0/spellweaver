@@ -1,0 +1,51 @@
+{
+  "id": "magicka:hurricane",
+  "formula": {
+    "arcane": 3,
+    "water": 2
+  },
+  "incantation": "72727",
+  "name": "Hurricane",
+  "tier": "Signature",
+  "tags": "CC/DMG/AOE",
+  "shape": "targeted_zone",
+  "origin": "aim_hit",
+  "cast_ticks": 27,
+  "cast_mode": "epic",
+  "delivery": {
+    "epic": "tornado",
+    "duration_ticks": 240,
+    "radius": 9.0
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 6,
+      "element": "arcane"
+    },
+    {
+      "type": "set_wet",
+      "duration_ticks": 100
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "slow_falling",
+        "duration_ticks": 300,
+        "strength": 1
+      },
+      {
+        "type": "apply_status",
+        "status": "haste",
+        "duration_ticks": 300,
+        "strength": 3
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "A tornado rises at the aimed spot and slowly follows your crosshair.\nUltimate channel: just stand still for up to 12 s. Stepping aside breaks the channel; instant mode does not apply. Needs open sky: at least 10 blocks of air above the target, so it fails in caves and under roofs.\nThe funnel pulls in and spins every creature within 9 blocks. Those caught in the core are lifted into the air and take, twice a second:\n• Damage 3 ❤ arcane\n• Wet for 5 s\nThe funnel tears up grass, flowers and leaves on its path. You are not pulled.",
+  "self_description": "On you:\n• Slow falling for 15 s\n• Speed IV for 15 s"
+}

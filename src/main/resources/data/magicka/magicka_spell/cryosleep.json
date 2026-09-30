@@ -1,0 +1,49 @@
+{
+  "id": "magicka:cryosleep",
+  "formula": {
+    "cold": 1,
+    "life": 2
+  },
+  "name": "Cryosleep",
+  "tier": "Signature",
+  "tags": "HEAL/CC",
+  "shape": "direct_target",
+  "origin": "aim_hit",
+  "cast_mode": "instant",
+  "delivery": {
+    "legend": "cryosleep",
+    "duration_ticks": 60,
+    "foe": [
+      {
+        "type": "apply_status",
+        "status": "frozen",
+        "duration_ticks": 60,
+        "strength": 1
+      },
+      {
+        "type": "apply_status",
+        "status": "chilled",
+        "duration_ticks": 120,
+        "strength": 1
+      }
+    ]
+  },
+  "effects": [
+    {
+      "type": "heal",
+      "amount": 2
+    }
+  ],
+  "self": {
+    "mode": "legend",
+    "effects": [
+      {
+        "type": "heal",
+        "amount": 2
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "The sci-fi cryo pod. The creature you aim at (or you, if you aim at nothing) is sealed in a block of ice for 3 s.\n• Ally or you: can't move, resistance V, heal 1 ❤ every 0.5 s — up to 6 ❤\n• Foe: frozen for 3 s, then chilled for 3 s more",
+  "self_description": "You seal yourself in ice: 3 s without moving, resistance V and up to 6 ❤ of healing."
+}

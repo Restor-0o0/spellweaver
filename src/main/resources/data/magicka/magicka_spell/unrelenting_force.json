@@ -1,0 +1,50 @@
+{
+  "id": "magicka:unrelenting_force",
+  "formula": {
+    "water": 1,
+    "earth": 1,
+    "arcane": 1
+  },
+  "name": "Fus Ro Dah",
+  "tier": "Signature",
+  "tags": "DMG/CC",
+  "shape": "spray",
+  "origin": "caster_front",
+  "cast_mode": "instant",
+  "delivery": {
+    "legend": "shout",
+    "radius": 10
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 2,
+      "element": "earth"
+    },
+    {
+      "type": "apply_status",
+      "status": "stunned",
+      "duration_ticks": 20,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "legend",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 2,
+        "element": "earth"
+      },
+      {
+        "type": "apply_status",
+        "status": "stunned",
+        "duration_ticks": 20,
+        "strength": 1
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "The Unrelenting Force shout from Skyrim. A roaring wave sweeps a 70° cone up to 10 blocks ahead. Everyone caught:\n• Damage 1 ❤ earth\n• Stun for 1 s\n• Blown far back, harder the closer they stand\nProjectiles in the cone are turned away.",
+  "self_description": "The shout bursts in every direction around you."
+}

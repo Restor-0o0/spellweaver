@@ -1,0 +1,73 @@
+{
+  "id": "magicka:cold_titan",
+  "formula": {
+    "earth": 1,
+    "cold": 3,
+    "arcane": 1
+  },
+  "incantation": "53373",
+  "name": "Frost Titan",
+  "tier": "Signature",
+  "tags": "SUMMON/DMG/AOE",
+  "shape": "targeted_zone",
+  "origin": "aim_hit",
+  "cast_ticks": 27,
+  "cast_mode": "epic",
+  "delivery": {
+    "epic": "titan",
+    "element": "cold",
+    "duration_ticks": 240,
+    "slam": [
+      {
+        "type": "deal_damage",
+        "amount": 6,
+        "element": "cold"
+      },
+      {
+        "type": "modify_temperature",
+        "amount": -80
+      },
+      {
+        "type": "apply_status",
+        "status": "chilled",
+        "duration_ticks": 80,
+        "strength": 3
+      }
+    ]
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 6,
+      "element": "cold"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": -60
+    },
+    {
+      "type": "apply_status",
+      "status": "chilled",
+      "duration_ticks": 60,
+      "strength": 2
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 300,
+        "strength": 3
+      },
+      {
+        "type": "modify_temperature",
+        "amount": -60
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "A giant frost titan rises waist-deep from the ground at the aimed spot and fights from there while you keep the channel.\nUltimate channel: just stand still for up to 12 s. Stepping aside breaks the channel and the titan sinks back underground; instant mode does not apply. Needs open sky above the aimed spot.\nIt picks foes within 20 blocks and, about every 1.5 s, either fires ice shards at up to 3 foes: damage 3 ❤ cold, cold 60, chill;\nor slams the ground with both fists, which freezes the ground within 3 blocks; everyone within 5 blocks takes 3 ❤ cold, cold 80 and a strong chill.",
+  "self_description": "On you:\n• Stone skin (resistance III), 15 s\n• Cold 60"
+}

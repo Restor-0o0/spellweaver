@@ -28,7 +28,7 @@ public final class RecipeGameTests {
         for(var d:RecipeRegistry.recipes()){counts[d.formula().size()]++;keys.add(d.formula());}
         h.assertTrue(Arrays.equals(counts,new int[]{0,8,36,120,330,792}) && keys.size()==1286,"Complete canonical catalog");
         long signatures=RecipeRegistry.recipes().stream().filter(d->d.tier().equals("Signature")).count();
-        h.assertTrue(signatures==153,"All signatures imported, got "+signatures);
+        h.assertTrue(signatures==204,"All signatures imported, got "+signatures);
         var base=spell("Ember");var json=base.source().deepCopy();json.addProperty("cast_ticks",33);json.addProperty("shape","beam");
         var changed=SpellDefinition.parse(ResourceLocation.parse("test:custom_ember"),json);
         h.assertTrue(changed.shape()==SpellShape.BEAM && changed.castTicks()==33 && changed.formula().equals(base.formula()),"New delivery is defined by data alone");
@@ -89,9 +89,13 @@ public final class RecipeGameTests {
         h.assertTrue(plan.start.equals(p.blockPosition().south()),"Stair starts at feet, not aim hit");
         BlockPos first=plan.next(p,0),previous=first;
         for(int i=1;i<stair.budget();i++){BlockPos next=plan.next(p,i);h.assertTrue(next.distManhattan(previous)==1,"Stair segments remain connected and climbable");previous=next;}
-        SpellRuntime.cast(p,stair,false);
-        h.runAfterDelay(8,()->h.assertTrue(h.getLevel().getBlockState(first).is(MagicBlocks.EARTH.get()),"Reachable first stair step placed"));
-        h.runAfterDelay(72,()->{
+        var path=new net.minecraft.world.phys.AABB(first).expandTowards(0,2,0).inflate(1);
+        h.runAfterDelay(1,()->{
+            h.getLevel().getEntitiesOfClass(net.minecraft.world.entity.Mob.class,path).forEach(net.minecraft.world.entity.Entity::discard);
+            SpellRuntime.cast(p,stair,false);
+        });
+        h.runAfterDelay(9,()->h.assertTrue(h.getLevel().getBlockState(first).is(MagicBlocks.EARTH.get()),"Reachable first stair step placed"));
+        h.runAfterDelay(73,()->{
             h.assertTrue(MagicConstructionManager.get(h.getLevel()).structures().stream().anyMatch(c->c.owner.equals(p.getUUID()) && c.blocks.size()>2),"Manager tracks constructed stair");
             var bridge=spell("Skybridge");h.assertTrue(bridge.floating() && bridge.origin()==OriginMode.AIM_HIT,"Bridge supports aim and floating anchor");
             var tag=MagicConstructionManager.get(h.getLevel()).save(new net.minecraft.nbt.CompoundTag(),h.getLevel().registryAccess());
@@ -160,5 +164,21 @@ public final class RecipeGameTests {
         SpellRuntime.cast(p,recipe,true);h.assertTrue(MagicStatuses.has(p,MagicStatuses.Status.STONE_SHELL),"Omitting Self uses generic rules");
         SpellRuntime.cast(p,spell("Ice Step"),true);h.assertTrue(MagicStatuses.has(p,MagicStatuses.Status.CHILLED),"Authored construction Self also applies its slow");
         RecipeRegistry.resetClient();h.succeed();
+    }
+    @GameTest(template="empty")
+    public static void ultimatesShatterSpawners(GameTestHelper h){
+        var p=caster(h);BlockPos local=new BlockPos(2,2,2);Vec3 point=h.absoluteVec(new Vec3(2.5,2.5,2.5));
+        SpellDefinition quake=spell("Earthquake"),pebble=spell("Pebble");
+        h.assertTrue(quake.ultimate() && !pebble.ultimate(),"Only ritual spells count as ultimates");
+        var node=new com.google.gson.JsonObject();node.addProperty("type","destroy_blocks");node.addProperty("budget",8);node.addProperty("radius",1.5);
+        h.setBlock(local,Blocks.SPAWNER);
+        EffectGraph.world(p,pebble,List.of(node),point,false,false);
+        h.assertBlockPresent(Blocks.SPAWNER,local);
+        EffectGraph.world(p,quake,List.of(node),point,false,false);
+        h.assertBlockPresent(Blocks.AIR,local);
+        h.setBlock(local,Blocks.CHEST);
+        EffectGraph.world(p,quake,List.of(node),point,false,false);
+        h.assertBlockPresent(Blocks.CHEST,local);
+        h.succeed();
     }
 }

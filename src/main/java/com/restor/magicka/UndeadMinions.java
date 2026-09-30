@@ -137,7 +137,7 @@ public final class UndeadMinions {
             Mob mob = minion.mob;
             ServerPlayer owner = minion.owner;
             if (!mob.isAlive() || mob.isRemoved()) { MINIONS.remove(mob.getUUID()); continue; }
-            if (owner.isRemoved() || !owner.isAlive() || owner.level() != mob.level() || mob.level().getGameTime() >= minion.until) { vanish(mob); continue; }
+            if (owner.isRemoved() || (!owner.isAlive() && !MagicGear.has(owner, MagicGear.Trait.GRAVE_BELL)) || owner.level() != mob.level() || mob.level().getGameTime() >= minion.until) { vanish(mob); continue; }
             if (mob.getTarget() != null && !allowed(minion, mob.getTarget())) mob.setTarget(null);
             if (mob.getTarget() == null) {
                 LivingEntity next = owner.getLastHurtByMob();

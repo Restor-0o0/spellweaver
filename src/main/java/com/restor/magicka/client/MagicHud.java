@@ -35,6 +35,14 @@ public final class MagicHud {
         for(Element element:Element.values()){
             int sx=px+4+(element.ordinal()%2)*20,sy=py+13+(element.ordinal()/2)*18;
             socket(g,element,sx,sy,state.enabled());
+            long lockLeft=MagicNetwork.clientLocksUntil-System.currentTimeMillis();
+            if(lockLeft>0 && (MagicNetwork.clientLocks&1<<element.ordinal())!=0){
+                g.pose().pushPose();g.pose().translate(0,0,150);
+                g.fill(sx,sy,sx+17,sy+17,0xB0100008);g.renderOutline(sx,sy,17,17,0xFFE0424A);
+                g.fill(sx+3,sy+8,sx+14,sy+9,0xFFE0424A);
+                MagicUi.small(g,Component.literal(""+(lockLeft/1000+1)),sx+6,sy+10,0xFFFF9A9A);
+                g.pose().popPose();
+            }
             keyBadge(g,MagicClient.elementKey(element),sx,sy);
             if(prepared.count(element)>0)countBadge(g,prepared.count(element),sx+17,sy+17);
         }
@@ -51,7 +59,7 @@ public final class MagicHud {
             int sx=panelX+21+i*23,packed=BookPreferences.get().slot(i);
             g.fill(sx,presetY,sx+21,presetY+25,0xB0141820);g.renderOutline(sx,presetY,21,25,MagicNetwork.clientQueue.formula()!=0 && MagicNetwork.clientQueue.formula()==packed?MagicUi.GOLD:0xFF494454);
             MagicUi.small(g,Component.literal(fit(MagicClient.quickKey(i).getString().replace(" ",""),25)),sx+2,presetY+2,MagicUi.GOLD);
-            if(packed!=0){var f=Formula.unpack(packed);
+            if(packed!=0){var f=RecipeRegistry.clientResolve(Formula.unpack(packed).key()).spokenFormula();
                 g.pose().pushPose();g.pose().translate(sx+5,presetY+10,0);g.pose().scale(.75f,.75f,1);MagicUi.icon(g,f.elements().getFirst(),0,0);g.pose().popPose();
                 for(int j=0;j<f.size();j++)g.fill(sx+3+j*4,presetY+23,sx+6+j*4,presetY+24,f.elements().get(j).color);
             }
@@ -67,7 +75,7 @@ public final class MagicHud {
             if(queuing && i>=prepared.size() && i<display.size())g.fill(panelX+5+i*21,y+13,panelX+20+i*21,y+28,0xAF0E1119);
         }
         if(state.instant()){
-            boolean channel=!display.empty() && RecipeRegistry.clientResolve(display.key()).channeled();
+            boolean channel=!display.empty() && (RecipeRegistry.clientResolve(display.key()).channeled() || RecipeRegistry.clientResolve(display.key()).epic());
             String text=state.channeling()?"≈≈":channel?"≈":"⚡";
             MagicUi.small(g,Component.literal(text),panelX+109-(int)Math.ceil(Minecraft.getInstance().font.width(text)*.75f),y+13,channel?0xFF7FD0FF:0xFFFFDC84);
         }

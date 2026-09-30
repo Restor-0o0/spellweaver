@@ -1,0 +1,50 @@
+{
+  "id": "magicka:zombie_cure",
+  "formula": {
+    "earth": 1,
+    "life": 2,
+    "death": 1
+  },
+  "name": "Zombie Cure",
+  "tier": "Signature",
+  "tags": "UTIL/DMG",
+  "shape": "targeted_zone",
+  "origin": "aim_ground",
+  "cast_mode": "instant",
+  "delivery": {
+    "legend": "zombie_cure",
+    "radius": 4
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 6,
+      "element": "life"
+    },
+    {
+      "type": "apply_status",
+      "status": "stunned",
+      "duration_ticks": 20,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "legend",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 6,
+        "element": "life"
+      },
+      {
+        "type": "apply_status",
+        "status": "stunned",
+        "duration_ticks": 20,
+        "strength": 1
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "The cure from zombie films, without the golden apple. A golden flash at the aimed spot, radius 4:\n• Zombie villagers become villagers again, keeping their trade\n• Zombified piglins become piglins, zoglins become hoglins, zombie horses become horses\n• Other hostile undead: damage 3 ❤ life and stun for 1 s",
+  "self_description": "The flash bursts around you."
+}

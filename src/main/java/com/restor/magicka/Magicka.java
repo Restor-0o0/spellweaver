@@ -11,14 +11,26 @@ public final class Magicka {
     public static final String ID = "magicka";
 
     public Magicka(IEventBus bus, ModContainer container) {
+        com.restor.magicka.enemy.MagicEnemies.TYPES.register(bus);
+        Elementals.TYPES.register(bus);
         MagicBlocks.BLOCKS.register(bus);
         MagicBlocks.ENTITIES.register(bus);
         MagicItems.ITEMS.register(bus);
+        MagicItems.TABS.register(bus);
+        GearMenu.MENUS.register(bus);
         bus.addListener(MagicItems::creative);
+        bus.addListener(com.restor.magicka.enemy.MagicEnemies::attributes);
+        bus.addListener(com.restor.magicka.enemy.MagicEnemies::placements);
         bus.addListener(MagicNetwork::register);
+        bus.addListener(Elementals::attributes);
+        NeoForge.EVENT_BUS.addListener(Elementals::stop);
+        NeoForge.EVENT_BUS.addListener(LegendMagic::join);
+        NeoForge.EVENT_BUS.addListener(LegendMagic::target);
+        NeoForge.EVENT_BUS.addListener(LegendLife::death);
         container.registerConfig(ModConfig.Type.SERVER, MagicConfig.SPEC);
         NeoForge.EVENT_BUS.register(new CastingServer());
         NeoForge.EVENT_BUS.register(new MagicStats());
+        NeoForge.EVENT_BUS.register(new MagicGear());
         NeoForge.EVENT_BUS.register(new RecipeRegistry());
         NeoForge.EVENT_BUS.register(new MagicStatuses());
         NeoForge.EVENT_BUS.register(new SpellRuntime());
@@ -28,5 +40,6 @@ public final class Magicka {
         NeoForge.EVENT_BUS.register(new MagicConstructionManager());
         NeoForge.EVENT_BUS.register(new ShapePattern());
         NeoForge.EVENT_BUS.addListener(MagicBlocks::climbRoots);
+        NeoForge.EVENT_BUS.register(new com.restor.magicka.enemy.MagicEnemies());
     }
 }

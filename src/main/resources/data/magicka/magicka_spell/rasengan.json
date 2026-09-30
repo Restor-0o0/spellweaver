@@ -1,0 +1,41 @@
+{
+  "id": "magicka:rasengan",
+  "formula": {
+    "water": 1,
+    "arcane": 2
+  },
+  "name": "Rasengan",
+  "tier": "Signature",
+  "tags": "DMG/MOVE",
+  "shape": "dash",
+  "origin": "caster_front",
+  "cast_mode": "instant",
+  "delivery": {
+    "legend": "rasengan"
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 6,
+      "element": "arcane"
+    },
+    {
+      "type": "set_wet",
+      "duration_ticks": 60
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "haste",
+        "duration_ticks": 160,
+        "strength": 2
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "From Naruto. A spinning sphere of chakra forms in your hand and you lunge forward. The first creature it touches within 0.7 s:\n• Damage 3 ❤ arcane\n• Wet for 3 s\n• Hurled far away in a spiral burst\nYou take no fall damage during the lunge.",
+  "self_description": "On you:\n• Speed III, 8 s"
+}

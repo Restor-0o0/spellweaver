@@ -1,0 +1,37 @@
+{
+  "id": "magicka:patronus",
+  "formula": {
+    "life": 2,
+    "arcane": 2
+  },
+  "name": "Expecto Patronum",
+  "tier": "Signature",
+  "tags": "DMG/CC",
+  "shape": "summon_object",
+  "origin": "caster_front",
+  "cast_mode": "instant",
+  "delivery": {
+    "legend": "patronus",
+    "duration_ticks": 60
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 4,
+      "element": "arcane"
+    }
+  ],
+  "self": {
+    "mode": "legend",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 4,
+        "element": "arcane"
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "From Harry Potter. A silvery stag gallops out of your wand and runs 40 blocks forward along the ground for 3 s. Foes it tramples, at most once every 0.5 s:\n• Damage 2 ❤ arcane, 4 ❤ to the undead\n• Thrown aside\nAllies it passes lose withering and blindness.",
+  "self_description": "The stag circles around you at 3 blocks for 3 s and guards you the same way."
+}
