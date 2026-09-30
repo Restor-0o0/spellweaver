@@ -1,6 +1,7 @@
 package com.restor.magicka;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -20,6 +21,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.Tags;
 import java.util.*;
@@ -372,7 +374,7 @@ final class LegendArts {
         ServerLevel level = p.serverLevel();
         Vec3 fwd = flat(p.getLookAngle()), across = new Vec3(-fwd.z,0,fwd.x);
         Vec3 a = p.position().add(fwd.scale(2.5)).add(0,1.1,0);
-        Vec3 b = (self ? home(p) : EpicMagic.focus(p)).add(0,1.1,0);
+        Vec3 b = (self ? home(p) : destination(p)).add(0,1.1,0);
         Map<UUID,Integer> cooldown = new HashMap<>();
         cooldown.put(p.getUUID(),10);
         sound(level,a,SoundEvents.BEACON_ACTIVATE,1.2f,1.6f);
@@ -383,6 +385,14 @@ final class LegendArts {
             travel(p,s,a,b.add(fwd.scale(1.3)),cooldown,age);
             travel(p,s,b,a.subtract(fwd.scale(1.3)),cooldown,age);
         });
+    }
+    private static Vec3 destination(ServerPlayer p) {
+        var hit = SpellAim.hit(p);
+        Vec3 at = hit.getLocation();
+        if (hit.getType() != HitResult.Type.MISS && hit.getDirection() != Direction.UP)
+            at = at.add(Vec3.atLowerCornerOf(hit.getDirection().getNormal()).scale(1.2));
+        Vec3 ground = EpicMagic.drop(p.serverLevel(),at.add(0,.5,0),hit.getType() == HitResult.Type.MISS ? 320 : 64,p);
+        return ground == null ? at : ground;
     }
     private static Vec3 home(ServerPlayer p) {
         ServerLevel level = p.serverLevel();
