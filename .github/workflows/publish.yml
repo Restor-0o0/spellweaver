@@ -1,0 +1,36 @@
+name: Publish
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: gradle/actions/setup-gradle@v4
+      - run: ./gradlew build
+      - id: meta
+        run: echo "version=$(grep '^mod_version=' gradle.properties | cut -d= -f2)" >> "$GITHUB_OUTPUT"
+      - uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          modrinth-id: WN5er9NK
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          curseforge-id: @CFID@
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          files: build/libs/!(*-secret).jar
+          name: Spellweaver ${{ steps.meta.outputs.version }} (Forge 1.20.1)
+          version: ${{ steps.meta.outputs.version }}+forge-1.20.1
+          version-type: release
+          loaders: forge
+          game-versions: 1.20.1
+          java: 17
