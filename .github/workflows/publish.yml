@@ -1,8 +1,8 @@
 name: Publish
 
 on:
-  release:
-    types: [published]
+  push:
+    tags: ['v*']
 
 permissions:
   contents: write
@@ -20,6 +20,14 @@ jobs:
       - run: ./gradlew build
       - id: meta
         run: echo "version=$(grep '^mod_version=' gradle.properties | cut -d= -f2)" >> "$GITHUB_OUTPUT"
+      - id: notes
+        run: |
+          git fetch --force origin "+refs/tags/${GITHUB_REF_NAME}:refs/tags/${GITHUB_REF_NAME}"
+          {
+            echo 'text<<CHANGELOG_EOF'
+            git tag -l --format='%(contents)' "$GITHUB_REF_NAME"
+            echo 'CHANGELOG_EOF'
+          } >> "$GITHUB_OUTPUT"
       - uses: Kir-Antipov/mc-publish@v3.3
         with:
           modrinth-id: WN5er9NK
@@ -27,7 +35,9 @@ jobs:
           curseforge-id: 1759626
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-tag: ${{ github.ref_name }}
           files: build/libs/!(*-secret).jar
+          changelog: ${{ steps.notes.outputs.text }}
           name: Spellweaver ${{ steps.meta.outputs.version }} (NeoForge 26.1.2)
           version: ${{ steps.meta.outputs.version }}+neoforge-26.1.2
           version-type: release
