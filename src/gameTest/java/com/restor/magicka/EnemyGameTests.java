@@ -61,7 +61,7 @@ public final class EnemyGameTests {
         SpellDefinition earth = find(d -> d.formula().count(Element.EARTH) > 0);
         h.assertTrue(hit(crawler, p, fire, 10, false) <= 4.01f, "Armor soaks plain spells");
         h.assertTrue(crawler.armored(), "Armor holds without a brittle Earth hit");
-        crawler.setInvulnerableTime(0);
+        crawler.invulnerableTime = 0;
         hit(crawler, p, earth, 4, true);
         h.assertFalse(crawler.armored(), "Brittle Earth shatters the armor");
         h.succeed();
@@ -75,7 +75,7 @@ public final class EnemyGameTests {
         ShieldBeetle guard = mob(h, MagicEnemies.SHIELD_BEETLE.get(), 1.5, 3.5, 0);
         SpellDefinition fire = find(d -> d.formula().size() >= 2 && d.formula().count(Element.FIRE) == d.formula().size());
         SpellDefinition water = find(d -> d.formula().size() > 0 && d.formula().count(Element.WATER) == d.formula().size());
-        for (int i = 0; i < 6; i++) { guard.setInvulnerableTime(0); MagicEnemies.hurt(guard, guard.damageSources().magic(), .1f, p, fire, false); }
+        for (int i = 0; i < 6; i++) { guard.invulnerableTime = 0; MagicEnemies.hurt(guard, guard.damageSources().magic(), .1f, p, fire, false); }
         h.assertTrue(mage.weight(Element.FIRE) >= Countermage.THRESHOLD, "Spells on allies are observed");
         mage.raiseWard(Element.FIRE);
         h.assertTrue(mage.warded() == Element.FIRE, "Ward takes the dominant element");

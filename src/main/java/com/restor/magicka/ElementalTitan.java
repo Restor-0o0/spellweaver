@@ -209,7 +209,7 @@ public class ElementalTitan extends Entity implements ElementalBody {
         }
         Elementals.blast(owner, spell, e, at, SLAM_RADIUS, slam, true);
         for (var v : level.getEntitiesOfClass(LivingEntity.class, new AABB(at, at).inflate(SLAM_RADIUS), v -> Elementals.hostile(owner, v) && v.distanceToSqr(at) < SLAM_RADIUS * SLAM_RADIUS)) {
-            v.push(0, .45, 0); v.syncVelocity = true;
+            v.push(0, .45, 0); v.hurtMarked = true;
         }
     }
 

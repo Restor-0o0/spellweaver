@@ -123,7 +123,7 @@ public final class MagicItems {
             .action(80, player -> {
                 Vec3 look = player.getLookAngle();
                 player.push(look.x * .9, Math.max(.5, look.y * .9 + .4), look.z * .9);
-                player.syncVelocity = true;
+                player.hurtMarked = true;
                 MagicStatuses.apply(player, MagicStatuses.Status.SLOW_FALLING, 100, 1);
             }));
     public static final DeferredItem<GearItem> SURVEY_SCANNER = gear("survey_scanner", TOOL, UNCOMMON, b -> b

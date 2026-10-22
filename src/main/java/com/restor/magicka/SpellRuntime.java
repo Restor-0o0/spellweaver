@@ -85,7 +85,7 @@ public final class SpellRuntime {
             p.level().playSound(null,p.blockPosition(),net.minecraft.sounds.SoundEvents.ENDER_DRAGON_GROWL,net.minecraft.sounds.SoundSource.PLAYERS,.7f,1.3f);
             p.level().playSound(null,p.blockPosition(),net.minecraft.sounds.SoundEvents.LIGHTNING_BOLT_THUNDER,net.minecraft.sounds.SoundSource.PLAYERS,.8f,.7f);
         }
-        p.swing(net.minecraft.world.InteractionHand.MAIN_HAND,net.minecraft.world.item.component.SwingAnimation.DEFAULT,true);
+        p.swing(net.minecraft.world.InteractionHand.MAIN_HAND,true);
         Vec3 point = origin(p,s.origin());
         if(s.origin()!=OriginMode.CASTER && s.origin()!=OriginMode.CASTER_FEET && s.origin()!=OriginMode.CASTER_FRONT){
             LivingEntity aimed=target(p);if(aimed!=null)point=aimed.position();
@@ -305,7 +305,7 @@ public final class SpellRuntime {
     private static void dash(ServerPlayer p,SpellDefinition s){
         EffectGraph.entity(p,p,s,s.selfEffects(),p.position(),true);
         Vec3 velocity=p.getLookAngle().scale(Math.clamp(s.number("dash_speed",1.1),.2,2));
-        p.setDeltaMovement(velocity.add(0,.3,0));p.syncVelocity=true;
+        p.setDeltaMovement(velocity.add(0,.3,0));p.hurtMarked=true;
         add(new Active(){int age;public ServerPlayer caster(){return p;}public boolean tick(){if(++age>10)return true;particles(p,s,p.position(),4,.2);if(age%3==0)zone(p,s,p.position(),40,1,false,false);return false;}});
     }
     private static void summon(ServerPlayer p,SpellDefinition s,Vec3 point,boolean self){

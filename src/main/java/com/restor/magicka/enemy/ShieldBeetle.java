@@ -90,7 +90,7 @@ public class ShieldBeetle extends SpecialEnemy {
             setDeltaMovement(forward.x * .55, getDeltaMovement().y, forward.z * .55);
             for (LivingEntity hit : level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(.3), e -> e != this && !ally(e))) {
                 hit.hurt(damageSources().mobAttack(this), 6);
-                hit.push(forward.x * 1.2, .3, forward.z * 1.2); hit.syncVelocity = true;
+                hit.push(forward.x * 1.2, .3, forward.z * 1.2); hit.hurtMarked = true;
                 charging = 1;
             }
             if (--charging == 0 || horizontalCollision) { charging = 0; recovering = 40; setAction(RECOVER); playSound(SoundEvents.SHIELD_BREAK.value(), .8f, 1.4f); }

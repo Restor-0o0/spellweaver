@@ -84,7 +84,7 @@ public class StoneCrawler extends SpecialEnemy {
                     level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.STONE.defaultBlockState()), getX(), getY() + .1, getZ(), 50, 1.8, .1, 1.8, .15);
                 for (LivingEntity hit : level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(3, 1, 3), e -> e != this && !ally(e) && e.distanceToSqr(this) < 16)) {
                     hit.hurt(damageSources().mobAttack(this), 8);
-                    hit.push(0, .5, 0); hit.syncVelocity = true;
+                    hit.push(0, .5, 0); hit.hurtMarked = true;
                 }
                 cooldown = 70;
             });

@@ -56,7 +56,7 @@ public class EnemyBolt extends AbstractHurtingProjectile {
             case WATER -> {
                 MagicStatuses.apply(target, MagicStatuses.Status.WET, 160, 1);
                 Vec3 push = getDeltaMovement().normalize().scale(.9);
-                target.push(push.x, .15, push.z); target.syncVelocity = true;
+                target.push(push.x, .15, push.z); target.hurtMarked = true;
             }
             case LIGHTNING -> MagicStatuses.charge(target, 30);
             case COLD -> MagicStatuses.temperature(target, -25);

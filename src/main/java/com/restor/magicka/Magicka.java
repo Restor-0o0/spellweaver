@@ -27,7 +27,7 @@ public final class Magicka {
         NeoForge.EVENT_BUS.addListener(LegendMagic::join);
         NeoForge.EVENT_BUS.addListener(LegendMagic::target);
         NeoForge.EVENT_BUS.addListener(LegendLife::death);
-        container.registerConfig(ModConfig.Type.SYNCED, MagicConfig.SPEC, "spellweaver-server.toml");
+        container.registerConfig(ModConfig.Type.SERVER, MagicConfig.SPEC, "spellweaver-server.toml");
         NeoForge.EVENT_BUS.register(new CastingServer());
         NeoForge.EVENT_BUS.register(new MagicStats());
         NeoForge.EVENT_BUS.register(new MagicGear());

@@ -54,7 +54,7 @@ public final class WorldPlacement {
         }
         if (solid) for (LivingEntity entity : occupants) {
             entity.teleportTo(entity.getX(), pos.getY() + 1.01, entity.getZ());
-            entity.push(0, 0.2, 0); entity.syncVelocity = true;
+            entity.push(0, 0.2, 0); entity.hurtMarked = true;
             if (entity != player && EffectGraph.canHarm(player, entity)) entity.hurt(player.damageSources().indirectMagic(player, player), 1F);
         }
         if (world.getBlockEntity(pos) instanceof MagicBlocks.MagicBlockEntity data) {

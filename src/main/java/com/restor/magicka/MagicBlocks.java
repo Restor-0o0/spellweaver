@@ -45,7 +45,7 @@ public final class MagicBlocks {
             "construction", () -> new BlockEntityType<>(MagicBlockEntity::new, EARTH.get(), ICE.get(), ROOT.get(), ARCANE.get(), PUDDLE.get(), LIGHT.get(), GLOW.get(), COPPER.get(), COIL.get()));
 
     private static BlockBehaviour.Properties properties() {
-        return BlockBehaviour.Properties.of().noLootTable().pushReaction(PushReaction.IMMOVEABLE);
+        return BlockBehaviour.Properties.of().noLootTable().pushReaction(PushReaction.BLOCK);
     }
 
     public static final class TemporaryBlock extends Block implements EntityBlock {

@@ -64,7 +64,7 @@ public final class SpellVisuals {
             if(p.kind()!=SpellVfx.ORB || formula.earth()==0)continue;
             float progress=Math.clamp((cue.age+partial)/Math.max(1,p.ticks()),0,1);
             Vec3 center=p.from().lerp(p.to(),progress);float scale=(float)(Math.clamp(p.radius(),.05,16)*1.7);
-            stack.pushPose();stack.translate(center.x,center.y,center.z);stack.scale(scale,scale,scale);stack.rotate(Axis.YP.rotationDegrees(((mc.level==null?cue.age:mc.level.getGameTime())+partial)*18));stack.rotate(Axis.XP.rotationDegrees(25));
+            stack.pushPose();stack.translate(center.x,center.y,center.z);stack.scale(scale,scale,scale);stack.mulPose(Axis.YP.rotationDegrees(((mc.level==null?cue.age:mc.level.getGameTime())+partial)*18));stack.mulPose(Axis.XP.rotationDegrees(25));
             var item=formula.fire()>0?Items.MAGMA_BLOCK:formula.cold()>0?Items.PACKED_ICE:Items.COBBLESTONE;
             var state=new net.minecraft.client.renderer.item.ItemStackRenderState();
             mc.getItemModelResolver().updateForTopItem(state,new ItemStack(item),ItemDisplayContext.FIXED,mc.level,null,0);

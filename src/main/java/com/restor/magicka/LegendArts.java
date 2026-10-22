@@ -84,7 +84,7 @@ final class LegendArts {
         announce(p,24,"magicka.legend.mjolnir");
         if (self) { hammer(p,s,p.position()); return; }
         Vec3 look = flat(p.getLookAngle());
-        p.setDeltaMovement(look.x*1.1,1.25,look.z*1.1); p.syncVelocity = true;
+        p.setDeltaMovement(look.x*1.1,1.25,look.z*1.1); p.hurtMarked = true;
         sound(p.level(),p.position(),SoundEvents.TRIDENT_RIPTIDE_3.value(),1f,.8f);
         SpellRuntime.sustain(p,age -> {
             p.fallDistance = 0;
@@ -135,7 +135,7 @@ final class LegendArts {
         Vec3 d = p.position().add(0,1,0).subtract(e.position());
         Vec3 v = e instanceof LivingEntity ? new Vec3(d.x*.18,Math.clamp(d.y*.1+.35,.2,1.2),d.z*.18) : new Vec3(d.x*.1,d.y*.1+Math.sqrt(Math.sqrt(d.lengthSqr()))*.08,d.z*.1);
         if (v.length() > 2.5) v = v.normalize().scale(2.5);
-        e.setDeltaMovement(v); e.syncVelocity = true;
+        e.setDeltaMovement(v); e.hurtMarked = true;
         if (e instanceof Projectile shot) shot.setNoGravity(false);
         EpicMagic.fx(p.level(),ParticleTypes.ENCHANT,e.getX(),e.getY()+.5,e.getZ(),10,.3,.3,.3,.5);
     }
@@ -160,13 +160,13 @@ final class LegendArts {
                 held.put(shot,new Paused(shot.isNoGravity()));
                 EpicMagic.fx(level,ParticleTypes.REVERSE_PORTAL,shot.getX(),shot.getY(),shot.getZ(),6,.1,.1,.1,.02);
             }
-            for (Projectile shot : held.keySet()) { shot.setDeltaMovement(Vec3.ZERO); shot.setNoGravity(true); shot.syncVelocity = true; }
+            for (Projectile shot : held.keySet()) { shot.setDeltaMovement(Vec3.ZERO); shot.setNoGravity(true); shot.hurtMarked = true; }
             for (LivingEntity e : near(p,c,2.2)) if (foe(p,e)) {
                 Vec3 out = flat(e.position().subtract(p.position()));
-                e.setDeltaMovement(out.x*.5,.05,out.z*.5); e.syncVelocity = true;
+                e.setDeltaMovement(out.x*.5,.05,out.z*.5); e.hurtMarked = true;
                 if (cooldown.getOrDefault(e.getUUID(),-99) <= age) { cooldown.put(e.getUUID(),age+20); EffectGraph.entity(p,e,s,s.effects(),c,false); }
             }
-        },() -> held.forEach((shot,paused) -> { if (shot.isAlive()) { shot.setNoGravity(paused.noGravity()); shot.syncVelocity = true; } }));
+        },() -> held.forEach((shot,paused) -> { if (shot.isAlive()) { shot.setNoGravity(paused.noGravity()); shot.hurtMarked = true; } }));
     }
 
     static void auraScale(ServerPlayer p, SpellDefinition s) {
@@ -296,7 +296,7 @@ final class LegendArts {
             if (budget[0] > 0 && WorldMagic.shatterWeak(p,BlockPos.containing(at),.6f)) budget[0]--;
         }, (e,dir) -> {
             EffectGraph.entity(p,e,s,s.effects(),p.position(),false);
-            e.push(dir.x*1.5,.4,dir.z*1.5); e.syncVelocity = true;
+            e.push(dir.x*1.5,.4,dir.z*1.5); e.hurtMarked = true;
         });
     }
 
@@ -368,7 +368,7 @@ final class LegendArts {
                 if (age % 20 == 0) EffectGraph.entity(p,e,s,s.effects(),center,false);
             }
             for (Projectile shot : level.getEntitiesOfClass(Projectile.class,new AABB(center,center).inflate(radius,3,radius)))
-                if (shot.getOwner() instanceof LivingEntity owner && foe(p,owner)) { shot.setDeltaMovement(shot.getDeltaMovement().scale(.5)); shot.syncVelocity = true; }
+                if (shot.getOwner() instanceof LivingEntity owner && foe(p,owner)) { shot.setDeltaMovement(shot.getDeltaMovement().scale(.5)); shot.hurtMarked = true; }
         });
     }
 
@@ -423,7 +423,7 @@ final class LegendArts {
             Vec3 to = exit.add(0,-e.getBbHeight()/2,0);
             if (e instanceof ServerPlayer player) player.teleportTo(level,to.x,to.y,to.z,java.util.Set.of(),player.getYRot(),player.getXRot(),false);
             else e.teleportTo(to.x,to.y,to.z);
-            e.fallDistance = 0; e.syncVelocity = true;
+            e.fallDistance = 0; e.hurtMarked = true;
             if (e instanceof LivingEntity living) EffectGraph.entity(p,living,s,s.effects(),gate,false);
             sound(level,to,SoundEvents.ENDERMAN_TELEPORT,.8f,1.2f);
             EpicMagic.fx(level,ParticleTypes.FLAME,to.x,to.y+e.getBbHeight()/2,to.z,12,.3,.5,.3,.05);

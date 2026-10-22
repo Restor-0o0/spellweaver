@@ -74,7 +74,7 @@ public class Burrower extends SpecialEnemy {
             playSound(SoundEvents.RAVAGER_ATTACK, 1f, 1.4f);
             for (LivingEntity hit : level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(1.2, .5, 1.2), e -> e != this && !ally(e))) {
                 hit.hurt(damageSources().mobAttack(this), 6);
-                hit.push(0, .55, 0); hit.syncVelocity = true;
+                hit.push(0, .55, 0); hit.hurtMarked = true;
             }
         }
     }

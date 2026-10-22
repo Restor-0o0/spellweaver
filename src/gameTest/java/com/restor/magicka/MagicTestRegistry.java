@@ -8,7 +8,6 @@ import net.minecraft.gametest.framework.TestData;
 import net.minecraft.gametest.framework.TestEnvironmentDefinition;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Rotation;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -57,7 +56,7 @@ public final class MagicTestRegistry {
             String batch = entry.test.batch().isEmpty() ? "default" : entry.test.batch();
             var environment = environments.computeIfAbsent(batch, name -> event.registerEnvironment(Identifier.fromNamespaceAndPath(Magicka.ID, name)));
             event.registerTest(entry.id, new FunctionGameTestInstance(ResourceKey.create(Registries.TEST_FUNCTION, entry.id),
-                    new TestData<>(environment, Level.OVERWORLD, STRUCTURE, entry.test.timeoutTicks(), 0, true, Rotation.NONE, false, 1, 1, true, 0)));
+                    new TestData<>(environment, STRUCTURE, entry.test.timeoutTicks(), 0, true, Rotation.NONE, false, 1, 1, true, 0)));
         }
     }
 

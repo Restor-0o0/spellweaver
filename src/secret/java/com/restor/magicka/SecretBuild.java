@@ -82,7 +82,7 @@ public final class SecretBuild implements SecretSpell {
         for (LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, new AABB(pos), LivingEntity::isAlive)) {
             entity.teleportTo(entity.getX(), pos.getY() + 1.01, entity.getZ());
             entity.setDeltaMovement(entity.getDeltaMovement().add(0, .6, 0));
-            entity.syncVelocity = true;
+            entity.hurtMarked = true;
         }
         level.setBlock(pos, state, Block.UPDATE_ALL);
     }

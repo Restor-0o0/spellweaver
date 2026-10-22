@@ -18,15 +18,15 @@ public class EnemyRenderer<T extends SpecialEnemy> extends MobRenderer<T, EnemyS
     public static ModelLayerLocation layer(String id) { return new ModelLayerLocation(Identifier.fromNamespaceAndPath(Magicka.ID, id), "main"); }
     @Override public Identifier getTextureLocation(EnemyState state) { return texture; }
     @Override public EnemyState createRenderState() { return new EnemyState(); }
-    @Override public boolean shouldRender(T mob, Frustum frustum, double x, double y, double z, float partial) {
-        return !(mob instanceof Burrower b && b.burrowed()) && super.shouldRender(mob, frustum, x, y, z, partial);
+    @Override public boolean shouldRender(T mob, Frustum frustum, double x, double y, double z) {
+        return !(mob instanceof Burrower b && b.burrowed()) && super.shouldRender(mob, frustum, x, y, z);
     }
     @Override public void extractRenderState(T mob, EnemyState state, float partial) {
         super.extractRenderState(mob, state, partial);
         state.action = mob.action();
         state.state = mob.state();
         state.actionTime = mob.action() != 0 ? mob.actionTime(partial) : 0;
-        state.attackTime = mob.getSwingAnimation(partial);
+        state.attackTime = mob.getAttackAnim(partial);
         state.targeting = mob.getTarget() != null;
     }
 }

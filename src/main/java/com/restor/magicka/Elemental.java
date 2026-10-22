@@ -185,7 +185,7 @@ public class Elemental extends PathfinderMob implements ElementalBody {
             case LIGHTNING, ARCANE -> Elementals.beam(owner, spell, e, hand(), target, graph);
             case DEATH -> { Elementals.beam(owner, spell, e, hand(), target, graph); heal(2); }
             case EARTH -> {
-                swing(net.minecraft.world.InteractionHand.MAIN_HAND,net.minecraft.world.item.component.SwingAnimation.DEFAULT,false);
+                swing(net.minecraft.world.InteractionHand.MAIN_HAND,false);
                 EffectGraph.entity(owner, target, spell, graph, position(), false);
                 Vec3 push = target.position().subtract(position()).multiply(1, 0, 1);
                 if (push.lengthSqr() > 1e-4) target.knockback(.8, -push.x, -push.z, damageSources().mobAttack(this), 0);

@@ -93,7 +93,7 @@ public final class MagicGameTests {
         player.connection = FakePlayerFactory.getMinecraft(helper.getLevel()).connection;
         player.setPos(helper.absoluteVec(new net.minecraft.world.phys.Vec3(2, 2, 2)));
         for (int i = 0; i < 61; i++) player.tick(); // Let vanilla spawn invulnerability expire.
-        player.setHealth(20); player.setInvulnerableTime(0); player.getAbilities().invulnerable = false;
+        player.setHealth(20); player.invulnerableTime = 0; player.getAbilities().invulnerable = false;
         Formula water = new Formula(); water.add(Element.WATER);
         SpellRuntime.cast(player, RecipeRegistry.resolve(water.key()), true);
         helper.assertTrue(MagicStatuses.has(player,MagicStatuses.Status.WET), "Self water wets caster");
@@ -101,7 +101,7 @@ public final class MagicGameTests {
         SpellRuntime.cast(player, RecipeRegistry.resolve(cold.key()), true);
         helper.assertTrue(player.getTicksFrozen() > 0, "Wet + cold freezes caster");
         helper.assertTrue(MagicStatuses.has(player,MagicStatuses.Status.BRITTLE), "Frozen targets become brittle");
-        player.setInvulnerableTime(0);
+        player.invulnerableTime = 0;
         Formula earth = new Formula(); earth.add(Element.EARTH);
         float before = player.getHealth();
         SpellRuntime.cast(player, RecipeRegistry.resolve(earth.key()), true);

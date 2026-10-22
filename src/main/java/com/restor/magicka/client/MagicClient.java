@@ -43,17 +43,17 @@ public final class MagicClient {
     private static final int[] ELEMENT_KEYS = {InputConstants.KEY_1, InputConstants.KEY_2, InputConstants.KEY_3, InputConstants.KEY_4,
             InputConstants.KEY_Q, InputConstants.KEY_E, InputConstants.KEY_R, InputConstants.KEY_F};
     private static final KeyMapping[] ELEMENTS = java.util.Arrays.stream(Element.values()).map(e ->
-            key(e.name().toLowerCase(java.util.Locale.ROOT), InputConstants.Type.KEYBOARD, ELEMENT_KEYS[e.ordinal()])).toArray(KeyMapping[]::new);
-    private static final KeyMapping TOGGLE = key("toggle", InputConstants.Type.KEYBOARD, InputConstants.KEY_G);
-    private static final KeyMapping CLEAR = key("clear", InputConstants.Type.KEYBOARD, InputConstants.KEY_V);
+            key(e.name().toLowerCase(java.util.Locale.ROOT), InputConstants.Type.KEYSYM, ELEMENT_KEYS[e.ordinal()])).toArray(KeyMapping[]::new);
+    private static final KeyMapping TOGGLE = key("toggle", InputConstants.Type.KEYSYM, InputConstants.KEY_G);
+    private static final KeyMapping CLEAR = key("clear", InputConstants.Type.KEYSYM, InputConstants.KEY_V);
     private static final KeyMapping DIRECTED = key("directed", InputConstants.Type.MOUSE, InputConstants.MOUSE_BUTTON_LEFT);
     private static final KeyMapping SELF = key("self", InputConstants.Type.MOUSE, InputConstants.MOUSE_BUTTON_RIGHT);
-    private static final KeyMapping BOOK = key("spellbook", InputConstants.Type.KEYBOARD, InputConstants.KEY_B);
-    private static final KeyMapping INSTANT = key("instant", InputConstants.Type.KEYBOARD, InputConstants.KEY_H);
-    private static final KeyMapping SHAPE = key("shape", InputConstants.Type.KEYBOARD, InputConstants.KEY_K);
-    private static final KeyMapping LOADOUT = key("loadout", InputConstants.Type.KEYBOARD, InputConstants.KEY_J);
+    private static final KeyMapping BOOK = key("spellbook", InputConstants.Type.KEYSYM, InputConstants.KEY_B);
+    private static final KeyMapping INSTANT = key("instant", InputConstants.Type.KEYSYM, InputConstants.KEY_H);
+    private static final KeyMapping SHAPE = key("shape", InputConstants.Type.KEYSYM, InputConstants.KEY_K);
+    private static final KeyMapping LOADOUT = key("loadout", InputConstants.Type.KEYSYM, InputConstants.KEY_J);
     private static final KeyMapping[] QUICK=java.util.stream.IntStream.range(0,4).mapToObj(i->new KeyMapping("key.magicka.quick_"+(i+1),KeyConflictContext.IN_GAME,
-            net.neoforged.neoforge.client.settings.KeyModifier.ALT,InputConstants.Type.KEYBOARD,InputConstants.KEY_1+i,CATEGORY)).toArray(KeyMapping[]::new);
+            net.neoforged.neoforge.client.settings.KeyModifier.ALT,InputConstants.Type.KEYSYM,InputConstants.KEY_1+i,CATEGORY)).toArray(KeyMapping[]::new);
     public static Component quickKey(int index){return QUICK[index].getTranslatedKeyMessage();}
     public static Component elementKey(Element element) { return ELEMENTS[element.ordinal()].getTranslatedKeyMessage(); }
     public static Component bookKey() { return BOOK.getTranslatedKeyMessage(); }

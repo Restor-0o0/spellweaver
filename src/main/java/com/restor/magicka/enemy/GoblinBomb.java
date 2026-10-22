@@ -70,7 +70,7 @@ public class GoblinBomb extends ThrowableItemProjectile {
             float k = (float)(1 - d / RADIUS);
             e.hurt(damageSources().explosion(this, owner), 2 + 7 * k);
             Vec3 push = e.position().subtract(position()).multiply(1, 0, 1).normalize().scale(.4 + k * .8);
-            e.push(push.x, .3 + k * .3, push.z); e.syncVelocity = true;
+            e.push(push.x, .3 + k * .3, push.z); e.hurtMarked = true;
             if (!MagicStatuses.has(e, MagicStatuses.Status.WET)) e.igniteForSeconds(2);
         }
         discard();

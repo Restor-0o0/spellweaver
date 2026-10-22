@@ -46,7 +46,7 @@ public final class EpicMagic {
         ServerLevel level = p.level();
         level.playSound(null,p.blockPosition(),SoundEvents.ENDER_DRAGON_GROWL,SoundSource.PLAYERS,.7f,1.3f);
         level.playSound(null,c.focus.x,c.focus.y,c.focus.z,SoundEvents.LIGHTNING_BOLT_THUNDER,SoundSource.PLAYERS,2f,.6f);
-        p.swing(net.minecraft.world.InteractionHand.MAIN_HAND,net.minecraft.world.item.component.SwingAnimation.DEFAULT,true);
+        p.swing(net.minecraft.world.InteractionHand.MAIN_HAND,true);
         return c;
     }
     static Vec3 focus(ServerPlayer p) {
@@ -240,7 +240,7 @@ public final class EpicMagic {
             e.fallDistance = 0;
             if (e.getY()-center.y > 11) v = v.add(in.scale(-1.1)).add(0,.2,0);
         }
-        e.setDeltaMovement(v); e.syncVelocity = true;
+        e.setDeltaMovement(v); e.hurtMarked = true;
         return core;
     }
     private static void funnel(ServerLevel level, Vec3 base, int age, double scale) {

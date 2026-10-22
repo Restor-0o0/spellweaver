@@ -171,7 +171,7 @@ public final class LegendMagic {
                 announce(p,32,"magicka.legend.kamehameha");
                 sound(level,hand,SoundEvents.WARDEN_SONIC_BOOM,2f,1.3f);
                 sound(level,hand,SoundEvents.BEACON_ACTIVATE,1.5f,1.6f);
-                if (self) { p.setDeltaMovement(0,1.7,0); p.syncVelocity = true; MagicStatuses.apply(p,MagicStatuses.Status.SLOW_FALLING,100,1); }
+                if (self) { p.setDeltaMovement(0,1.7,0); p.hurtMarked = true; MagicStatuses.apply(p,MagicStatuses.Status.SLOW_FALLING,100,1); }
             }
             Vec3 to = reach(p,hand,dir,self ? 14 : 32);
             line(level,hand,to,.6,dust(0x6FD8FF,2.4f));
@@ -180,7 +180,7 @@ public final class LegendMagic {
             if (t % 2 == 0) SpellVfx.cue(p,s,SpellVfx.BEAM,hand,to,.6,3);
             if (t % 4 == 0) for (LivingEntity e : segment(p,hand,to,1.3)) if (foe(p,e)) {
                 EffectGraph.entity(p,e,s,s.effects(),hand,false);
-                e.push(dir.x*.6,.15,dir.z*.6); e.syncVelocity = true;
+                e.push(dir.x*.6,.15,dir.z*.6); e.hurtMarked = true;
             }
             if (t % 6 == 0) sound(level,hand,SoundEvents.FIRECHARGE_USE,1f,.6f);
         });
@@ -194,7 +194,7 @@ public final class LegendMagic {
             Vec3 look = p.getLookAngle();
             Vec3 hand = p.getEyePosition().add(look.scale(.9)).add(0,-.35,0);
             p.fallDistance = 0;
-            if (age < 10 && age % 2 == 0) { p.setDeltaMovement(look.x*1.1,Math.max(p.getDeltaMovement().y,look.y*.6+.05),look.z*1.1); p.syncVelocity = true; }
+            if (age < 10 && age % 2 == 0) { p.setDeltaMovement(look.x*1.1,Math.max(p.getDeltaMovement().y,look.y*.6+.05),look.z*1.1); p.hurtMarked = true; }
             for (int i = 0; i < 6; i++) {
                 double a = age*.9+i*Math.PI/3;
                 EpicMagic.fx(level,dust(0x9AD4FF,.8f),hand.x+Math.cos(a)*.35,hand.y+Math.sin(a*1.3)*.2,hand.z+Math.sin(a)*.35,1,0,0,0,0);
@@ -204,7 +204,7 @@ public final class LegendMagic {
             if (target != null) {
                 EffectGraph.entity(p,target,s,s.effects(),hand,false);
                 Vec3 push = flat(look);
-                target.push(push.x*2.2,.35,push.z*2.2); target.syncVelocity = true;
+                target.push(push.x*2.2,.35,push.z*2.2); target.hurtMarked = true;
                 for (int i = 0; i < 36; i++) {
                     double a = i*Math.PI*2/12;
                     EpicMagic.fx(level,ParticleTypes.CLOUD,hand.x,hand.y,hand.z,0,Math.cos(a),(i/12-1)*.3,Math.sin(a),.35+i/12*.1);
@@ -230,14 +230,14 @@ public final class LegendMagic {
             if (age % 2 == 0) sound(level,hand,SoundEvents.PARROT_AMBIENT,1f,1.6f+level.getRandom().nextFloat()*.4f);
             if (age < windup) return false;
             p.fallDistance = 0;
-            p.setDeltaMovement(dir.scale(1.5)); p.syncVelocity = true;
+            p.setDeltaMovement(dir.scale(1.5)); p.hurtMarked = true;
             EpicMagic.fx(level,dust(0xCFE8FF,1.2f),p.getX(),p.getY()+1,p.getZ(),4,.3,.4,.3,0);
             for (LivingEntity e : near(p,p.position().add(0,1,0),1.8)) if (foe(p,e) && struck.add(e.getUUID())) {
                 EffectGraph.entity(p,e,s,s.effects(),p.position(),false);
                 SpellVfx.cue(p,s,SpellVfx.ARC,hand,e.getBoundingBox().getCenter(),.15,10);
                 sound(level,e.position(),SoundEvents.LIGHTNING_BOLT_IMPACT,1f,1.4f);
             }
-            if (age >= windup+8 || age > windup && p.horizontalCollision) { p.setDeltaMovement(p.getDeltaMovement().scale(.2)); p.syncVelocity = true; return true; }
+            if (age >= windup+8 || age > windup && p.horizontalCollision) { p.setDeltaMovement(p.getDeltaMovement().scale(.2)); p.hurtMarked = true; return true; }
             return false;
         });
     }
@@ -304,7 +304,7 @@ public final class LegendMagic {
                 EffectGraph.entity(p,e,s,s.effects(),pos,false);
                 if (e.getType().builtInRegistryHolder().is(EntityTypeTags.UNDEAD)) EffectGraph.entity(p,e,s,s.effects(),pos,false);
                 Vec3 away = flat(e.position().subtract(pos));
-                e.push(away.x*1.2,.35,away.z*1.2); e.syncVelocity = true;
+                e.push(away.x*1.2,.35,away.z*1.2); e.hurtMarked = true;
             }
         });
     }
@@ -360,12 +360,12 @@ public final class LegendMagic {
                 if (!EffectGraph.canHarm(p,e)) continue;
                 Vec3 v = to.lengthSqr() < .01 ? dir : to.normalize();
                 double power = 2.4*(1-to.length()/range*.5);
-                e.push(v.x*power,.45+Math.max(0,v.y)*power*.5,v.z*power); e.syncVelocity = true;
+                e.push(v.x*power,.45+Math.max(0,v.y)*power*.5,v.z*power); e.hurtMarked = true;
             }
             for (Projectile shot : level.getEntitiesOfClass(Projectile.class,new AABB(origin,origin).inflate(r))) {
                 Vec3 to = shot.position().subtract(origin);
                 if (shot.getOwner() == p || !self && to.normalize().dot(dir) < cone) continue;
-                shot.setDeltaMovement(to.normalize().scale(1.5)); shot.syncVelocity = true;
+                shot.setDeltaMovement(to.normalize().scale(1.5)); shot.hurtMarked = true;
             }
         });
     }
@@ -404,7 +404,7 @@ public final class LegendMagic {
         EpicMagic.fx(level,ParticleTypes.LAVA,target.x,target.y+1,target.z,40,radius/2,1,radius/2,0);
         sound(level,target,SoundEvents.GENERIC_EXPLODE.value(),6f,.5f);
         sound(level,target,SoundEvents.LIGHTNING_BOLT_THUNDER,4f,.6f);
-        if (self) { p.setDeltaMovement(0,2.2,0); p.syncVelocity = true; MagicStatuses.apply(p,MagicStatuses.Status.SLOW_FALLING,160,1); }
+        if (self) { p.setDeltaMovement(0,2.2,0); p.hurtMarked = true; MagicStatuses.apply(p,MagicStatuses.Status.SLOW_FALLING,160,1); }
         SpellRuntime.impact(p,s,target,radius,false,true);
         announce(p,64,"magicka.legend.explosion");
         p.addEffect(new MobEffectInstance(MobEffects.SLOWNESS,160,3));
@@ -447,13 +447,13 @@ public final class LegendMagic {
             if (age % 20 == 10) sound(level,center,SoundEvents.NOTE_BLOCK_HAT.value(),1.5f,.5f);
             AABB box = new AABB(center,center).inflate(radius);
             for (Mob mob : level.getEntitiesOfClass(Mob.class,box,m -> m.isAlive() && !m.isNoAi() && m.distanceToSqr(center) <= radius*radius && !EffectGraph.ally(p,m))) {
-                mob.setNoAi(true); mob.getPersistentData().putBoolean(STOPPED_TAG,true); mob.setDeltaMovement(Vec3.ZERO); mob.syncVelocity = true;
+                mob.setNoAi(true); mob.getPersistentData().putBoolean(STOPPED_TAG,true); mob.setDeltaMovement(Vec3.ZERO); mob.hurtMarked = true;
                 STOPPED.add(mob.getUUID()); held.add(mob.getUUID());
                 EpicMagic.fx(level,ParticleTypes.REVERSE_PORTAL,mob.getX(),mob.getY()+mob.getBbHeight()/2,mob.getZ(),12,.3,.4,.3,.02);
             }
             for (Projectile shot : level.getEntitiesOfClass(Projectile.class,box,e -> e.isAlive() && e.distanceToSqr(center) <= radius*radius))
                 if (!shots.containsKey(shot)) shots.put(shot,new Paused(shot.getDeltaMovement(),shot.isNoGravity()));
-            for (Projectile shot : shots.keySet()) { shot.setDeltaMovement(Vec3.ZERO); shot.setNoGravity(true); shot.syncVelocity = true; }
+            for (Projectile shot : shots.keySet()) { shot.setDeltaMovement(Vec3.ZERO); shot.setNoGravity(true); shot.hurtMarked = true; }
         },() -> {
             boolean running = p.level().getServer().isRunning();
             for (UUID id : held) {
@@ -463,7 +463,7 @@ public final class LegendMagic {
                     if (running && mob.isAlive()) EffectGraph.entity(p,mob,s,s.effects(),center,false);
                 }
             }
-            shots.forEach((shot,paused) -> { if (shot.isAlive()) { shot.setNoGravity(paused.noGravity()); shot.setDeltaMovement(paused.motion()); shot.syncVelocity = true; } });
+            shots.forEach((shot,paused) -> { if (shot.isAlive()) { shot.setNoGravity(paused.noGravity()); shot.setDeltaMovement(paused.motion()); shot.hurtMarked = true; } });
             if (running) { announce(p,48,"magicka.legend.time_resume"); sound(level,center,SoundEvents.BELL_BLOCK,2f,1f); }
         });
     }
@@ -508,7 +508,7 @@ public final class LegendMagic {
                     if (Math.abs(rel.dot(side)) > half+.5 || Math.abs(rel.dot(forward)) > 1.2) continue;
                     push = forward;
                 }
-                e.setDeltaMovement(push.x*.9,.3,push.z*.9); e.syncVelocity = true;
+                e.setDeltaMovement(push.x*.9,.3,push.z*.9); e.hurtMarked = true;
                 if (cooldown.getOrDefault(e.getUUID(),-99) <= age) { cooldown.put(e.getUUID(),age+20); EffectGraph.entity(p,e,s,s.effects(),c,false); }
             }
             for (Projectile shot : level.getEntitiesOfClass(Projectile.class,new AABB(c,c).inflate(self ? ring+1 : half+1,3,self ? ring+1 : half+1))) {

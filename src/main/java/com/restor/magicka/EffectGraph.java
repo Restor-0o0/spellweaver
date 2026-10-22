@@ -78,7 +78,7 @@ public final class EffectGraph {
                     if (!canHarm(caster,target)) break;
                     Vec3 direction = target.position().subtract(origin).normalize();
                     if (direction.lengthSqr() < .001) direction = caster.getLookAngle();
-                    target.push(direction.x*amount,number(node,"lift",0),direction.z*amount); target.syncVelocity = true;
+                    target.push(direction.x*amount,number(node,"lift",0),direction.z*amount); target.hurtMarked = true;
                 }
                 case "conditional" -> {
                     boolean passes = switch(text(node,"condition","")) { case "wet" -> MagicStatuses.has(target,MagicStatuses.Status.WET); case "was_frozen","brittle" -> frozen; case "self" -> self; default -> false; };

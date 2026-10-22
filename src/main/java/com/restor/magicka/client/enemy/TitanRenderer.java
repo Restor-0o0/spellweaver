@@ -32,7 +32,7 @@ public class TitanRenderer extends EntityRenderer<ElementalTitan, ElementalState
         }
     }
     @Override public ElementalState createRenderState() { return new ElementalState(); }
-    @Override public boolean shouldRender(ElementalTitan titan, Frustum frustum, double x, double y, double z, float partial) { return frustum.isVisible(titan.getBoundingBox().inflate(4, 2, 4)); }
+    @Override public boolean shouldRender(ElementalTitan titan, Frustum frustum, double x, double y, double z) { return frustum.isVisible(titan.getBoundingBox().inflate(4, 2, 4)); }
     @Override public void extractRenderState(ElementalTitan titan, ElementalState state, float partial) {
         super.extractRenderState(titan, state, partial);
         ElementalRenderer.extract(titan, state, partial);
@@ -48,10 +48,10 @@ public class TitanRenderer extends EntityRenderer<ElementalTitan, ElementalState
         if (state.emergence <= 0) return;
         pose.pushPose();
         pose.translate(0, -(1 - state.emergence) * DEPTH, 0);
-        pose.rotate(Axis.YP.rotationDegrees(180 - state.bodyRot));
+        pose.mulPose(Axis.YP.rotationDegrees(180 - state.bodyRot));
         pose.scale(-ElementalTitan.SCALE, -ElementalTitan.SCALE, ElementalTitan.SCALE);
         pose.translate(0, -1.501, 0);
-        collector.submitModel(models.get(state.element), state, pose, RenderTypes.entityCutout(state.texture), state.lightCoords, OverlayTexture.NO_OVERLAY, -1, null, 0);
+        collector.submitModel(models.get(state.element), state, pose, RenderTypes.entityCutout(state.texture), state.lightCoords, OverlayTexture.NO_OVERLAY, -1, null, 0, null);
         pose.popPose();
         super.submit(state, pose, collector, camera);
     }

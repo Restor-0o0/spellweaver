@@ -28,9 +28,9 @@ jobs:
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           files: build/libs/!(*-secret).jar
-          name: Spellweaver ${{ steps.meta.outputs.version }} (NeoForge 26.3)
-          version: ${{ steps.meta.outputs.version }}+neoforge-26.3
+          name: Spellweaver ${{ steps.meta.outputs.version }} (NeoForge 26.2)
+          version: ${{ steps.meta.outputs.version }}+neoforge-26.2
           version-type: release
           loaders: neoforge
-          game-versions: 26.3
+          game-versions: 26.2
           java: 25

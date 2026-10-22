@@ -4,125 +4,111 @@
   "spawners": [
     {
       "type": "magicka:cave_skitter",
-      "count": {
-        "type": "minecraft:uniform",
-        "min_inclusive": 3,
-        "max_inclusive": 6
-      },
-      "weight": 12
+      "weight": 12,
+      "minCount": 3,
+      "maxCount": 6
     },
     {
       "type": "magicka:shield_beetle",
-      "count": {
-        "type": "minecraft:uniform",
-        "min_inclusive": 1,
-        "max_inclusive": 2
-      },
-      "weight": 4
+      "weight": 4,
+      "minCount": 1,
+      "maxCount": 2
     },
     {
       "type": "magicka:stone_crawler",
-      "count": 1,
-      "weight": 3
+      "weight": 3,
+      "minCount": 1,
+      "maxCount": 1
     },
     {
       "type": "magicka:mushroom_nurse",
-      "count": 1,
-      "weight": 3
+      "weight": 3,
+      "minCount": 1,
+      "maxCount": 1
     },
     {
       "type": "magicka:element_binder",
-      "count": 1,
-      "weight": 2
+      "weight": 2,
+      "minCount": 1,
+      "maxCount": 1
     },
     {
       "type": "magicka:burrower",
-      "count": 1,
-      "weight": 3
+      "weight": 3,
+      "minCount": 1,
+      "maxCount": 1
     },
     {
       "type": "magicka:cave_wisp",
-      "count": {
-        "type": "minecraft:uniform",
-        "min_inclusive": 1,
-        "max_inclusive": 3
-      },
-      "weight": 5
+      "weight": 5,
+      "minCount": 1,
+      "maxCount": 3
     },
     {
       "type": "magicka:stone_eater",
-      "count": 1,
-      "weight": 2
+      "weight": 2,
+      "minCount": 1,
+      "maxCount": 1
     },
     {
       "type": "magicka:flood_caster",
-      "count": 1,
-      "weight": 3
+      "weight": 3,
+      "minCount": 1,
+      "maxCount": 1
     },
     {
       "type": "magicka:countermage",
-      "count": 1,
-      "weight": 1
+      "weight": 1,
+      "minCount": 1,
+      "maxCount": 1
     },
     {
       "type": "magicka:spark_imp",
-      "count": {
-        "type": "minecraft:uniform",
-        "min_inclusive": 2,
-        "max_inclusive": 3
-      },
-      "weight": 4
+      "weight": 4,
+      "minCount": 2,
+      "maxCount": 3
     },
     {
       "type": "magicka:goblin_warrior",
-      "count": {
-        "type": "minecraft:uniform",
-        "min_inclusive": 2,
-        "max_inclusive": 4
-      },
-      "weight": 4
+      "weight": 4,
+      "minCount": 2,
+      "maxCount": 4
     },
     {
       "type": "magicka:goblin_archer",
-      "count": {
-        "type": "minecraft:uniform",
-        "min_inclusive": 1,
-        "max_inclusive": 3
-      },
-      "weight": 3
+      "weight": 3,
+      "minCount": 1,
+      "maxCount": 3
     },
     {
       "type": "magicka:goblin_mage",
-      "count": {
-        "type": "minecraft:uniform",
-        "min_inclusive": 1,
-        "max_inclusive": 2
-      },
-      "weight": 2
+      "weight": 2,
+      "minCount": 1,
+      "maxCount": 2
     },
     {
       "type": "magicka:goblin_frost_mage",
-      "count": 1,
-      "weight": 1
+      "weight": 1,
+      "minCount": 1,
+      "maxCount": 1
     },
     {
       "type": "magicka:goblin_storm_mage",
-      "count": 1,
-      "weight": 1
+      "weight": 1,
+      "minCount": 1,
+      "maxCount": 1
     },
     {
       "type": "magicka:goblin_bomber",
-      "count": {
-        "type": "minecraft:uniform",
-        "min_inclusive": 1,
-        "max_inclusive": 2
-      },
-      "weight": 2
+      "weight": 2,
+      "minCount": 1,
+      "maxCount": 2
     },
     {
       "type": "magicka:goblin_shaman",
-      "count": 1,
-      "weight": 1
+      "weight": 1,
+      "minCount": 1,
+      "maxCount": 1
     }
   ]
 }

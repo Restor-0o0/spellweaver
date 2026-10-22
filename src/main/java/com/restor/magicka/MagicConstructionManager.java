@@ -228,7 +228,7 @@ public final class MagicConstructionManager extends SavedData {
             if (entity==player || !EffectGraph.canHarm(player,entity) || !build.impaled.add(entity.getUUID())) continue;
             if (damage>0) com.restor.magicka.enemy.MagicEnemies.hurt(entity,player.damageSources().indirectMagic(player,player),(float)(build.instant ? damage*1.5 : damage),player,build.spell,MagicStatuses.has(entity,MagicStatuses.Status.FROZEN) || MagicStatuses.has(entity,MagicStatuses.Status.BRITTLE));
             MagicStatuses.apply(entity,MagicStatuses.Status.CHILLED,60,1);
-            entity.push(push.x,push.y,push.z);entity.syncVelocity=true;
+            entity.push(push.x,push.y,push.z);entity.hurtMarked=true;
         }
     }
     public static Block material(SpellDefinition spell) {

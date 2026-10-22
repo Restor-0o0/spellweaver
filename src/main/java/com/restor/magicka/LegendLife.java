@@ -44,7 +44,7 @@ final class LegendLife {
         EffectGraph.entity(p,target,s,s.effects(),hand,false);
         if (critical) EffectGraph.entity(p,target,s,s.effects(),hand,false);
         target.removeEffect(MobEffects.POISON); target.removeEffect(MobEffects.WITHER);
-        target.push(0,.25,0); target.syncVelocity = true;
+        target.push(0,.25,0); target.hurtMarked = true;
         EpicMagic.fx(level,ParticleTypes.ELECTRIC_SPARK,at.x,at.y,at.z,30,.4,.6,.4,.2);
         EpicMagic.fx(level,ParticleTypes.HEART,at.x,at.y+target.getBbHeight()*.6,at.z,critical ? 8 : 4,.4,.3,.4,0);
         sound(level,at,SoundEvents.LIGHTNING_BOLT_IMPACT,.7f,2f);
@@ -177,7 +177,7 @@ final class LegendLife {
         for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class,v.getBoundingBox().inflate(5),e -> e != v && e instanceof Enemy && e.isAlive())) {
             e.igniteForSeconds(5);
             Vec3 away = flat(e.position().subtract(v.position()));
-            e.push(away.x*1.5,.5,away.z*1.5); e.syncVelocity = true;
+            e.push(away.x*1.5,.5,away.z*1.5); e.hurtMarked = true;
         }
         EpicMagic.fx(level,ParticleTypes.FLAME,at.x,at.y,at.z,120,1.2,1.2,1.2,.2);
         EpicMagic.fx(level,ParticleTypes.TOTEM_OF_UNDYING,at.x,at.y,at.z,40,.6,.8,.6,.4);
@@ -224,7 +224,7 @@ final class LegendLife {
             for (LivingEntity e : near(p,center,radius+.5)) {
                 if (!foe(p,e)) continue;
                 Vec3 out = flat(e.position().subtract(center));
-                e.setDeltaMovement(out.x*.6,.2,out.z*.6); e.syncVelocity = true;
+                e.setDeltaMovement(out.x*.6,.2,out.z*.6); e.hurtMarked = true;
                 if (cooldown.getOrDefault(e.getUUID(),-99) <= age) { cooldown.put(e.getUUID(),age+20); EffectGraph.entity(p,e,s,s.effects(),center,false); }
             }
             for (Projectile shot : level.getEntitiesOfClass(Projectile.class,new AABB(center,center).inflate(radius+1))) {
@@ -234,7 +234,7 @@ final class LegendLife {
                 if (d > radius+1 || d < radius-1.5 || v.dot(rel) >= 0) continue;
                 Vec3 n = rel.normalize();
                 shot.setDeltaMovement(v.subtract(n.scale(2*v.dot(n))));
-                shot.setOwner(p); shot.syncVelocity = true;
+                shot.setOwner(p); shot.hurtMarked = true;
                 EpicMagic.fx(level,ParticleTypes.ENCHANTED_HIT,shot.getX(),shot.getY(),shot.getZ(),8,.2,.2,.2,.2);
                 sound(level,shot.position(),SoundEvents.SHIELD_BLOCK.value(),1f,1.4f);
             }
