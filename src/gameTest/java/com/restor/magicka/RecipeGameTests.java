@@ -7,10 +7,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.util.FakePlayerFactory;
-import net.neoforged.neoforge.event.level.BlockEvent;
-import net.neoforged.neoforge.gametest.*;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.FakePlayerFactory;
+import net.minecraftforge.event.level.BlockEvent;
+import net.minecraftforge.gametest.*;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -30,7 +30,7 @@ public final class RecipeGameTests {
         long signatures=RecipeRegistry.recipes().stream().filter(d->d.tier().equals("Signature")).count();
         h.assertTrue(signatures==204,"All signatures imported, got "+signatures);
         var base=spell("Ember");var json=base.source().deepCopy();json.addProperty("cast_ticks",33);json.addProperty("shape","beam");
-        var changed=SpellDefinition.parse(ResourceLocation.parse("test:custom_ember"),json);
+        var changed=SpellDefinition.parse(new ResourceLocation("test:custom_ember"),json);
         h.assertTrue(changed.shape()==SpellShape.BEAM && changed.castTicks()==33 && changed.formula().equals(base.formula()),"New delivery is defined by data alone");
         json.getAsJsonObject("formula").addProperty("fire",6);
         boolean rejected=false;try{SpellDefinition.parse(base.id(),json);}catch(IllegalArgumentException expected){rejected=true;}
@@ -55,8 +55,8 @@ public final class RecipeGameTests {
         h.setBlock(local,Blocks.BEDROCK);h.assertFalse(WorldMagic.breakBlock(p,pos),"Bedrock protected");
         h.setBlock(local,Blocks.CHEST);h.assertFalse(WorldMagic.breakBlock(p,pos),"Containers protected");
         h.setBlock(local,Blocks.STONE);
-        Consumer<BlockEvent.BreakEvent> deny=e->{if(e.getPos().equals(pos))e.setCanceled(true);};NeoForge.EVENT_BUS.addListener(deny);
-        try{h.assertFalse(WorldMagic.breakBlock(p,pos),"Claim hook cancels terrain destruction");h.assertBlockPresent(Blocks.STONE,local);}finally{NeoForge.EVENT_BUS.unregister(deny);}
+        Consumer<BlockEvent.BreakEvent> deny=e->{if(e.getPos().equals(pos))e.setCanceled(true);};MinecraftForge.EVENT_BUS.addListener(deny);
+        try{h.assertFalse(WorldMagic.breakBlock(p,pos),"Claim hook cancels terrain destruction");h.assertBlockPresent(Blocks.STONE,local);}finally{MinecraftForge.EVENT_BUS.unregister(deny);}
         h.assertTrue(WorldMagic.breakBlock(p,pos),"Ordinary terrain can be destroyed");h.succeed();
     }
     @GameTest(template="empty",timeoutTicks=70)
@@ -98,7 +98,7 @@ public final class RecipeGameTests {
         h.runAfterDelay(73,()->{
             h.assertTrue(MagicConstructionManager.get(h.getLevel()).structures().stream().anyMatch(c->c.owner.equals(p.getUUID()) && c.blocks.size()>2),"Manager tracks constructed stair");
             var bridge=spell("Skybridge");h.assertTrue(bridge.floating() && bridge.origin()==OriginMode.AIM_HIT,"Bridge supports aim and floating anchor");
-            var tag=MagicConstructionManager.get(h.getLevel()).save(new net.minecraft.nbt.CompoundTag(),h.getLevel().registryAccess());
+            var tag=MagicConstructionManager.get(h.getLevel()).save(new net.minecraft.nbt.CompoundTag());
             h.assertTrue(!tag.getList("Structures",10).isEmpty(),"Construction metadata persists");h.succeed();
         });
     }
@@ -109,7 +109,7 @@ public final class RecipeGameTests {
         h.runAfterDelay(24,()->{
             h.assertTrue(pig.getHealth()>3,"Healing summon pulses");
             var objects=h.getLevel().getEntitiesOfClass(MagicSummon.class,pig.getBoundingBox().inflate(4));
-            h.assertTrue(!objects.isEmpty(),"Healer has a damageable object");var object=objects.getFirst();
+            h.assertTrue(!objects.isEmpty(),"Healer has a damageable object");var object=objects.get(0);
             float hp=object.getHealth();object.hurt(p.damageSources().magic(),3);
             h.assertTrue(object.getHealth()==hp-3,"Object loses actual HP");
             h.assertTrue(!object.shouldBeSaved() && object.interactAt(p,Vec3.ZERO,net.minecraft.world.InteractionHand.MAIN_HAND)==net.minecraft.world.InteractionResult.FAIL,"No persistent orphan or equipment farming");
@@ -127,7 +127,7 @@ public final class RecipeGameTests {
     }
     @GameTest(template="empty",timeoutTicks=40)
     public static void bridgeReallyCreatesAnchor(GameTestHelper h){
-        var p=caster(h);p.setPos(h.absoluteVec(new Vec3(1.5,24,1.5)));p.setXRot(0);var bridge=spell("Skybridge");
+        var p=caster(h);p.setPos(h.absoluteVec(new Vec3(1.5,24,1.5)));p.setXRot(0);p.setYRot(180);var bridge=spell("Skybridge");
         h.assertTrue(SpellAim.hit(p).getType()==net.minecraft.world.phys.HitResult.Type.MISS,"Bridge test must aim into empty sky");
         var plan=new MagicConstructionManager.Plan(p,bridge,false,null);
         // Keep the test's remote aim chunk loaded without forcing chunks in production code.
@@ -160,7 +160,7 @@ public final class RecipeGameTests {
         RecipeRegistry.acceptClient(data);
         h.assertTrue(RecipeRegistry.clientRecipes().size()==1286,"Complete catalog synchronization");
         var json=spell("Pebble").source().deepCopy();json.remove("self");
-        var recipe=SpellDefinition.parse(ResourceLocation.parse("test:earth"),json);var p=caster(h);
+        var recipe=SpellDefinition.parse(new ResourceLocation("test:earth"),json);var p=caster(h);
         SpellRuntime.cast(p,recipe,true);h.assertTrue(MagicStatuses.has(p,MagicStatuses.Status.STONE_SHELL),"Omitting Self uses generic rules");
         SpellRuntime.cast(p,spell("Ice Step"),true);h.assertTrue(MagicStatuses.has(p,MagicStatuses.Status.CHILLED),"Authored construction Self also applies its slow");
         RecipeRegistry.resetClient();h.succeed();

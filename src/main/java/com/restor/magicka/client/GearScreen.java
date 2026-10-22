@@ -102,7 +102,7 @@ public final class GearScreen extends AbstractContainerScreen<GearMenu> {
     }
 
     @Override public void render(GuiGraphics g, int mouseX, int mouseY, float partial) {
-        renderBackground(g, mouseX, mouseY, partial);
+        renderBackground(g);
         super.render(g, mouseX, mouseY, partial);
         renderTooltip(g, mouseX, mouseY);
     }

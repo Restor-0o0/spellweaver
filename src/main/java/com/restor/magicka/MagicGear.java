@@ -1,5 +1,6 @@
 package com.restor.magicka;
 
+import net.minecraftforge.event.TickEvent;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.core.Holder;
@@ -18,10 +19,9 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import java.util.*;
 
 public final class MagicGear {
@@ -46,7 +46,7 @@ public final class MagicGear {
 
     public static final int SLOTS = Slot.values().length;
     private static final String TAG = "magicka_gear";
-    private static final List<Holder<Attribute>> MANAGED = List.of(Attributes.MAX_HEALTH, Attributes.ARMOR,
+    private static final List<Attribute> MANAGED = List.of(Attributes.MAX_HEALTH, Attributes.ARMOR,
             Attributes.ARMOR_TOUGHNESS, Attributes.KNOCKBACK_RESISTANCE, Attributes.MOVEMENT_SPEED);
 
     private record Profile(int revision, List<GearItem> items, int[] deltas, Set<Trait> traits,
@@ -63,7 +63,7 @@ public final class MagicGear {
             this.owner = owner;
             CompoundTag tag = owner.getPersistentData().getCompound(TAG);
             for (Slot slot : Slot.values()) if (tag.contains(slot.key()))
-                setItem(slot.ordinal(), ItemStack.parse(owner.registryAccess(), tag.getCompound(slot.key())).orElse(ItemStack.EMPTY));
+                setItem(slot.ordinal(), ItemStack.of(tag.getCompound(slot.key())));
             loading = false;
         }
         @Override public void setChanged() {
@@ -81,7 +81,7 @@ public final class MagicGear {
         CompoundTag tag = new CompoundTag();
         for (Slot slot : Slot.values()) {
             ItemStack stack = loadout.getItem(slot.ordinal());
-            if (!stack.isEmpty()) tag.put(slot.key(), (CompoundTag) stack.save(player.registryAccess()));
+            if (!stack.isEmpty()) tag.put(slot.key(), stack.save(new CompoundTag()));
         }
         player.getPersistentData().put(TAG, tag);
         if (player instanceof ServerPlayer server) invalidate(server);
@@ -90,7 +90,7 @@ public final class MagicGear {
     public static ItemStack item(Player player, Slot slot) {
         CompoundTag tag = player.getPersistentData().getCompound(TAG);
         return tag.contains(slot.key())
-                ? ItemStack.parse(player.registryAccess(), tag.getCompound(slot.key())).orElse(ItemStack.EMPTY)
+                ? ItemStack.of(tag.getCompound(slot.key()))
                 : ItemStack.EMPTY;
     }
 
@@ -203,36 +203,36 @@ public final class MagicGear {
     }
 
     private static void attributes(ServerPlayer player) {
-        Map<Holder<Attribute>, Map<AttributeModifier.Operation, Double>> sums = new HashMap<>();
+        Map<Attribute, Map<AttributeModifier.Operation, Double>> sums = new HashMap<>();
         for (GearItem gear : profile(player).items) for (GearItem.Attr attr : gear.attributes())
             sums.computeIfAbsent(attr.attribute(), key -> new EnumMap<>(AttributeModifier.Operation.class))
                     .merge(attr.operation(), attr.amount(), Double::sum);
-        for (Holder<Attribute> holder : MANAGED) {
+        for (Attribute holder : MANAGED) {
             AttributeInstance instance = player.getAttribute(holder);
             if (instance == null) continue;
             for (AttributeModifier.Operation operation : AttributeModifier.Operation.values()) {
                 ResourceLocation id = modifier(holder, operation);
-                instance.removeModifier(id);
+                instance.removeModifier(UUID.nameUUIDFromBytes(id.toString().getBytes()));
                 double amount = sums.getOrDefault(holder, Map.of()).getOrDefault(operation, 0.0);
-                if (amount != 0) instance.addPermanentModifier(new AttributeModifier(id, amount, operation));
+                if (amount != 0) instance.addPermanentModifier(new AttributeModifier(UUID.nameUUIDFromBytes(id.toString().getBytes()), id.toString(), amount, operation));
             }
         }
         player.setHealth(Math.min(player.getHealth(), player.getMaxHealth()));
     }
 
-    private static ResourceLocation modifier(Holder<Attribute> holder, AttributeModifier.Operation operation) {
-        ResourceLocation key = BuiltInRegistries.ATTRIBUTE.getKey(holder.value());
-        return ResourceLocation.fromNamespaceAndPath(Magicka.ID,
+    private static ResourceLocation modifier(Attribute holder, AttributeModifier.Operation operation) {
+        ResourceLocation key = BuiltInRegistries.ATTRIBUTE.getKey(holder);
+        return new ResourceLocation(Magicka.ID,
                 "gear/" + (key == null ? "unknown" : key.getPath()) + "/" + operation.name().toLowerCase(Locale.ROOT));
     }
 
-    @SubscribeEvent public void tick(PlayerTickEvent.Post event) {
-        if (!(event.getEntity() instanceof ServerPlayer player) || player.tickCount % 60 != 0) return;
+    @SubscribeEvent public void tick(TickEvent.PlayerTickEvent event) {
+        if (event.phase != TickEvent.Phase.END || !(event.player instanceof ServerPlayer player) || player.tickCount % 60 != 0) return;
         if (player.isAlive() && has(player, Trait.LIVING_REGEN))
             MagicStatuses.apply(player, MagicStatuses.Status.REGENERATING, 80, 1);
     }
 
-    @SubscribeEvent public void hurt(LivingIncomingDamageEvent event) {
+    @SubscribeEvent public void hurt(LivingHurtEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
         if (event.getSource().is(net.minecraft.tags.DamageTypeTags.IS_FIRE) && has(player, Trait.FIRE_FRAIL))
             event.setAmount(event.getAmount() * 1.5f);

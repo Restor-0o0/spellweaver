@@ -15,7 +15,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.gametest.*;
+import net.minecraftforge.gametest.*;
 import java.util.List;
 
 @GameTestHolder(Magicka.ID)

@@ -1,5 +1,6 @@
 package com.restor.magicka.client;
 
+import net.minecraftforge.fml.common.Mod;
 import com.restor.magicka.Magicka;
 import com.restor.magicka.MagicNetwork;
 import net.minecraft.client.Minecraft;
@@ -9,17 +10,16 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RenderHandEvent;
-import net.neoforged.neoforge.client.event.RenderPlayerEvent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.client.event.RenderHandEvent;
+import net.minecraftforge.client.event.RenderPlayerEvent;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /** Draws a polymorphed player as the animal the server named, without touching the player entity itself. */
-@EventBusSubscriber(modid = Magicka.ID, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = Magicka.ID, value = Dist.CLIENT)
 public final class PolymorphVisuals {
     private record Shape(String id, LivingEntity dummy) {}
     private static final Map<Integer, Shape> SHAPES = new HashMap<>();

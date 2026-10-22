@@ -24,7 +24,7 @@ public class ElementalRenderer extends MobRenderer<Elemental, ElementalModel<Ele
         }
     }
     static boolean glows(Element e) { return e == Element.FIRE || e == Element.LIGHTNING || e == Element.ARCANE || e == Element.DEATH; }
-    @Override public ResourceLocation getTextureLocation(Elemental mob) { return ResourceLocation.fromNamespaceAndPath(Magicka.ID, "textures/entity/" + mob.modelId() + ".png"); }
+    @Override public ResourceLocation getTextureLocation(Elemental mob) { return new ResourceLocation(Magicka.ID, "textures/entity/" + mob.modelId() + ".png"); }
     @Override protected int getBlockLightLevel(Elemental mob, BlockPos pos) { return glows(mob.element()) ? 15 : super.getBlockLightLevel(mob, pos); }
     @Override public void render(Elemental mob, float yaw, float partial, PoseStack pose, MultiBufferSource buffers, int light) {
         model = models.get(mob.element());

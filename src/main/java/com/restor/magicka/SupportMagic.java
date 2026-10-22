@@ -1,5 +1,6 @@
 package com.restor.magicka;
 
+import net.minecraft.util.Mth;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -14,16 +15,16 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.level.BlockEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.level.BlockEvent;
 import java.util.UUID;
 
 public final class SupportMagic {
     public static void effect(ServerPlayer caster, LivingEntity target, String id, int ticks, int strength) {
         var key = ResourceLocation.tryParse(id);
-        var effect = key == null ? null : BuiltInRegistries.MOB_EFFECT.getHolder(key).orElse(null);
-        if (effect == null || !effect.value().isBeneficial() && !EffectGraph.canHarm(caster, target)) return;
-        target.addEffect(new MobEffectInstance(effect, Math.clamp(ticks, 1, 72000), Math.clamp(strength - 1, 0, 4)), caster);
+        var effect = key == null ? null : BuiltInRegistries.MOB_EFFECT.get(key);
+        if (effect == null || !effect.isBeneficial() && !EffectGraph.canHarm(caster, target)) return;
+        target.addEffect(new MobEffectInstance(effect, Mth.clamp(ticks, 1, 72000), Mth.clamp(strength - 1, 0, 4)), caster);
     }
 
     private static BlockPos open(ServerPlayer caster, Vec3 point) {
@@ -53,8 +54,8 @@ public final class SupportMagic {
         double length = direction.length();
         if (length < 1) return light(caster, point, 1) ? 1 : 0;
         direction = direction.scale(1 / length);
-        spacing = Math.clamp(spacing, 2, 16);
-        int placed = 0, limit = Math.clamp(count, 1, 16);
+        spacing = Mth.clamp(spacing, 2, 16);
+        int placed = 0, limit = Mth.clamp(count, 1, 16);
         for (double d = Math.min(length, spacing * .5); placed < limit; d = Math.min(length, d + spacing)) {
             boolean last = d >= length - .5;
             if (place(caster, last ? open(caster, point) : BlockPos.containing(from.add(direction.scale(d))), MagicBlocks.LIGHT.get().defaultBlockState())) placed++;
@@ -66,8 +67,8 @@ public final class SupportMagic {
     public static int ring(ServerPlayer caster, Vec3 point, double radius, int count) {
         var level = caster.serverLevel();
         int placed = 0;
-        count = Math.clamp(count, 1, 16);
-        radius = Math.clamp(radius, 1, 32);
+        count = Mth.clamp(count, 1, 16);
+        radius = Mth.clamp(radius, 1, 32);
         for (int i = 0; i < count; i++) {
             double angle = 2 * Math.PI * i / count;
             BlockPos column = BlockPos.containing(point.x + Math.cos(angle) * radius, point.y + 2, point.z + Math.sin(angle) * radius);
@@ -86,10 +87,10 @@ public final class SupportMagic {
     }
 
     public static int reveal(ServerPlayer caster, Vec3 point, double radius, int ticks) {
-        double r = Math.clamp(radius, 1, 128);
+        double r = Mth.clamp(radius, 1, 128);
         var found = caster.serverLevel().getEntitiesOfClass(LivingEntity.class, new AABB(point, point).inflate(r),
                 e -> e != caster && e.isAlive() && !e.isSpectator() && e.distanceToSqr(point) <= r * r && EffectGraph.canHarm(caster, e));
-        for (var entity : found) entity.addEffect(new MobEffectInstance(MobEffects.GLOWING, Math.clamp(ticks, 20, 6000), 0, false, false), caster);
+        for (var entity : found) entity.addEffect(new MobEffectInstance(MobEffects.GLOWING, Mth.clamp(ticks, 20, 6000), 0, false, false), caster);
         caster.serverLevel().sendParticles(ParticleTypes.FLASH, point.x, point.y + 1, point.z, 1, 0, 0, 0, 0);
         caster.serverLevel().playSound(null, BlockPos.containing(point), SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, .6f, 1.8f);
         return found.size();
@@ -97,14 +98,14 @@ public final class SupportMagic {
 
     public static int extinguish(ServerPlayer caster, Vec3 point, double radius) {
         var level = caster.serverLevel();
-        int r = Math.clamp((int) Math.ceil(radius), 1, 32), doused = 0;
+        int r = Mth.clamp((int) Math.ceil(radius), 1, 32), doused = 0;
         BlockPos center = BlockPos.containing(point);
         for (BlockPos p : BlockPos.betweenClosed(center.offset(-r, -r, -r), center.offset(r, r, r))) {
             if (p.distToCenterSqr(point) > radius * radius || !level.hasChunkAt(p)) continue;
             BlockPos pos = p.immutable();
             BlockState state = level.getBlockState(pos);
             if (!state.is(BlockTags.FIRE) || !WorldPlacement.allowed(caster, pos)) continue;
-            if (NeoForge.EVENT_BUS.post(new BlockEvent.BreakEvent(level, pos, state, caster)).isCanceled()) continue;
+            if (MinecraftForge.EVENT_BUS.post(new BlockEvent.BreakEvent(level, pos, state, caster))) continue;
             if (level.removeBlock(pos, false)) {
                 doused++;
                 level.sendParticles(ParticleTypes.CLOUD, pos.getX() + .5, pos.getY() + .3, pos.getZ() + .5, 3, .2, .1, .2, .01);

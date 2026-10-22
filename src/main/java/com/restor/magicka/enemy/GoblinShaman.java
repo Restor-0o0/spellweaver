@@ -40,9 +40,9 @@ public class GoblinShaman extends Goblin {
         playSound(SoundEvents.RAVAGER_ROAR, .7f, 1.8f);
     }
     @Override protected void castTell(int remaining) {
-        if (remaining % 6 == 0) { playSound(SoundEvents.NOTE_BLOCK_BASEDRUM.value(), 1.2f, .7f); ring(position(), RANGE * (1 - remaining / 30.0), 0xB0402A); }
+        if (remaining % 6 == 0) { playSound(SoundEvents.NOTE_BLOCK_BASEDRUM.get(), 1.2f, .7f); ring(position(), RANGE * (1 - remaining / 30.0), 0xB0402A); }
         dust(position().add(0, getBbHeight() + .2, 0), 0xB0402A, 2, .2);
     }
     @Override protected float interruptDamage() { return 3; }
-    @Override protected SoundEvent castSound() { return SoundEvents.NOTE_BLOCK_BASEDRUM.value(); }
+    @Override protected SoundEvent castSound() { return SoundEvents.NOTE_BLOCK_BASEDRUM.get(); }
 }

@@ -38,7 +38,7 @@ public final class EnemyPreviewScreen extends Screen {
             pose.scale(scale, scale, -scale);
             pose.mulPose(Axis.XP.rotationDegrees(15)); pose.mulPose(Axis.YP.rotationDegrees(yaw));
             pose.translate(0, -1.5, 0);
-            var tex = ResourceLocation.fromNamespaceAndPath(Magicka.ID, "textures/entity/" + id + ".png");
+            var tex = new ResourceLocation(Magicka.ID, "textures/entity/" + id + ".png");
             root.render(pose, buffers.getBuffer(RenderType.entityCutoutNoCull(tex)), LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
             buffers.endBatch();
             pose.popPose();
@@ -52,5 +52,4 @@ public final class EnemyPreviewScreen extends Screen {
         }
         Lighting.setupFor3DItems();
     }
-    @Override public void renderBackground(GuiGraphics g, int x, int y, float partial) {}
 }

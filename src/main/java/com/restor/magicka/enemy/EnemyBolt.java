@@ -1,5 +1,6 @@
 package com.restor.magicka.enemy;
 
+import net.minecraft.util.Mth;
 import com.restor.magicka.Element;
 import com.restor.magicka.MagicStatuses;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -15,7 +16,7 @@ public class EnemyBolt extends AbstractHurtingProjectile {
     private static final EntityDataAccessor<Integer> ELEMENT = SynchedEntityData.defineId(EnemyBolt.class, EntityDataSerializers.INT);
     private float damage = 3;
 
-    public EnemyBolt(EntityType<? extends EnemyBolt> type, Level level) { super(type, level); accelerationPower = 0; }
+    public EnemyBolt(EntityType<? extends EnemyBolt> type, Level level) { super(type, level); }
 
     public static EnemyBolt shoot(Mob shooter, LivingEntity target, Element element, float damage, double speed) {
         EnemyBolt bolt = new EnemyBolt(MagicEnemies.BOLT.get(), shooter.level());
@@ -29,9 +30,9 @@ public class EnemyBolt extends AbstractHurtingProjectile {
         shooter.level().addFreshEntity(bolt);
         return bolt;
     }
-    public Element element() { return Element.values()[Math.clamp(entityData.get(ELEMENT), 0, Element.values().length - 1)]; }
+    public Element element() { return Element.values()[Mth.clamp(entityData.get(ELEMENT), 0, Element.values().length - 1)]; }
 
-    @Override protected void defineSynchedData(SynchedEntityData.Builder builder) { super.defineSynchedData(builder); builder.define(ELEMENT, Element.ARCANE.ordinal()); }
+    @Override protected void defineSynchedData() { super.defineSynchedData(); entityData.define(ELEMENT, Element.ARCANE.ordinal()); }
     @Override protected boolean shouldBurn() { return false; }
     @Override protected float getInertia() { return 1f; }
     @Override public boolean isPickable() { return false; }
@@ -60,7 +61,7 @@ public class EnemyBolt extends AbstractHurtingProjectile {
             }
             case LIGHTNING -> MagicStatuses.charge(target, 30);
             case COLD -> MagicStatuses.temperature(target, -25);
-            case FIRE -> target.igniteForSeconds(3);
+            case FIRE -> target.setSecondsOnFire(3);
             default -> {}
         }
     }

@@ -1,5 +1,6 @@
 package com.restor.magicka.client;
 
+import net.minecraftforge.fml.common.Mod;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.restor.magicka.Element;
 import com.restor.magicka.Formula;
@@ -10,30 +11,29 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.InputEvent;
-import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
-import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
-import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
-import net.neoforged.neoforge.client.settings.KeyConflictContext;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.client.event.InputEvent;
+import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
+import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
+import net.minecraftforge.client.settings.KeyConflictContext;
 import org.lwjgl.glfw.GLFW;
 
-@EventBusSubscriber(modid = Magicka.ID, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = Magicka.ID, value = Dist.CLIENT)
 public final class MagicClient {
     static {MagicNetwork.visualReceiver=SpellVisuals::receive;}
-    @SubscribeEvent public static void visualsTick(net.neoforged.neoforge.client.event.ClientTickEvent.Post event){
+    @SubscribeEvent public static void visualsTick(net.minecraftforge.event.TickEvent.ClientTickEvent event){
+        if(event.phase!=net.minecraftforge.event.TickEvent.Phase.END)return;
         SpellVisuals.tick();
         var player=Minecraft.getInstance().player;
         if(player!=null && MagicNetwork.clientState.channeling() && !directedHeld && player.tickCount%5==0)send(12);
     }
-    @SubscribeEvent public static void visuals(net.neoforged.neoforge.client.event.RenderLevelStageEvent event){
+    @SubscribeEvent public static void visuals(net.minecraftforge.client.event.RenderLevelStageEvent event){
         var mc=Minecraft.getInstance();
-        if(event.getStage()!=net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_PARTICLES || mc.level==null)return;
+        if(event.getStage()!=net.minecraftforge.client.event.RenderLevelStageEvent.Stage.AFTER_PARTICLES || mc.level==null)return;
         var pose=event.getPoseStack();var camera=event.getCamera().getPosition();pose.pushPose();pose.translate(-camera.x,-camera.y,-camera.z);
-        SpellVisuals.render(pose,mc.renderBuffers().bufferSource(),camera,event.getPartialTick().getGameTimeDeltaPartialTick(false));pose.popPose();
+        SpellVisuals.render(pose,mc.renderBuffers().bufferSource(),camera,event.getPartialTick());pose.popPose();
     }
     // Elements stay under the resting left hand: 1-4 above WASD, Q E R F around it.
     private static final int[] ELEMENT_KEYS = {GLFW.GLFW_KEY_1, GLFW.GLFW_KEY_2, GLFW.GLFW_KEY_3, GLFW.GLFW_KEY_4,
@@ -49,7 +49,7 @@ public final class MagicClient {
     private static final KeyMapping SHAPE = key("shape", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_K);
     private static final KeyMapping LOADOUT = key("loadout", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_J);
     private static final KeyMapping[] QUICK=java.util.stream.IntStream.range(0,4).mapToObj(i->new KeyMapping("key.magicka.quick_"+(i+1),KeyConflictContext.IN_GAME,
-            net.neoforged.neoforge.client.settings.KeyModifier.ALT,InputConstants.Type.KEYSYM,GLFW.GLFW_KEY_1+i,"key.categories.magicka")).toArray(KeyMapping[]::new);
+            net.minecraftforge.client.settings.KeyModifier.ALT,InputConstants.Type.KEYSYM,GLFW.GLFW_KEY_1+i,"key.categories.magicka")).toArray(KeyMapping[]::new);
     public static Component quickKey(int index){return QUICK[index].getTranslatedKeyMessage();}
     public static Component elementKey(Element element) { return ELEMENTS[element.ordinal()].getTranslatedKeyMessage(); }
     public static Component bookKey() { return BOOK.getTranslatedKeyMessage(); }
@@ -58,7 +58,7 @@ public final class MagicClient {
     public static boolean bookMatches(int key, int scan) { return BOOK.matches(key, scan); }
     public static boolean shapeMatches(int key, int scan) { return SHAPE.matches(key, scan); }
     public static Component loadoutKey() { return LOADOUT.getTranslatedKeyMessage(); }
-    public static void openLoadout() { PacketDistributor.sendToServer(new MagicNetwork.Input(14)); }
+    public static void openLoadout() { MagicNetwork.sendToServer(new MagicNetwork.Input(14)); }
     public static Component castHint(String intent) {
         return Component.literal((intent.equals("self") ? "Self: " : "Primary: ")).append(intent.equals("self") ? SELF.getTranslatedKeyMessage() : DIRECTED.getTranslatedKeyMessage());
     }
@@ -73,7 +73,7 @@ public final class MagicClient {
         if (!playable()) return false;
         for(int i=0;i<4;i++)if(matches.test(QUICK[i]) && QUICK[i].getKeyModifier().isActive(QUICK[i].getKeyConflictContext())){
             int formula=BookPreferences.get().slot(i);
-            if(formula!=0)PacketDistributor.sendToServer(new MagicNetwork.QuickFill(formula));
+            if(formula!=0)MagicNetwork.sendToServer(new MagicNetwork.QuickFill(formula));
             else Minecraft.getInstance().player.displayClientMessage(Component.translatable("hud.magicka.quick_empty",i+1),true);
             return true;
         }
@@ -105,13 +105,13 @@ public final class MagicClient {
         return false;
     }
     public static int elementAction(Element element) { return element == Element.DEATH ? 13 : element.ordinal(); }
-    private static void send(int action) { PacketDistributor.sendToServer(new MagicNetwork.Input(action)); }
-    @SubscribeEvent public static void movement(net.neoforged.neoforge.client.event.MovementInputUpdateEvent event) {
+    private static void send(int action) { MagicNetwork.sendToServer(new MagicNetwork.Input(action)); }
+    @SubscribeEvent public static void movement(net.minecraftforge.client.event.MovementInputUpdateEvent event) {
         int mask=MagicNetwork.clientStatuses.getOrDefault(event.getEntity().getId(),0);
         int frozen=(1<<com.restor.magicka.MagicStatuses.Status.FROZEN.ordinal())|(1<<com.restor.magicka.MagicStatuses.Status.STUNNED.ordinal())|(1<<com.restor.magicka.MagicStatuses.Status.ROOTED.ordinal());
         if((mask&frozen)!=0){var input=event.getInput();input.forwardImpulse=0;input.leftImpulse=0;input.jumping=false;}
     }
-    @SubscribeEvent public static void useBook(net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.RightClickItem event) {
+    @SubscribeEvent public static void useBook(net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickItem event) {
         if (event.getLevel().isClientSide && event.getItemStack().is(com.restor.magicka.MagicItems.SPELLBOOK.get())) {
             Minecraft.getInstance().setScreen(new SpellbookScreen());
             event.setCancellationResult(net.minecraft.world.InteractionResult.SUCCESS);
@@ -132,7 +132,7 @@ public final class MagicClient {
         directedHeld = false;
         if (MagicNetwork.clientState.channeling()) send(12);
     }
-    @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.HIGHEST)
+    @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.HIGHEST)
     public static void keyboard(InputEvent.Key event) {
         if (event.getAction() == GLFW.GLFW_RELEASE) { release(key -> key.matches(event.getKey(), event.getScanCode())); return; }
         if (!playable()) return;
@@ -142,7 +142,7 @@ public final class MagicClient {
         repeatedElement |= java.util.Arrays.stream(QUICK).anyMatch(key->key.matches(event.getKey(),event.getScanCode()) && key.getKeyModifier().isActive(key.getKeyConflictContext()));
         if (handled || repeatedElement) suppressVanilla(event.getKey(), event.getScanCode());
     }
-    @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.HIGHEST)
+    @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.HIGHEST)
     public static void mouse(InputEvent.MouseButton.Pre event) {
         if (event.getAction() == GLFW.GLFW_RELEASE) release(key -> key.matchesMouse(event.getButton()));
         if (event.getAction() == GLFW.GLFW_PRESS && dispatch(key -> key.matchesMouse(event.getButton()))) event.setCanceled(true);
@@ -157,8 +157,8 @@ public final class MagicClient {
         SpellVisuals.clear();
         PolymorphVisuals.clear();
     }
-    @SubscribeEvent public static void preview(net.neoforged.neoforge.client.event.RenderLevelStageEvent event) {
-        if (event.getStage() != net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS || !playable()) return;
+    @SubscribeEvent public static void preview(net.minecraftforge.client.event.RenderLevelStageEvent event) {
+        if (event.getStage() != net.minecraftforge.client.event.RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS || !playable()) return;
         var state = MagicNetwork.clientState;
         if (!state.enabled() || state.remaining() > 0 || state.formula()==0 || !com.restor.magicka.RecipeRegistry.clientResolve(Formula.unpack(state.formula()).key()).shape().construction()) return;
         var mc = Minecraft.getInstance();
@@ -181,18 +181,18 @@ public final class MagicClient {
         stack.popPose();
         buffers.endBatch(net.minecraft.client.renderer.RenderType.lines());
     }
-    @EventBusSubscriber(modid = Magicka.ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
+    @Mod.EventBusSubscriber(modid = Magicka.ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
     public static final class Registration {
         @SubscribeEvent public static void keys(RegisterKeyMappingsEvent event) {
             for (KeyMapping key : ELEMENTS) event.register(key);
             for(KeyMapping key:QUICK)event.register(key);
             for (KeyMapping key : new KeyMapping[]{TOGGLE, CLEAR, DIRECTED, SELF, INSTANT, BOOK, SHAPE, LOADOUT}) event.register(key);
         }
-        @SubscribeEvent public static void screens(net.neoforged.neoforge.client.event.RegisterMenuScreensEvent event) {
-            event.register(com.restor.magicka.GearMenu.TYPE.get(), GearScreen::new);
+        @SubscribeEvent public static void screens(net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent event) {
+            event.enqueueWork(() -> net.minecraft.client.gui.screens.MenuScreens.register(com.restor.magicka.GearMenu.TYPE.get(), GearScreen::new));
         }
-        @SubscribeEvent public static void layers(RegisterGuiLayersEvent event) {
-            event.registerAboveAll(ResourceLocation.fromNamespaceAndPath(Magicka.ID, "casting"), (graphics, timer) -> MagicHud.render(graphics));
+        @SubscribeEvent public static void layers(RegisterGuiOverlaysEvent event) {
+            event.registerAboveAll("casting", (gui, graphics, partial, width, height) -> MagicHud.render(graphics, Math.max(gui.leftHeight, gui.rightHeight)));
         }
     }
     private MagicClient() {}

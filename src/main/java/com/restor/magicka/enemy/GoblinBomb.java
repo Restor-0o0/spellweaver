@@ -62,7 +62,7 @@ public class GoblinBomb extends ThrowableItemProjectile {
     public void explode(ServerLevel level) {
         level.sendParticles(ParticleTypes.EXPLOSION_EMITTER, getX(), getY() + .3, getZ(), 1, 0, 0, 0, 0);
         level.sendParticles(ParticleTypes.FLAME, getX(), getY() + .3, getZ(), 30, 1, .4, 1, .05);
-        level.playSound(null, getX(), getY(), getZ(), SoundEvents.GENERIC_EXPLODE.value(), getSoundSource(), 1.2f, 1.1f);
+        level.playSound(null, getX(), getY(), getZ(), SoundEvents.GENERIC_EXPLODE, getSoundSource(), 1.2f, 1.1f);
         LivingEntity owner = getOwner() instanceof LivingEntity o ? o : null;
         for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(RADIUS), LivingEntity::isAlive)) {
             double d = e.position().distanceTo(position());
@@ -71,7 +71,7 @@ public class GoblinBomb extends ThrowableItemProjectile {
             e.hurt(damageSources().explosion(this, owner), 2 + 7 * k);
             Vec3 push = e.position().subtract(position()).multiply(1, 0, 1).normalize().scale(.4 + k * .8);
             e.push(push.x, .3 + k * .3, push.z); e.hurtMarked = true;
-            if (!MagicStatuses.has(e, MagicStatuses.Status.WET)) e.igniteForSeconds(2);
+            if (!MagicStatuses.has(e, MagicStatuses.Status.WET)) e.setSecondsOnFire(2);
         }
         discard();
     }

@@ -1,11 +1,11 @@
 package com.restor.magicka;
 
+import net.minecraftforge.event.TickEvent;
+import net.minecraft.util.Mth;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.effect.*;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.tick.EntityTickEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import java.util.Locale;
 
 public final class MagicStatuses {
@@ -25,11 +25,11 @@ public final class MagicStatuses {
     }
     public static void apply(LivingEntity entity, Status status, int duration, int strength) {
         CompoundTag tag = data(entity);
-        tag.putLong(status.name(), Math.max(tag.getLong(status.name()), entity.level().getGameTime()+Math.clamp(duration,1,72000)));
-        tag.putInt(status.name()+"_strength",Math.max(tag.getInt(status.name()+"_strength"),Math.clamp(strength,1,5)));
+        tag.putLong(status.name(), Math.max(tag.getLong(status.name()), entity.level().getGameTime()+Mth.clamp(duration,1,72000)));
+        tag.putInt(status.name()+"_strength",Math.max(tag.getInt(status.name()+"_strength"),Mth.clamp(strength,1,5)));
         switch(status) {
             case WET -> entity.clearFire();
-            case BURNING -> entity.igniteForTicks(duration);
+            case BURNING -> entity.setRemainingFireTicks(Math.max(entity.getRemainingFireTicks(), duration));
             case FROZEN -> { entity.setTicksFrozen(entity.getTicksRequiredToFreeze()+duration); apply(entity,Status.BRITTLE,duration,1); }
             default -> {}
         }
@@ -64,8 +64,9 @@ public final class MagicStatuses {
     public static int mask(LivingEntity target) {
         int mask = 0; for (Status status : Status.values()) if (has(target,status)) mask |= 1 << status.ordinal(); return mask;
     }
-    @SubscribeEvent public void tick(EntityTickEvent.Post event) {
-        if (!(event.getEntity() instanceof LivingEntity entity) || !entity.isAlive() || entity.level().isClientSide) return;
+    @SubscribeEvent public void tick(net.minecraftforge.event.entity.living.LivingEvent.LivingTickEvent event) {
+        LivingEntity entity = event.getEntity();
+        if (!entity.isAlive() || entity.level().isClientSide) return;
         if (!entity.getPersistentData().contains("magicka:statuses")) return;
         var tag = data(entity); long now = entity.level().getGameTime();
         for (Status status : Status.values()) {
@@ -84,14 +85,14 @@ public final class MagicStatuses {
             if (has(entity,Status.SHOCKED)) entity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS,15,0,false,false));
             if (has(entity,Status.LEVITATING)) entity.addEffect(new MobEffectInstance(MobEffects.LEVITATION,15,0,false,false));
             if (has(entity,Status.SLOW_FALLING)) entity.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING,15,0,false,false));
-            if (has(entity,Status.HASTE)) entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED,15,Math.clamp(tag.getInt("HASTE_strength"),1,4),false,false));
+            if (has(entity,Status.HASTE)) entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED,15,Mth.clamp(tag.getInt("HASTE_strength"),1,4),false,false));
             if (has(entity,Status.OBSCURED)) entity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS,15,0,false,false));
             if (has(entity,Status.WET)) entity.clearFire();
             tag.putDouble("cold", Math.max(0,tag.getDouble("cold")-2));
             tag.putDouble("charge",Math.max(0,tag.getDouble("charge")-3));
             int mask = mask(entity);
             if (tag.getInt("last_mask") != mask || now % 40 == 0) {
-                PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity,new MagicNetwork.Statuses(entity.getId(),mask));
+                MagicNetwork.sendToPlayersTrackingEntityAndSelf(entity,new MagicNetwork.Statuses(entity.getId(),mask));
                 tag.putInt("last_mask",mask);
             }
         }

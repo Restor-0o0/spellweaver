@@ -1,11 +1,11 @@
 package com.restor.magicka;
 
+import net.minecraftforge.event.TickEvent;
 import net.minecraft.gametest.framework.*;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.event.tick.PlayerTickEvent;
-import net.neoforged.neoforge.gametest.*;
+import net.minecraftforge.gametest.*;
 
 @GameTestHolder(Magicka.ID)
 @PrefixGameTestTemplate(false)
@@ -28,21 +28,21 @@ public final class EpicGameTests {
         var storm = RecipeGameTests.spell("Thunderstorm");
         CastingServer.input(p, 7); CastingServer.input(p, 11); type(p, storm); CastingServer.input(p, 9);
         h.assertTrue(CastingServer.snapshot(p).remaining() > 0 && !CastingServer.snapshot(p).channeling(), "Instant mode does not skip the ultimate windup");
-        for (int i = 0; i < 400 && !CastingServer.snapshot(p).channeling(); i++) server.tick(new PlayerTickEvent.Post(p));
+        for (int i = 0; i < 400 && !CastingServer.snapshot(p).channeling(); i++) server.tick(new TickEvent.PlayerTickEvent(TickEvent.Phase.END,p));
         h.assertTrue(CastingServer.snapshot(p).channeling() && storm.equals(CastingServer.casting(p)), "The storm channels after the windup");
-        server.tick(new PlayerTickEvent.Post(p));
+        server.tick(new TickEvent.PlayerTickEvent(TickEvent.Phase.END,p));
         h.assertTrue(CastingServer.snapshot(p).channeling(), "Standing still keeps the channel");
         CastingServer.input(p, 12);
-        server.tick(new PlayerTickEvent.Post(p));
+        server.tick(new TickEvent.PlayerTickEvent(TickEvent.Phase.END,p));
         h.assertTrue(CastingServer.snapshot(p).channeling(), "Releasing the button does not end an ultimate");
         p.setPos(p.position().add(1, 0, 0));
-        server.tick(new PlayerTickEvent.Post(p));
+        server.tick(new TickEvent.PlayerTickEvent(TickEvent.Phase.END,p));
         h.assertFalse(CastingServer.snapshot(p).channeling(), "Stepping aside breaks the channel");
         h.assertTrue(CastingServer.snapshot(p).remaining() == 0 && CastingServer.casting(p) == null, "A broken channel ends the ultimate");
         CastingServer.input(p, 12);
         type(p, storm); CastingServer.input(p, 9);
         p.setPos(p.position().add(0, 0, 1));
-        server.tick(new PlayerTickEvent.Post(p));
+        server.tick(new TickEvent.PlayerTickEvent(TickEvent.Phase.END,p));
         h.assertTrue(CastingServer.snapshot(p).remaining() == 0, "Moving during the windup cancels it too");
         h.succeed();
     }

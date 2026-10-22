@@ -1,5 +1,6 @@
 package com.restor.magicka.client;
 
+import net.minecraft.util.Mth;
 import com.restor.magicka.MagicNetwork;
 import com.restor.magicka.ShapePattern;
 import net.minecraft.client.Minecraft;
@@ -7,7 +8,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 /** Paints the caster's 5x5x5 stencil as five floor plans, the bottom layer on the left. */
 public final class ShapeEditorScreen extends Screen {
@@ -17,7 +17,7 @@ public final class ShapeEditorScreen extends Screen {
     private boolean dirty, painting, paintValue;
     public ShapeEditorScreen(){super(Component.translatable("shape.magicka.title"));}
     @Override protected void init(){
-        cell=Math.clamp((width-72)/(SIZE*SIZE+3),9,20);gap=Math.max(4,cell/2);
+        cell=Mth.clamp((width-72)/(SIZE*SIZE+3),9,20);gap=Math.max(4,cell/2);
         int span=SIZE*(SIZE*cell)+(SIZE-1)*gap;
         panelW=span+24;panelH=SIZE*cell+114;
         panelX=(width-panelW)/2;panelY=Math.max(4,(height-panelH)/2);
@@ -103,9 +103,8 @@ public final class ShapeEditorScreen extends Screen {
         return super.keyPressed(key,scan,modifiers);
     }
     @Override public void removed(){
-        if(dirty && Minecraft.getInstance().getConnection()!=null)PacketDistributor.sendToServer(new MagicNetwork.SetShapeGrid(bits[0],bits[1]));
+        if(dirty && Minecraft.getInstance().getConnection()!=null)MagicNetwork.sendToServer(new MagicNetwork.SetShapeGrid(bits[0],bits[1]));
         super.removed();
     }
     @Override public boolean isPauseScreen(){return false;}
-    @Override public void renderBackground(GuiGraphics g,int mouseX,int mouseY,float partialTick){}
 }

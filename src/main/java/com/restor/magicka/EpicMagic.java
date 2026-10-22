@@ -1,5 +1,6 @@
 package com.restor.magicka;
 
+import net.minecraft.util.Mth;
 import com.google.gson.JsonObject;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -105,7 +106,7 @@ public final class EpicMagic {
 
     private static void storm(ServerPlayer p, SpellDefinition s, Channel c) {
         ServerLevel level = p.serverLevel(); RandomSource r = level.random;
-        double radius = Math.clamp(s.number("radius",12),4,24), cloud = c.focus.y+Math.max(4,clearance(level,c.focus,16)), height = cloud-c.focus.y;
+        double radius = Mth.clamp(s.number("radius",12),4,24), cloud = c.focus.y+Math.max(4,clearance(level,c.focus,16)), height = cloud-c.focus.y;
         var dark = new DustParticleOptions(new Vector3f(.22f,.23f,.27f),4f);
         int[] next = {12}, fade = {0};
         SpellRuntime.sustain(p,age -> {
@@ -136,7 +137,7 @@ public final class EpicMagic {
         fx(level,ParticleTypes.ELECTRIC_SPARK,at.x,at.y+.3,at.z,24,.6,.4,.6,.15);
         for (var e : area(p,at,2.5,1.5,3)) {
             EffectGraph.entity(p,e,s,s.effects(),at,false);
-            if (!MagicStatuses.has(e,MagicStatuses.Status.WET) && EffectGraph.canHarm(p,e) && r.nextFloat() < .5f) e.igniteForSeconds(3);
+            if (!MagicStatuses.has(e,MagicStatuses.Status.WET) && EffectGraph.canHarm(p,e) && r.nextFloat() < .5f) e.setSecondsOnFire(3);
         }
         BlockPos ground = BlockPos.containing(at.x,at.y-.2,at.z);
         if (r.nextFloat() < .35f) {
@@ -148,7 +149,7 @@ public final class EpicMagic {
 
     private static void meteors(ServerPlayer p, SpellDefinition s, Channel c) {
         ServerLevel level = p.serverLevel(); RandomSource r = level.random;
-        double radius = Math.clamp(s.number("radius",10),3,24);
+        double radius = Mth.clamp(s.number("radius",10),3,24);
         Vec3 slant = flat(p.getLookAngle());
         var ember = new DustParticleOptions(new Vector3f(.9f,.35f,.1f),3f);
         int[] next = {0};
@@ -185,7 +186,7 @@ public final class EpicMagic {
             SpellRuntime.impact(p,s,end,s.number("burst_radius",3),false,true);
             fx(level,ParticleTypes.EXPLOSION,end.x,end.y+.5,end.z,3,.8,.4,.8,0);
             fx(level,ParticleTypes.LAVA,end.x,end.y+.3,end.z,10,.6,.2,.6,0);
-            sound(level,end,SoundEvents.GENERIC_EXPLODE.value(),1.4f,.7f+level.random.nextFloat()*.3f);
+            sound(level,end,SoundEvents.GENERIC_EXPLODE,1.4f,.7f+level.random.nextFloat()*.3f);
             if (level.random.nextFloat() < .3f) ignite(p,BlockPos.containing(end.x,end.y-.2,end.z));
             return true;
         });
@@ -193,7 +194,7 @@ public final class EpicMagic {
 
     private static void tornado(ServerPlayer p, SpellDefinition s, Channel c) {
         ServerLevel level = p.serverLevel(); RandomSource r = level.random;
-        double pull = Math.clamp(s.number("radius",9),3,16);
+        double pull = Mth.clamp(s.number("radius",9),3,16);
         Vec3[] base = {c.focus}; int[] fade = {0};
         SpellRuntime.sustain(p,age -> {
             double scale = 1;
@@ -257,7 +258,7 @@ public final class EpicMagic {
 
     private static void blizzard(ServerPlayer p, SpellDefinition s, Channel c) {
         ServerLevel level = p.serverLevel(); RandomSource r = level.random;
-        double radius = Math.clamp(s.number("radius",11),3,24), top = c.focus.y+Math.max(4,clearance(level,c.focus,10)), height = top-c.focus.y;
+        double radius = Mth.clamp(s.number("radius",11),3,24), top = c.focus.y+Math.max(4,clearance(level,c.focus,10)), height = top-c.focus.y;
         List<JsonObject> shard = SpellDefinition.graph(s.delivery(),"shard");
         Vec3 wind = flat(p.getLookAngle()).scale(.25);
         var ice = new BlockParticleOption(ParticleTypes.BLOCK,Blocks.ICE.defaultBlockState());

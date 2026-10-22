@@ -1,11 +1,11 @@
 package com.restor.magicka;
 
+import net.minecraftforge.event.TickEvent;
 import net.minecraft.gametest.framework.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.block.Blocks;
-import net.neoforged.neoforge.gametest.*;
-import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.minecraftforge.gametest.*;
 import java.nio.file.*;
 
 @GameTestHolder(Magicka.ID)
@@ -17,7 +17,7 @@ public final class QuickCastGameTests {
         CastingServer.quickFill(p,packed);h.assertTrue(CastingServer.snapshot(p).formula()==0,"Fill starts empty");
         var server=new CastingServer();
         for(int tick=1;tick<=20;tick++){
-            server.tick(new PlayerTickEvent.Post(p));var state=CastingServer.snapshot(p);
+            server.tick(new TickEvent.PlayerTickEvent(TickEvent.Phase.END,p));var state=CastingServer.snapshot(p);
             h.assertTrue(Formula.unpack(state.formula()).size()==Math.min(Formula.unpack(packed).size(),tick/CastingServer.QUEUE_TICKS_PER_ELEMENT),"One element every four ticks");
             h.assertTrue(state.remaining()==0,"Quick fill never commits a cast");
         }
@@ -41,7 +41,7 @@ public final class QuickCastGameTests {
     public static void quickFilledIncantationCastsTheUltimate(GameTestHelper h){
         var p=RecipeGameTests.caster(h);var ultimate=RecipeGameTests.spell("Absolute Zero");var server=new CastingServer();
         CastingServer.quickFill(p,ultimate.spokenPacked());
-        for(int i=0;i<ultimate.formula().size()*CastingServer.QUEUE_TICKS_PER_ELEMENT;i++)server.tick(new PlayerTickEvent.Post(p));
+        for(int i=0;i<ultimate.formula().size()*CastingServer.QUEUE_TICKS_PER_ELEMENT;i++)server.tick(new TickEvent.PlayerTickEvent(TickEvent.Phase.END,p));
         h.assertTrue(Formula.unpack(CastingServer.snapshot(p).formula()).elements().equals(ultimate.spoken()),"Queue fills in the spoken order");
         CastingServer.input(p,9);var cast=CastingServer.casting(p);
         h.assertTrue(cast!=null && cast.id().equals(ultimate.id()),"Preset casts the ultimate, got "+(cast==null?"nothing":cast.name()));
@@ -53,7 +53,7 @@ public final class QuickCastGameTests {
         for(var ultimate:RecipeRegistry.recipes().stream().filter(d->!d.incantation().isEmpty()).toList()){
             var p=RecipeGameTests.caster(h);
             CastingServer.quickFill(p,ultimate.formula().prepared().packed());
-            for(int i=0;i<ultimate.formula().size()*CastingServer.QUEUE_TICKS_PER_ELEMENT;i++)server.tick(new PlayerTickEvent.Post(p));
+            for(int i=0;i<ultimate.formula().size()*CastingServer.QUEUE_TICKS_PER_ELEMENT;i++)server.tick(new TickEvent.PlayerTickEvent(TickEvent.Phase.END,p));
             if(!Formula.unpack(CastingServer.snapshot(p).formula()).elements().equals(ultimate.spoken()))errors.add(ultimate.name()+" filled as "+Formula.unpack(CastingServer.snapshot(p).formula()).elements());
             CastingServer.input(p,9);var cast=CastingServer.casting(p);
             if(cast==null || !cast.id().equals(ultimate.id()))errors.add(ultimate.name()+" cast as "+(cast==null?"nothing":cast.name()));
@@ -74,8 +74,8 @@ public final class QuickCastGameTests {
     @GameTest(template="empty")
     public static void cancelFillAndProtectCommittedCast(GameTestHelper h){
         var p=RecipeGameTests.caster(h);var other=RecipeGameTests.caster(h);int f=RecipeGameTests.spell("Firebomb").formula().prepared().packed();
-        CastingServer.quickFill(p,f);var server=new CastingServer();for(int i=0;i<8;i++)server.tick(new PlayerTickEvent.Post(p));
-        CastingServer.input(p,8);for(int i=0;i<25;i++)server.tick(new PlayerTickEvent.Post(p));
+        CastingServer.quickFill(p,f);var server=new CastingServer();for(int i=0;i<8;i++)server.tick(new TickEvent.PlayerTickEvent(TickEvent.Phase.END,p));
+        CastingServer.input(p,8);for(int i=0;i<25;i++)server.tick(new TickEvent.PlayerTickEvent(TickEvent.Phase.END,p));
         h.assertTrue(CastingServer.snapshot(p).formula()==0,"Clear cancels pending fill");
         CastingServer.input(p,0);CastingServer.input(p,10);var before=CastingServer.snapshot(p);
         CastingServer.quickFill(p,f);h.assertTrue(CastingServer.snapshot(p).equals(before),"Preset cannot replace committed cast");
@@ -125,7 +125,7 @@ public final class QuickCastGameTests {
         CastingServer.input(p,7);CastingServer.input(p,11);CastingServer.input(p,1);CastingServer.input(p,1);CastingServer.input(p,9);
         var state=CastingServer.snapshot(p);
         h.assertTrue(state.channeling() && state.remaining()>0 && state.remaining()==state.total(),"Channel starts at once");
-        for(int i=0;i<10;i++)server.tick(new PlayerTickEvent.Post(p));
+        for(int i=0;i<10;i++)server.tick(new TickEvent.PlayerTickEvent(TickEvent.Phase.END,p));
         h.assertTrue(CastingServer.snapshot(p).channeling(),"Channel keeps running");
         CastingServer.input(p,12);state=CastingServer.snapshot(p);
         h.assertTrue(!state.channeling() && state.remaining()==0 && state.formula()==0 && state.instant(),"Release ends the channel");
@@ -154,7 +154,7 @@ public final class QuickCastGameTests {
         var p=RecipeGameTests.caster(h);h.setBlock(new BlockPos(1,1,4),Blocks.STONE);p.setXRot(30);var server=new CastingServer();
         CastingServer.input(p,7);CastingServer.input(p,11);for(int e:new int[]{4,4,4,6})CastingServer.input(p,e);CastingServer.input(p,9);CastingServer.input(p,12);
         h.assertTrue(CastingServer.snapshot(p).channeling(),"Releasing does not cut a growing construction");
-        for(int t=1;t<=30;t++)h.runAfterDelay(t,()->server.tick(new PlayerTickEvent.Post(p)));
+        for(int t=1;t<=30;t++)h.runAfterDelay(t,()->server.tick(new TickEvent.PlayerTickEvent(TickEvent.Phase.END,p)));
         h.runAfterDelay(31,()->{
             int blocks=MagicConstructionManager.get(h.getLevel()).structures().stream().filter(c->c.owner.equals(p.getUUID())).mapToInt(c->c.blocks.size()).sum();
             h.assertTrue(blocks>=5,"Bridge keeps growing after a tap, got "+blocks);h.succeed();
@@ -175,7 +175,7 @@ public final class QuickCastGameTests {
     public static void rootsAreClimbable(GameTestHelper h){
         var p=RecipeGameTests.caster(h);p.setPos(h.absoluteVec(new Vec3(1.5,2,1.65)));h.setBlock(new BlockPos(1,2,2),MagicBlocks.ROOT.get());
         p.setDeltaMovement(Vec3.ZERO);p.horizontalCollision=true;
-        MagicBlocks.climbRoots(new PlayerTickEvent.Pre(p));
+        MagicBlocks.climbRoots(new TickEvent.PlayerTickEvent(TickEvent.Phase.START,p));
         h.assertTrue(p.getDeltaMovement().y>=.2,"Pushing into roots lifts the player");h.succeed();
     }
     @GameTest(template="empty",batch="distant",timeoutTicks=100)

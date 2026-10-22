@@ -1,5 +1,7 @@
 package com.restor.magicka.client;
 
+import com.restor.magicka.MagicNetwork;
+import net.minecraft.util.Mth;
 import com.restor.magicka.*;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -26,7 +28,7 @@ public final class SpellbookScreen extends Screen {
     public SpellbookScreen(){
         super(Component.translatable("book.magicka.title"));var saved=BookPreferences.get();
         tag=Arrays.asList(TAGS).contains(saved.tag)?saved.tag:"all";query=saved.query;page=saved.page;scroll=saved.scroll;restoreId=saved.selectedId;
-        size=Math.clamp(saved.size,0,Formula.MAX);elements=Math.clamp(saved.elements,0,255);
+        size=Mth.clamp(saved.size,0,Formula.MAX);elements=Mth.clamp(saved.elements,0,255);
     }
     public static List<SpellDefinition> uniqueSpells(){return RecipeRegistry.clientRecipes().stream().filter(d->d.tier().equalsIgnoreCase("Signature")).toList();}
     private List<SpellDefinition> entries(){
@@ -55,7 +57,7 @@ public final class SpellbookScreen extends Screen {
     public void showStats(boolean show){stats=show;guide=false;rebuild(false);}
     private static void sendStat(int index,int value){
         int[] copy=MagicNetwork.clientStats.clone();if(index>=0)copy[index]=MagicStats.Stat.values()[index].clamp(value);MagicNetwork.clientStats=copy;
-        if(net.minecraft.client.Minecraft.getInstance().getConnection()!=null)net.neoforged.neoforge.network.PacketDistributor.sendToServer(new MagicNetwork.SetStat(index,value));
+        if(net.minecraft.client.Minecraft.getInstance().getConnection()!=null)MagicNetwork.sendToServer(new MagicNetwork.SetStat(index,value));
     }
     private void rebuildStats(){
         statRows.clear();shownStats=MagicNetwork.clientStats;
@@ -63,7 +65,7 @@ public final class SpellbookScreen extends Screen {
         addRenderableWidget(new BookButton(x+bookWidth-150,y+10,98,16,Component.translatable("book.magicka.stats.back"),b->showStats(false),true));
         addRenderableWidget(new BookButton(x+bookWidth-250,y+10,96,16,Component.translatable("book.magicka.stats.reset_all"),b->{sendStat(-1,0);MagicNetwork.clientStats=MagicStats.defaults();rebuild(false);},false));
         var all=MagicStats.Stat.values();int perColumn=(all.length+1)/2;
-        int top=y+48,rowHeight=Math.clamp((bookHeight-58)/perColumn,17,30),columnWidth=(bookWidth-36)/2;
+        int top=y+48,rowHeight=Mth.clamp((bookHeight-58)/perColumn,17,30),columnWidth=(bookWidth-36)/2;
         for(int i=0;i<all.length;i++){
             var stat=all[i];int column=i/perColumn,row=i%perColumn;
             int rx=x+14+column*(columnWidth+8),ry=top+row*rowHeight,labelWidth=Math.min(120,columnWidth*2/5);
@@ -99,7 +101,7 @@ public final class SpellbookScreen extends Screen {
         addRenderableWidget(new BookButton(x+bookWidth-48,y+10,16,16,Component.literal("?"),b->{guide=true;scroll=0;},false));
         addRenderableWidget(new BookButton(x+bookWidth-150,y+10,98,16,Component.translatable("book.magicka.stats"),b->showStats(true),false));
         addRenderableWidget(new BookButton(x+bookWidth-250,y+10,96,16,Component.translatable("book.magicka.shape"),b->minecraft.setScreen(new ShapeEditorScreen()),false));
-        var list=entries();page=Math.clamp(page,0,Math.max(0,(list.size()-1)/rows));selected=Math.clamp(selected,0,Math.max(0,list.size()-1));
+        var list=entries();page=Mth.clamp(page,0,Math.max(0,(list.size()-1)/rows));selected=Mth.clamp(selected,0,Math.max(0,list.size()-1));
         for(int i=0;i<rows && page*rows+i<list.size();i++){int index=page*rows+i;
             addRenderableWidget(new BookButton(x+12,y+LIST_TOP+i*23,divider-x-23,21,list.get(index).displayName(),
                     b->{selected=index;guide=false;scroll=0;rebuild(false);},index==selected));}
@@ -134,7 +136,7 @@ public final class SpellbookScreen extends Screen {
                         .append("\n").append(Component.translatable(entry.epic()?"book.magicka.mode_epic":!entry.channeled()?"book.magicka.mode_instant":entry.shape().construction()?"book.magicka.mode_growth":"book.magicka.mode_channel"));
         if(entry!=null && !guide && !entry.incantation().isEmpty())body=Component.literal("").append(body).append("\n\n").append(Component.translatable("book.magicka.incantation"));
         var lines=font.split(body,dw);int visible=Math.max(1,(y+bookHeight-72-textTop)/11);
-        scroll=Math.clamp(scroll,0,Math.max(0,lines.size()-visible));
+        scroll=Mth.clamp(scroll,0,Math.max(0,lines.size()-visible));
         for(int i=0;i<visible && i+scroll<lines.size();i++)g.drawString(font,lines.get(i+scroll),dx,textTop+i*11,MagicUi.INK,false);
         if(lines.size()>visible){int bottom=textTop+visible*11,thumb=Math.max(5,(bottom-textTop)*visible/lines.size()),offset=(bottom-textTop-thumb)*scroll/Math.max(1,lines.size()-visible);
             g.fill(x+bookWidth-12,textTop,x+bookWidth-10,bottom,0xFFC9B68D);g.fill(x+bookWidth-12,textTop+offset,x+bookWidth-10,textTop+offset+thumb,0xFF80653F);}
@@ -193,18 +195,17 @@ public final class SpellbookScreen extends Screen {
         if(button==0 && dragging){int slot=slotAt(mx,my);if(slot>=0)assign(slot,dragFormula);dragFormula=0;dragging=false;super.mouseReleased(mx,my,button);return true;}
         dragFormula=0;return super.mouseReleased(mx,my,button);
     }
-    private void remember(){var saved=BookPreferences.get();var list=entries();saved.selectedId=list.isEmpty()?"":list.get(Math.clamp(selected,0,list.size()-1)).id().toString();saved.query=query;saved.tag=tag;saved.size=size;saved.elements=elements;saved.page=page;saved.scroll=scroll;}
+    private void remember(){var saved=BookPreferences.get();var list=entries();saved.selectedId=list.isEmpty()?"":list.get(Mth.clamp(selected,0,list.size()-1)).id().toString();saved.query=query;saved.tag=tag;saved.size=size;saved.elements=elements;saved.page=page;saved.scroll=scroll;}
     @Override public void removed(){remember();BookPreferences.save();super.removed();}
-    @Override public boolean mouseScrolled(double mx,double my,double horizontal,double vertical){
-        if(stats)return super.mouseScrolled(mx,my,horizontal,vertical);
+    @Override public boolean mouseScrolled(double mx,double my,double vertical){
+        if(stats)return super.mouseScrolled(mx,my,vertical);
         if(mx>divider)scroll=Math.max(0,scroll-(int)Math.signum(vertical)*3);
-        else{page=Math.clamp(page-(int)Math.signum(vertical),0,Math.max(0,(entries().size()-1)/rows));selected=page*rows;rebuild(false);}return true;
+        else{page=Mth.clamp(page-(int)Math.signum(vertical),0,Math.max(0,(entries().size()-1)/rows));selected=page*rows;rebuild(false);}return true;
     }
     @Override public boolean keyPressed(int key,int scan,int modifiers){
         if(!(getFocused() instanceof EditBox box && box.isFocused()) && MagicClient.bookMatches(key,scan)){onClose();return true;}return super.keyPressed(key,scan,modifiers);
     }
     @Override public boolean isPauseScreen(){return false;}
-    @Override public void renderBackground(GuiGraphics g,int mouseX,int mouseY,float partialTick){}
     private static final class StatSlider extends net.minecraft.client.gui.components.AbstractSliderButton {
         private final MagicStats.Stat stat;private final EditBox box;
         StatSlider(int x,int y,int width,int height,MagicStats.Stat stat,EditBox box){

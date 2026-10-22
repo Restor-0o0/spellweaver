@@ -1,12 +1,12 @@
 package com.restor.magicka;
 
+import net.minecraft.util.Mth;
 import com.google.gson.*;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import java.util.*;
 
 public final class MagicStats {
@@ -17,7 +17,7 @@ public final class MagicStats {
         public final int min, max;
         Stat(int min,int max){this.min=min;this.max=max;}
         public String key(){return name().toLowerCase(Locale.ROOT);}
-        public int clamp(int value){return Math.clamp(value,min,max);}
+        public int clamp(int value){return Mth.clamp(value,min,max);}
     }
     public static final int COUNT = Stat.values().length, DEFAULT = 100;
     private static final String TAG = "magicka_stats";
@@ -39,8 +39,8 @@ public final class MagicStats {
     public static double power(Player player,Stat stat){return MagicGear.total(player)[stat.ordinal()]/100.0;}
     public static void reset(ServerPlayer player){player.getPersistentData().remove(TAG);CACHE.remove(player.getUUID());sync(player);}
     public static void invalidate(ServerPlayer player){CACHE.remove(player.getUUID());sync(player);}
-    public static void sync(ServerPlayer player){PacketDistributor.sendToPlayer(player,new MagicNetwork.Stats(get(player),MagicGear.deltas(player)));}
-    public static int minionCap(ServerPlayer owner){int[] v=MagicGear.total(owner);return (int)Math.clamp(Math.round(MagicConfig.MAX_MINIONS.get()*Math.max(1,v[Stat.SUMMONS.ordinal()]/100.0*v[Stat.DEATH.ordinal()]/100.0)),1,512);}
+    public static void sync(ServerPlayer player){MagicNetwork.sendToPlayer(player,new MagicNetwork.Stats(get(player),MagicGear.deltas(player)));}
+    public static int minionCap(ServerPlayer owner){int[] v=MagicGear.total(owner);return (int)Mth.clamp(Math.round(MagicConfig.MAX_MINIONS.get()*Math.max(1,v[Stat.SUMMONS.ordinal()]/100.0*v[Stat.DEATH.ordinal()]/100.0)),1,512);}
 
     public static SpellDefinition resolve(ServerPlayer player,SpellFormula key){return apply(player,RecipeRegistry.resolve(key));}
     public static SpellDefinition apply(ServerPlayer player,SpellDefinition base){
@@ -67,7 +67,7 @@ public final class MagicStats {
         power=total==0?1:power/total;
         double area=m.applyAsDouble(Stat.AREA)*Math.sqrt(power), duration=m.applyAsDouble(Stat.DURATION);
         JsonObject json=base.source().deepCopy();
-        json.addProperty("cast_ticks",Math.clamp(Math.round(base.castTicks()*bias/m.applyAsDouble(Stat.CAST_SPEED)),1,200));
+        json.addProperty("cast_ticks",Mth.clamp(Math.round(base.castTicks()*bias/m.applyAsDouble(Stat.CAST_SPEED)),1,200));
         JsonObject d=json.has("delivery")?json.getAsJsonObject("delivery"):new JsonObject();json.add("delivery",d);
         if(!d.has("radius"))d.addProperty("radius",3.0);
         if(!d.has("burst_radius"))d.addProperty("burst_radius",2.0);
@@ -78,7 +78,7 @@ public final class MagicStats {
         JsonObject c=json.has("construction")?json.getAsJsonObject("construction"):new JsonObject();
         if(base.shape().construction() || base.selfMode().equals("construct") || c.size()>0){
             double cm=m.applyAsDouble(Stat.CONSTRUCTION);
-            if(cm!=1){c.addProperty("budget",Math.clamp(Math.round(base.budget()*cm),1,4096));c.addProperty("uncapped",true);json.add("construction",c);}
+            if(cm!=1){c.addProperty("budget",Mth.clamp(Math.round(base.budget()*cm),1,4096));c.addProperty("uncapped",true);json.add("construction",c);}
             mul(c,"lifetime_ticks",duration,1,72000);
         }
         scaleGraph(json.getAsJsonArray("effects"),v,area,duration);
@@ -139,7 +139,7 @@ public final class MagicStats {
     }
     private static void mul(JsonObject o,String key,double factor,double min,double max){
         if(!o.has(key) || !o.get(key).isJsonPrimitive() || !o.getAsJsonPrimitive(key).isNumber())return;
-        double base=o.get(key).getAsDouble(), value=Math.clamp(base*factor,min,max);
+        double base=o.get(key).getAsDouble(), value=Mth.clamp(base*factor,min,max);
         boolean integer=base==Math.floor(base) && !key.equals("radius") && !key.equals("range") && !key.equals("amount") && !key.endsWith("_radius") && !key.equals("end_burst") && !key.equals("lift") && !key.equals("health_fraction");
         if(integer)o.addProperty(key,(long)Math.round(value));else o.addProperty(key,round(value));
     }

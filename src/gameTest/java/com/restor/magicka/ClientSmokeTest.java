@@ -1,18 +1,19 @@
 package com.restor.magicka;
 
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.event.TickEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.TitleScreen;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 /** Development-only check: finish resource loading, verify bindings, then close the client. */
-@EventBusSubscriber(modid = Magicka.ID, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = Magicka.ID, value = Dist.CLIENT)
 public final class ClientSmokeTest {
     private static int ticks;
     private static int stage;
-    @SubscribeEvent public static void tick(ClientTickEvent.Post event) {
+    @SubscribeEvent public static void tick(net.minecraftforge.event.TickEvent.ClientTickEvent event) {
+        if (event.phase != net.minecraftforge.event.TickEvent.Phase.END) return;
         if (!Boolean.getBoolean("magicka.clientSmokeTest")) return;
         var mc = Minecraft.getInstance();
         if (mc.screen instanceof net.minecraft.client.gui.screens.AccessibilityOnboardingScreen && mc.getOverlay() == null) {
@@ -25,7 +26,7 @@ public final class ClientSmokeTest {
             if (RecipeRegistry.clientRecipes().size()!=RecipeRegistry.CATALOG_SIZE)throw new IllegalStateException("Client catalog must contain all "+RecipeRegistry.CATALOG_SIZE+" spells, got "+RecipeRegistry.clientRecipes().size());
             for(String id:com.restor.magicka.client.enemy.EnemyLayers.ALL.keySet()){
                 mc.getEntityModels().bakeLayer(com.restor.magicka.client.enemy.EnemyRenderer.layer(id));
-                if(mc.getResourceManager().getResource(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(Magicka.ID,"textures/entity/"+id+".png")).isEmpty())throw new IllegalStateException("Missing enemy texture "+id);
+                if(mc.getResourceManager().getResource(new net.minecraft.resources.ResourceLocation(Magicka.ID,"textures/entity/"+id+".png")).isEmpty())throw new IllegalStateException("Missing enemy texture "+id);
             }
             org.slf4j.LoggerFactory.getLogger("MagickaSmokeTest").info("MAGICKA_CLIENT_SMOKE_OK: resources loaded; {} key mappings registered", keys);
             mc.options.languageCode = "ru_ru";
@@ -54,7 +55,7 @@ public final class ClientSmokeTest {
                     int cx = width / 2;
                     g.fill(cx - 91, height - 22, cx + 91, height, 0xFF56555A);
                     for (int i = 0; i < 9; i++) g.renderOutline(cx - 90 + i * 20, height - 21, 20, 20, 0xFFAAAAAA);
-                    for (int i = 0; i < 10; i++) g.blitSprite(net.minecraft.resources.ResourceLocation.withDefaultNamespace("hud/heart/full"), cx - 91 + i * 8, height - 39, 9, 9);
+                    for (int i = 0; i < 10; i++) g.blit(new net.minecraft.resources.ResourceLocation("textures/gui/icons.png"), cx - 91 + i * 8, height - 39, 52, 0, 9, 9);
                     var f = new Formula(); f.add(Element.WATER); f.add(Element.COLD); f.add(Element.EARTH);
                     com.restor.magicka.client.MagicHud.render(g, new MagicNetwork.State(true, f.packed(), 20, 60, 0, 8, true, false), 49);
                 }

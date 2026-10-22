@@ -1,5 +1,6 @@
 package com.restor.magicka.client;
 
+import net.minecraft.util.Mth;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
 import com.restor.magicka.*;
@@ -19,7 +20,7 @@ public final class SpellVisuals {
     public static void receive(MagicNetwork.Visual packet){
         if(packet.kind()<0 || packet.kind()>7 || !GrimoireState.valid(packet.formula()) || !Double.isFinite(packet.from().lengthSqr()+packet.to().lengthSqr()) || !Float.isFinite(packet.radius()))return;
         if(packet.kind()==SpellVfx.ZONE || packet.kind()==SpellVfx.MINE)CUES.removeIf(c->c.packet.kind()==packet.kind() && c.packet.formula()==packet.formula() && c.packet.from().distanceToSqr(packet.from())<.01);
-        if(CUES.size()>=512)CUES.removeFirst();CUES.add(new Cue(packet));
+        if(CUES.size()>=512)CUES.remove(0);CUES.add(new Cue(packet));
     }
     public static void tick(){
         var mc=Minecraft.getInstance();if(mc.level==null){clear();return;}
@@ -38,9 +39,9 @@ public final class SpellVisuals {
     private static boolean fire(SpellFormula formula){return formula.fire()>0 && formula.death()==0 && formula.lightning()==0;}
     private static void flames(Minecraft mc,Cue cue){
         var p=cue.packet;var random=mc.level.random;double progress=Math.min(1,cue.age/(double)Math.max(1,p.ticks()));
-        double spread=Math.clamp(p.radius(),.15,6);
+        double spread=Mth.clamp(p.radius(),.15,6);
         int count=switch(p.kind()){case SpellVfx.BEAM,SpellVfx.ARC,SpellVfx.SPRAY->16;case SpellVfx.ORB->8;case SpellVfx.IMPACT,SpellVfx.ZONE->14;default->6;};
-        count=(int)Math.round(count*Math.clamp(spread/2.5,1,3));
+        count=(int)Math.round(count*Mth.clamp(spread/2.5,1,3));
         for(int i=0;i<count;i++){
             Vec3 point=switch(p.kind()){
                 case SpellVfx.BEAM,SpellVfx.ARC,SpellVfx.SPRAY->p.from().lerp(p.to(),random.nextDouble());
@@ -61,14 +62,14 @@ public final class SpellVisuals {
         var mc=Minecraft.getInstance();var consumer=buffers.getBuffer(RenderType.lightning());
         for(Cue cue:CUES){
             var p=cue.packet;var formula=Formula.unpack(p.formula()).key();
-            float progress=Math.clamp((cue.age+partial)/Math.max(1,p.ticks()),0,1),alpha=(1-progress)*.85f;
-            int color=color(formula);double radius=Math.clamp(p.radius(),.05,16);Vec3 center=p.from();
+            float progress=Mth.clamp((cue.age+partial)/Math.max(1,p.ticks()),0,1),alpha=(1-progress)*.85f;
+            int color=color(formula);double radius=Mth.clamp(p.radius(),.05,16);Vec3 center=p.from();
             boolean flames=fire(formula);
             if(flames && (p.kind()==SpellVfx.BEAM || p.kind()==SpellVfx.ARC || p.kind()==SpellVfx.SPRAY))continue;
             switch(p.kind()){
                 case SpellVfx.BEAM,SpellVfx.ARC -> {
                     Vec3 delta=p.to().subtract(p.from()),axis=delta.normalize().cross(new Vec3(0,1,0)).normalize();
-                    int segments=Math.clamp((int)(delta.length()/1.2),2,96);Vec3 previous=p.from();
+                    int segments=Mth.clamp((int)(delta.length()/1.2),2,96);Vec3 previous=p.from();
                     for(int i=1;i<=segments;i++){Vec3 next=p.from().lerp(p.to(),i/(double)segments);
                         if(i<segments && p.kind()==SpellVfx.ARC)next=next.add(axis.scale(Math.sin(i*13.7+cue.age*.9)*.35)).add(0,Math.cos(i*8.3)*.18,0);
                         stroke(pose,consumer,camera,previous,next,radius,color,alpha*.5f);stroke(pose,consumer,camera,previous,next,radius*.28,0xFFFFFF,alpha);previous=next;
@@ -118,7 +119,7 @@ public final class SpellVisuals {
     private static void stroke(PoseStack pose,VertexConsumer out,Vec3 camera,Vec3 from,Vec3 to,double width,int color,float alpha){
         Vec3 side=to.subtract(from).cross(camera.subtract(from)).normalize().scale(width);if(side.lengthSqr()<1e-8)side=new Vec3(width,0,0);
         float r=((color>>16)&255)/255f,g=((color>>8)&255)/255f,b=(color&255)/255f;
-        for(Vec3 v:new Vec3[]{from.subtract(side),from.add(side),to.add(side),to.subtract(side)})out.addVertex(pose.last().pose(),(float)v.x,(float)v.y,(float)v.z).setColor(r,g,b,alpha);
+        for(Vec3 v:new Vec3[]{from.subtract(side),from.add(side),to.add(side),to.subtract(side)})out.vertex(pose.last().pose(),(float)v.x,(float)v.y,(float)v.z).color(r,g,b,alpha).endVertex();
     }
     private SpellVisuals(){}
 }

@@ -9,9 +9,9 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.util.BlockSnapshot;
-import net.neoforged.neoforge.event.level.BlockEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.BlockSnapshot;
+import net.minecraftforge.event.level.BlockEvent;
 
 public final class WorldPlacement {
     static boolean allowed(ServerPlayer player, BlockPos pos) {
@@ -48,8 +48,8 @@ public final class WorldPlacement {
         BlockSnapshot snapshot = BlockSnapshot.create(world.dimension(), world, pos);
         if (!world.setBlock(pos, state, Block.UPDATE_CLIENTS)) return false;
         var event = new BlockEvent.EntityPlaceEvent(snapshot, world.getBlockState(pos.below()), player);
-        if (NeoForge.EVENT_BUS.post(event).isCanceled()) {
-            snapshot.restore();
+        if (MinecraftForge.EVENT_BUS.post(event)) {
+            snapshot.restore(true, false);
             return false;
         }
         if (solid) for (LivingEntity entity : occupants) {
@@ -77,7 +77,7 @@ public final class WorldPlacement {
         if (!MagicConfig.TERRAIN_DAMAGE.get() || !allowed(player, pos)) return false;
         var world = player.serverLevel();
         if (!(world.getBlockState(pos).getBlock() instanceof MagicBlocks.TemporaryBlock)) return false;
-        if (NeoForge.EVENT_BUS.post(new BlockEvent.BreakEvent(world, pos, world.getBlockState(pos), player)).isCanceled()) return false;
+        if (MinecraftForge.EVENT_BUS.post(new BlockEvent.BreakEvent(world, pos, world.getBlockState(pos), player))) return false;
         return world.removeBlock(pos, false);
     }
 }

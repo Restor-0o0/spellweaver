@@ -1,14 +1,15 @@
 package com.restor.magicka;
 
+import net.minecraftforge.event.TickEvent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.level.block.Blocks;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.util.FakePlayerFactory;
-import net.neoforged.neoforge.event.level.BlockEvent;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.FakePlayerFactory;
+import net.minecraftforge.event.level.BlockEvent;
+import net.minecraftforge.gametest.GameTestHolder;
+import net.minecraftforge.gametest.PrefixGameTestTemplate;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -28,7 +29,7 @@ public final class MagicGameTests {
                 Formula input = new Formula(); int value = sequence;
                 for (int slot = 0; slot < length; slot++) { input.add(Element.values()[value % 8]); value /= 8; }
                 helper.assertTrue(input.elements().equals(Formula.unpack(input.packed()).elements()), "Formula round trip");
-                Formula reverse = new Formula(); input.elements().reversed().forEach(reverse::add);
+                Formula reverse = new Formula(); var reversed=new java.util.ArrayList<>(input.elements());java.util.Collections.reverse(reversed);reversed.forEach(reverse::add);
                 helper.assertTrue(input.key().equals(reverse.key()) && input.key().hashCode()==reverse.key().hashCode(), "Order independent keys");
                 helper.assertTrue(RecipeRegistry.resolve(input.key())==RecipeRegistry.resolve(reverse.key()), "Order independent recipe resolution");
             }
@@ -40,15 +41,15 @@ public final class MagicGameTests {
         BlockPos p = new BlockPos(1, 2, 1);
         helper.setBlock(p, MagicBlocks.ICE.get());
         helper.setBlock(p.east(), MagicBlocks.EARTH.get());
-        MagicBlocks.MagicBlockEntity earth = helper.getBlockEntity(p.east());
+        MagicBlocks.MagicBlockEntity earth = (MagicBlocks.MagicBlockEntity) helper.getBlockEntity(p.east());
         earth.initialize(UUID.randomUUID(), UUID.randomUUID(), helper.absolutePos(p.east()), helper.getLevel().getGameTime() + 8, true);
-        MagicBlocks.MagicBlockEntity data = helper.getBlockEntity(p);
+        MagicBlocks.MagicBlockEntity data = (MagicBlocks.MagicBlockEntity) helper.getBlockEntity(p);
         UUID owner = UUID.randomUUID(), construction = UUID.randomUUID();
         long expire = helper.getLevel().getGameTime() + 8;
         data.initialize(owner, construction, helper.absolutePos(p), expire, false);
-        var tag = data.saveWithFullMetadata(helper.getLevel().registryAccess());
+        var tag = data.saveWithFullMetadata();
         var restored = new MagicBlocks.MagicBlockEntity(helper.absolutePos(p), data.getBlockState());
-        restored.loadWithComponents(tag, helper.getLevel().registryAccess());
+        restored.load(tag);
         helper.assertTrue(restored.owner.equals(owner) && restored.construction.equals(construction)
                 && restored.expires == expire && restored.root.equals(data.root), "Persistent ownership, root and lifetime");
         helper.runAfterDelay(12, () -> { helper.assertBlockPresent(Blocks.AIR, p); helper.assertBlockPresent(MagicBlocks.EARTH.get(), p.east()); helper.succeed(); });
@@ -69,12 +70,12 @@ public final class MagicGameTests {
         helper.setBlock(local.below(), Blocks.STONE);
         var player = FakePlayerFactory.getMinecraft(helper.getLevel());
         Consumer<BlockEvent.EntityPlaceEvent> deny = event -> { if (event.getPos().equals(pos)) event.setCanceled(true); };
-        NeoForge.EVENT_BUS.addListener(deny);
+        MinecraftForge.EVENT_BUS.addListener(deny);
         try {
             helper.assertFalse(WorldPlacement.placeBlock(player, pos, MagicBlocks.EARTH.get().defaultBlockState(),
                     UUID.randomUUID(), pos, false, false, null), "Canceled event must reject placement");
             helper.assertBlockPresent(Blocks.AIR, local);
-        } finally { NeoForge.EVENT_BUS.unregister(deny); }
+        } finally { MinecraftForge.EVENT_BUS.unregister(deny); }
         helper.assertTrue(WorldPlacement.placeBlock(player, pos, MagicBlocks.EARTH.get().defaultBlockState(),
                 UUID.randomUUID(), pos, false, false, null), "Placement allowed after listener removed");
         helper.succeed();
@@ -95,7 +96,7 @@ public final class MagicGameTests {
     public static void literalSelfAndElementReactions(GameTestHelper helper) {
         // A real ServerPlayer is needed: NeoForge FakePlayer rejects every damage source.
         var player = new net.minecraft.server.level.ServerPlayer(helper.getLevel().getServer(), helper.getLevel(),
-                new com.mojang.authlib.GameProfile(UUID.randomUUID(), "SpellTester"), net.minecraft.server.level.ClientInformation.createDefault());
+                new com.mojang.authlib.GameProfile(UUID.randomUUID(), "SpellTester"));
         player.connection = FakePlayerFactory.getMinecraft(helper.getLevel()).connection;
         player.setPos(helper.absoluteVec(new net.minecraft.world.phys.Vec3(2, 2, 2)));
         for (int i = 0; i < 61; i++) player.tick(); // Let vanilla spawn invulnerability expire.
@@ -126,7 +127,7 @@ public final class MagicGameTests {
         for (int action : new int[]{8, 4, 9, 11, 7, -1, 1000}) CastingServer.input(player, action);
         helper.assertTrue(before.equals(CastingServer.snapshot(player)), "Commit must reject edits, mode changes and other intents");
         var server = new CastingServer();
-        for (int i = 0; i < before.total(); i++) server.tick(new net.neoforged.neoforge.event.tick.PlayerTickEvent.Post(player));
+        for (int i = 0; i < before.total(); i++) server.tick(new TickEvent.PlayerTickEvent(TickEvent.Phase.END,player));
         helper.assertTrue(CastingServer.snapshot(player).remaining() == 0 && CastingServer.snapshot(player).formula() == 0, "Committed cast completes and consumes formula");
         helper.succeed();
     }

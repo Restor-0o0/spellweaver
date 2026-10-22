@@ -1,5 +1,6 @@
 package com.restor.magicka;
 
+import net.minecraft.util.Mth;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleOptions;
@@ -28,8 +29,8 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.living.LivingChangeTargetEvent;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.joml.Vector3f;
@@ -90,7 +91,7 @@ public final class LegendMagic {
     private static void flowers(ServerPlayer p, SpellDefinition s, boolean self) {
         ServerLevel level = p.serverLevel();
         Vec3 center = self ? p.position() : EpicMagic.focus(p);
-        int radius = (int)Math.round(Math.clamp(s.number("radius",7),2,16));
+        int radius = (int)Math.round(Mth.clamp(s.number("radius",7),2,16));
         BlockPos base = BlockPos.containing(center);
         List<BlockPos> ground = new ArrayList<>();
         for (int dx = -radius; dx <= radius; dx++) for (int dz = -radius; dz <= radius; dz++) {
@@ -98,7 +99,7 @@ public final class LegendMagic {
             for (int dy = 3; dy >= -4; dy--) {
                 BlockPos at = base.offset(dx,dy,dz);
                 BlockState above = level.getBlockState(at.above());
-                if (level.getBlockState(at).is(BlockTags.DIRT) && (above.isAir() || above.is(Blocks.SHORT_GRASS))) { ground.add(at); break; }
+                if (level.getBlockState(at).is(BlockTags.DIRT) && (above.isAir() || above.is(Blocks.GRASS))) { ground.add(at); break; }
             }
         }
         ground.sort(Comparator.comparingDouble(b -> b.distSqr(base)));
@@ -209,7 +210,7 @@ public final class LegendMagic {
                     double a = i*Math.PI*2/12;
                     EpicMagic.fx(level,ParticleTypes.CLOUD,hand.x,hand.y,hand.z,0,Math.cos(a),(i/12-1)*.3,Math.sin(a),.35+i/12*.1);
                 }
-                sound(level,hand,SoundEvents.GENERIC_EXPLODE.value(),1.2f,1.5f);
+                sound(level,hand,SoundEvents.GENERIC_EXPLODE,1.2f,1.5f);
                 return true;
             }
             if (age >= 14) { EpicMagic.fx(level,ParticleTypes.POOF,hand.x,hand.y,hand.z,8,.2,.2,.2,.02); return true; }
@@ -220,7 +221,7 @@ public final class LegendMagic {
     private static void chidori(ServerPlayer p, SpellDefinition s) {
         ServerLevel level = p.serverLevel();
         Vec3 look = p.getLookAngle();
-        Vec3 dir = new Vec3(look.x,Math.clamp(look.y,-.3,.3),look.z).normalize();
+        Vec3 dir = new Vec3(look.x,Mth.clamp(look.y,-.3,.3),look.z).normalize();
         Set<UUID> struck = new HashSet<>();
         int windup = 6;
         announce(p,24,"magicka.legend.chidori");
@@ -302,7 +303,7 @@ public final class LegendMagic {
                 if (!foe(p,e) || cooldown.getOrDefault(e.getUUID(),-99) > age) continue;
                 cooldown.put(e.getUUID(),age+10);
                 EffectGraph.entity(p,e,s,s.effects(),pos,false);
-                if (e.getType().is(EntityTypeTags.UNDEAD)) EffectGraph.entity(p,e,s,s.effects(),pos,false);
+                if (e.getMobType() == net.minecraft.world.entity.MobType.UNDEAD) EffectGraph.entity(p,e,s,s.effects(),pos,false);
                 Vec3 away = flat(e.position().subtract(pos));
                 e.push(away.x*1.2,.35,away.z*1.2); e.hurtMarked = true;
             }
@@ -337,7 +338,7 @@ public final class LegendMagic {
     private static void shout(ServerPlayer p, SpellDefinition s, boolean self) {
         ServerLevel level = p.serverLevel();
         Vec3 origin = p.getEyePosition().add(0,-.3,0), dir = p.getLookAngle();
-        double range = Math.clamp(s.number("radius",10),3,24), cone = Math.cos(Math.toRadians(35));
+        double range = Mth.clamp(s.number("radius",10),3,24), cone = Math.cos(Math.toRadians(35));
         Set<UUID> hit = new HashSet<>();
         announce(p,32,"magicka.legend.shout");
         sound(level,origin,SoundEvents.RAVAGER_ROAR,2f,.7f);
@@ -373,7 +374,7 @@ public final class LegendMagic {
     private static void explosion(ServerPlayer p, SpellDefinition s, boolean self) {
         ServerLevel level = p.serverLevel();
         Vec3 target = self ? p.position() : EpicMagic.focus(p);
-        double radius = Math.clamp(s.number("radius",8),3,16);
+        double radius = Mth.clamp(s.number("radius",8),3,16);
         int charge = 40;
         announce(p,32,"magicka.legend.explosion_chant");
         SpellVfx.cue(p,s,SpellVfx.TELEGRAPH,target,target,radius,charge+10);
@@ -402,7 +403,7 @@ public final class LegendMagic {
         EpicMagic.fx(level,ParticleTypes.FLASH,target.x,target.y+1,target.z,3,.5,.5,.5,0);
         EpicMagic.fx(level,ParticleTypes.EXPLOSION_EMITTER,target.x,target.y+1,target.z,4,radius/3,1,radius/3,0);
         EpicMagic.fx(level,ParticleTypes.LAVA,target.x,target.y+1,target.z,40,radius/2,1,radius/2,0);
-        sound(level,target,SoundEvents.GENERIC_EXPLODE.value(),6f,.5f);
+        sound(level,target,SoundEvents.GENERIC_EXPLODE,6f,.5f);
         sound(level,target,SoundEvents.LIGHTNING_BOLT_THUNDER,4f,.6f);
         if (self) { p.setDeltaMovement(0,2.2,0); p.hurtMarked = true; MagicStatuses.apply(p,MagicStatuses.Status.SLOW_FALLING,160,1); }
         SpellRuntime.impact(p,s,target,radius,false,true);
@@ -429,13 +430,13 @@ public final class LegendMagic {
     private static void timeStop(ServerPlayer p, SpellDefinition s) {
         ServerLevel level = p.serverLevel();
         Vec3 center = p.position();
-        double radius = Math.clamp(s.number("radius",16),4,32);
+        double radius = Mth.clamp(s.number("radius",16),4,32);
         List<UUID> held = new ArrayList<>();
         Map<Projectile,Paused> shots = new IdentityHashMap<>();
         announce(p,48,"magicka.legend.time_stop");
         sound(level,center,SoundEvents.BELL_BLOCK,3f,.5f);
         sound(level,center,SoundEvents.BEACON_DEACTIVATE,2f,.5f);
-        SpellRuntime.timed(p,Math.clamp((int)s.number("duration_ticks",100),20,400),age -> {
+        SpellRuntime.timed(p,Mth.clamp((int)s.number("duration_ticks",100),20,400),age -> {
             if (age < 10) {
                 double r = radius*(age+1)/10;
                 RandomSource random = level.random;
@@ -444,7 +445,7 @@ public final class LegendMagic {
                     EpicMagic.fx(level,dust(0x8C8FA8,1.6f),center.x+v.x,center.y+1+v.y,center.z+v.z,1,0,0,0,0);
                 }
             }
-            if (age % 20 == 10) sound(level,center,SoundEvents.NOTE_BLOCK_HAT.value(),1.5f,.5f);
+            if (age % 20 == 10) sound(level,center,SoundEvents.NOTE_BLOCK_HAT.get(),1.5f,.5f);
             AABB box = new AABB(center,center).inflate(radius);
             for (Mob mob : level.getEntitiesOfClass(Mob.class,box,m -> m.isAlive() && !m.isNoAi() && m.distanceToSqr(center) <= radius*radius && !EffectGraph.ally(p,m))) {
                 mob.setNoAi(true); mob.getPersistentData().putBoolean(STOPPED_TAG,true); mob.setDeltaMovement(Vec3.ZERO); mob.hurtMarked = true;
@@ -527,7 +528,7 @@ public final class LegendMagic {
     }
     static void target(LivingChangeTargetEvent event) {
         UUID id = event.getEntity().getUUID(), owner = CHARMED.get(id);
-        LivingEntity next = event.getNewAboutToBeSetTarget();
+        LivingEntity next = event.getNewTarget();
         if (next == null) return;
         if (owner != null && (next instanceof Player || owner.equals(CHARMED.get(next.getUUID())))) event.setCanceled(true);
         else if (CONFUSED.containsKey(id) && next instanceof Player) event.setCanceled(true);
@@ -578,7 +579,7 @@ public final class LegendMagic {
         }
     }
     static DustParticleOptions dust(int rgb, float size) {
-        return new DustParticleOptions(new Vector3f((rgb >> 16 & 255)/255f,(rgb >> 8 & 255)/255f,(rgb & 255)/255f),Math.clamp(size,.01f,4f));
+        return new DustParticleOptions(new Vector3f((rgb >> 16 & 255)/255f,(rgb >> 8 & 255)/255f,(rgb & 255)/255f),Mth.clamp(size,.01f,4f));
     }
     static void sound(ServerLevel level, Vec3 at, SoundEvent sound, float volume, float pitch) {
         level.playSound(null,at.x,at.y,at.z,sound,SoundSource.PLAYERS,volume,pitch);

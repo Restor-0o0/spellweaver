@@ -14,9 +14,9 @@ public class EnemyRenderer<T extends SpecialEnemy> extends MobRenderer<T, EnemyM
 
     public EnemyRenderer(EntityRendererProvider.Context context, String id, float shadow) {
         super(context, new EnemyModel<>(context.bakeLayer(layer(id)), id), shadow);
-        texture = ResourceLocation.fromNamespaceAndPath(Magicka.ID, "textures/entity/" + id + ".png");
+        texture = new ResourceLocation(Magicka.ID, "textures/entity/" + id + ".png");
     }
-    public static ModelLayerLocation layer(String id) { return new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(Magicka.ID, id), "main"); }
+    public static ModelLayerLocation layer(String id) { return new ModelLayerLocation(new ResourceLocation(Magicka.ID, id), "main"); }
     @Override public ResourceLocation getTextureLocation(T mob) { return texture; }
     @Override public void render(T mob, float yaw, float partial, PoseStack pose, MultiBufferSource buffers, int light) {
         if (mob instanceof Burrower b && b.burrowed()) return;

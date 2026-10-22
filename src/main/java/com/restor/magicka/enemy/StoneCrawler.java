@@ -79,7 +79,7 @@ public class StoneCrawler extends SpecialEnemy {
         LivingEntity target = getTarget();
         if (target != null && cooldown == 0 && !casting() && !disabled() && distanceTo(target) < 3.5) {
             startCast(SLAM, 18, () -> {
-                playSound(SoundEvents.GENERIC_EXPLODE.value(), .8f, 1.4f);
+                playSound(SoundEvents.GENERIC_EXPLODE, .8f, 1.4f);
                 if (level() instanceof ServerLevel level)
                     level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.STONE.defaultBlockState()), getX(), getY() + .1, getZ(), 50, 1.8, .1, 1.8, .15);
                 for (LivingEntity hit : level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(3, 1, 3), e -> e != this && !ally(e) && e.distanceToSqr(this) < 16)) {

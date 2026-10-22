@@ -2,9 +2,8 @@ package com.restor.magicka;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 
 /** Personal 5x5x5 stencil, 125 cells packed into two longs and kept in player data. */
 public final class ShapePattern {
@@ -23,7 +22,7 @@ public final class ShapePattern {
     public static void store(ServerPlayer player,long low,long high){
         player.getPersistentData().putLongArray(TAG,sanitize(low,high));sync(player);
     }
-    public static void sync(ServerPlayer player){long[] bits=of(player);PacketDistributor.sendToPlayer(player,new MagicNetwork.ShapeGrid(bits[0],bits[1]));}
+    public static void sync(ServerPlayer player){long[] bits=of(player);MagicNetwork.sendToPlayer(player,new MagicNetwork.ShapeGrid(bits[0],bits[1]));}
     public static boolean filled(long[] bits,int x,int y,int z){
         if(!inside(x,y,z))return false;
         int i=index(x,y,z);

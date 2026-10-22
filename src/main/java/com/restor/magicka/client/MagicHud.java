@@ -1,5 +1,6 @@
 package com.restor.magicka.client;
 
+import net.minecraft.util.Mth;
 import com.restor.magicka.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -60,7 +61,7 @@ public final class MagicHud {
             g.fill(sx,presetY,sx+21,presetY+25,0xB0141820);g.renderOutline(sx,presetY,21,25,MagicNetwork.clientQueue.formula()!=0 && MagicNetwork.clientQueue.formula()==packed?MagicUi.GOLD:0xFF494454);
             MagicUi.small(g,Component.literal(fit(MagicClient.quickKey(i).getString().replace(" ",""),25)),sx+2,presetY+2,MagicUi.GOLD);
             if(packed!=0){var f=RecipeRegistry.clientResolve(Formula.unpack(packed).key()).spokenFormula();
-                g.pose().pushPose();g.pose().translate(sx+5,presetY+10,0);g.pose().scale(.75f,.75f,1);MagicUi.icon(g,f.elements().getFirst(),0,0);g.pose().popPose();
+                g.pose().pushPose();g.pose().translate(sx+5,presetY+10,0);g.pose().scale(.75f,.75f,1);MagicUi.icon(g,f.elements().get(0),0,0);g.pose().popPose();
                 for(int j=0;j<f.size();j++)g.fill(sx+3+j*4,presetY+23,sx+6+j*4,presetY+24,f.elements().get(j).color);
             }
         }
@@ -81,12 +82,12 @@ public final class MagicHud {
         }
         if(casting || queuing){
             float progress=queuing?MagicNetwork.clientQueue.elapsed()/(float)Math.max(1,Formula.unpack(MagicNetwork.clientQueue.formula()).size()*com.restor.magicka.CastingServer.QUEUE_TICKS_PER_ELEMENT):1-state.remaining()/(float)Math.max(1,state.total());
-            g.fill(panelX+2,y+31,panelX+109,y+33,0xFF30293B);g.fill(panelX+2,y+31,panelX+2+(int)(107*Math.clamp(progress,0,1)),y+33,queuing?MagicUi.GOLD:0xFFBF92E6);
+            g.fill(panelX+2,y+31,panelX+109,y+33,0xFF30293B);g.fill(panelX+2,y+31,panelX+2+(int)(107*Mth.clamp(progress,0,1)),y+33,queuing?MagicUi.GOLD:0xFFBF92E6);
         }
     }
-    public static void render(GuiGraphics g){
+    public static void render(GuiGraphics g,int offset){
         var mc=Minecraft.getInstance();if(mc.player==null || mc.options.hideGui || mc.player.isSpectator() || mc.screen!=null)return;
-        render(g,MagicNetwork.clientState,Math.max(mc.gui.leftHeight,mc.gui.rightHeight));
+        render(g,MagicNetwork.clientState,offset);
     }
     private MagicHud(){}
 }

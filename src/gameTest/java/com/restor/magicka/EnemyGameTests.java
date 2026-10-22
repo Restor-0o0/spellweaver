@@ -6,7 +6,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.gametest.*;
+import net.minecraftforge.gametest.*;
 import java.util.function.Predicate;
 
 @GameTestHolder(Magicka.ID)
@@ -139,7 +139,7 @@ public final class EnemyGameTests {
         h.assertTrue(warrior.hasEffect(net.minecraft.world.effect.MobEffects.DAMAGE_BOOST), "Goblins get the war chant");
         h.assertFalse(beetle.hasEffect(net.minecraft.world.effect.MobEffects.DAMAGE_BOOST), "Other monsters do not");
         var mobs = MagicEnemies.encounter(h.getLevel(), h.absoluteVec(new Vec3(2.5, 2, 2.5)), "h");
-        boolean kin = mobs.stream().allMatch(m -> m instanceof LivingEntity l && Goblin.kin(l));
+        boolean kin = mobs.stream().allMatch(Goblin::kin);
         mobs.forEach(m -> m.discard());
         h.assertTrue(mobs.size() == 8 && kin, "Encounter H spawns eight goblins, got " + mobs.size());
         h.succeed();

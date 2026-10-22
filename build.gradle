@@ -2,7 +2,7 @@ plugins {
     id 'java-library'
     id 'maven-publish'
     id 'idea'
-    id 'net.neoforged.moddev' version '2.0.147'
+    id 'net.neoforged.moddev.legacyforge' version '2.0.147'
 }
 
 version = mod_version
@@ -18,7 +18,7 @@ repositories {
 }
 
 base {
-    archivesName = "spellweaver-neoforge-${minecraft_version}"
+    archivesName = "spellweaver-forge-${minecraft_version}"
 }
 
 def licenseName = "LICENSE_${mod_id}"
@@ -26,10 +26,11 @@ tasks.withType(Jar).configureEach {
     from('LICENSE') { rename { licenseName } }
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
+    options.compilerArgs << '-Xmaxerrs' << '2000'
 }
 
 sourceSets {
@@ -43,9 +44,8 @@ sourceSets {
     }
 }
 
-neoForge {
-    // Specify the version of NeoForge to use.
-    version = project.neo_version
+legacyForge {
+    version = "${minecraft_version}-${forge_version}"
 
 
     // This line is optional. Access Transformers are automatically detected
@@ -59,13 +59,13 @@ neoForge {
             systemProperty 'magicka.clientSmokeTest', project.hasProperty('clientSmokeTest').toString()
 
             // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
-            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
         }
 
         server {
             server()
             programArgument '--nogui'
-            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
         }
 
         // This run config launches GameTestServer and runs all registered gametests, then exits.
@@ -74,7 +74,7 @@ neoForge {
         gameTestServer {
             type = "gameTestServer"
             systemProperty 'magicka.secret', 'true'
-            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
         }
 
         data {
@@ -149,8 +149,8 @@ dependencies {
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
     var replaceProperties = [minecraft_version      : minecraft_version,
                              minecraft_version_range: minecraft_version_range,
-                             neo_version            : neo_version,
-                             neo_version_range      : neo_version_range,
+                             forge_version          : forge_version,
+                             forge_version_range    : forge_version_range,
                              loader_version_range   : loader_version_range,
                              mod_id                 : mod_id,
                              mod_name               : mod_name,
@@ -177,7 +177,11 @@ tasks.register('secretJar', Jar) {
 }
 tasks.named('assemble') { dependsOn 'secretJar' }
 // To avoid having to run "generateModMetadata" manually, make it run on every project reload
-neoForge.ideSyncTask generateModMetadata
+legacyForge.ideSyncTask generateModMetadata
+
+obfuscation {
+    reobfuscate(tasks.named('secretJar'), sourceSets.main)
+}
 
 // Example configuration to allow publishing using the maven-publish plugin
 publishing {

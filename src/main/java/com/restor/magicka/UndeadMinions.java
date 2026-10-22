@@ -1,5 +1,7 @@
 package com.restor.magicka;
 
+import net.minecraftforge.event.TickEvent;
+import net.minecraft.util.Mth;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -16,12 +18,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.event.entity.living.*;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.server.ServerStoppedEvent;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.living.*;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.server.ServerStoppedEvent;
 import java.util.*;
 
 /** Temporary undead servants: bound to one caster, never saved, never dropping loot. */
@@ -33,7 +34,7 @@ public final class UndeadMinions {
     public static int summon(ServerPlayer owner, Vec3 point, String id, int count, int ticks) {
         var type = BuiltInRegistries.ENTITY_TYPE.getOptional(ResourceLocation.tryParse(id)).orElse(EntityType.ZOMBIE);
         int spawned = 0;
-        for (int i = 0; i < Math.clamp(count, 1, 128); i++) if (spawn(owner, type, point, i, ticks)) spawned++;
+        for (int i = 0; i < Mth.clamp(count, 1, 128); i++) if (spawn(owner, type, point, i, ticks)) spawned++;
         return spawned;
     }
 
@@ -48,7 +49,7 @@ public final class UndeadMinions {
         Vec3 at = place(level, mob, point, index);
         if (at == null || !WorldPlacement.allowed(owner, BlockPos.containing(at))) { mob.discard(); return false; }
         mob.moveTo(at.x, at.y, at.z, owner.getYRot() + index * 45, 0);
-        mob.finalizeSpawn(level, level.getCurrentDifficultyAt(mob.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
+        mob.finalizeSpawn(level, level.getCurrentDifficultyAt(mob.blockPosition()), MobSpawnType.MOB_SUMMONED, null, null);
         if (mob.getVehicle() != null) { Entity vehicle = mob.getVehicle(); mob.stopRiding(); vehicle.discard(); }
         if (mob instanceof Zombie zombie) zombie.setBaby(false);
         if (mob.getItemBySlot(EquipmentSlot.HEAD).isEmpty()) mob.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.SKELETON_SKULL));
@@ -58,7 +59,7 @@ public final class UndeadMinions {
         mob.addTag(TAG);
         mob.addTag("magicka_object");
         mob.setCustomName(net.minecraft.network.chat.Component.translatable("entity.magicka.minion", owner.getDisplayName()));
-        long until = level.getGameTime() + Math.clamp(ticks, 20, 72000);
+        long until = level.getGameTime() + Mth.clamp(ticks, 20, 72000);
         MINIONS.put(mob.getUUID(), new Minion(mob, owner, until));
         if (!level.addFreshEntity(mob)) { MINIONS.remove(mob.getUUID()); return false; }
         trim(owner);
@@ -121,7 +122,7 @@ public final class UndeadMinions {
 
     @SubscribeEvent public void target(LivingChangeTargetEvent event) {
         Minion minion = MINIONS.get(event.getEntity().getUUID());
-        if (minion != null && !allowed(minion, event.getNewAboutToBeSetTarget())) event.setCanceled(true);
+        if (minion != null && !allowed(minion, event.getNewTarget())) event.setCanceled(true);
     }
 
     @SubscribeEvent public void drops(LivingDropsEvent event) { if (event.getEntity().getTags().contains(TAG)) event.setCanceled(true); }
@@ -131,7 +132,8 @@ public final class UndeadMinions {
         if (!event.getLevel().isClientSide && event.getEntity().getTags().contains(TAG) && !MINIONS.containsKey(event.getEntity().getUUID())) event.setCanceled(true);
     }
 
-    @SubscribeEvent public void tick(ServerTickEvent.Post event) {
+    @SubscribeEvent public void tick(TickEvent.ServerTickEvent event) {
+        if (event.phase != TickEvent.Phase.END) return;
         if (event.getServer().getTickCount() % 10 != 0 || MINIONS.isEmpty()) return;
         for (Minion minion : List.copyOf(MINIONS.values())) {
             Mob mob = minion.mob;

@@ -1,5 +1,7 @@
 package com.restor.magicka;
 
+import net.minecraftforge.event.TickEvent;
+import net.minecraft.util.Mth;
 import net.minecraft.core.*;
 import net.minecraft.nbt.*;
 import net.minecraft.server.level.*;
@@ -8,8 +10,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.phys.*;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.tick.LevelTickEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import java.util.*;
 
 public final class MagicConstructionManager extends SavedData {
@@ -30,7 +31,7 @@ public final class MagicConstructionManager extends SavedData {
     static boolean instantBuilds;
     public MagicConstructionManager() {}
     public static MagicConstructionManager get(ServerLevel level) {
-        return level.getDataStorage().computeIfAbsent(new Factory<>(MagicConstructionManager::new,MagicConstructionManager::load),"magicka_constructions");
+        return level.getDataStorage().computeIfAbsent(MagicConstructionManager::load,MagicConstructionManager::new,"magicka_constructions");
     }
     Construction structure(UUID id) { return structures.get(id); }
     public Collection<Construction> structures() { return Collections.unmodifiableCollection(structures.values()); }
@@ -180,7 +181,7 @@ public final class MagicConstructionManager extends SavedData {
         public BlockPos next(Player player, int index) {
             // Vanilla rotation packets are authoritative input; turns are rate-limited per segment.
             float difference=net.minecraft.util.Mth.wrapDegrees(player.getYRot()-yaw);
-            yaw+=Math.clamp(difference,-35,35); direction=Direction.fromYRot(yaw);
+            yaw+=Mth.clamp(difference,-35,35); direction=Direction.fromYRot(yaw);
             if (template!=null) return index<template.size() ? template.get(index) : null;
             if (index==0 && shape!=SpellShape.GROWTH) return start;
             int width=SpellDefinition.integer(spell.construction(),"width",1,1,5);
@@ -291,8 +292,9 @@ public final class MagicConstructionManager extends SavedData {
         for(Direction direction:Direction.values()) if(level.hasChunkAt(pos.relative(direction)) && !level.getBlockState(pos.relative(direction)).isAir()) return true;
         return false;
     }
-    @SubscribeEvent public void levelTick(LevelTickEvent.Post event) { if(event.getLevel() instanceof ServerLevel level) get(level).tick(level); }
-    @Override public CompoundTag save(CompoundTag tag, HolderLookup.Provider lookup) {
+    @SubscribeEvent public void levelTick(TickEvent.LevelTickEvent event) {
+        if (event.phase != TickEvent.Phase.END) return; if(event.level instanceof ServerLevel level) get(level).tick(level); }
+    @Override public CompoundTag save(CompoundTag tag) {
         ListTag list=new ListTag();
         for(Construction c:structures.values()) {
             var n=new CompoundTag();n.putUUID("Id",c.id);n.putUUID("Owner",c.owner);n.putString("Type",c.type);n.putLong("Root",c.root.asLong());n.putLong("Expires",c.expires);n.putFloat("Integrity",c.integrity);
@@ -300,7 +302,7 @@ public final class MagicConstructionManager extends SavedData {
         }
         tag.put("Structures",list);return tag;
     }
-    private static MagicConstructionManager load(CompoundTag tag, HolderLookup.Provider lookup) {
+    private static MagicConstructionManager load(CompoundTag tag) {
         var manager=new MagicConstructionManager();
         for(Tag t:tag.getList("Structures",Tag.TAG_COMPOUND)) {
             CompoundTag n=(CompoundTag)t;

@@ -1,5 +1,6 @@
 package com.restor.magicka;
 
+import net.minecraft.util.Mth;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
@@ -21,8 +22,8 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.event.EventHooks;
-import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.ForgeEventFactory;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import java.util.*;
 
 import static com.restor.magicka.LegendMagic.*;
@@ -84,7 +85,7 @@ final class LegendLife {
     static void purifyingFlame(ServerPlayer p, SpellDefinition s, boolean self) {
         ServerLevel level = p.serverLevel();
         Vec3 center = self ? p.position() : EpicMagic.focus(p);
-        double radius = Math.clamp(s.number("radius",5),2,12);
+        double radius = Mth.clamp(s.number("radius",5),2,12);
         List<com.google.gson.JsonObject> support = graph(s,"support");
         sound(level,center,SoundEvents.FIRECHARGE_USE,1.2f,.7f);
         SpellRuntime.repeat(p,Math.max(20,(int)s.number("duration_ticks",160)),age -> {
@@ -99,7 +100,7 @@ final class LegendLife {
             for (LivingEntity e : withCaster(p,near(p,center,radius),center,radius)) {
                 if (foe(p,e)) {
                     EffectGraph.entity(p,e,s,s.effects(),center,false);
-                    if (e.getType().is(EntityTypeTags.UNDEAD)) EffectGraph.entity(p,e,s,s.effects(),center,false);
+                    if (e.getMobType() == net.minecraft.world.entity.MobType.UNDEAD) EffectGraph.entity(p,e,s,s.effects(),center,false);
                 } else if (EffectGraph.ally(p,e)) {
                     EffectGraph.entity(p,e,s,support,center,false);
                     e.clearFire();
@@ -113,7 +114,7 @@ final class LegendLife {
         ServerLevel level = p.serverLevel();
         LivingEntity aimed = self ? p : aimed(p,24);
         LivingEntity target = aimed == null ? p : aimed;
-        int ticks = Math.clamp((int)s.number("duration_ticks",60),20,200);
+        int ticks = Mth.clamp((int)s.number("duration_ticks",60),20,200);
         boolean hostile = foe(p,target);
         Vec3 anchor = target.position();
         sound(level,anchor,SoundEvents.GLASS_PLACE,1.2f,.6f);
@@ -148,7 +149,7 @@ final class LegendLife {
         ServerLevel level = p.serverLevel();
         LivingEntity aimed = self ? p : aimed(p,24);
         LivingEntity target = aimed != null && EffectGraph.ally(p,aimed) ? aimed : p;
-        int ticks = Math.clamp((int)s.number("duration_ticks",1200),20,12000);
+        int ticks = Mth.clamp((int)s.number("duration_ticks",1200),20,12000);
         target.getPersistentData().putLong(PHOENIX_TAG,level.getGameTime()+ticks);
         EffectGraph.entity(p,target,s,s.effects(),p.position(),false);
         Vec3 at = target.getBoundingBox().getCenter();
@@ -174,7 +175,7 @@ final class LegendLife {
         v.addEffect(new MobEffectInstance(MobEffects.REGENERATION,100,1));
         Vec3 at = v.getBoundingBox().getCenter();
         for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class,v.getBoundingBox().inflate(5),e -> e != v && e instanceof Enemy && e.isAlive())) {
-            e.igniteForSeconds(5);
+            e.setSecondsOnFire(5);
             Vec3 away = flat(e.position().subtract(v.position()));
             e.push(away.x*1.5,.5,away.z*1.5); e.hurtMarked = true;
         }
@@ -187,7 +188,7 @@ final class LegendLife {
 
     static void kaioken(ServerPlayer p, SpellDefinition s) {
         ServerLevel level = p.serverLevel();
-        int ticks = Math.clamp((int)s.number("duration_ticks",400),20,2400);
+        int ticks = Mth.clamp((int)s.number("duration_ticks",400),20,2400);
         EffectGraph.entity(p,p,s,s.effects(),p.position(),true);
         p.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST,ticks,1));
         p.addEffect(new MobEffectInstance(MobEffects.JUMP,ticks,1));
@@ -206,7 +207,7 @@ final class LegendLife {
 
     static void protego(ServerPlayer p, SpellDefinition s, boolean self) {
         ServerLevel level = p.serverLevel();
-        double radius = self ? 3.5 : Math.clamp(s.number("radius",6),3,12);
+        double radius = self ? 3.5 : Mth.clamp(s.number("radius",6),3,12);
         Vec3 fixed = p.position();
         Map<UUID,Integer> cooldown = new HashMap<>();
         announce(p,24,"magicka.legend.protego");
@@ -243,7 +244,7 @@ final class LegendLife {
     static void zombieCure(ServerPlayer p, SpellDefinition s, boolean self) {
         ServerLevel level = p.serverLevel();
         Vec3 center = self ? p.position() : EpicMagic.focus(p);
-        double radius = Math.clamp(s.number("radius",4),2,10);
+        double radius = Mth.clamp(s.number("radius",4),2,10);
         sound(level,center,SoundEvents.ZOMBIE_VILLAGER_CURE,1.2f,1.2f);
         EpicMagic.fx(level,ParticleTypes.TOTEM_OF_UNDYING,center.x,center.y+1,center.z,60,radius*.4,.8,radius*.4,.3);
         for (int i = 0; i < 48; i++) {
@@ -251,32 +252,29 @@ final class LegendLife {
             EpicMagic.fx(level,dust(0xFFD84A,1.2f),center.x+Math.cos(a)*radius,center.y+.2,center.z+Math.sin(a)*radius,1,0,0,0,0);
         }
         for (LivingEntity e : near(p,center,radius)) {
-            LivingEntity cured = switch (e) {
-                case ZombieVillager zv -> {
-                    var villager = zv.convertTo(EntityType.VILLAGER,false);
-                    if (villager != null) {
-                        villager.setVillagerData(zv.getVillagerData());
-                        villager.setVillagerXp(zv.getVillagerXp());
-                        villager.addEffect(new MobEffectInstance(MobEffects.CONFUSION,200));
-                    }
-                    yield villager;
+            LivingEntity cured = null;
+            if (e instanceof ZombieVillager zv) {
+                var villager = zv.convertTo(EntityType.VILLAGER,false);
+                if (villager != null) {
+                    villager.setVillagerData(zv.getVillagerData());
+                    villager.setVillagerXp(zv.getVillagerXp());
+                    villager.addEffect(new MobEffectInstance(MobEffects.CONFUSION,200));
                 }
-                case ZombifiedPiglin zp -> { var piglin = zp.convertTo(EntityType.PIGLIN,true); if (piglin != null) piglin.setImmuneToZombification(true); yield piglin; }
-                case Zoglin zg -> { var hoglin = zg.convertTo(EntityType.HOGLIN,true); if (hoglin != null) hoglin.setImmuneToZombification(true); yield hoglin; }
-                case ZombieHorse zh -> zh.convertTo(EntityType.HORSE,false);
-                default -> null;
-            };
+                cured = villager;
+            } else if (e instanceof ZombifiedPiglin zp) { var piglin = zp.convertTo(EntityType.PIGLIN,true); if (piglin != null) piglin.setImmuneToZombification(true); cured = piglin; }
+            else if (e instanceof Zoglin zg) { var hoglin = zg.convertTo(EntityType.HOGLIN,true); if (hoglin != null) hoglin.setImmuneToZombification(true); cured = hoglin; }
+            else if (e instanceof ZombieHorse zh) cured = zh.convertTo(EntityType.HORSE,false);
             if (cured != null) {
-                EventHooks.onLivingConvert(e,cured);
+                ForgeEventFactory.onLivingConvert(e,cured);
                 EpicMagic.fx(level,ParticleTypes.HAPPY_VILLAGER,cured.getX(),cured.getY()+1,cured.getZ(),16,.4,.6,.4,0);
-            } else if (e.getType().is(EntityTypeTags.UNDEAD) && foe(p,e)) EffectGraph.entity(p,e,s,s.effects(),center,false);
+            } else if (e.getMobType() == net.minecraft.world.entity.MobType.UNDEAD && foe(p,e)) EffectGraph.entity(p,e,s,s.effects(),center,false);
         }
     }
 
     static void wellspring(ServerPlayer p, SpellDefinition s, boolean self) {
         ServerLevel level = p.serverLevel();
         Vec3 center = self ? p.position() : EpicMagic.focus(p);
-        double radius = Math.clamp(s.number("radius",4),2,10);
+        double radius = Mth.clamp(s.number("radius",4),2,10);
         sound(level,center,SoundEvents.BUCKET_EMPTY,1.2f,.8f);
         SpellRuntime.repeat(p,Math.max(40,(int)s.number("duration_ticks",600)),age -> {
             RandomSource r = level.random;

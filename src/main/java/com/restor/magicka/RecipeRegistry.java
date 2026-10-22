@@ -4,10 +4,9 @@ import com.google.gson.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.*;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.AddReloadListenerEvent;
-import net.neoforged.neoforge.event.OnDatapackSyncEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.event.AddReloadListenerEvent;
+import net.minecraftforge.event.OnDatapackSyncEvent;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -30,7 +29,7 @@ public final class RecipeRegistry {
         Map<SpellFormula, SpellDefinition> loaded = new HashMap<>();
         for (String text : definitions) {
             JsonObject json = JsonParser.parseString(text).getAsJsonObject();
-            var def = SpellDefinition.parse(ResourceLocation.parse(json.get("id").getAsString()), json);
+            var def = SpellDefinition.parse(new ResourceLocation(json.get("id").getAsString()), json);
             if (loaded.put(def.formula(), def) != null) throw new IllegalArgumentException("Duplicate synced formula");
         }
         client = Map.copyOf(loaded);
@@ -42,7 +41,7 @@ public final class RecipeRegistry {
             JsonArray index = JsonParser.parseReader(new InputStreamReader(stream, StandardCharsets.UTF_8)).getAsJsonArray();
             Map<SpellFormula, SpellDefinition> loaded = new HashMap<>();
             for (JsonElement e : index) {
-                ResourceLocation id = ResourceLocation.parse(e.getAsString());
+                ResourceLocation id = new ResourceLocation(e.getAsString());
                 try (var data = RecipeRegistry.class.getResourceAsStream("/data/" + id.getNamespace() + "/magicka_spell/" + id.getPath() + ".json")) {
                     if (data == null) throw new IllegalStateException("Missing " + id);
                     var def = SpellDefinition.parse(id, JsonParser.parseReader(new InputStreamReader(data,StandardCharsets.UTF_8)).getAsJsonObject());
@@ -83,8 +82,8 @@ public final class RecipeRegistry {
         // Small chunks stay far below Minecraft's 1 MiB clientbound limit.
         for (int i = 0; i < packets.size(); i += 12) {
             var packet = new MagicNetwork.Catalog(i == 0, i + 12 >= packets.size(), packets.subList(i,Math.min(i+12,packets.size())));
-            if (event.getPlayer() == null) event.getPlayerList().getPlayers().forEach(p -> PacketDistributor.sendToPlayer(p,packet));
-            else PacketDistributor.sendToPlayer(event.getPlayer(),packet);
+            if (event.getPlayer() == null) event.getPlayerList().getPlayers().forEach(p -> MagicNetwork.sendToPlayer(p,packet));
+            else MagicNetwork.sendToPlayer(event.getPlayer(),packet);
         }
     }
 }

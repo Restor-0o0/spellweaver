@@ -30,7 +30,7 @@ public class TitanRenderer extends EntityRenderer<ElementalTitan> {
             models.put(e, new ElementalModel<>(context.bakeLayer(EnemyRenderer.layer(id)), id));
         }
     }
-    @Override public ResourceLocation getTextureLocation(ElementalTitan titan) { return ResourceLocation.fromNamespaceAndPath(Magicka.ID, "textures/entity/" + titan.modelId() + ".png"); }
+    @Override public ResourceLocation getTextureLocation(ElementalTitan titan) { return new ResourceLocation(Magicka.ID, "textures/entity/" + titan.modelId() + ".png"); }
     @Override public boolean shouldRender(ElementalTitan titan, Frustum frustum, double x, double y, double z) { return frustum.isVisible(titan.getBoundingBox().inflate(4, 2, 4)); }
     @Override public void render(ElementalTitan titan, float yaw, float partial, PoseStack pose, MultiBufferSource buffers, int light) {
         float up = titan.emergence(partial);
@@ -43,7 +43,7 @@ public class TitanRenderer extends EntityRenderer<ElementalTitan> {
         pose.translate(0, -1.501, 0);
         model.setupAnim(titan, 0, 0, titan.tickCount + partial, 0, 0);
         int shade = ElementalRenderer.glows(titan.element()) ? LightTexture.FULL_BRIGHT : LightTexture.pack(Math.max(10, LightTexture.block(light)), LightTexture.sky(light));
-        model.renderToBuffer(pose, buffers.getBuffer(RenderType.entityCutoutNoCull(getTextureLocation(titan))), shade, OverlayTexture.NO_OVERLAY);
+        model.renderToBuffer(pose, buffers.getBuffer(RenderType.entityCutoutNoCull(getTextureLocation(titan))), shade, OverlayTexture.NO_OVERLAY, 1, 1, 1, 1);
         pose.popPose();
         super.render(titan, yaw, partial, pose, buffers, light);
     }

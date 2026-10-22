@@ -29,9 +29,9 @@ public abstract class SpecialEnemy extends Monster {
 
     protected SpecialEnemy(EntityType<? extends Monster> type, Level level) { super(type, level); }
 
-    @Override protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(ACTION, 0).define(STATE, 0).define(EXTRA, 0);
+    @Override protected void defineSynchedData() {
+        super.defineSynchedData();
+        entityData.define(ACTION, 0); entityData.define(STATE, 0); entityData.define(EXTRA, 0);
     }
     @Override public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
         super.onSyncedDataUpdated(key);

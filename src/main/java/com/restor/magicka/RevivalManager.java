@@ -1,21 +1,22 @@
 package com.restor.magicka;
 
+import net.minecraftforge.event.TickEvent;
+import net.minecraft.util.Mth;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.*;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.phys.*;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.server.ServerStoppedEvent;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.server.ServerStoppedEvent;
 import java.util.*;
 
 /** Short-lived soul markers; resurrection never copies dropped inventory/equipment. */
 public final class RevivalManager {
     private record Remains(UUID id, ServerLevel level, Vec3 point, EntityType<?> type, boolean player, long until) {}
     private static final Map<UUID,Remains> SOULS = new HashMap<>();
-    @SubscribeEvent(priority=net.neoforged.bus.api.EventPriority.LOWEST) public void death(LivingDeathEvent event) {
+    @SubscribeEvent(priority=net.minecraftforge.eventbus.api.EventPriority.LOWEST) public void death(LivingDeathEvent event) {
         if (event.getEntity().level() instanceof ServerLevel world && !event.isCanceled()) {
             var e = event.getEntity();
             if (e.getType() == EntityType.ENDER_DRAGON || e.getType() == EntityType.WITHER || e.getTags().contains("magicka_object") || e.getTags().contains("magicka_revived")) return;
@@ -27,7 +28,8 @@ public final class RevivalManager {
     @SubscribeEvent public void respawn(PlayerEvent.PlayerRespawnEvent event) { SOULS.remove(event.getEntity().getUUID()); }
     @SubscribeEvent public void logout(PlayerEvent.PlayerLoggedOutEvent event) { SOULS.remove(event.getEntity().getUUID()); }
     @SubscribeEvent public void stop(ServerStoppedEvent event) { SOULS.clear(); }
-    @SubscribeEvent public void tick(ServerTickEvent.Post event) {
+    @SubscribeEvent public void tick(TickEvent.ServerTickEvent event) {
+        if (event.phase != TickEvent.Phase.END) return;
         SOULS.values().removeIf(r -> r.level.getGameTime() >= r.until);
         for (Remains r : SOULS.values()) if (r.level.getGameTime()%20==0 && r.level.hasChunkAt(net.minecraft.core.BlockPos.containing(r.point)))
             r.level.sendParticles(ParticleTypes.SOUL,r.point.x,r.point.y+.8,r.point.z,2,.2,.3,.2,.01);
@@ -35,7 +37,7 @@ public final class RevivalManager {
     public static int raise(ServerPlayer caster, Vec3 point, double radius, int count, int ticks) {
         var level = caster.serverLevel();
         var found = SOULS.values().stream().filter(r -> !r.player && r.level==level && r.until>level.getGameTime() && r.point.distanceToSqr(point)<=radius*radius)
-                .sorted(Comparator.comparingDouble(r -> r.point.distanceToSqr(point))).limit(Math.clamp(count,1,128)).toList();
+                .sorted(Comparator.comparingDouble(r -> r.point.distanceToSqr(point))).limit(Mth.clamp(count,1,128)).toList();
         int raised = 0;
         for (Remains r : found) if (level.getEntity(r.id) == null && UndeadMinions.spawn(caster,r.type,r.point,raised,ticks)) { SOULS.remove(r.id); raised++; }
         return raised;
@@ -50,7 +52,7 @@ public final class RevivalManager {
             var player = level.getServer().getPlayerList().getPlayer(remains.id);
             if (player == null || player.isAlive() || level.getServer().isHardcore()) return false;
             SOULS.remove(remains.id);
-            var restored = level.getServer().getPlayerList().respawn(player,false,Entity.RemovalReason.KILLED);
+            var restored = level.getServer().getPlayerList().respawn(player,false);
             restored.connection.player = restored;
             restored.teleportTo(level,remains.point.x,remains.point.y,remains.point.z,Set.of(),restored.getYRot(),restored.getXRot());
             restored.setHealth(Math.max(1,restored.getMaxHealth()*health));

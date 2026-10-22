@@ -3,12 +3,12 @@ package com.restor.magicka;
 import net.minecraft.gametest.framework.*;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.gametest.*;
+import net.minecraftforge.gametest.*;
 
 @GameTestHolder(Magicka.ID)
 @PrefixGameTestTemplate(false)
 public final class GearGameTests {
-    private static void equip(ServerPlayer player, MagicGear.Slot slot, net.neoforged.neoforge.registries.DeferredItem<GearItem> item) {
+    private static void equip(ServerPlayer player, MagicGear.Slot slot, net.minecraftforge.registries.RegistryObject<GearItem> item) {
         MagicGear.Loadout loadout = new MagicGear.Loadout(player);
         loadout.setItem(slot.ordinal(), new ItemStack(item.get()));
     }

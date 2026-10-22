@@ -4,7 +4,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.neoforged.neoforge.network.PacketDistributor;
 import java.util.*;
 
 public final class ElementLocks {
@@ -20,7 +19,7 @@ public final class ElementLocks {
         if (mask == 0) return;
         long now = player.serverLevel().getGameTime();
         LOCKS.put(player.getUUID(), new Lock(mask | active(player), now + ticks));
-        PacketDistributor.sendToPlayer(player, new MagicNetwork.Locks(active(player), ticks));
+        MagicNetwork.sendToPlayer(player, new MagicNetwork.Locks(active(player), ticks));
         player.serverLevel().playSound(null, player.blockPosition(), SoundEvents.CHAIN_PLACE, SoundSource.HOSTILE, 1f, .6f);
         player.displayClientMessage(Component.translatable("hud.magicka.elements_locked", names(mask), ticks / 20), true);
         CastingServer.dissolveLocked(player);
@@ -37,7 +36,7 @@ public final class ElementLocks {
         player.displayClientMessage(Component.translatable("hud.magicka.element_locked", Component.translatable(element.key())), true);
     }
     public static void clear(ServerPlayer player) {
-        if (LOCKS.remove(player.getUUID()) != null) PacketDistributor.sendToPlayer(player, new MagicNetwork.Locks(0, 0));
+        if (LOCKS.remove(player.getUUID()) != null) MagicNetwork.sendToPlayer(player, new MagicNetwork.Locks(0, 0));
     }
     static void reset() { LOCKS.clear(); }
     private static Component names(int mask) {

@@ -1,18 +1,18 @@
 package com.restor.magicka.client.enemy;
 
+import net.minecraftforge.fml.common.Mod;
 import com.restor.magicka.Magicka;
 import com.restor.magicka.enemy.MagicEnemies;
 import com.restor.magicka.enemy.SpecialEnemy;
 import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.world.entity.EntityType;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.EntityRenderersEvent;
-import net.neoforged.neoforge.registries.DeferredHolder;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.registries.RegistryObject;
 import java.util.Map;
 
-@EventBusSubscriber(modid = Magicka.ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
+@Mod.EventBusSubscriber(modid = Magicka.ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public final class EnemyClient {
     private static final Map<String, Float> SHADOWS = Map.ofEntries(
             Map.entry("cave_skitter", .45f), Map.entry("shield_beetle", .8f), Map.entry("stone_crawler", .9f), Map.entry("mushroom_nurse", .45f),
@@ -33,7 +33,7 @@ public final class EnemyClient {
         for (var holder : MagicEnemies.TYPES.getEntries()) {
             String id = holder.getId().getPath();
             if (!EnemyLayers.ALL.containsKey(id)) continue;
-            var type = (EntityType<SpecialEnemy>)((DeferredHolder<EntityType<?>, ?>)holder).get();
+            var type = (EntityType<SpecialEnemy>)((RegistryObject<?>)holder).get();
             event.registerEntityRenderer(type, context -> new EnemyRenderer<>(context, id, SHADOWS.getOrDefault(id, .5f)));
         }
     }

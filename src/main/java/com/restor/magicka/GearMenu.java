@@ -9,14 +9,14 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraftforge.common.extensions.IForgeMenuType;
+import net.minecraftforge.registries.RegistryObject;
+import net.minecraftforge.registries.DeferredRegister;
 
 public final class GearMenu extends AbstractContainerMenu {
     public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(Registries.MENU, Magicka.ID);
-    public static final DeferredHolder<MenuType<?>, MenuType<GearMenu>> TYPE = MENUS.register("loadout",
-            () -> IMenuTypeExtension.create((id, inventory, buffer) -> new GearMenu(id, inventory, new SimpleContainer(MagicGear.SLOTS))));
+    public static final RegistryObject<MenuType<GearMenu>> TYPE = MENUS.register("loadout",
+            () -> IForgeMenuType.create((id, inventory, buffer) -> new GearMenu(id, inventory, new SimpleContainer(MagicGear.SLOTS))));
 
     public static final int[][] POSITIONS = {{26, 30}, {62, 30}, {26, 62}, {62, 62}, {26, 94}, {62, 94}, {98, 94}, {98, 30}};
     private static final int GEAR_END = MagicGear.SLOTS, INVENTORY_END = GEAR_END + 36;

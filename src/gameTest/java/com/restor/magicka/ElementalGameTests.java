@@ -5,7 +5,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.gametest.*;
+import net.minecraftforge.gametest.*;
 
 @GameTestHolder(Magicka.ID)
 @PrefixGameTestTemplate(false)
@@ -34,7 +34,7 @@ public final class ElementalGameTests {
         Elementals.companion(p, RecipeGameTests.spell("Fire Elemental"), h.absoluteVec(new Vec3(3.5, 2, 3.5)));
         var owned = Elementals.companions(p);
         h.assertTrue(owned.size() == 1, "The elemental answers the call");
-        var mob = owned.getFirst();
+        var mob = owned.get(0);
         h.assertTrue(mob.element() == Element.FIRE && mob.flyer() && mob.fireImmune(), "A fire elemental flies and does not burn");
         h.assertTrue(mob.isAlliedTo(p) && EffectGraph.ally(p, mob), "The elemental is the caster's ally");
         h.assertFalse(mob.hurt(p.damageSources().playerAttack(p), 6) || mob.getHealth() < mob.getMaxHealth(), "The caster cannot hurt their own elemental");
@@ -68,8 +68,8 @@ public final class ElementalGameTests {
         var channel = EpicMagic.start(p, RecipeGameTests.spell("Stone Titan"));
         var box = new AABB(h.absolutePos(net.minecraft.core.BlockPos.ZERO)).inflate(12);
         var titans = h.getLevel().getEntitiesOfClass(ElementalTitan.class, box);
-        h.assertTrue(titans.size() == 1 && titans.getFirst().element() == Element.EARTH, "The titan rises at the aimed spot");
-        var titan = titans.getFirst();
+        h.assertTrue(titans.size() == 1 && titans.get(0).element() == Element.EARTH, "The titan rises at the aimed spot");
+        var titan = titans.get(0);
         h.assertTrue(titan.emergence(0) < .2f, "It starts underground");
         h.runAfterDelay(90, () -> {
             h.assertTrue(titan.emergence(0) == 1 && !titan.sinking(), "It stands waist-deep while the channel lives");

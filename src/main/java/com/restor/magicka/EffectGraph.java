@@ -1,5 +1,6 @@
 package com.restor.magicka;
 
+import net.minecraft.util.Mth;
 import com.google.gson.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -84,7 +85,7 @@ public final class EffectGraph {
                     boolean passes = switch(text(node,"condition","")) { case "wet" -> MagicStatuses.has(target,MagicStatuses.Status.WET); case "was_frozen","brittle" -> frozen; case "self" -> self; default -> false; };
                     if (passes) damage += executeEntity(caster,target,spell,children(node),origin,self,frozen);
                 }
-                case "delay" -> SpellRuntime.delay(caster,Math.clamp((int)number(node,"ticks",20),1,1200), () -> {
+                case "delay" -> SpellRuntime.delay(caster,Mth.clamp((int)number(node,"ticks",20),1,1200), () -> {
                     if (target.isAlive() && target.level() == caster.level()) entity(caster,target,spell,children(node),origin,self);
                 });
                 default -> {} // World-only effects are dispatched once per impact, not once per victim.
@@ -96,7 +97,7 @@ public final class EffectGraph {
         for (JsonObject node : graph) switch(text(node,"type","")) {
             case "modify_temperature" -> WorldMagic.temperature(caster,point,number(node,"amount",0),spell);
             case "set_wet" -> {
-                SupportMagic.extinguish(caster,point,Math.clamp(spell.number("radius",2),2,4));
+                SupportMagic.extinguish(caster,point,Mth.clamp(spell.number("radius",2),2,4));
                 if (allowSpawn) SpellRuntime.wetZone(caster,point,Math.min(2,spell.number("radius",1)),(int)number(node,"duration_ticks",160));
             }
             case "destroy_blocks" -> WorldMagic.destroy(caster,point,(int)number(node,"budget",1),number(node,"radius",1),spell.ultimate());

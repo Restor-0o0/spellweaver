@@ -1,16 +1,18 @@
 package com.restor.magicka;
 
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.config.ModConfig;
-import net.neoforged.neoforge.common.NeoForge;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.common.MinecraftForge;
 
 @Mod(Magicka.ID)
 public final class Magicka {
     public static final String ID = "magicka";
 
-    public Magicka(IEventBus bus, ModContainer container) {
+    public Magicka() {
+        IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         com.restor.magicka.enemy.MagicEnemies.TYPES.register(bus);
         Elementals.TYPES.register(bus);
         MagicBlocks.BLOCKS.register(bus);
@@ -21,25 +23,25 @@ public final class Magicka {
         bus.addListener(MagicItems::creative);
         bus.addListener(com.restor.magicka.enemy.MagicEnemies::attributes);
         bus.addListener(com.restor.magicka.enemy.MagicEnemies::placements);
-        bus.addListener(MagicNetwork::register);
+        MagicNetwork.register();
         bus.addListener(Elementals::attributes);
-        NeoForge.EVENT_BUS.addListener(Elementals::stop);
-        NeoForge.EVENT_BUS.addListener(LegendMagic::join);
-        NeoForge.EVENT_BUS.addListener(LegendMagic::target);
-        NeoForge.EVENT_BUS.addListener(LegendLife::death);
-        container.registerConfig(ModConfig.Type.SERVER, MagicConfig.SPEC, "spellweaver-server.toml");
-        NeoForge.EVENT_BUS.register(new CastingServer());
-        NeoForge.EVENT_BUS.register(new MagicStats());
-        NeoForge.EVENT_BUS.register(new MagicGear());
-        NeoForge.EVENT_BUS.register(new RecipeRegistry());
-        NeoForge.EVENT_BUS.register(new MagicStatuses());
-        NeoForge.EVENT_BUS.register(new SpellRuntime());
-        NeoForge.EVENT_BUS.register(new RevivalManager());
-        NeoForge.EVENT_BUS.register(new UndeadMinions());
-        NeoForge.EVENT_BUS.register(new PolymorphManager());
-        NeoForge.EVENT_BUS.register(new MagicConstructionManager());
-        NeoForge.EVENT_BUS.register(new ShapePattern());
-        NeoForge.EVENT_BUS.addListener(MagicBlocks::climbRoots);
-        NeoForge.EVENT_BUS.register(new com.restor.magicka.enemy.MagicEnemies());
+        MinecraftForge.EVENT_BUS.addListener(Elementals::stop);
+        MinecraftForge.EVENT_BUS.addListener(LegendMagic::join);
+        MinecraftForge.EVENT_BUS.addListener(LegendMagic::target);
+        MinecraftForge.EVENT_BUS.addListener(LegendLife::death);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, MagicConfig.SPEC, "spellweaver-server.toml");
+        MinecraftForge.EVENT_BUS.register(new CastingServer());
+        MinecraftForge.EVENT_BUS.register(new MagicStats());
+        MinecraftForge.EVENT_BUS.register(new MagicGear());
+        MinecraftForge.EVENT_BUS.register(new RecipeRegistry());
+        MinecraftForge.EVENT_BUS.register(new MagicStatuses());
+        MinecraftForge.EVENT_BUS.register(new SpellRuntime());
+        MinecraftForge.EVENT_BUS.register(new RevivalManager());
+        MinecraftForge.EVENT_BUS.register(new UndeadMinions());
+        MinecraftForge.EVENT_BUS.register(new PolymorphManager());
+        MinecraftForge.EVENT_BUS.register(new MagicConstructionManager());
+        MinecraftForge.EVENT_BUS.register(new ShapePattern());
+        MinecraftForge.EVENT_BUS.addListener(MagicBlocks::climbRoots);
+        MinecraftForge.EVENT_BUS.register(new com.restor.magicka.enemy.MagicEnemies());
     }
 }

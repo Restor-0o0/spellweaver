@@ -1,5 +1,7 @@
 package com.restor.magicka;
 
+import net.minecraftforge.event.TickEvent;
+import net.minecraft.util.Mth;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -17,17 +19,15 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
-import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
-import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.event.server.ServerStoppedEvent;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.player.AttackEntityEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.server.ServerStoppedEvent;
 
 import java.util.*;
 
@@ -43,7 +43,7 @@ public final class PolymorphManager {
 
     public static boolean apply(ServerPlayer caster, LivingEntity target, String id, int ticks) {
         if (!(target.level() instanceof ServerLevel level) || !EffectGraph.canHarm(caster, target)) return false;
-        ticks = Math.clamp(ticks, 20, 24000);
+        ticks = Mth.clamp(ticks, 20, 24000);
         EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.getOptional(ResourceLocation.tryParse(id)).orElse(EntityType.SHEEP);
         if (target instanceof Player) return target instanceof ServerPlayer victim && living(type, level) && applyPlayer(victim, type, ticks);
         if (ACTIVE.containsKey(target.getUUID())) {
@@ -99,7 +99,7 @@ public final class PolymorphManager {
     }
 
     private static void sync(ServerPlayer victim, String id) {
-        PacketDistributor.sendToPlayersTrackingEntityAndSelf(victim, new MagicNetwork.Shape(victim.getId(), id));
+        MagicNetwork.sendToPlayersTrackingEntityAndSelf(victim, new MagicNetwork.Shape(victim.getId(), id));
     }
 
     private static void resync(Player player) {
@@ -130,7 +130,7 @@ public final class PolymorphManager {
         if (restored != null) {
             restored.moveTo(shape.getX(), shape.getY(), shape.getZ(), shape.getYRot(), shape.getXRot());
             if (restored instanceof LivingEntity living)
-                living.setHealth(Math.clamp(shape.getHealth(), 1, living.getMaxHealth()));
+                living.setHealth(Mth.clamp(shape.getHealth(), 1, living.getMaxHealth()));
             if (!level.addFreshEntity(restored)) restored = null;
         }
         puff(level, shape.position());
@@ -156,7 +156,7 @@ public final class PolymorphManager {
 
     private static boolean swapped(Entity entity) { return entity != null && ACTIVE.containsKey(entity.getUUID()); }
 
-    @SubscribeEvent public void damaged(LivingIncomingDamageEvent event) {
+    @SubscribeEvent public void damaged(LivingAttackEvent event) {
         if (event.getEntity() instanceof ServerPlayer victim && PLAYERS.containsKey(victim.getUUID())) { revertPlayer(victim); return; }
         if (!ACTIVE.containsKey(event.getEntity().getUUID())) return;
         event.setCanceled(true);
@@ -182,7 +182,7 @@ public final class PolymorphManager {
     @SubscribeEvent public void track(PlayerEvent.StartTracking event) {
         String id = event.getTarget() instanceof ServerPlayer target ? PLAYERS.get(target.getUUID()) : null;
         if (id != null && event.getEntity() instanceof ServerPlayer watcher)
-            PacketDistributor.sendToPlayer(watcher, new MagicNetwork.Shape(event.getTarget().getId(), id));
+            MagicNetwork.sendToPlayer(watcher, new MagicNetwork.Shape(event.getTarget().getId(), id));
     }
 
     @SubscribeEvent public void join(EntityJoinLevelEvent event) {
@@ -192,7 +192,8 @@ public final class PolymorphManager {
         else shape.removeTag(TAG);
     }
 
-    @SubscribeEvent public void tick(ServerTickEvent.Post event) {
+    @SubscribeEvent public void tick(TickEvent.ServerTickEvent event) {
+        if (event.phase != TickEvent.Phase.END) return;
         if (ACTIVE.isEmpty() && PLAYERS.isEmpty() || event.getServer().getTickCount() % 10 != 0) return;
         for (UUID id : List.copyOf(PLAYERS.keySet())) {
             ServerPlayer victim = event.getServer().getPlayerList().getPlayer(id);

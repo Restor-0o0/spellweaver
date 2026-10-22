@@ -1,15 +1,15 @@
 package com.restor.magicka;
 
+import net.minecraftforge.event.TickEvent;
+import net.minecraft.util.Mth;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.tick.PlayerTickEvent;
-import net.neoforged.neoforge.event.server.ServerStoppedEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.server.ServerStoppedEvent;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -50,7 +50,7 @@ public final class CastingServer {
         if (++s.inputsThisTick > 12) return;
         if (action == 12) { if (s.channeling && s.epic == null && !s.recipe.shape().construction()) finishChannel(player, s); return; }
         if (s.committed()) return;
-        if(s.queued!=null){s.queued=null;PacketDistributor.sendToPlayer(player,new MagicNetwork.QueueState(0,0));}
+        if(s.queued!=null){s.queued=null;MagicNetwork.sendToPlayer(player,new MagicNetwork.QueueState(0,0));}
         if (action == 7) s.enabled = !s.enabled;
         else if (action == 11) s.instant = !s.instant;
         else if (s.enabled) {
@@ -148,7 +148,7 @@ public final class CastingServer {
     private static void startEpic(ServerPlayer player, Session s) {
         if (EpicMagic.cramped(player)) { deny(player); s.anchor = null; s.remaining = s.total = 0; s.formula.clear(); s.recipe = null; return; }
         s.channeling = true; s.channelStart = player.serverLevel().getGameTime(); s.elapsed = 0;
-        s.total = s.remaining = Math.clamp((int)s.recipe.number("duration_ticks",240),20,1200);
+        s.total = s.remaining = Mth.clamp((int)s.recipe.number("duration_ticks",240),20,1200);
         s.epic = EpicMagic.start(player, s.recipe);
         MagicGear.cast(player, s.recipe, false);
     }    public static void quickFill(ServerPlayer player,int packed){
@@ -156,10 +156,10 @@ public final class CastingServer {
         Session s=SESSIONS.computeIfAbsent(player.getUUID(),id->new Session());long now=player.serverLevel().getGameTime();
         if(s.committed() || now-s.lastQueue<5)return;
         s.lastQueue=now;s.queued=spoken(Formula.unpack(packed));s.queueTicks=0;s.queueIndex=0;s.level=player.serverLevel();s.formula.clear();s.typed.setLength(0);s.enabled=true;
-        sync(player,s);PacketDistributor.sendToPlayer(player,new MagicNetwork.QueueState(s.queued.packed(),0));
+        sync(player,s);MagicNetwork.sendToPlayer(player,new MagicNetwork.QueueState(s.queued.packed(),0));
     }
-    @SubscribeEvent public void tick(PlayerTickEvent.Post event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+    @SubscribeEvent public void tick(TickEvent.PlayerTickEvent event) {
+        if (event.phase != TickEvent.Phase.END || !(event.player instanceof ServerPlayer player)) return;
         Session s = SESSIONS.get(player.getUUID());
         if (s == null) return;
         if(s.queued!=null){
@@ -168,12 +168,12 @@ public final class CastingServer {
             int target=s.queueTicks/QUEUE_TICKS_PER_ELEMENT;
             while(s.queueIndex<target && s.queueIndex<s.queued.size()){
                 Element element=s.queued.elements().get(s.queueIndex++);
-                if(ElementLocks.locked(player,element)){ElementLocks.reject(player,element);s.queued=null;s.formula.clear();s.typed.setLength(0);sync(player,s);PacketDistributor.sendToPlayer(player,new MagicNetwork.QueueState(0,0));return;}
+                if(ElementLocks.locked(player,element)){ElementLocks.reject(player,element);s.queued=null;s.formula.clear();s.typed.setLength(0);sync(player,s);MagicNetwork.sendToPlayer(player,new MagicNetwork.QueueState(0,0));return;}
                 s.formula.add(element);s.typed.append(element.ordinal()+1);
                 player.serverLevel().playSound(null,player.blockPosition(),net.minecraft.sounds.SoundEvents.AMETHYST_BLOCK_CHIME,net.minecraft.sounds.SoundSource.PLAYERS,.35f,.85f+s.queueIndex*.15f);
             }
             int queued=s.queued.packed();if(s.queueIndex>=s.queued.size())s.queued=null;
-            sync(player,s);PacketDistributor.sendToPlayer(player,new MagicNetwork.QueueState(s.queued==null?0:queued,s.queueTicks));return;
+            sync(player,s);MagicNetwork.sendToPlayer(player,new MagicNetwork.QueueState(s.queued==null?0:queued,s.queueTicks));return;
         }
         if (!s.committed()) {
             if(s.enabled && !s.formula.empty() && player.tickCount%12==0) SpellRuntime.particles(player,RecipeRegistry.resolve(s.formula.key()),player.getEyePosition().add(player.getLookAngle().scale(.6)),2,.1);
@@ -201,7 +201,7 @@ public final class CastingServer {
     }
     static boolean hit(BlockHitResult hit) { return hit.getType() == HitResult.Type.BLOCK; }
     private static void sync(ServerPlayer player, Session s) {
-        PacketDistributor.sendToPlayer(player, snapshot(player, s));
+        MagicNetwork.sendToPlayer(player, snapshot(player, s));
     }
     static MagicNetwork.State snapshot(ServerPlayer player) {
         return snapshot(player, SESSIONS.getOrDefault(player.getUUID(), new Session()));
@@ -221,7 +221,7 @@ public final class CastingServer {
         Session s = SESSIONS.get(player.getUUID());
         if (s == null || s.committed() || (ElementLocks.mask(s.formula) & ElementLocks.active(player)) == 0 && s.queued == null) return;
         s.formula.clear(); s.typed.setLength(0);
-        if (s.queued != null) { s.queued = null; PacketDistributor.sendToPlayer(player, new MagicNetwork.QueueState(0, 0)); }
+        if (s.queued != null) { s.queued = null; MagicNetwork.sendToPlayer(player, new MagicNetwork.QueueState(0, 0)); }
         sync(player, s);
     }
     static SpellDefinition casting(ServerPlayer player) { Session s=SESSIONS.get(player.getUUID()); return s==null?null:s.recipe; }
@@ -232,8 +232,8 @@ public final class CastingServer {
         ElementLocks.clear(player);
         boolean instant = old != null && old.instant;
         if (instant) { Session fresh = new Session(); fresh.instant = true; SESSIONS.put(player.getUUID(), fresh); }
-        PacketDistributor.sendToPlayer(player, new MagicNetwork.State(false, 0, 0, 0, 0, 0, instant, false));
-        PacketDistributor.sendToPlayer(player,new MagicNetwork.QueueState(0,0));
+        MagicNetwork.sendToPlayer(player, new MagicNetwork.State(false, 0, 0, 0, 0, 0, instant, false));
+        MagicNetwork.sendToPlayer(player,new MagicNetwork.QueueState(0,0));
     }
     @SubscribeEvent public void login(PlayerEvent.PlayerLoggedInEvent event) { if (event.getEntity() instanceof ServerPlayer p) reset(p); }
     @SubscribeEvent public void logout(PlayerEvent.PlayerLoggedOutEvent event) { SESSIONS.remove(event.getEntity().getUUID()); }

@@ -4,7 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.*;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.gametest.*;
+import net.minecraftforge.gametest.*;
 
 @GameTestHolder(Magicka.ID)
 @PrefixGameTestTemplate(false)
@@ -88,7 +88,7 @@ public final class AuditGameTests {
         p.setXRot(0);var slope=MagicConstructionManager.Plan.template(p,"slope",center,south);
         h.assertTrue(slope.size()==50 && slope.contains(feet.south(3)) && slope.contains(feet.above(3)) && !slope.contains(feet.above(2)) && !slope.contains(feet.south().above(1)),"Slanted wall rises at 45 degrees over the caster, got "+slope.size());
         p.setXRot(-80);var roof=MagicConstructionManager.Plan.template(p,"slab",center,south);
-        h.assertTrue(roof.size()==25 && roof.stream().allMatch(b->b.getY()==feet.getY()+3) && roof.getFirst().equals(feet.above(3)),"Looking up turns the slab into a roof");
+        h.assertTrue(roof.size()==25 && roof.stream().allMatch(b->b.getY()==feet.getY()+3) && roof.get(0).equals(feet.above(3)),"Looking up turns the slab into a roof");
         p.setXRot(70);h.assertTrue(MagicConstructionManager.Plan.template(p,"slab",center,south).stream().allMatch(b->b.getY()==feet.getY()-1),"Looking down turns it into a floor");
         p.setXRot(0);var diagonal=new Vec3(1,0,1).normalize();
         for(String kind:new String[]{"wall","slope","redoubt"}){
@@ -136,7 +136,7 @@ public final class AuditGameTests {
         h.assertTrue(MagicStats.apply(p,bomb)==bomb,"Default attributes leave spells untouched");
         MagicStats.set(p,MagicStats.Stat.FIRE.ordinal(),400);MagicStats.set(p,MagicStats.Stat.DAMAGE.ordinal(),200);MagicStats.set(p,MagicStats.Stat.AREA.ordinal(),200);
         var strong=MagicStats.apply(p,bomb);
-        h.assertTrue(strong.effects().getFirst().get("amount").getAsDouble()==28,"Fire damage scales with fire power and damage");
+        h.assertTrue(strong.effects().get(0).get("amount").getAsDouble()==28,"Fire damage scales with fire power and damage");
         h.assertTrue(strong.effects().get(2).get("amount").getAsDouble()==4,"Arcane damage ignores fire power");
         h.assertTrue(strong.number("burst_radius",0)>bomb.number("burst_radius",0)*3,"Burst radius grows with area and element power");
         MagicStats.set(p,MagicStats.Stat.CONSTRUCTION.ordinal(),500);
@@ -163,7 +163,7 @@ public final class AuditGameTests {
         h.assertTrue(spell.budget()==125 && spell.floating(),"Stencil fills the whole cube and may hang in the air");
         var plan=new MagicConstructionManager.Plan(p,spell,false,null);
         h.assertTrue(plan.template.size()==26,"Plan follows the stencil, got "+plan.template.size());
-        int base=plan.template.getFirst().getY();
+        int base=plan.template.get(0).getY();
         var slab=plan.template.stream().filter(c->c.getY()==base).toList();
         h.assertTrue(slab.size()==25 && slab.stream().mapToInt(BlockPos::getX).distinct().count()==5
                 && slab.stream().mapToInt(BlockPos::getZ).distinct().count()==5,"Bottom layer is a 5x5 square");

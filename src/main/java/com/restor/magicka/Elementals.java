@@ -1,5 +1,6 @@
 package com.restor.magicka;
 
+import net.minecraft.util.Mth;
 import com.google.gson.JsonObject;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
@@ -22,19 +23,19 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
-import net.neoforged.neoforge.event.server.ServerStoppedEvent;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
+import net.minecraftforge.event.server.ServerStoppedEvent;
+import net.minecraftforge.registries.RegistryObject;
+import net.minecraftforge.registries.DeferredRegister;
 import org.joml.Vector3f;
 import java.util.*;
 
 /** Summoned elementals: companions that follow their caster and titans that live only while an ultimate is channelled. */
 public final class Elementals {
     public static final DeferredRegister<EntityType<?>> TYPES = DeferredRegister.create(Registries.ENTITY_TYPE, Magicka.ID);
-    public static final DeferredHolder<EntityType<?>, EntityType<Elemental>> COMPANION = TYPES.register("elemental", () -> EntityType.Builder.of(Elemental::new, MobCategory.MISC)
+    public static final RegistryObject<EntityType<Elemental>> COMPANION = TYPES.register("elemental", () -> EntityType.Builder.of(Elemental::new, MobCategory.MISC)
             .sized(.8f, 1.6f).clientTrackingRange(10).build("elemental"));
-    public static final DeferredHolder<EntityType<?>, EntityType<ElementalTitan>> TITAN = TYPES.register("elemental_titan", () -> EntityType.Builder.<ElementalTitan>of(ElementalTitan::new, MobCategory.MISC)
+    public static final RegistryObject<EntityType<ElementalTitan>> TITAN = TYPES.register("elemental_titan", () -> EntityType.Builder.<ElementalTitan>of(ElementalTitan::new, MobCategory.MISC)
             .sized(4f, 6f).clientTrackingRange(16).updateInterval(1).fireImmune().build("elemental_titan"));
     public static final int LIMIT = 2;
     private static final Map<UUID, Deque<Elemental>> OWNED = new HashMap<>();
@@ -53,7 +54,7 @@ public final class Elementals {
         Elemental mob = COMPANION.get().create(level);
         if (mob == null) return;
         Element e = element(s);
-        mob.setup(p, s, e, level.getGameTime() + Math.clamp((int)s.number("duration_ticks",1200), 20, 12000));
+        mob.setup(p, s, e, level.getGameTime() + Mth.clamp((int)s.number("duration_ticks",1200), 20, 12000));
         Vec3 at = place(level, mob, point);
         if (at == null) at = place(level, mob, p.position().add(0,1,0));
         if (at == null || !WorldPlacement.allowed(p, BlockPos.containing(at))) { mob.discard(); return; }
@@ -152,7 +153,7 @@ public final class Elementals {
             case EARTH -> SoundEvents.STONE_BREAK;
             case LIFE -> SoundEvents.AZALEA_LEAVES_BREAK;
             case ARCANE -> SoundEvents.AMETHYST_BLOCK_BREAK;
-            case DEATH -> SoundEvents.SOUL_ESCAPE.value();
+            case DEATH -> SoundEvents.SOUL_ESCAPE;
         };
     }
     static void burst(ServerLevel level, Element e, Vec3 at, int count, double spread) {

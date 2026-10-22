@@ -40,9 +40,9 @@ public class Elemental extends PathfinderMob implements ElementalBody {
         setPersistenceRequired();
         addTag("magicka_object");
     }
-    @Override protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(ELEMENT, 0).define(ACTION, 0);
+    @Override protected void defineSynchedData() {
+        super.defineSynchedData();
+        entityData.define(ELEMENT, 0); entityData.define(ACTION, 0);
     }
     @Override public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
         super.onSyncedDataUpdated(key);
@@ -65,7 +65,7 @@ public class Elemental extends PathfinderMob implements ElementalBody {
     @Override public boolean fireImmune() { return element() == Element.FIRE || super.fireImmune(); }
     @Override public boolean canFreeze() { return element() != Element.COLD && super.canFreeze(); }
     @Override public void thunderHit(ServerLevel level, LightningBolt bolt) { if (element() != Element.LIGHTNING) super.thunderHit(level, bolt); }
-    @Override public boolean canBeLeashed() { return false; }
+    @Override public boolean canBeLeashed(net.minecraft.world.entity.player.Player player) { return false; }
     @Override public boolean isAlliedTo(Entity other) {
         if (owner != null && (other == owner || other instanceof Elemental e && e.owner == owner || UndeadMinions.ownedBy(other, owner))) return true;
         return super.isAlliedTo(other);

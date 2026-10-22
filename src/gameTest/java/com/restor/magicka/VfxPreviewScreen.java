@@ -23,5 +23,4 @@ public final class VfxPreviewScreen extends Screen {
         SpellVisuals.render(pose,minecraft.renderBuffers().bufferSource(),new Vec3(0,8,20),.6f);minecraft.renderBuffers().bufferSource().endBatch();pose.popPose();
         g.drawCenteredString(font,"BEAM / LIGHTNING · ELEMENTAL CORES · ZONE / MINE / IMPACT",width/2,height-19,0xFFBBC9D5);
     }
-    @Override public void renderBackground(GuiGraphics g,int x,int y,float partial){}
 }

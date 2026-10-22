@@ -57,7 +57,7 @@ public class GoblinMage extends Goblin {
         @Override public Element element() { return Element.LIGHTNING; }
         @Override protected float boltDamage() { return 3; }
         @Override protected int tellColor() { return 0xB8C8FF; }
-        @Override protected SoundEvent release() { return SoundEvents.TRIDENT_THUNDER.value(); }
+        @Override protected SoundEvent release() { return SoundEvents.TRIDENT_THUNDER; }
         @Override protected SoundEvent castSound() { return SoundEvents.BEACON_POWER_SELECT; }
         @Override protected void customServerAiStep() {
             LivingEntity target = getTarget();

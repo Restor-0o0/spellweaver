@@ -1,5 +1,6 @@
 package com.restor.magicka.enemy;
 
+import net.minecraftforge.event.TickEvent;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.restor.magicka.*;
 import net.minecraft.commands.Commands;
@@ -18,63 +19,61 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.common.DeferredSpawnEggItem;
-import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
-import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
-import net.neoforged.neoforge.event.server.ServerStoppedEvent;
-import net.neoforged.neoforge.event.tick.LevelTickEvent;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredItem;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.common.ForgeSpawnEggItem;
+import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
+import net.minecraftforge.event.entity.SpawnPlacementRegisterEvent;
+import net.minecraftforge.event.server.ServerStoppedEvent;
+import net.minecraftforge.registries.RegistryObject;
+import net.minecraftforge.registries.DeferredRegister;
 import java.util.*;
 import java.util.function.Supplier;
 
 public final class MagicEnemies {
     public static final DeferredRegister<EntityType<?>> TYPES = DeferredRegister.create(Registries.ENTITY_TYPE, Magicka.ID);
-    public static final List<DeferredItem<Item>> EGGS = new ArrayList<>();
-    private static final Map<DeferredHolder<EntityType<?>, ? extends EntityType<? extends SpecialEnemy>>, Supplier<AttributeSupplier.Builder>> ATTRIBUTES = new LinkedHashMap<>();
+    public static final List<RegistryObject<Item>> EGGS = new ArrayList<>();
+    private static final Map<RegistryObject<? extends EntityType<? extends SpecialEnemy>>, Supplier<AttributeSupplier.Builder>> ATTRIBUTES = new LinkedHashMap<>();
 
-    public static final DeferredHolder<EntityType<?>, EntityType<EnemyBolt>> BOLT = TYPES.register("enemy_bolt", () -> EntityType.Builder.<EnemyBolt>of(EnemyBolt::new, MobCategory.MISC)
+    public static final RegistryObject<EntityType<EnemyBolt>> BOLT = TYPES.register("enemy_bolt", () -> EntityType.Builder.<EnemyBolt>of(EnemyBolt::new, MobCategory.MISC)
             .sized(.3125f, .3125f).clientTrackingRange(4).updateInterval(10).build("enemy_bolt"));
-    public static final DeferredHolder<EntityType<?>, EntityType<CaveSkitter>> CAVE_SKITTER = mob("cave_skitter", CaveSkitter::new, .9f, .5f, 0x4A4038, 0x8E8270, CaveSkitter::attributes);
-    public static final DeferredHolder<EntityType<?>, EntityType<ShieldBeetle>> SHIELD_BEETLE = mob("shield_beetle", ShieldBeetle::new, 1.3f, 1.1f, 0x4A5238, 0x8C6E44, ShieldBeetle::attributes);
-    public static final DeferredHolder<EntityType<?>, EntityType<StoneCrawler>> STONE_CRAWLER = mob("stone_crawler", StoneCrawler::new, 1.4f, 1.5f, 0x7D7F83, 0x4F6A32, StoneCrawler::attributes);
-    public static final DeferredHolder<EntityType<?>, EntityType<MushroomNurse>> MUSHROOM_NURSE = mob("mushroom_nurse", MushroomNurse::new, .8f, 1.7f, 0x8A3F2A, 0xE8DCC4, MushroomNurse::attributes);
-    public static final DeferredHolder<EntityType<?>, EntityType<ElementBinder>> ELEMENT_BINDER = mob("element_binder", ElementBinder::new, .6f, 1.4f, 0x6E8B3D, 0x4E3A5E, ElementBinder::attributes);
-    public static final DeferredHolder<EntityType<?>, EntityType<Burrower>> BURROWER = mob("burrower", Burrower::new, 1f, .6f, 0x3A3438, 0xD89A8E, Burrower::attributes);
-    public static final DeferredHolder<EntityType<?>, EntityType<CaveWisp>> CAVE_WISP = mob("cave_wisp", CaveWisp::new, .9f, .6f, 0x9A8A70, 0x6E6250, CaveWisp::attributes);
-    public static final DeferredHolder<EntityType<?>, EntityType<StoneEater>> STONE_EATER = mob("stone_eater", StoneEater::new, 1.2f, 1.2f, 0x6E6A64, 0x7E6A9A, StoneEater::attributes);
-    public static final DeferredHolder<EntityType<?>, EntityType<FloodCaster>> FLOOD_CASTER = mob("flood_caster", FloodCaster::new, .9f, .9f, 0x5A6E3A, 0xC8C090, FloodCaster::attributes);
-    public static final DeferredHolder<EntityType<?>, EntityType<Countermage>> COUNTERMAGE = mob("countermage", Countermage::new, .6f, 1.45f, 0x6A7A48, 0x9A3A2A, Countermage::attributes);
-    public static final DeferredHolder<EntityType<?>, EntityType<SparkImp>> SPARK_IMP = mob("spark_imp", SparkImp::new, .7f, .8f, 0x4A4048, 0x5A4A50, SparkImp::attributes);
-    public static final DeferredHolder<EntityType<?>, EntityType<GoblinWarrior>> GOBLIN_WARRIOR = mob("goblin_warrior", GoblinWarrior::new, .6f, 1.4f, 0x6E8B3D, 0x6B4A2E, GoblinWarrior::attributes);
-    public static final DeferredHolder<EntityType<?>, EntityType<GoblinArcher>> GOBLIN_ARCHER = mob("goblin_archer", GoblinArcher::new, .6f, 1.4f, 0x6E8B3D, 0x4F6B3A, GoblinArcher::attributes);
-    public static final DeferredHolder<EntityType<?>, EntityType<GoblinMage>> GOBLIN_MAGE = mob("goblin_mage", GoblinMage::new, .6f, 1.4f, 0x6E8B3D, 0x7A2E2A, GoblinMage::attributes);
-    public static final DeferredHolder<EntityType<?>, EntityType<GoblinMage.Frost>> GOBLIN_FROST_MAGE = mob("goblin_frost_mage", GoblinMage.Frost::new, .6f, 1.4f, 0x6E8B3D, 0x9CC4D8, GoblinMage::attributes);
-    public static final DeferredHolder<EntityType<?>, EntityType<GoblinMage.Storm>> GOBLIN_STORM_MAGE = mob("goblin_storm_mage", GoblinMage.Storm::new, .6f, 1.4f, 0x6E8B3D, 0x3A4868, GoblinMage::attributes);
-    public static final DeferredHolder<EntityType<?>, EntityType<GoblinBomber>> GOBLIN_BOMBER = mob("goblin_bomber", GoblinBomber::new, .6f, 1.4f, 0x6E8B3D, 0x9A7A4A, GoblinBomber::attributes);
-    public static final DeferredHolder<EntityType<?>, EntityType<GoblinShaman>> GOBLIN_SHAMAN = mob("goblin_shaman", GoblinShaman::new, .6f, 1.4f, 0x6E8B3D, 0xDDD3BC, GoblinShaman::attributes);
-    public static final DeferredHolder<EntityType<?>, EntityType<GoblinBomb>> GOBLIN_BOMB = TYPES.register("goblin_bomb", () -> EntityType.Builder.<GoblinBomb>of(GoblinBomb::new, MobCategory.MISC)
+    public static final RegistryObject<EntityType<CaveSkitter>> CAVE_SKITTER = mob("cave_skitter", CaveSkitter::new, .9f, .5f, 0x4A4038, 0x8E8270, CaveSkitter::attributes);
+    public static final RegistryObject<EntityType<ShieldBeetle>> SHIELD_BEETLE = mob("shield_beetle", ShieldBeetle::new, 1.3f, 1.1f, 0x4A5238, 0x8C6E44, ShieldBeetle::attributes);
+    public static final RegistryObject<EntityType<StoneCrawler>> STONE_CRAWLER = mob("stone_crawler", StoneCrawler::new, 1.4f, 1.5f, 0x7D7F83, 0x4F6A32, StoneCrawler::attributes);
+    public static final RegistryObject<EntityType<MushroomNurse>> MUSHROOM_NURSE = mob("mushroom_nurse", MushroomNurse::new, .8f, 1.7f, 0x8A3F2A, 0xE8DCC4, MushroomNurse::attributes);
+    public static final RegistryObject<EntityType<ElementBinder>> ELEMENT_BINDER = mob("element_binder", ElementBinder::new, .6f, 1.4f, 0x6E8B3D, 0x4E3A5E, ElementBinder::attributes);
+    public static final RegistryObject<EntityType<Burrower>> BURROWER = mob("burrower", Burrower::new, 1f, .6f, 0x3A3438, 0xD89A8E, Burrower::attributes);
+    public static final RegistryObject<EntityType<CaveWisp>> CAVE_WISP = mob("cave_wisp", CaveWisp::new, .9f, .6f, 0x9A8A70, 0x6E6250, CaveWisp::attributes);
+    public static final RegistryObject<EntityType<StoneEater>> STONE_EATER = mob("stone_eater", StoneEater::new, 1.2f, 1.2f, 0x6E6A64, 0x7E6A9A, StoneEater::attributes);
+    public static final RegistryObject<EntityType<FloodCaster>> FLOOD_CASTER = mob("flood_caster", FloodCaster::new, .9f, .9f, 0x5A6E3A, 0xC8C090, FloodCaster::attributes);
+    public static final RegistryObject<EntityType<Countermage>> COUNTERMAGE = mob("countermage", Countermage::new, .6f, 1.45f, 0x6A7A48, 0x9A3A2A, Countermage::attributes);
+    public static final RegistryObject<EntityType<SparkImp>> SPARK_IMP = mob("spark_imp", SparkImp::new, .7f, .8f, 0x4A4048, 0x5A4A50, SparkImp::attributes);
+    public static final RegistryObject<EntityType<GoblinWarrior>> GOBLIN_WARRIOR = mob("goblin_warrior", GoblinWarrior::new, .6f, 1.4f, 0x6E8B3D, 0x6B4A2E, GoblinWarrior::attributes);
+    public static final RegistryObject<EntityType<GoblinArcher>> GOBLIN_ARCHER = mob("goblin_archer", GoblinArcher::new, .6f, 1.4f, 0x6E8B3D, 0x4F6B3A, GoblinArcher::attributes);
+    public static final RegistryObject<EntityType<GoblinMage>> GOBLIN_MAGE = mob("goblin_mage", GoblinMage::new, .6f, 1.4f, 0x6E8B3D, 0x7A2E2A, GoblinMage::attributes);
+    public static final RegistryObject<EntityType<GoblinMage.Frost>> GOBLIN_FROST_MAGE = mob("goblin_frost_mage", GoblinMage.Frost::new, .6f, 1.4f, 0x6E8B3D, 0x9CC4D8, GoblinMage::attributes);
+    public static final RegistryObject<EntityType<GoblinMage.Storm>> GOBLIN_STORM_MAGE = mob("goblin_storm_mage", GoblinMage.Storm::new, .6f, 1.4f, 0x6E8B3D, 0x3A4868, GoblinMage::attributes);
+    public static final RegistryObject<EntityType<GoblinBomber>> GOBLIN_BOMBER = mob("goblin_bomber", GoblinBomber::new, .6f, 1.4f, 0x6E8B3D, 0x9A7A4A, GoblinBomber::attributes);
+    public static final RegistryObject<EntityType<GoblinShaman>> GOBLIN_SHAMAN = mob("goblin_shaman", GoblinShaman::new, .6f, 1.4f, 0x6E8B3D, 0xDDD3BC, GoblinShaman::attributes);
+    public static final RegistryObject<EntityType<GoblinBomb>> GOBLIN_BOMB = TYPES.register("goblin_bomb", () -> EntityType.Builder.<GoblinBomb>of(GoblinBomb::new, MobCategory.MISC)
             .sized(.4f, .4f).clientTrackingRange(6).updateInterval(5).build("goblin_bomb"));
 
-    private static <T extends SpecialEnemy> DeferredHolder<EntityType<?>, EntityType<T>> mob(String id, EntityType.EntityFactory<T> factory, float width, float height, int base, int spots, Supplier<AttributeSupplier.Builder> attributes) {
+    private static <T extends SpecialEnemy> RegistryObject<EntityType<T>> mob(String id, EntityType.EntityFactory<T> factory, float width, float height, int base, int spots, Supplier<AttributeSupplier.Builder> attributes) {
         var holder = TYPES.register(id, () -> EntityType.Builder.of(factory, MobCategory.MONSTER).sized(width, height).clientTrackingRange(10).build(id));
-        EGGS.add(MagicItems.ITEMS.register(id + "_spawn_egg", () -> new DeferredSpawnEggItem(holder, base, spots, new Item.Properties())));
+        EGGS.add(MagicItems.ITEMS.register(id + "_spawn_egg", () -> new ForgeSpawnEggItem(holder, base, spots, new Item.Properties())));
         ATTRIBUTES.put(holder, attributes);
         return holder;
     }
     public static void attributes(EntityAttributeCreationEvent event) {
         ATTRIBUTES.forEach((type, builder) -> event.put(type.get(), builder.get().build()));
     }
-    public static void placements(RegisterSpawnPlacementsEvent event) {
+    public static void placements(SpawnPlacementRegisterEvent event) {
         for (var type : ATTRIBUTES.keySet()) register(event, type.get());
     }
-    private static <T extends Monster> void register(RegisterSpawnPlacementsEvent event, EntityType<T> type) {
-        event.register(type, SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+    private static <T extends Monster> void register(SpawnPlacementRegisterEvent event, EntityType<T> type) {
+        event.register(type, SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                 (t, level, reason, pos, random) -> (reason != MobSpawnType.NATURAL && reason != MobSpawnType.CHUNK_GENERATION || pos.getY() < 48 && MagicConfig.SPECIAL_SPAWNS.get())
-                        && Monster.checkMonsterSpawnRules(t, level, reason, pos, random), RegisterSpawnPlacementsEvent.Operation.REPLACE);
+                        && Monster.checkMonsterSpawnRules(t, level, reason, pos, random), SpawnPlacementRegisterEvent.Operation.REPLACE);
     }
 
     public static boolean bySpell;
@@ -105,8 +104,9 @@ public final class MagicEnemies {
     public static boolean flooded(Level level, Vec3 point) {
         return FLOODS.stream().anyMatch(f -> f.level == level.dimension() && f.center.distanceToSqr(point) < f.radius * f.radius);
     }
-    @SubscribeEvent public void tick(LevelTickEvent.Post event) {
-        if (!(event.getLevel() instanceof ServerLevel level) || FLOODS.isEmpty()) return;
+    @SubscribeEvent public void tick(TickEvent.LevelTickEvent event) {
+        if (event.phase != TickEvent.Phase.END) return;
+        if (!(event.level instanceof ServerLevel level) || FLOODS.isEmpty()) return;
         long now = level.getGameTime();
         FLOODS.removeIf(f -> f.level == level.dimension() && f.until <= now);
         for (Flood f : FLOODS) {
@@ -154,7 +154,7 @@ public final class MagicEnemies {
                 if (type.create(level) instanceof Mob mob) {
                     Vec3 spot = floor(level, at, center);
                     mob.moveTo(spot.x, spot.y, spot.z, level.random.nextFloat() * 360, 0);
-                    mob.finalizeSpawn(level, level.getCurrentDifficultyAt(mob.blockPosition()), MobSpawnType.COMMAND, null);
+                    mob.finalizeSpawn(level, level.getCurrentDifficultyAt(mob.blockPosition()), MobSpawnType.COMMAND, null, null);
                     level.addFreshEntity(mob);
                     spawned.add(mob);
                 }

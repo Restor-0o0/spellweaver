@@ -82,7 +82,7 @@ public class Burrower extends SpecialEnemy {
     private void debris(int count) {
         if (level() instanceof ServerLevel level) level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, ground()), getX(), getY() + .1, getZ(), count, .4, .1, .4, .1);
     }
-    @Override public EntityDimensions getDefaultDimensions(Pose pose) { return burrowed() ? super.getDefaultDimensions(pose).scale(1, .25f) : super.getDefaultDimensions(pose); }
+    @Override public EntityDimensions getDimensions(Pose pose) { return burrowed() ? super.getDimensions(pose).scale(1, .25f) : super.getDimensions(pose); }
     @Override public boolean isPickable() { return surfaced() && super.isPickable(); }
     @Override public boolean isPushable() { return surfaced(); }
     @Override protected float spellDamage(ServerPlayer caster, SpellDefinition spell, float amount, boolean brittle) {

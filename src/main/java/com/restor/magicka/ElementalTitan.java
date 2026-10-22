@@ -55,7 +55,7 @@ public class ElementalTitan extends Entity implements ElementalBody {
         level.playSound(null, c.focus.x, c.focus.y, c.focus.z, Elementals.shot(titan.element()), SoundSource.PLAYERS, 2f, .5f);
     }
 
-    @Override protected void defineSynchedData(SynchedEntityData.Builder builder) { builder.define(ELEMENT, 0).define(ACTION, 0).define(SINKING, false); }
+    @Override protected void defineSynchedData() { entityData.define(ELEMENT, 0); entityData.define(ACTION, 0); entityData.define(SINKING, false); }
     @Override public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
         super.onSyncedDataUpdated(key);
         if (ACTION.equals(key)) { previous = shown; shown = entityData.get(ACTION); actionStart = tickCount; }
@@ -187,7 +187,7 @@ public class ElementalTitan extends Entity implements ElementalBody {
     private void slam(ServerLevel level) {
         Element e = element();
         Vec3 at = impact(level);
-        level.playSound(null, at.x, at.y, at.z, SoundEvents.GENERIC_EXPLODE.value(), SoundSource.PLAYERS, 1.2f, .7f);
+        level.playSound(null, at.x, at.y, at.z, SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 1.2f, .7f);
         level.playSound(null, at.x, at.y, at.z, Elementals.hit(e), SoundSource.PLAYERS, 2f, .6f);
         rubble(level, SLAM_RADIUS, 16);
         switch (e) {

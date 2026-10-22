@@ -14,7 +14,7 @@ import java.util.*;
 public class GearItem extends Item {
     public enum Kind { FOCUS, ROBE, RING, TRINKET, TOOL }
     public enum Grade { COMMON, UNCOMMON, RARE, LEGENDARY, WEIRD }
-    public record Attr(Holder<Attribute> attribute, AttributeModifier.Operation operation, double amount) {}
+    public record Attr(Attribute attribute, AttributeModifier.Operation operation, double amount) {}
     public interface Action { void run(net.minecraft.server.level.ServerPlayer player); }
 
     public final String id;
@@ -63,7 +63,7 @@ public class GearItem extends Item {
 
     @Override public Component getName(ItemStack stack) { return Component.translatable("gear.magicka." + id); }
 
-    @Override public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> lines, TooltipFlag flag) {
+    @Override public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable net.minecraft.world.level.Level level, List<Component> lines, TooltipFlag flag) {
         lines.add(Component.translatable("gear.magicka.kind." + kind.name().toLowerCase(Locale.ROOT))
                 .append(" · ").append(Component.translatable("gear.magicka.grade." + grade.name().toLowerCase(Locale.ROOT)))
                 .withStyle(ChatFormatting.DARK_GRAY));
@@ -72,7 +72,7 @@ public class GearItem extends Item {
                         .append(Component.translatable("book.magicka.stat." + e.getKey().key()))
                         .withStyle(e.getValue() > 0 ? ChatFormatting.GREEN : ChatFormatting.RED)));
         for (Attr attr : attributes) lines.add(Component.literal(format(attr) + " ")
-                .append(Component.translatable(attr.attribute().value().getDescriptionId()))
+                .append(Component.translatable(attr.attribute().getDescriptionId()))
                 .withStyle(attr.amount() > 0 ? ChatFormatting.GREEN : ChatFormatting.RED));
         traits.stream().sorted().forEach(trait -> lines.add(Component.translatable("gear.magicka.trait." + trait.name().toLowerCase(Locale.ROOT)).withStyle(ChatFormatting.AQUA)));
         for (SpellFormula formula : patches.keySet().stream().sorted(Comparator.comparingInt(SpellFormula::size)).toList())
@@ -83,8 +83,8 @@ public class GearItem extends Item {
     }
 
     private static String format(Attr attr) {
-        double amount = attr.operation() == AttributeModifier.Operation.ADD_VALUE ? attr.amount() : attr.amount() * 100;
-        String suffix = attr.operation() == AttributeModifier.Operation.ADD_VALUE ? "" : "%";
+        double amount = attr.operation() == AttributeModifier.Operation.ADDITION ? attr.amount() : attr.amount() * 100;
+        String suffix = attr.operation() == AttributeModifier.Operation.ADDITION ? "" : "%";
         return (amount > 0 ? "+" : "") + (amount == Math.floor(amount) ? Long.toString((long) amount) : String.format(Locale.ROOT, "%.1f", amount)) + suffix;
     }
 
@@ -104,7 +104,7 @@ public class GearItem extends Item {
         public Builder stat(MagicStats.Stat stat, int delta) { stats.merge(stat, delta, Integer::sum); return this; }
         public Builder trait(MagicGear.Trait trait) { traits.add(trait); return this; }
         public Builder patch(SpellFormula formula, JsonObject patch) { patches.put(formula, patch); return this; }
-        public Builder attribute(Holder<Attribute> attribute, AttributeModifier.Operation operation, double amount) { attributes.add(new Attr(attribute, operation, amount)); return this; }
+        public Builder attribute(Attribute attribute, AttributeModifier.Operation operation, double amount) { attributes.add(new Attr(attribute, operation, amount)); return this; }
         public Builder bias(double one, double two, double three, double four, double five) { castBias = new double[]{one, two, three, four, five}; return this; }
         public GearItem build() { return new GearItem(this); }
     }

@@ -7,7 +7,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.gametest.*;
+import net.minecraftforge.gametest.*;
 
 @GameTestHolder(Magicka.ID)
 @PrefixGameTestTemplate(false)
@@ -36,7 +36,7 @@ public final class DeathGameTests {
         SpellRuntime.cast(p,RecipeGameTests.spell("Grave Call"),true);
         var raised=minions(h,p);
         h.assertTrue(raised.size()==2 && UndeadMinions.count(p)==2,"Grave Call raises two servants, got "+raised.size());
-        var servant=raised.getFirst();servant.setTarget(p);
+        var servant=raised.get(0);servant.setTarget(p);
         h.assertTrue(servant.getTarget()==null,"A servant never targets its master");
         h.assertTrue(EffectGraph.canHarm(p,servant),"Master spells hurt own servants too");
         var enemy=h.spawnWithNoFreeWill(EntityType.SKELETON,new BlockPos(3,2,3));
@@ -54,7 +54,7 @@ public final class DeathGameTests {
         h.assertTrue(raised.size()>=2,"Servants rise around their master, got "+raised.size());
         h.assertTrue(raised.stream().allMatch(m->m.distanceTo(p)<6),"Servants rise at the master, not at the aim point");
         h.assertTrue(raised.stream().map(Mob::blockPosition).distinct().count()==raised.size(),"Every servant gets its own spot");
-        var stray=raised.getFirst();
+        var stray=raised.get(0);
         stray.teleportTo(p.getX()+200,p.getY(),p.getZ());
         h.runAfterDelay(12,()->{
             h.assertTrue(!stray.isAlive()||stray.isRemoved(),"A servant left far behind crumbles instead of teleporting");
@@ -69,7 +69,7 @@ public final class DeathGameTests {
         var creepers=minions(h).stream().filter(m->m instanceof net.minecraft.world.entity.monster.Creeper).toList();
         h.assertTrue(creepers.size()==3,"Creeper Graves raises three creepers, got "+creepers.size());
         h.assertTrue(RecipeGameTests.spell("Legion of the Dead").effects().stream().noneMatch(n->n.toString().contains("wither")),"No wither skeletons in the legion");
-        var creeper=creepers.getFirst();var other=creepers.get(1);
+        var creeper=creepers.get(0);var other=creepers.get(1);
         other.hurt(h.getLevel().damageSources().explosion(creeper,creeper),6);
         h.assertTrue(other.getHealth()<other.getMaxHealth(),"Servant blasts hurt other servants");
         other.setTarget(p);

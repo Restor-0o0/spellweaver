@@ -1,5 +1,6 @@
 package com.restor.magicka;
 
+import net.minecraft.util.Mth;
 import com.google.gson.*;
 import net.minecraft.resources.ResourceLocation;
 import java.util.*;
@@ -85,7 +86,7 @@ public record SpellDefinition(ResourceLocation id, SpellFormula formula, String 
     public double number(String key, double fallback) {
         double value = delivery.has(key) ? delivery.get(key).getAsDouble() : fallback;
         if (!Double.isFinite(value)) return fallback;
-        return Math.clamp(value, 0, 72000);
+        return Mth.clamp(value, 0, 72000);
     }
     public String langKey() { return "spell." + id.getNamespace() + "." + id.getPath(); }
     public net.minecraft.network.chat.MutableComponent displayName() { return text("", name); }

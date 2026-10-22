@@ -1,5 +1,6 @@
 package com.restor.magicka;
 
+import net.minecraft.util.Mth;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -23,7 +24,7 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.Tags;
+import net.minecraftforge.common.Tags;
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -33,7 +34,7 @@ import static com.restor.magicka.LegendMagic.*;
 final class LegendArts {
     static void amaterasu(ServerPlayer p, SpellDefinition s, boolean self) {
         ServerLevel level = p.serverLevel();
-        int ticks = Math.clamp((int)s.number("duration_ticks",200),20,600);
+        int ticks = Mth.clamp((int)s.number("duration_ticks",200),20,600);
         announce(p,24,"magicka.legend.amaterasu");
         sound(level,p.position(),SoundEvents.FIRECHARGE_USE,1f,.4f);
         if (self) {
@@ -47,7 +48,7 @@ final class LegendArts {
                 }
                 for (LivingEntity e : near(p,c.add(0,1,0),3)) if (foe(p,e) && cooldown.getOrDefault(e.getUUID(),-99) <= age) {
                     cooldown.put(e.getUUID(),age+20);
-                    e.igniteForTicks(40);
+                    e.setRemainingFireTicks(Math.max(e.getRemainingFireTicks(), 40));
                     EffectGraph.entity(p,e,s,s.effects(),c,false);
                 }
             });
@@ -69,7 +70,7 @@ final class LegendArts {
                 burning[0] = next;
                 return;
             }
-            e.igniteForTicks(20);
+            e.setRemainingFireTicks(Math.max(e.getRemainingFireTicks(), 20));
             AABB b = e.getBoundingBox();
             EpicMagic.fx(level,dust(0x0A0A0A,1.6f),b.getCenter().x,b.minY+b.getYsize()*.5,b.getCenter().z,6,b.getXsize()*.4,b.getYsize()*.4,b.getZsize()*.4,0);
             EpicMagic.fx(level,ParticleTypes.SOUL_FIRE_FLAME,b.getCenter().x,b.minY+.2,b.getCenter().z,2,b.getXsize()*.3,b.getYsize()*.3,b.getZsize()*.3,.01);
@@ -83,7 +84,7 @@ final class LegendArts {
         if (self) { hammer(p,s,p.position()); return; }
         Vec3 look = flat(p.getLookAngle());
         p.setDeltaMovement(look.x*1.1,1.25,look.z*1.1); p.hurtMarked = true;
-        sound(p.serverLevel(),p.position(),SoundEvents.TRIDENT_RIPTIDE_3.value(),1f,.8f);
+        sound(p.serverLevel(),p.position(),SoundEvents.TRIDENT_RIPTIDE_3,1f,.8f);
         SpellRuntime.sustain(p,age -> {
             p.fallDistance = 0;
             EpicMagic.fx(p.serverLevel(),ParticleTypes.ELECTRIC_SPARK,p.getX(),p.getY()+1,p.getZ(),4,.3,.5,.3,.05);
@@ -102,7 +103,7 @@ final class LegendArts {
             double a = i*Math.PI*2/40;
             EpicMagic.fx(level,ParticleTypes.ELECTRIC_SPARK,at.x+Math.cos(a)*1.5,at.y+.2,at.z+Math.sin(a)*1.5,0,Math.cos(a),.05,Math.sin(a),.5);
         }
-        for (LivingEntity e : near(p,at.add(0,1,0),Math.clamp(s.number("radius",4),2,8))) if (foe(p,e)) EffectGraph.entity(p,e,s,s.effects(),at,false);
+        for (LivingEntity e : near(p,at.add(0,1,0),Mth.clamp(s.number("radius",4),2,8))) if (foe(p,e)) EffectGraph.entity(p,e,s,s.effects(),at,false);
     }
 
     static void accio(ServerPlayer p, SpellDefinition s, boolean self) {
@@ -131,7 +132,7 @@ final class LegendArts {
     }
     private static void fly(ServerPlayer p, Entity e) {
         Vec3 d = p.position().add(0,1,0).subtract(e.position());
-        Vec3 v = e instanceof LivingEntity ? new Vec3(d.x*.18,Math.clamp(d.y*.1+.35,.2,1.2),d.z*.18) : new Vec3(d.x*.1,d.y*.1+Math.sqrt(Math.sqrt(d.lengthSqr()))*.08,d.z*.1);
+        Vec3 v = e instanceof LivingEntity ? new Vec3(d.x*.18,Mth.clamp(d.y*.1+.35,.2,1.2),d.z*.18) : new Vec3(d.x*.1,d.y*.1+Math.sqrt(Math.sqrt(d.lengthSqr()))*.08,d.z*.1);
         if (v.length() > 2.5) v = v.normalize().scale(2.5);
         e.setDeltaMovement(v); e.hurtMarked = true;
         if (e instanceof Projectile shot) shot.setNoGravity(false);
@@ -141,12 +142,12 @@ final class LegendArts {
     private record Paused(boolean noGravity) {}
     static void infinity(ServerPlayer p, SpellDefinition s, boolean self) {
         ServerLevel level = p.serverLevel();
-        double radius = Math.clamp(s.number("radius",3),2,6);
+        double radius = Mth.clamp(s.number("radius",3),2,6);
         Map<Projectile,Paused> held = new IdentityHashMap<>();
         Map<UUID,Integer> cooldown = new HashMap<>();
         announce(p,24,"magicka.legend.infinity");
         sound(level,p.position(),SoundEvents.AMETHYST_BLOCK_RESONATE,1.5f,.5f);
-        SpellRuntime.timed(p,Math.clamp((int)s.number("duration_ticks",100),20,400),age -> {
+        SpellRuntime.timed(p,Mth.clamp((int)s.number("duration_ticks",100),20,400),age -> {
             Vec3 c = p.position().add(0,1,0);
             RandomSource r = level.random;
             if (age % 3 == 0) for (int i = 0; i < 16; i++) {
@@ -189,7 +190,7 @@ final class LegendArts {
             return;
         }
         announce(p,24,"magicka.legend.aura_obey");
-        charm(p,mob,Math.clamp((int)s.number("duration_ticks",600),20,6000),true);
+        charm(p,mob,Mth.clamp((int)s.number("duration_ticks",600),20,6000),true);
     }
     private static void charm(ServerPlayer p, Mob mob, int ticks, boolean servant) {
         ServerLevel level = p.serverLevel();
@@ -215,7 +216,7 @@ final class LegendArts {
     static void judradjim(ServerPlayer p, SpellDefinition s, boolean self) {
         ServerLevel level = p.serverLevel();
         Vec3 at = self ? p.position() : EpicMagic.focus(p);
-        double radius = Math.clamp(s.number("radius",4),2,8);
+        double radius = Mth.clamp(s.number("radius",4),2,8);
         int charge = 30;
         announce(p,32,"magicka.legend.judradjim");
         SpellRuntime.repeat(p,charge+10,age -> {
@@ -255,7 +256,7 @@ final class LegendArts {
     }
     private static void wave(ServerPlayer p, SpellDefinition s, boolean self, double angle, java.util.function.BiConsumer<Vec3,Double> front, java.util.function.BiConsumer<LivingEntity,Vec3> hit) {
         Vec3 origin = p.getEyePosition().add(0,-.3,0), dir = p.getLookAngle();
-        double range = Math.clamp(s.number("radius",7),3,16), cos = Math.cos(Math.toRadians(angle));
+        double range = Mth.clamp(s.number("radius",7),3,16), cos = Math.cos(Math.toRadians(angle));
         Set<UUID> struck = new HashSet<>();
         SpellRuntime.repeat(p,6,age -> {
             double r = range*(age+1)/6;
@@ -280,7 +281,7 @@ final class LegendArts {
         sound(level,p.position(),SoundEvents.BLAZE_SHOOT,1.2f,.8f);
         sound(level,p.position(),SoundEvents.FIRECHARGE_USE,1f,.7f);
         wave(p,s,self,30,(at,r) -> EpicMagic.fx(level,ParticleTypes.FLAME,at.x,at.y,at.z,1,.1,.1,.1,.02),
-                (e,dir) -> { EffectGraph.entity(p,e,s,s.effects(),p.position(),false); e.igniteForSeconds(4); });
+                (e,dir) -> { EffectGraph.entity(p,e,s,s.effects(),p.position(),false); e.setSecondsOnFire(4); });
     }
 
     static void aard(ServerPlayer p, SpellDefinition s, boolean self) {
@@ -300,12 +301,12 @@ final class LegendArts {
 
     static void quen(ServerPlayer p, SpellDefinition s) {
         ServerLevel level = p.serverLevel();
-        int ticks = Math.clamp((int)s.number("duration_ticks",400),20,2400);
+        int ticks = Mth.clamp((int)s.number("duration_ticks",400),20,2400);
         p.addEffect(new MobEffectInstance(MobEffects.ABSORPTION,ticks,1));
         float[] last = {p.getAbsorptionAmount()};
         int[] ready = {0};
         announce(p,24,"magicka.legend.quen");
-        sound(level,p.position(),SoundEvents.ARMOR_EQUIP_GOLD.value(),1.5f,.8f);
+        sound(level,p.position(),SoundEvents.ARMOR_EQUIP_GOLD,1.5f,.8f);
         SpellRuntime.sustain(p,age -> {
             float now = p.getAbsorptionAmount();
             if (now < last[0]-.01f && age >= ready[0]) {
@@ -332,7 +333,7 @@ final class LegendArts {
 
     static void axii(ServerPlayer p, SpellDefinition s) {
         ServerLevel level = p.serverLevel();
-        int ticks = Math.clamp((int)s.number("duration_ticks",160),20,1200);
+        int ticks = Mth.clamp((int)s.number("duration_ticks",160),20,1200);
         announce(p,24,"magicka.legend.axii");
         sound(level,p.position(),SoundEvents.ILLUSIONER_PREPARE_MIRROR,1.2f,1.2f);
         wave(p,s,false,25,(at,r) -> EpicMagic.fx(level,dust(0x9FFFE0,.8f),at.x,at.y,at.z,1,0,0,0,0), (e,dir) -> {
@@ -344,7 +345,7 @@ final class LegendArts {
     static void yrden(ServerPlayer p, SpellDefinition s, boolean self) {
         ServerLevel level = p.serverLevel();
         Vec3 center = self ? p.position() : EpicMagic.focus(p);
-        double radius = Math.clamp(s.number("radius",4),2,10);
+        double radius = Mth.clamp(s.number("radius",4),2,10);
         announce(p,24,"magicka.legend.yrden");
         sound(level,center,SoundEvents.ENCHANTMENT_TABLE_USE,1.5f,.6f);
         SpellRuntime.repeat(p,Math.max(20,(int)s.number("duration_ticks",240)),age -> {

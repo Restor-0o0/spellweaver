@@ -30,7 +30,7 @@ public class SparkImp extends HoverEnemy {
     }
     @Override protected void attack(LivingEntity target) {
         EnemyBolt.shoot(this, target, Element.LIGHTNING, 2, 1.1);
-        playSound(SoundEvents.TRIDENT_THUNDER.value(), .25f, 2f);
+        playSound(SoundEvents.TRIDENT_THUNDER, .25f, 2f);
         cooldown = 40 + random.nextInt(20);
     }
     @Override protected void castTell(int remaining) { dust(position().add(0, .9, 0), 0x9FD8FF, 2, .2); }
