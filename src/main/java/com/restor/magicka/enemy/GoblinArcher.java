@@ -7,8 +7,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.entity.projectile.AbstractArrow;
-import net.minecraft.world.entity.projectile.Arrow;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
+import net.minecraft.world.entity.projectile.arrow.Arrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -20,8 +20,8 @@ public class GoblinArcher extends Goblin {
     public static AttributeSupplier.Builder attributes() {
         return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 12).add(Attributes.MOVEMENT_SPEED, .28).add(Attributes.FOLLOW_RANGE, 28);
     }
-    @Override protected void customServerAiStep() {
-        super.customServerAiStep();
+    @Override protected void customServerAiStep(net.minecraft.server.level.ServerLevel serverLevel) {
+        super.customServerAiStep(serverLevel);
         LivingEntity target = getTarget();
         if (target == null || casting() || disabled()) return;
         keepDistance(target, 8, 14, 1);

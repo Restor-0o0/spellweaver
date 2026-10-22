@@ -8,7 +8,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
-import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
+import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -39,7 +39,7 @@ public class GoblinBomb extends ThrowableItemProjectile {
             setDeltaMovement(onGround() ? Vec3.ZERO : new Vec3(0, getDeltaMovement().y - .04, 0));
             move(MoverType.SELF, getDeltaMovement());
         } else super.tick();
-        if (level().isClientSide || isRemoved()) return;
+        if (level().isClientSide() || isRemoved()) return;
         ServerLevel level = (ServerLevel)level();
         level.sendParticles(ParticleTypes.SMOKE, getX(), getY() + .35, getZ(), 1, .02, .02, .02, .01);
         if (tickCount % 3 == 0) level.sendParticles(ParticleTypes.FLAME, getX(), getY() + .35, getZ(), 1, .02, .02, .02, .005);
@@ -70,7 +70,7 @@ public class GoblinBomb extends ThrowableItemProjectile {
             float k = (float)(1 - d / RADIUS);
             e.hurt(damageSources().explosion(this, owner), 2 + 7 * k);
             Vec3 push = e.position().subtract(position()).multiply(1, 0, 1).normalize().scale(.4 + k * .8);
-            e.push(push.x, .3 + k * .3, push.z); e.hurtMarked = true;
+            e.push(push.x, .3 + k * .3, push.z); e.syncVelocity = true;
             if (!MagicStatuses.has(e, MagicStatuses.Status.WET)) e.igniteForSeconds(2);
         }
         discard();

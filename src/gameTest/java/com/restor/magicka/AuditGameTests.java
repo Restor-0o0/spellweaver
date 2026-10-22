@@ -1,15 +1,12 @@
 package com.restor.magicka;
 
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.*;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.gametest.*;
-
-@GameTestHolder(Magicka.ID)
-@PrefixGameTestTemplate(false)
 public final class AuditGameTests {
-    @GameTest(template="empty")
+    @MagicTest
     public static void fireIgnitesWood(GameTestHelper h){
         DeathGameTests.floor(h);var p=RecipeGameTests.caster(h);
         h.setBlock(new BlockPos(3,2,3),net.minecraft.world.level.block.Blocks.OAK_PLANKS);
@@ -22,7 +19,7 @@ public final class AuditGameTests {
         h.assertTrue(surface,"Ember sets wood alight from the surface");
         h.succeed();
     }
-    @GameTest(template="empty")
+    @MagicTest
     public static void ritualOrderGatesUltimates(GameTestHelper h){
         DeathGameTests.floor(h);var spoken=RecipeGameTests.caster(h);var scrambled=RecipeGameTests.caster(h);
         CastingServer.input(spoken,7);for(int a:new int[]{4,4,0,2,4})CastingServer.input(spoken,a);CastingServer.input(spoken,9);
@@ -31,7 +28,7 @@ public final class AuditGameTests {
         h.assertTrue(CastingServer.snapshot(scrambled).total()==RecipeGameTests.spell("Heavy Greater Magma").castTicks(),"A scrambled order collapses to the four-element spell");
         h.succeed();
     }
-    @GameTest(template="empty")
+    @MagicTest
     public static void quakeHeavesGroundWithoutLevellingIt(GameTestHelper h){
         DeathGameTests.floor(h);var p=RecipeGameTests.caster(h);
         WorldMagic.heave(p,h.absoluteVec(new Vec3(2.5,1.5,2.5)),12,2.5,.75);
@@ -45,28 +42,28 @@ public final class AuditGameTests {
         h.assertTrue(standing>=8,"The quake heaves the ground instead of levelling it, "+standing+" blocks left");
         h.succeed();
     }
-    @GameTest(template="empty")
+    @MagicTest
     public static void lightningLeavesHandAndChains(GameTestHelper h){
         DeathGameTests.floor(h);var p=RecipeGameTests.caster(h);
-        var aimed=h.spawnWithNoFreeWill(EntityType.ZOMBIE,new BlockPos(1,2,4));var near=h.spawnWithNoFreeWill(EntityType.ZOMBIE,new BlockPos(3,2,4));
-        var far=h.spawnWithNoFreeWill(EntityType.ZOMBIE,new BlockPos(1,2,14));
+        var aimed=h.spawnWithNoFreeWill(EntityTypes.ZOMBIE,new BlockPos(1,2,4));var near=h.spawnWithNoFreeWill(EntityTypes.ZOMBIE,new BlockPos(3,2,4));
+        var far=h.spawnWithNoFreeWill(EntityTypes.ZOMBIE,new BlockPos(1,2,14));
         SpellRuntime.cast(p,RecipeGameTests.spell("Bolt"),false);
         h.assertTrue(aimed.getHealth()<aimed.getMaxHealth(),"Aimed creature is struck");
         h.assertTrue(near.getHealth()<near.getMaxHealth(),"Lightning chains to a neighbour");
         h.assertTrue(far.getHealth()==far.getMaxHealth(),"Creatures out of reach are untouched");h.succeed();
     }
-    @GameTest(template="empty")
+    @MagicTest
     public static void thunderLancePiercesLine(GameTestHelper h){
         DeathGameTests.floor(h);var p=RecipeGameTests.caster(h);
-        var first=h.spawnWithNoFreeWill(EntityType.ZOMBIE,new BlockPos(1,2,3));var second=h.spawnWithNoFreeWill(EntityType.ZOMBIE,new BlockPos(1,2,5));
+        var first=h.spawnWithNoFreeWill(EntityTypes.ZOMBIE,new BlockPos(1,2,3));var second=h.spawnWithNoFreeWill(EntityTypes.ZOMBIE,new BlockPos(1,2,5));
         h.setBlock(new BlockPos(1,2,8),net.minecraft.world.level.block.Blocks.STONE);h.setBlock(new BlockPos(1,3,8),net.minecraft.world.level.block.Blocks.STONE);
         SpellRuntime.cast(p,RecipeGameTests.spell("Thunder Lance"),false);
         h.assertTrue(first.getHealth()<first.getMaxHealth() && second.getHealth()<second.getMaxHealth(),"Every creature on the line is struck");h.succeed();
     }
-    @GameTest(template="empty",timeoutTicks=160)
+    @MagicTest(timeoutTicks=160)
     public static void teslaSpireBuildsCoilAndZaps(GameTestHelper h){
         DeathGameTests.floor(h);var p=RecipeGameTests.caster(h);
-        var enemy=h.spawnWithNoFreeWill(EntityType.ZOMBIE,new BlockPos(2,2,2));
+        var enemy=h.spawnWithNoFreeWill(EntityTypes.ZOMBIE,new BlockPos(2,2,2));
         SpellRuntime.cast(p,RecipeGameTests.spell("Tesla Spire"),true);
         h.runAfterDelay(120,()->{
             var blocks=MagicConstructionManager.get(h.getLevel()).structures().stream().filter(c->c.owner.equals(p.getUUID())).flatMap(c->c.blocks.stream()).toList();
@@ -77,7 +74,7 @@ public final class AuditGameTests {
             h.assertTrue(enemy.getHealth()<enemy.getMaxHealth(),"Coil zaps a nearby enemy");h.succeed();
         });
     }
-    @GameTest(template="empty",timeoutTicks=60)
+    @MagicTest(timeoutTicks=60)
     public static void structureSpellsFollowView(GameTestHelper h){
         DeathGameTests.floor(h);var p=RecipeGameTests.caster(h);p.setPos(h.absoluteVec(new Vec3(2.5,2,0.5)));BlockPos feet=p.blockPosition();
         var wall=RecipeGameTests.spell("Stone Wall");
@@ -103,7 +100,7 @@ public final class AuditGameTests {
             h.assertTrue(h.getBlockState(new BlockPos(2,2,2)).isAir(),"Nothing is built in front of the aim point");h.succeed();
         });
     }
-    @GameTest(template="empty",timeoutTicks=80)
+    @MagicTest(timeoutTicks=80)
     public static void stoneSlabBridgesGapAhead(GameTestHelper h){
         var p=RecipeGameTests.caster(h);p.setPos(h.absoluteVec(new Vec3(2.5,2,0.5)));h.setBlock(new BlockPos(2,1,0),net.minecraft.world.level.block.Blocks.STONE);
         SpellRuntime.cast(p,RecipeGameTests.spell("Stone Slab"),false);
@@ -112,7 +109,7 @@ public final class AuditGameTests {
             h.succeed();
         });
     }
-    @GameTest(template="empty",timeoutTicks=80)
+    @MagicTest(timeoutTicks=80)
     public static void floatingPlatformAppearsUnderFeet(GameTestHelper h){
         var p=RecipeGameTests.caster(h);p.setPos(h.absoluteVec(new Vec3(2.5,4,2.5)));BlockPos feet=p.blockPosition();
         SpellRuntime.cast(p,RecipeGameTests.spell("Floating Platform"),false);
@@ -122,14 +119,14 @@ public final class AuditGameTests {
             h.succeed();
         });
     }
-    @GameTest(template="empty",timeoutTicks=40)
+    @MagicTest(timeoutTicks=40)
     public static void bubbleLiftRaisesEveryoneAround(GameTestHelper h){
         DeathGameTests.floor(h);var p=RecipeGameTests.caster(h);
-        var a=h.spawnWithNoFreeWill(EntityType.PIG,new BlockPos(2,2,3));var b=h.spawnWithNoFreeWill(EntityType.PIG,new BlockPos(3,2,2));
+        var a=h.spawnWithNoFreeWill(EntityTypes.PIG,new BlockPos(2,2,3));var b=h.spawnWithNoFreeWill(EntityTypes.PIG,new BlockPos(3,2,2));
         SpellRuntime.cast(p,RecipeGameTests.spell("Bubble Lift"),true);
         h.assertTrue(MagicStatuses.has(a,MagicStatuses.Status.LEVITATING) && MagicStatuses.has(b,MagicStatuses.Status.LEVITATING) && MagicStatuses.has(p,MagicStatuses.Status.LEVITATING),"Everyone nearby floats");h.succeed();
     }
-    @GameTest(template="empty",timeoutTicks=40)
+    @MagicTest(timeoutTicks=40)
     public static void attributesScaleSpells(GameTestHelper h){
         DeathGameTests.floor(h);var p=RecipeGameTests.caster(h);
         var bomb=RecipeGameTests.spell("Firebomb");
@@ -147,7 +144,7 @@ public final class AuditGameTests {
         MagicStats.reset(p);
         h.assertTrue(raised==6,"Summons triples servants, got "+raised);h.succeed();
     }
-    @GameTest(template="empty",timeoutTicks=100)
+    @MagicTest(timeoutTicks=100)
     public static void stencilBuildsTheChosenShape(GameTestHelper h){
         var level=h.getLevel();var origin=h.absolutePos(BlockPos.ZERO);
         // The stencil is wider than the 6x6x6 arena, so clear a yard around it and floor it with stone.

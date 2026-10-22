@@ -1,5 +1,6 @@
 package com.restor.magicka;
 
+import net.minecraft.resources.Identifier;
 import net.minecraft.core.*;
 import net.minecraft.nbt.*;
 import net.minecraft.server.level.*;
@@ -29,19 +30,21 @@ public final class MagicConstructionManager extends SavedData {
     private record Build(UUID id, UUID owner, SpellDefinition spell, Plan plan, long started, boolean self, boolean instant, int[] attempts, Set<UUID> impaled) {}
     static boolean instantBuilds;
     public MagicConstructionManager() {}
+    private static final net.minecraft.world.level.saveddata.SavedDataType<MagicConstructionManager> TYPE = new net.minecraft.world.level.saveddata.SavedDataType<>(
+            Identifier.fromNamespaceAndPath(Magicka.ID, "constructions"), MagicConstructionManager::new, CompoundTag.CODEC.xmap(MagicConstructionManager::load, MagicConstructionManager::save));
     public static MagicConstructionManager get(ServerLevel level) {
-        return level.getDataStorage().computeIfAbsent(new Factory<>(MagicConstructionManager::new,MagicConstructionManager::load),"magicka_constructions");
+        return level.getDataStorage().computeIfAbsent(TYPE);
     }
     Construction structure(UUID id) { return structures.get(id); }
     public Collection<Construction> structures() { return Collections.unmodifiableCollection(structures.values()); }
     public static void start(ServerPlayer player, SpellDefinition spell, boolean self, Vec3 point) {
         if (!MagicConfig.CONSTRUCTION.get()) return;
-        var manager = get(player.serverLevel());
+        var manager = get(player.level());
         if (manager.builds.stream().filter(b -> b.owner.equals(player.getUUID())).count() >= 2) return;
-        manager.builds.add(new Build(UUID.randomUUID(),player.getUUID(),spell,new Plan(player,spell,self,point),player.serverLevel().getGameTime(),self,instantBuilds,new int[]{0},new HashSet<>()));
+        manager.builds.add(new Build(UUID.randomUUID(),player.getUUID(),spell,new Plan(player,spell,self,point),player.level().getGameTime(),self,instantBuilds,new int[]{0},new HashSet<>()));
     }
     static void stop(ServerPlayer player, long since) {
-        get(player.serverLevel()).builds.removeIf(b -> b.owner.equals(player.getUUID()) && !b.instant && b.started >= since);
+        get(player.level()).builds.removeIf(b -> b.owner.equals(player.getUUID()) && !b.instant && b.started >= since);
     }
     /** Immutable recipe determines shape; only bounded yaw/pitch steering changes the path. */
     public static final class Plan {
@@ -71,7 +74,7 @@ public final class MagicConstructionManager extends SavedData {
             cursor=start;
             var look=player.getLookAngle();
             var flat=new Vec3(look.x,0,look.z);
-            heading=look.y>=0 ? look : flat.lengthSqr()>1e-4 ? flat.normalize() : Vec3.atLowerCornerOf(direction.getNormal());
+            heading=look.y>=0 ? look : flat.lengthSqr()>1e-4 ? flat.normalize() : Vec3.atLowerCornerOf(direction.getUnitVec3i());
             template=shape==SpellShape.SPIKE ? spike(player,self,heading) : spell.construction().has("template") ? structure(player,SpellDefinition.string(spell.construction(),"template","wall"),self) : null;
         }
         public int limit(){return template==null ? spell.budget() : Math.min(spell.budget(),template.size());}
@@ -166,7 +169,7 @@ public final class MagicConstructionManager extends SavedData {
             var random=player.getRandom();var level=player.level();var hit=SpellAim.hit(player);
             BlockPos from;
             if(!self && hit.getType()==HitResult.Type.BLOCK && WorldPlacement.replaceable(level.getBlockState(hit.getBlockPos().relative(hit.getDirection())),true)){
-                from=hit.getBlockPos().relative(hit.getDirection());heading=tilt(Vec3.atLowerCornerOf(hit.getDirection().getNormal()),random,0,.4);
+                from=hit.getBlockPos().relative(hit.getDirection());heading=tilt(Vec3.atLowerCornerOf(hit.getDirection().getUnitVec3i()),random,0,.4);
             }
             else{from=spikeStart(player,direction);heading=tilt(look,random,0,.12);}
             int budget=spell.budget();
@@ -221,11 +224,11 @@ public final class MagicConstructionManager extends SavedData {
     private static void impale(ServerPlayer player, Build build, BlockPos pos) {
         double damage=EffectGraph.number(build.spell.construction(),"impale_damage",0);
         Vec3 push=build.plan.heading().scale(build.instant ? 1.1 : .7).add(0,.25,0);
-        for (var entity:player.serverLevel().getEntitiesOfClass(LivingEntity.class,new AABB(pos),LivingEntity::isAlive)) {
+        for (var entity:player.level().getEntitiesOfClass(LivingEntity.class,new AABB(pos),LivingEntity::isAlive)) {
             if (entity==player || !EffectGraph.canHarm(player,entity) || !build.impaled.add(entity.getUUID())) continue;
             if (damage>0) com.restor.magicka.enemy.MagicEnemies.hurt(entity,player.damageSources().indirectMagic(player,player),(float)(build.instant ? damage*1.5 : damage),player,build.spell,MagicStatuses.has(entity,MagicStatuses.Status.FROZEN) || MagicStatuses.has(entity,MagicStatuses.Status.BRITTLE));
             MagicStatuses.apply(entity,MagicStatuses.Status.CHILLED,60,1);
-            entity.push(push.x,push.y,push.z);entity.hurtMarked=true;
+            entity.push(push.x,push.y,push.z);entity.syncVelocity=true;
         }
     }
     public static Block material(SpellDefinition spell) {
@@ -271,7 +274,7 @@ public final class MagicConstructionManager extends SavedData {
                     existing.blocks.add(pos.immutable());existing.expires=Math.max(existing.expires,data.expires);setDirty();
                     if (existing.blocks.size()==1 && tesla) SpellRuntime.tesla(player,build.spell,build.id);
                     if(build.plan.shape==SpellShape.GROWTH)for(var entity:level.getEntitiesOfClass(LivingEntity.class,new AABB(build.plan.start).inflate(1.8)))
-                        EffectGraph.entity(player,entity,build.spell,build.self?build.spell.selfEffects():build.spell.effects(),build.plan.start.getCenter(),build.self);
+                        EffectGraph.entity(player,entity,build.spell,build.self?build.spell.selfEffects():build.spell.effects(),net.minecraft.world.phys.Vec3.atCenterOf(build.plan.start),build.self);
                     MagicNetwork.construction(player,build.id,existing.blocks.size(),limit-build.attempts[0]);
                 }
             }
@@ -292,20 +295,21 @@ public final class MagicConstructionManager extends SavedData {
         return false;
     }
     @SubscribeEvent public void levelTick(LevelTickEvent.Post event) { if(event.getLevel() instanceof ServerLevel level) get(level).tick(level); }
-    @Override public CompoundTag save(CompoundTag tag, HolderLookup.Provider lookup) {
-        ListTag list=new ListTag();
+    CompoundTag save() {
+        CompoundTag tag=new CompoundTag();ListTag list=new ListTag();
         for(Construction c:structures.values()) {
-            var n=new CompoundTag();n.putUUID("Id",c.id);n.putUUID("Owner",c.owner);n.putString("Type",c.type);n.putLong("Root",c.root.asLong());n.putLong("Expires",c.expires);n.putFloat("Integrity",c.integrity);
+            var n=new CompoundTag();n.store("Id",net.minecraft.core.UUIDUtil.CODEC,c.id);n.store("Owner",net.minecraft.core.UUIDUtil.CODEC,c.owner);n.putString("Type",c.type);n.putLong("Root",c.root.asLong());n.putLong("Expires",c.expires);n.putFloat("Integrity",c.integrity);
             n.putLongArray("Blocks",c.blocks.stream().mapToLong(BlockPos::asLong).toArray());list.add(n);
         }
         tag.put("Structures",list);return tag;
     }
-    private static MagicConstructionManager load(CompoundTag tag, HolderLookup.Provider lookup) {
+    private static MagicConstructionManager load(CompoundTag tag) {
         var manager=new MagicConstructionManager();
-        for(Tag t:tag.getList("Structures",Tag.TAG_COMPOUND)) {
+        for(Tag t:tag.getListOrEmpty("Structures")) {
             CompoundTag n=(CompoundTag)t;
-            Construction c=new Construction(n.getUUID("Id"),n.getUUID("Owner"),n.getString("Type"),BlockPos.of(n.getLong("Root")),n.getLong("Expires"),n.getFloat("Integrity"));
-            for(long p:n.getLongArray("Blocks")) c.blocks.add(BlockPos.of(p));manager.structures.put(c.id,c);
+            var id=n.read("Id",net.minecraft.core.UUIDUtil.CODEC);var owner=n.read("Owner",net.minecraft.core.UUIDUtil.CODEC);if(id.isEmpty()||owner.isEmpty())continue;
+            Construction c=new Construction(id.get(),owner.get(),n.getStringOr("Type",""),BlockPos.of(n.getLongOr("Root",0L)),n.getLongOr("Expires",0L),n.getFloatOr("Integrity",0f));
+            for(long p:n.getLongArray("Blocks").orElse(new long[0])) c.blocks.add(BlockPos.of(p));manager.structures.put(c.id,c);
         }
         return manager;
     }

@@ -129,7 +129,7 @@
   "intent.magicka.directed": "По направлению",
   "intent.magicka.self": "На себя",
   "item.magicka.spellbook": "Гримуар стихий",
-  "key.categories.magicka": "Spellweaver",
+  "key.category.magicka.main": "Spellweaver",
   "key.magicka.arcane": "Добавить: Аркана",
   "key.magicka.clear": "Очистить формулу",
   "key.magicka.cold": "Добавить: Холод",

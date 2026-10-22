@@ -1,21 +1,15 @@
 package com.restor.magicka;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import net.neoforged.neoforge.event.level.BlockEvent;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 import java.util.UUID;
 import java.util.function.Consumer;
-
-@GameTestHolder(Magicka.ID)
-@PrefixGameTestTemplate(false)
 public final class MagicGameTests {
-    @GameTest(template = "empty")
+    @MagicTest
     public static void formulas(GameTestHelper helper) {
         Formula f = new Formula();
         for (int i = 0; i < Formula.MAX; i++) helper.assertTrue(f.add(Element.EARTH), "Element accepted within capacity");
@@ -35,35 +29,35 @@ public final class MagicGameTests {
         }
         helper.succeed();
     }
-    @GameTest(template = "empty", timeoutTicks = 40)
+    @MagicTest(timeoutTicks=40)
     public static void expiryAndPersistence(GameTestHelper helper) {
         BlockPos p = new BlockPos(1, 2, 1);
         helper.setBlock(p, MagicBlocks.ICE.get());
         helper.setBlock(p.east(), MagicBlocks.EARTH.get());
-        MagicBlocks.MagicBlockEntity earth = helper.getBlockEntity(p.east());
+        MagicBlocks.MagicBlockEntity earth = helper.getBlockEntity(p.east(), MagicBlocks.MagicBlockEntity.class);
         earth.initialize(UUID.randomUUID(), UUID.randomUUID(), helper.absolutePos(p.east()), helper.getLevel().getGameTime() + 8, true);
-        MagicBlocks.MagicBlockEntity data = helper.getBlockEntity(p);
+        MagicBlocks.MagicBlockEntity data = helper.getBlockEntity(p, MagicBlocks.MagicBlockEntity.class);
         UUID owner = UUID.randomUUID(), construction = UUID.randomUUID();
         long expire = helper.getLevel().getGameTime() + 8;
         data.initialize(owner, construction, helper.absolutePos(p), expire, false);
         var tag = data.saveWithFullMetadata(helper.getLevel().registryAccess());
         var restored = new MagicBlocks.MagicBlockEntity(helper.absolutePos(p), data.getBlockState());
-        restored.loadWithComponents(tag, helper.getLevel().registryAccess());
+        restored.loadWithComponents(net.minecraft.world.level.storage.TagValueInput.create(net.minecraft.util.ProblemReporter.DISCARDING, helper.getLevel().registryAccess(), tag));
         helper.assertTrue(restored.owner.equals(owner) && restored.construction.equals(construction)
                 && restored.expires == expire && restored.root.equals(data.root), "Persistent ownership, root and lifetime");
         helper.runAfterDelay(12, () -> { helper.assertBlockPresent(Blocks.AIR, p); helper.assertBlockPresent(MagicBlocks.EARTH.get(), p.east()); helper.succeed(); });
     }
-    @GameTest(template = "empty", timeoutTicks = 40)
+    @MagicTest(timeoutTicks=40)
     public static void rootCollapse(GameTestHelper helper) {
         BlockPos root = new BlockPos(1, 2, 1), child = root.east();
         helper.setBlock(root, MagicBlocks.EARTH.get()); helper.setBlock(child, MagicBlocks.EARTH.get());
         UUID id = UUID.randomUUID();
-        ((MagicBlocks.MagicBlockEntity) helper.getBlockEntity(root)).initialize(id, id, helper.absolutePos(root), Long.MAX_VALUE, false);
-        ((MagicBlocks.MagicBlockEntity) helper.getBlockEntity(child)).initialize(id, id, helper.absolutePos(root), Long.MAX_VALUE, false);
+        helper.getBlockEntity(root, MagicBlocks.MagicBlockEntity.class).initialize(id, id, helper.absolutePos(root), Long.MAX_VALUE, false);
+        helper.getBlockEntity(child, MagicBlocks.MagicBlockEntity.class).initialize(id, id, helper.absolutePos(root), Long.MAX_VALUE, false);
         helper.setBlock(root, Blocks.AIR);
         helper.runAfterDelay(15, () -> { helper.assertBlockPresent(Blocks.AIR, child); helper.succeed(); });
     }
-    @GameTest(template = "empty")
+    @MagicTest
     public static void canceledPlacementRestoresWorld(GameTestHelper helper) {
         BlockPos local = new BlockPos(1, 2, 1), pos = helper.absolutePos(local);
         helper.setBlock(local.below(), Blocks.STONE);
@@ -79,19 +73,19 @@ public final class MagicGameTests {
                 UUID.randomUUID(), pos, false, false, null), "Placement allowed after listener removed");
         helper.succeed();
     }
-    @GameTest(template = "empty")
+    @MagicTest
     public static void collisionAndTerrainPreserved(GameTestHelper helper) {
         BlockPos local = new BlockPos(1, 2, 1), pos = helper.absolutePos(local);
         helper.setBlock(local.below(), Blocks.STONE);
         var player = FakePlayerFactory.getMinecraft(helper.getLevel());
-        var pig = helper.spawnWithNoFreeWill(net.minecraft.world.entity.EntityType.PIG, local);
+        var pig = helper.spawnWithNoFreeWill(net.minecraft.world.entity.EntityTypes.PIG, local);
         helper.assertFalse(WorldPlacement.placeBlock(player, pos, MagicBlocks.EARTH.get().defaultBlockState(), UUID.randomUUID(), pos, false, false, null), "No suffocation placement");
         pig.discard(); helper.setBlock(local, Blocks.CHEST);
         helper.assertFalse(WorldPlacement.placeBlock(player, pos, MagicBlocks.EARTH.get().defaultBlockState(), UUID.randomUUID(), pos, false, false, null), "Do not replace terrain or containers");
         helper.assertBlockPresent(Blocks.CHEST, local);
         helper.succeed();
     }
-    @GameTest(template = "empty")
+    @MagicTest
     public static void literalSelfAndElementReactions(GameTestHelper helper) {
         // A real ServerPlayer is needed: NeoForge FakePlayer rejects every damage source.
         var player = new net.minecraft.server.level.ServerPlayer(helper.getLevel().getServer(), helper.getLevel(),
@@ -99,7 +93,7 @@ public final class MagicGameTests {
         player.connection = FakePlayerFactory.getMinecraft(helper.getLevel()).connection;
         player.setPos(helper.absoluteVec(new net.minecraft.world.phys.Vec3(2, 2, 2)));
         for (int i = 0; i < 61; i++) player.tick(); // Let vanilla spawn invulnerability expire.
-        player.setHealth(20); player.invulnerableTime = 0; player.getAbilities().invulnerable = false;
+        player.setHealth(20); player.setInvulnerableTime(0); player.getAbilities().invulnerable = false;
         Formula water = new Formula(); water.add(Element.WATER);
         SpellRuntime.cast(player, RecipeRegistry.resolve(water.key()), true);
         helper.assertTrue(MagicStatuses.has(player,MagicStatuses.Status.WET), "Self water wets caster");
@@ -107,7 +101,7 @@ public final class MagicGameTests {
         SpellRuntime.cast(player, RecipeRegistry.resolve(cold.key()), true);
         helper.assertTrue(player.getTicksFrozen() > 0, "Wet + cold freezes caster");
         helper.assertTrue(MagicStatuses.has(player,MagicStatuses.Status.BRITTLE), "Frozen targets become brittle");
-        player.invulnerableTime = 0;
+        player.setInvulnerableTime(0);
         Formula earth = new Formula(); earth.add(Element.EARTH);
         float before = player.getHealth();
         SpellRuntime.cast(player, RecipeRegistry.resolve(earth.key()), true);
@@ -117,7 +111,7 @@ public final class MagicGameTests {
         helper.assertTrue(player.getHealth()<before,"Bad Self still harms caster");
         helper.succeed();
     }
-    @GameTest(template = "empty")
+    @MagicTest
     public static void committedCastRejectsAllEdits(GameTestHelper helper) {
         var player = FakePlayerFactory.get(helper.getLevel(), new com.mojang.authlib.GameProfile(UUID.randomUUID(), "CommitTester"));
         CastingServer.input(player, 7); CastingServer.input(player, 0); CastingServer.input(player, 10);

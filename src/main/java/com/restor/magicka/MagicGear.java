@@ -6,7 +6,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
@@ -61,9 +61,9 @@ public final class MagicGear {
         public Loadout(Player owner) {
             super(SLOTS);
             this.owner = owner;
-            CompoundTag tag = owner.getPersistentData().getCompound(TAG);
+            CompoundTag tag = owner.getPersistentData().getCompoundOrEmpty(TAG);
             for (Slot slot : Slot.values()) if (tag.contains(slot.key()))
-                setItem(slot.ordinal(), ItemStack.parse(owner.registryAccess(), tag.getCompound(slot.key())).orElse(ItemStack.EMPTY));
+                setItem(slot.ordinal(), parse(owner, tag.getCompoundOrEmpty(slot.key())));
             loading = false;
         }
         @Override public void setChanged() {
@@ -81,16 +81,20 @@ public final class MagicGear {
         CompoundTag tag = new CompoundTag();
         for (Slot slot : Slot.values()) {
             ItemStack stack = loadout.getItem(slot.ordinal());
-            if (!stack.isEmpty()) tag.put(slot.key(), (CompoundTag) stack.save(player.registryAccess()));
+            if (!stack.isEmpty()) tag.put(slot.key(), ItemStack.OPTIONAL_CODEC.encodeStart(player.registryAccess().createSerializationContext(net.minecraft.nbt.NbtOps.INSTANCE), stack).getOrThrow());
         }
         player.getPersistentData().put(TAG, tag);
         if (player instanceof ServerPlayer server) invalidate(server);
     }
 
+    private static ItemStack parse(Player player, CompoundTag tag) {
+        return ItemStack.OPTIONAL_CODEC.parse(player.registryAccess().createSerializationContext(net.minecraft.nbt.NbtOps.INSTANCE), tag).result().orElse(ItemStack.EMPTY);
+    }
+
     public static ItemStack item(Player player, Slot slot) {
-        CompoundTag tag = player.getPersistentData().getCompound(TAG);
+        CompoundTag tag = player.getPersistentData().getCompoundOrEmpty(TAG);
         return tag.contains(slot.key())
-                ? ItemStack.parse(player.registryAccess(), tag.getCompound(slot.key())).orElse(ItemStack.EMPTY)
+                ? parse(player, tag.getCompoundOrEmpty(slot.key()))
                 : ItemStack.EMPTY;
     }
 
@@ -166,7 +170,7 @@ public final class MagicGear {
         if (profile.traits.contains(Trait.CHAOS_LENS) && recipe.formula().size() >= 4 && player.getRandom().nextFloat() < .25f)
             MagicStatuses.apply(player, MagicStatuses.Status.ARCANE_UNSTABLE, 100, 1);
         if (!profile.traits.contains(Trait.MIRROR_PRISM) || recipe.shape().construction()) return;
-        long now = player.serverLevel().getGameTime();
+        long now = player.level().getGameTime();
         if (now - ECHOES.getOrDefault(player.getUUID(), -1000L) < 100) return;
         ECHOES.put(player.getUUID(), now);
         SpellDefinition echo = weaken(recipe);
@@ -211,7 +215,7 @@ public final class MagicGear {
             AttributeInstance instance = player.getAttribute(holder);
             if (instance == null) continue;
             for (AttributeModifier.Operation operation : AttributeModifier.Operation.values()) {
-                ResourceLocation id = modifier(holder, operation);
+                Identifier id = modifier(holder, operation);
                 instance.removeModifier(id);
                 double amount = sums.getOrDefault(holder, Map.of()).getOrDefault(operation, 0.0);
                 if (amount != 0) instance.addPermanentModifier(new AttributeModifier(id, amount, operation));
@@ -220,9 +224,9 @@ public final class MagicGear {
         player.setHealth(Math.min(player.getHealth(), player.getMaxHealth()));
     }
 
-    private static ResourceLocation modifier(Holder<Attribute> holder, AttributeModifier.Operation operation) {
-        ResourceLocation key = BuiltInRegistries.ATTRIBUTE.getKey(holder.value());
-        return ResourceLocation.fromNamespaceAndPath(Magicka.ID,
+    private static Identifier modifier(Holder<Attribute> holder, AttributeModifier.Operation operation) {
+        Identifier key = BuiltInRegistries.ATTRIBUTE.getKey(holder.value());
+        return Identifier.fromNamespaceAndPath(Magicka.ID,
                 "gear/" + (key == null ? "unknown" : key.getPath()) + "/" + operation.name().toLowerCase(Locale.ROOT));
     }
 
@@ -245,7 +249,7 @@ public final class MagicGear {
         ECHOES.remove(event.getEntity().getUUID());
     }
     @SubscribeEvent public void clone(PlayerEvent.Clone event) {
-        CompoundTag tag = event.getOriginal().getPersistentData().getCompound(TAG);
+        CompoundTag tag = event.getOriginal().getPersistentData().getCompoundOrEmpty(TAG);
         if (!tag.isEmpty()) event.getEntity().getPersistentData().put(TAG, tag.copy());
         PROFILES.remove(event.getEntity().getUUID());
         REVISIONS.merge(event.getEntity().getUUID(), 1, Integer::sum);

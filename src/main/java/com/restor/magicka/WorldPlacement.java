@@ -15,13 +15,13 @@ import net.neoforged.neoforge.event.level.BlockEvent;
 
 public final class WorldPlacement {
     static boolean allowed(ServerPlayer player, BlockPos pos) {
-        var world = player.serverLevel();
+        var world = player.level();
         return player.mayBuild() && world.hasChunkAt(pos) && !world.isOutsideBuildHeight(pos)
                 && world.getWorldBorder().isWithinBounds(pos) && world.mayInteract(player, pos);
     }
     static boolean placeBlock(ServerPlayer player, BlockPos pos, BlockState state, java.util.UUID construction,
                               BlockPos root, boolean floating, boolean push, Object ignored) {
-        var world = player.serverLevel();
+        var world = player.level();
         if (!allowed(player, pos)) return false;
         BlockState old = world.getBlockState(pos);
         if (!replaceable(old, !state.is(MagicBlocks.PUDDLE.get()))) return false;
@@ -54,7 +54,7 @@ public final class WorldPlacement {
         }
         if (solid) for (LivingEntity entity : occupants) {
             entity.teleportTo(entity.getX(), pos.getY() + 1.01, entity.getZ());
-            entity.push(0, 0.2, 0); entity.hurtMarked = true;
+            entity.push(0, 0.2, 0); entity.syncVelocity = true;
             if (entity != player && EffectGraph.canHarm(player, entity)) entity.hurt(player.damageSources().indirectMagic(player, player), 1F);
         }
         if (world.getBlockEntity(pos) instanceof MagicBlocks.MagicBlockEntity data) {
@@ -75,9 +75,9 @@ public final class WorldPlacement {
     }
     static boolean destroy(ServerPlayer player, BlockPos pos) {
         if (!MagicConfig.TERRAIN_DAMAGE.get() || !allowed(player, pos)) return false;
-        var world = player.serverLevel();
+        var world = player.level();
         if (!(world.getBlockState(pos).getBlock() instanceof MagicBlocks.TemporaryBlock)) return false;
-        if (NeoForge.EVENT_BUS.post(new BlockEvent.BreakEvent(world, pos, world.getBlockState(pos), player)).isCanceled()) return false;
+        if (NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.block.BreakBlockEvent(world, pos, world.getBlockState(pos), player)).isCanceled()) return false;
         return world.removeBlock(pos, false);
     }
 }

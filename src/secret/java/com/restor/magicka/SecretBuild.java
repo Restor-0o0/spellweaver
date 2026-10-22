@@ -34,16 +34,16 @@ public final class SecretBuild implements SecretSpell {
 
     private static Block cell(int x, int z, int y) {
         double shaft = x * x + z * z;
-        if (y == HEIGHT - 1) return shaft <= 1.2 ? (shaft == 0 ? Blocks.MAGENTA_TERRACOTTA : Blocks.PINK_CONCRETE) : null;
+        if (y == HEIGHT - 1) return shaft <= 1.2 ? (shaft == 0 ? Blocks.DYED_TERRACOTTA.magenta() : Blocks.CONCRETE.pink()) : null;
         double head = shaft / (3.3 * 3.3) + Math.pow((y - 16.5) / 3.2, 2);
-        if (y >= 14 && head <= 1) return y == 14 && shaft > 5.5 ? Blocks.MAGENTA_TERRACOTTA : Blocks.PINK_CONCRETE;
+        if (y >= 14 && head <= 1) return y == 14 && shaft > 5.5 ? Blocks.DYED_TERRACOTTA.magenta() : Blocks.CONCRETE.pink();
         if (y <= 15 && shaft <= 2.6 * 2.6) {
             boolean vein = shaft > 4 && (y + x * 3 + z * 5) % 9 == 0;
-            return vein ? Blocks.MAGENTA_TERRACOTTA : Blocks.PINK_TERRACOTTA;
+            return vein ? Blocks.DYED_TERRACOTTA.magenta() : Blocks.DYED_TERRACOTTA.pink();
         }
         for (int side : new int[]{-3, 3}) {
             double ball = Math.pow((x - side) / 3.3, 2) + Math.pow(z / 3.0, 2) + Math.pow((y - 2.5) / 3.0, 2);
-            if (y <= 5 && ball <= 1) return Blocks.PINK_TERRACOTTA;
+            if (y <= 5 && ball <= 1) return Blocks.DYED_TERRACOTTA.pink();
         }
         return null;
     }
@@ -57,7 +57,7 @@ public final class SecretBuild implements SecretSpell {
     }
 
     @Override public void cast(ServerPlayer player) {
-        var level = player.serverLevel();
+        var level = player.level();
         Direction facing = player.getDirection();
         final BlockPos origin = base(player);
         var layers = new ArrayList<List<Map.Entry<BlockPos, Block>>>();
@@ -75,14 +75,14 @@ public final class SecretBuild implements SecretSpell {
     }
 
     private static void place(ServerPlayer player, BlockPos pos, BlockState state) {
-        var level = player.serverLevel();
+        var level = player.level();
         if (!WorldPlacement.allowed(player, pos)) return;
         var old = level.getBlockState(pos);
         if (!old.isAir() && !old.canBeReplaced() && !WorldMagic.breakBlock(player, pos)) return;
         for (LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, new AABB(pos), LivingEntity::isAlive)) {
             entity.teleportTo(entity.getX(), pos.getY() + 1.01, entity.getZ());
             entity.setDeltaMovement(entity.getDeltaMovement().add(0, .6, 0));
-            entity.hurtMarked = true;
+            entity.syncVelocity = true;
         }
         level.setBlock(pos, state, Block.UPDATE_ALL);
     }

@@ -1,22 +1,19 @@
 package com.restor.magicka;
 
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.gametest.framework.*;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.gametest.*;
-
-@GameTestHolder(Magicka.ID)
-@PrefixGameTestTemplate(false)
 public final class ElementalGameTests {
     private static Zombie dummy(GameTestHelper h, Vec3 at) {
-        Zombie zombie = h.spawn(EntityType.ZOMBIE, at);
+        Zombie zombie = h.spawn(EntityTypes.ZOMBIE, at);
         zombie.setNoAi(true);
         return zombie;
     }
 
-    @GameTest(template="empty")
+    @MagicTest
     public static void everyElementHasACompanionAndATitan(GameTestHelper h) {
         for (Element e : Element.values()) {
             var companion = RecipeRegistry.recipes().stream().filter(d -> d.id().getPath().equals(Elementals.id(e, "elemental"))).findFirst().orElseThrow();
@@ -27,7 +24,7 @@ public final class ElementalGameTests {
         h.succeed();
     }
 
-    @GameTest(template="empty")
+    @MagicTest
     public static void companionServesItsCasterOnly(GameTestHelper h) {
         DeathGameTests.floor(h);
         var p = RecipeGameTests.caster(h);
@@ -37,7 +34,7 @@ public final class ElementalGameTests {
         var mob = owned.getFirst();
         h.assertTrue(mob.element() == Element.FIRE && mob.flyer() && mob.fireImmune(), "A fire elemental flies and does not burn");
         h.assertTrue(mob.isAlliedTo(p) && EffectGraph.ally(p, mob), "The elemental is the caster's ally");
-        h.assertFalse(mob.hurt(p.damageSources().playerAttack(p), 6) || mob.getHealth() < mob.getMaxHealth(), "The caster cannot hurt their own elemental");
+        h.assertFalse(mob.hurtServer(h.getLevel(), p.damageSources().playerAttack(p), 6) || mob.getHealth() < mob.getMaxHealth(), "The caster cannot hurt their own elemental");
         h.assertFalse(mob.shouldBeSaved(), "Elementals are never saved to disk");
         Elementals.companion(p, RecipeGameTests.spell("Frost Elemental"), h.absoluteVec(new Vec3(3.5, 2, 1.5)));
         Elementals.companion(p, RecipeGameTests.spell("Stone Elemental"), h.absoluteVec(new Vec3(1.5, 2, 3.5)));
@@ -48,7 +45,7 @@ public final class ElementalGameTests {
         h.succeed();
     }
 
-    @GameTest(template="empty", timeoutTicks=200)
+    @MagicTest(timeoutTicks=200)
     public static void companionAttacksMonsters(GameTestHelper h) {
         DeathGameTests.floor(h);
         var p = RecipeGameTests.caster(h);
@@ -60,7 +57,7 @@ public final class ElementalGameTests {
         });
     }
 
-    @GameTest(template="empty", timeoutTicks=240)
+    @MagicTest(timeoutTicks=240)
     public static void titanFightsOnlyWhileChannelled(GameTestHelper h) {
         DeathGameTests.floor(h);
         var p = RecipeGameTests.caster(h); p.setXRot(60);

@@ -1,25 +1,22 @@
 package com.restor.magicka;
 
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.*;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.monster.Zombie;
-import net.minecraft.world.entity.monster.ZombieVillager;
-import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.monster.zombie.Zombie;
+import net.minecraft.world.entity.monster.zombie.ZombieVillager;
+import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.gametest.*;
 import java.util.List;
-
-@GameTestHolder(Magicka.ID)
-@PrefixGameTestTemplate(false)
 public final class LegendGameTests {
     private static final List<String> LEGENDS = List.of("Field of Flowers", "Piercing Rays", "Spirit Wave", "Spiral Sphere", "Storm Lunge", "Disarming Bolt",
             "Silver Stag", "Thunderous Shout", "Explosion", "Time Stop", "Bridge Warden", "Defibrillator", "Life Drain", "Purifying Flame",
@@ -27,13 +24,13 @@ public final class LegendGameTests {
             "Scales of Judgment", "Thunder Call", "Flame Sign", "Force Sign", "Ward Sign", "Calming Sign", "Trap Sign", "Spark Portal");
 
     private static Zombie dummy(GameTestHelper h, Vec3 at) {
-        Zombie zombie = h.spawn(EntityType.ZOMBIE, at);
+        Zombie zombie = h.spawn(EntityTypes.ZOMBIE, at);
         zombie.setNoAi(true);
         zombie.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.LEATHER_HELMET));
         return zombie;
     }
 
-    @GameTest(template="empty")
+    @MagicTest
     public static void legendsAreInstantSignatures(GameTestHelper h) {
         for (String name : LEGENDS) {
             var s = RecipeGameTests.spell(name);
@@ -42,7 +39,7 @@ public final class LegendGameTests {
         h.succeed();
     }
 
-    @GameTest(template="empty", timeoutTicks=100)
+    @MagicTest(timeoutTicks=100)
     public static void flowerFieldBlooms(GameTestHelper h) {
         for (int x = 0; x < 5; x++) for (int z = 0; z < 5; z++) h.setBlock(new BlockPos(x, 1, z), Blocks.GRASS_BLOCK);
         var p = RecipeGameTests.caster(h);
@@ -56,7 +53,7 @@ public final class LegendGameTests {
         });
     }
 
-    @GameTest(template="empty", timeoutTicks=100)
+    @MagicTest(timeoutTicks=100)
     public static void expelliarmusDisarms(GameTestHelper h) {
         DeathGameTests.floor(h);
         var p = RecipeGameTests.caster(h);
@@ -71,14 +68,14 @@ public final class LegendGameTests {
         });
     }
 
-    @GameTest(template="empty", timeoutTicks=200, batch="legend_time")
+    @MagicTest(timeoutTicks=200,batch="legend_time")
     public static void zaWarudoStopsAndResumesTime(GameTestHelper h) {
         DeathGameTests.floor(h);
         var p = RecipeGameTests.caster(h);
-        Zombie zombie = h.spawn(EntityType.ZOMBIE, new Vec3(3.5, 2, 3.5));
+        Zombie zombie = h.spawn(EntityTypes.ZOMBIE, new Vec3(3.5, 2, 3.5));
         zombie.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.LEATHER_HELMET));
         SpellRuntime.cast(p, RecipeGameTests.spell("Time Stop"), false);
-        h.runAfterDelay(5, () -> h.assertTrue(zombie.isNoAi() && zombie.getPersistentData().getBoolean(LegendMagic.STOPPED_TAG), "The zombie freezes"));
+        h.runAfterDelay(5, () -> h.assertTrue(zombie.isNoAi() && zombie.getPersistentData().getBooleanOr(LegendMagic.STOPPED_TAG, false), "The zombie freezes"));
         h.runAfterDelay(115, () -> {
             h.assertFalse(zombie.isNoAi() || zombie.getPersistentData().contains(LegendMagic.STOPPED_TAG), "Time resumes for the zombie");
             h.assertTrue(MagicStatuses.has(zombie, MagicStatuses.Status.STUNNED), "The zombie is dazed after time resumes");
@@ -86,7 +83,7 @@ public final class LegendGameTests {
         });
     }
 
-    @GameTest(template="empty", timeoutTicks=100, batch="legend_shout")
+    @MagicTest(timeoutTicks=100,batch="legend_shout")
     public static void fusRoDahHitsTheCone(GameTestHelper h) {
         DeathGameTests.floor(h);
         var p = RecipeGameTests.caster(h);
@@ -99,7 +96,7 @@ public final class LegendGameTests {
         });
     }
 
-    @GameTest(template="empty", timeoutTicks=120)
+    @MagicTest(timeoutTicks=120)
     public static void explosionCostsEveryElement(GameTestHelper h) {
         DeathGameTests.floor(h);
         var p = RecipeGameTests.caster(h);
@@ -113,7 +110,7 @@ public final class LegendGameTests {
         });
     }
 
-    @GameTest(template="empty", timeoutTicks=60, batch="legend_life")
+    @MagicTest(timeoutTicks=60,batch="legend_life")
     public static void defibrillatorRestartsTheCaster(GameTestHelper h) {
         var p = RecipeGameTests.caster(h);
         p.setHealth(4);
@@ -121,7 +118,7 @@ public final class LegendGameTests {
         h.succeedWhen(() -> h.assertTrue(p.getHealth() >= 14, "A critical jolt heals twice, got " + p.getHealth()));
     }
 
-    @GameTest(template="empty", timeoutTicks=100, batch="legend_life")
+    @MagicTest(timeoutTicks=100,batch="legend_life")
     public static void lifeDrainStealsHealth(GameTestHelper h) {
         DeathGameTests.floor(h);
         var p = RecipeGameTests.caster(h);
@@ -134,20 +131,20 @@ public final class LegendGameTests {
         });
     }
 
-    @GameTest(template="empty", timeoutTicks=60, batch="legend_life")
+    @MagicTest(timeoutTicks=60,batch="legend_life")
     public static void zombieCureRestoresVillagers(GameTestHelper h) {
         DeathGameTests.floor(h);
         var p = RecipeGameTests.caster(h);
-        ZombieVillager zv = h.spawn(EntityType.ZOMBIE_VILLAGER, new Vec3(2.5, 2, 2.5));
+        ZombieVillager zv = h.spawn(EntityTypes.ZOMBIE_VILLAGER, new Vec3(2.5, 2, 2.5));
         zv.setNoAi(true);
         SpellRuntime.cast(p, RecipeGameTests.spell("Zombie Cure"), true);
         h.succeedWhen(() -> {
             h.assertFalse(zv.isAlive(), "The zombie villager is gone");
-            h.assertEntityPresent(EntityType.VILLAGER);
+            h.assertEntityPresent(EntityTypes.VILLAGER);
         });
     }
 
-    @GameTest(template="empty", timeoutTicks=60, batch="legend_life")
+    @MagicTest(timeoutTicks=60,batch="legend_life")
     public static void phoenixTearsCheatDeath(GameTestHelper h) {
         var p = RecipeGameTests.caster(h);
         var zombie = dummy(h, new Vec3(3.5, 2, 3.5));
@@ -160,21 +157,21 @@ public final class LegendGameTests {
         });
     }
 
-    @GameTest(template="empty", timeoutTicks=60, batch="legend_life")
+    @MagicTest(timeoutTicks=60,batch="legend_life")
     public static void quenShieldsTheCaster(GameTestHelper h) {
         var p = RecipeGameTests.caster(h);
         SpellRuntime.cast(p, RecipeGameTests.spell("Ward Sign"), false);
         h.succeedWhen(() -> h.assertTrue(p.hasEffect(MobEffects.ABSORPTION) && p.getAbsorptionAmount() > 0, "Quen grants absorption"));
     }
 
-    @GameTest(template="empty", timeoutTicks=60, batch="legend_life")
+    @MagicTest(timeoutTicks=60,batch="legend_life")
     public static void kaiokenPowersUp(GameTestHelper h) {
         var p = RecipeGameTests.caster(h);
         SpellRuntime.cast(p, RecipeGameTests.spell("Crimson Aura"), false);
-        h.succeedWhen(() -> h.assertTrue(p.hasEffect(MobEffects.DAMAGE_BOOST) && p.hasEffect(MobEffects.JUMP), "Kaioken grants strength and jump"));
+        h.succeedWhen(() -> h.assertTrue(p.hasEffect(MobEffects.STRENGTH) && p.hasEffect(MobEffects.JUMP_BOOST), "Kaioken grants strength and jump"));
     }
 
-    @GameTest(template="empty", timeoutTicks=100, batch="legend_cone")
+    @MagicTest(timeoutTicks=100,batch="legend_cone")
     public static void igniBurnsTheCone(GameTestHelper h) {
         DeathGameTests.floor(h);
         var p = RecipeGameTests.caster(h);
@@ -187,7 +184,7 @@ public final class LegendGameTests {
         });
     }
 
-    @GameTest(template="empty", timeoutTicks=100, batch="legend_arts")
+    @MagicTest(timeoutTicks=100,batch="legend_arts")
     public static void judradjimStrikesAfterTheCloud(GameTestHelper h) {
         DeathGameTests.floor(h);
         var p = RecipeGameTests.caster(h);
@@ -197,7 +194,7 @@ public final class LegendGameTests {
         h.succeedWhen(() -> h.assertTrue(zombie.getHealth() < zombie.getMaxHealth(), "The thunder strikes the zombie"));
     }
 
-    @GameTest(template="empty", timeoutTicks=60, batch="legend_arts")
+    @MagicTest(timeoutTicks=60,batch="legend_arts")
     public static void accioSummonsItems(GameTestHelper h) {
         DeathGameTests.floor(h);
         var p = RecipeGameTests.caster(h);

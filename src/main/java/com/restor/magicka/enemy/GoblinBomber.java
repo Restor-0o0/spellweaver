@@ -17,8 +17,8 @@ public class GoblinBomber extends Goblin {
     public static AttributeSupplier.Builder attributes() {
         return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 14).add(Attributes.MOVEMENT_SPEED, .29).add(Attributes.FOLLOW_RANGE, 24);
     }
-    @Override protected void customServerAiStep() {
-        super.customServerAiStep();
+    @Override protected void customServerAiStep(net.minecraft.server.level.ServerLevel serverLevel) {
+        super.customServerAiStep(serverLevel);
         LivingEntity target = getTarget();
         if (target == null || casting() || disabled()) return;
         keepDistance(target, 6, 11, 1);
@@ -39,7 +39,7 @@ public class GoblinBomber extends Goblin {
         super.interrupt();
     }
     @Override public void die(DamageSource source) {
-        if (!level().isClientSide && casting() && action() == THROW) drop();
+        if (!level().isClientSide() && casting() && action() == THROW) drop();
         super.die(source);
     }
     @Override protected void castTell(int remaining) {

@@ -1,5 +1,7 @@
 package com.restor.magicka;
 
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.*;
 import net.minecraft.world.entity.*;
@@ -18,7 +20,7 @@ public final class RevivalManager {
     @SubscribeEvent(priority=net.neoforged.bus.api.EventPriority.LOWEST) public void death(LivingDeathEvent event) {
         if (event.getEntity().level() instanceof ServerLevel world && !event.isCanceled()) {
             var e = event.getEntity();
-            if (e.getType() == EntityType.ENDER_DRAGON || e.getType() == EntityType.WITHER || e.getTags().contains("magicka_object") || e.getTags().contains("magicka_revived")) return;
+            if (e.getType() == EntityTypes.ENDER_DRAGON || e.getType() == EntityTypes.WITHER || e.entityTags().contains("magicka_object") || e.entityTags().contains("magicka_revived")) return;
             if (SOULS.size() >= 256) return;
             SOULS.put(e.getUUID(),new Remains(e.getUUID(),world,e.position(),e.getType(),e instanceof ServerPlayer,world.getGameTime()+MagicConfig.REVIVE_TICKS.get()));
         }
@@ -33,7 +35,7 @@ public final class RevivalManager {
             r.level.sendParticles(ParticleTypes.SOUL,r.point.x,r.point.y+.8,r.point.z,2,.2,.3,.2,.01);
     }
     public static int raise(ServerPlayer caster, Vec3 point, double radius, int count, int ticks) {
-        var level = caster.serverLevel();
+        var level = caster.level();
         var found = SOULS.values().stream().filter(r -> !r.player && r.level==level && r.until>level.getGameTime() && r.point.distanceToSqr(point)<=radius*radius)
                 .sorted(Comparator.comparingDouble(r -> r.point.distanceToSqr(point))).limit(Math.clamp(count,1,128)).toList();
         int raised = 0;
@@ -41,10 +43,10 @@ public final class RevivalManager {
         return raised;
     }
     public static boolean revive(ServerPlayer caster, Vec3 point, double radius, float health) {
-        Remains remains = SOULS.values().stream().filter(r -> r.level==caster.serverLevel() && r.until>r.level.getGameTime() && r.point.distanceToSqr(point)<=radius*radius)
+        Remains remains = SOULS.values().stream().filter(r -> r.level==caster.level() && r.until>r.level.getGameTime() && r.point.distanceToSqr(point)<=radius*radius)
                 .min(Comparator.comparingDouble(r -> r.point.distanceToSqr(point))).orElse(null);
         if (remains == null || !WorldPlacement.allowed(caster,net.minecraft.core.BlockPos.containing(remains.point))) return false;
-        var level = caster.serverLevel();
+        var level = caster.level();
         if (!level.noCollision(new AABB(remains.point.x-.4,remains.point.y,remains.point.z-.4,remains.point.x+.4,remains.point.y+2,remains.point.z+.4))) return false;
         if (remains.player) {
             var player = level.getServer().getPlayerList().getPlayer(remains.id);
@@ -52,11 +54,11 @@ public final class RevivalManager {
             SOULS.remove(remains.id);
             var restored = level.getServer().getPlayerList().respawn(player,false,Entity.RemovalReason.KILLED);
             restored.connection.player = restored;
-            restored.teleportTo(level,remains.point.x,remains.point.y,remains.point.z,Set.of(),restored.getYRot(),restored.getXRot());
+            restored.teleportTo(level,remains.point.x,remains.point.y,remains.point.z,Set.of(),restored.getYRot(),restored.getXRot(),false);
             restored.setHealth(Math.max(1,restored.getMaxHealth()*health));
         } else {
             if (level.getEntity(remains.id) != null) return false;
-            Entity entity = remains.type.create(level);
+            Entity entity = remains.type.create(level, EntitySpawnReason.MOB_SUMMONED);
             if (!(entity instanceof LivingEntity living)) return false;
             living.setPos(remains.point); living.setHealth(Math.max(1,living.getMaxHealth()*health)); living.addTag("magicka_revived");
             if (!level.addFreshEntity(living)) return false;

@@ -129,7 +129,7 @@
   "intent.magicka.directed": "Directed",
   "intent.magicka.self": "Self",
   "item.magicka.spellbook": "Grimoire of Elements",
-  "key.categories.magicka": "Spellweaver",
+  "key.category.magicka.main": "Spellweaver",
   "key.magicka.arcane": "Add: Arcane",
   "key.magicka.clear": "Clear formula",
   "key.magicka.cold": "Add: Cold",

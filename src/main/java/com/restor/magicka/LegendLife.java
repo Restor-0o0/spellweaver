@@ -1,5 +1,6 @@
 package com.restor.magicka;
 
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
@@ -12,10 +13,10 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.animal.horse.ZombieHorse;
+import net.minecraft.world.entity.animal.equine.ZombieHorse;
 import net.minecraft.world.entity.monster.Enemy;
-import net.minecraft.world.entity.monster.ZombieVillager;
-import net.minecraft.world.entity.monster.ZombifiedPiglin;
+import net.minecraft.world.entity.monster.zombie.ZombieVillager;
+import net.minecraft.world.entity.monster.zombie.ZombifiedPiglin;
 import net.minecraft.world.entity.monster.Zoglin;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.block.Blocks;
@@ -32,7 +33,7 @@ final class LegendLife {
     static final String PHOENIX_TAG = "magicka:phoenix";
 
     static void defibrillator(ServerPlayer p, SpellDefinition s, boolean self) {
-        ServerLevel level = p.serverLevel();
+        ServerLevel level = p.level();
         LivingEntity target = self ? p : aimed(p,24);
         if (target == null || !EffectGraph.ally(p,target))
             target = near(p,p.position(),8).stream().filter(e -> e != p && EffectGraph.ally(p,e)).min(Comparator.comparingDouble(e -> e.distanceToSqr(p))).orElse(p);
@@ -43,7 +44,7 @@ final class LegendLife {
         EffectGraph.entity(p,target,s,s.effects(),hand,false);
         if (critical) EffectGraph.entity(p,target,s,s.effects(),hand,false);
         target.removeEffect(MobEffects.POISON); target.removeEffect(MobEffects.WITHER);
-        target.push(0,.25,0); target.hurtMarked = true;
+        target.push(0,.25,0); target.syncVelocity = true;
         EpicMagic.fx(level,ParticleTypes.ELECTRIC_SPARK,at.x,at.y,at.z,30,.4,.6,.4,.2);
         EpicMagic.fx(level,ParticleTypes.HEART,at.x,at.y+target.getBbHeight()*.6,at.z,critical ? 8 : 4,.4,.3,.4,0);
         sound(level,at,SoundEvents.LIGHTNING_BOLT_IMPACT,.7f,2f);
@@ -51,7 +52,7 @@ final class LegendLife {
     }
 
     static void lifeDrain(ServerPlayer p, SpellDefinition s, boolean self) {
-        ServerLevel level = p.serverLevel();
+        ServerLevel level = p.level();
         sound(level,p.position(),SoundEvents.WARDEN_HEARTBEAT,1.5f,.8f);
         SpellRuntime.repeat(p,60,age -> {
             if (self) {
@@ -82,13 +83,13 @@ final class LegendLife {
     }
 
     static void purifyingFlame(ServerPlayer p, SpellDefinition s, boolean self) {
-        ServerLevel level = p.serverLevel();
+        ServerLevel level = p.level();
         Vec3 center = self ? p.position() : EpicMagic.focus(p);
         double radius = Math.clamp(s.number("radius",5),2,12);
         List<com.google.gson.JsonObject> support = graph(s,"support");
         sound(level,center,SoundEvents.FIRECHARGE_USE,1.2f,.7f);
         SpellRuntime.repeat(p,Math.max(20,(int)s.number("duration_ticks",160)),age -> {
-            RandomSource r = level.random;
+            RandomSource r = level.getRandom();
             if (age % 2 == 0) for (int i = 0; i < 20; i++) {
                 double a = age*.05+i*Math.PI*2/20;
                 EpicMagic.fx(level,ParticleTypes.FLAME,center.x+Math.cos(a)*radius,center.y+.1,center.z+Math.sin(a)*radius,0,0,.05,0,1);
@@ -99,7 +100,7 @@ final class LegendLife {
             for (LivingEntity e : withCaster(p,near(p,center,radius),center,radius)) {
                 if (foe(p,e)) {
                     EffectGraph.entity(p,e,s,s.effects(),center,false);
-                    if (e.getType().is(EntityTypeTags.UNDEAD)) EffectGraph.entity(p,e,s,s.effects(),center,false);
+                    if (e.getType().builtInRegistryHolder().is(EntityTypeTags.UNDEAD)) EffectGraph.entity(p,e,s,s.effects(),center,false);
                 } else if (EffectGraph.ally(p,e)) {
                     EffectGraph.entity(p,e,s,support,center,false);
                     e.clearFire();
@@ -110,7 +111,7 @@ final class LegendLife {
     }
 
     static void cryosleep(ServerPlayer p, SpellDefinition s, boolean self) {
-        ServerLevel level = p.serverLevel();
+        ServerLevel level = p.level();
         LivingEntity aimed = self ? p : aimed(p,24);
         LivingEntity target = aimed == null ? p : aimed;
         int ticks = Math.clamp((int)s.number("duration_ticks",60),20,200);
@@ -118,7 +119,7 @@ final class LegendLife {
         Vec3 anchor = target.position();
         sound(level,anchor,SoundEvents.GLASS_PLACE,1.2f,.6f);
         if (hostile) EffectGraph.entity(p,target,s,graph(s,"foe"),p.position(),false);
-        else target.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE,ticks,4));
+        else target.addEffect(new MobEffectInstance(MobEffects.RESISTANCE,ticks,4));
         SpellRuntime.repeat(p,ticks,age -> {
             if (!target.isAlive()) return;
             if (!hostile) {
@@ -145,7 +146,7 @@ final class LegendLife {
     }
 
     static void phoenix(ServerPlayer p, SpellDefinition s, boolean self) {
-        ServerLevel level = p.serverLevel();
+        ServerLevel level = p.level();
         LivingEntity aimed = self ? p : aimed(p,24);
         LivingEntity target = aimed != null && EffectGraph.ally(p,aimed) ? aimed : p;
         int ticks = Math.clamp((int)s.number("duration_ticks",1200),20,12000);
@@ -165,7 +166,7 @@ final class LegendLife {
     }
     static void death(LivingDeathEvent event) {
         LivingEntity v = event.getEntity();
-        if (!(v.level() instanceof ServerLevel level) || v.getPersistentData().getLong(PHOENIX_TAG) <= level.getGameTime()) return;
+        if (!(v.level() instanceof ServerLevel level) || v.getPersistentData().getLongOr(PHOENIX_TAG, 0L) <= level.getGameTime()) return;
         v.getPersistentData().remove(PHOENIX_TAG);
         event.setCanceled(true);
         v.setHealth(v.getMaxHealth()*.5f);
@@ -176,36 +177,36 @@ final class LegendLife {
         for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class,v.getBoundingBox().inflate(5),e -> e != v && e instanceof Enemy && e.isAlive())) {
             e.igniteForSeconds(5);
             Vec3 away = flat(e.position().subtract(v.position()));
-            e.push(away.x*1.5,.5,away.z*1.5); e.hurtMarked = true;
+            e.push(away.x*1.5,.5,away.z*1.5); e.syncVelocity = true;
         }
         EpicMagic.fx(level,ParticleTypes.FLAME,at.x,at.y,at.z,120,1.2,1.2,1.2,.2);
         EpicMagic.fx(level,ParticleTypes.TOTEM_OF_UNDYING,at.x,at.y,at.z,40,.6,.8,.6,.4);
         sound(level,at,SoundEvents.TOTEM_USE,1f,1.2f);
         sound(level,at,SoundEvents.BLAZE_SHOOT,1.5f,.6f);
-        if (v instanceof ServerPlayer player) player.displayClientMessage(Component.translatable("magicka.legend.phoenix_rebirth"),true);
+        if (v instanceof ServerPlayer player) player.sendOverlayMessage(Component.translatable("magicka.legend.phoenix_rebirth"));
     }
 
     static void kaioken(ServerPlayer p, SpellDefinition s) {
-        ServerLevel level = p.serverLevel();
+        ServerLevel level = p.level();
         int ticks = Math.clamp((int)s.number("duration_ticks",400),20,2400);
         EffectGraph.entity(p,p,s,s.effects(),p.position(),true);
-        p.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST,ticks,1));
-        p.addEffect(new MobEffectInstance(MobEffects.JUMP,ticks,1));
-        p.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED,ticks,1));
+        p.addEffect(new MobEffectInstance(MobEffects.STRENGTH,ticks,1));
+        p.addEffect(new MobEffectInstance(MobEffects.JUMP_BOOST,ticks,1));
+        p.addEffect(new MobEffectInstance(MobEffects.HASTE,ticks,1));
         announce(p,24,"magicka.legend.kaioken");
         sound(level,p.position(),SoundEvents.RAVAGER_ROAR,1f,1.5f);
         sound(level,p.position(),SoundEvents.FIRECHARGE_USE,1f,.6f);
         SpellRuntime.repeat(p,ticks,age -> {
             if (age % 2 == 0) for (int i = 0; i < 4; i++) {
-                double a = level.random.nextDouble()*Math.PI*2;
-                EpicMagic.fx(level,dust(i % 2 == 0 ? 0xFF1E1E : 0xFF7A5A,1.2f),p.getX()+Math.cos(a)*.5,p.getY()+level.random.nextDouble()*2,p.getZ()+Math.sin(a)*.5,0,0,.15,0,1);
+                double a = level.getRandom().nextDouble()*Math.PI*2;
+                EpicMagic.fx(level,dust(i % 2 == 0 ? 0xFF1E1E : 0xFF7A5A,1.2f),p.getX()+Math.cos(a)*.5,p.getY()+level.getRandom().nextDouble()*2,p.getZ()+Math.sin(a)*.5,0,0,.15,0,1);
             }
             if (age % 20 == 19 && p.getHealth() > 2) p.setHealth(Math.max(2,p.getHealth()-1));
         });
     }
 
     static void protego(ServerPlayer p, SpellDefinition s, boolean self) {
-        ServerLevel level = p.serverLevel();
+        ServerLevel level = p.level();
         double radius = self ? 3.5 : Math.clamp(s.number("radius",6),3,12);
         Vec3 fixed = p.position();
         Map<UUID,Integer> cooldown = new HashMap<>();
@@ -213,17 +214,17 @@ final class LegendLife {
         sound(level,fixed,SoundEvents.BEACON_ACTIVATE,1.5f,1.4f);
         SpellRuntime.repeat(p,Math.max(20,(int)s.number("duration_ticks",200)),age -> {
             Vec3 center = self ? p.position() : fixed;
-            RandomSource r = level.random;
+            RandomSource r = level.getRandom();
             if (age % 2 == 0) for (int i = 0; i < 30; i++) {
                 Vec3 v = new Vec3(r.nextGaussian(),Math.abs(r.nextGaussian()),r.nextGaussian()).normalize().scale(radius);
                 EpicMagic.fx(level,dust(0xFFE9A8,.9f),center.x+v.x,center.y+v.y,center.z+v.z,1,0,0,0,0);
             }
             if (age % 20 == 0) for (LivingEntity e : withCaster(p,near(p,center,radius),center,radius))
-                if (EffectGraph.ally(p,e)) e.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE,30,0));
+                if (EffectGraph.ally(p,e)) e.addEffect(new MobEffectInstance(MobEffects.RESISTANCE,30,0));
             for (LivingEntity e : near(p,center,radius+.5)) {
                 if (!foe(p,e)) continue;
                 Vec3 out = flat(e.position().subtract(center));
-                e.setDeltaMovement(out.x*.6,.2,out.z*.6); e.hurtMarked = true;
+                e.setDeltaMovement(out.x*.6,.2,out.z*.6); e.syncVelocity = true;
                 if (cooldown.getOrDefault(e.getUUID(),-99) <= age) { cooldown.put(e.getUUID(),age+20); EffectGraph.entity(p,e,s,s.effects(),center,false); }
             }
             for (Projectile shot : level.getEntitiesOfClass(Projectile.class,new AABB(center,center).inflate(radius+1))) {
@@ -233,15 +234,15 @@ final class LegendLife {
                 if (d > radius+1 || d < radius-1.5 || v.dot(rel) >= 0) continue;
                 Vec3 n = rel.normalize();
                 shot.setDeltaMovement(v.subtract(n.scale(2*v.dot(n))));
-                shot.setOwner(p); shot.hurtMarked = true;
+                shot.setOwner(p); shot.syncVelocity = true;
                 EpicMagic.fx(level,ParticleTypes.ENCHANTED_HIT,shot.getX(),shot.getY(),shot.getZ(),8,.2,.2,.2,.2);
-                sound(level,shot.position(),SoundEvents.SHIELD_BLOCK,1f,1.4f);
+                sound(level,shot.position(),SoundEvents.SHIELD_BLOCK.value(),1f,1.4f);
             }
         });
     }
 
     static void zombieCure(ServerPlayer p, SpellDefinition s, boolean self) {
-        ServerLevel level = p.serverLevel();
+        ServerLevel level = p.level();
         Vec3 center = self ? p.position() : EpicMagic.focus(p);
         double radius = Math.clamp(s.number("radius",4),2,10);
         sound(level,center,SoundEvents.ZOMBIE_VILLAGER_CURE,1.2f,1.2f);
@@ -253,33 +254,33 @@ final class LegendLife {
         for (LivingEntity e : near(p,center,radius)) {
             LivingEntity cured = switch (e) {
                 case ZombieVillager zv -> {
-                    var villager = zv.convertTo(EntityType.VILLAGER,false);
+                    var villager = zv.convertTo(EntityTypes.VILLAGER,net.minecraft.world.entity.ConversionParams.single(zv,false,false),v -> {});
                     if (villager != null) {
                         villager.setVillagerData(zv.getVillagerData());
                         villager.setVillagerXp(zv.getVillagerXp());
-                        villager.addEffect(new MobEffectInstance(MobEffects.CONFUSION,200));
+                        villager.addEffect(new MobEffectInstance(MobEffects.NAUSEA,200));
                     }
                     yield villager;
                 }
-                case ZombifiedPiglin zp -> { var piglin = zp.convertTo(EntityType.PIGLIN,true); if (piglin != null) piglin.setImmuneToZombification(true); yield piglin; }
-                case Zoglin zg -> { var hoglin = zg.convertTo(EntityType.HOGLIN,true); if (hoglin != null) hoglin.setImmuneToZombification(true); yield hoglin; }
-                case ZombieHorse zh -> zh.convertTo(EntityType.HORSE,false);
+                case ZombifiedPiglin zp -> { var piglin = zp.convertTo(EntityTypes.PIGLIN,net.minecraft.world.entity.ConversionParams.single(zp,true,false),v -> {}); if (piglin != null) piglin.setImmuneToZombification(true); yield piglin; }
+                case Zoglin zg -> { var hoglin = zg.convertTo(EntityTypes.HOGLIN,net.minecraft.world.entity.ConversionParams.single(zg,true,false),v -> {}); if (hoglin != null) hoglin.setImmuneToZombification(true); yield hoglin; }
+                case ZombieHorse zh -> zh.convertTo(EntityTypes.HORSE,net.minecraft.world.entity.ConversionParams.single(zh,false,false),v -> {});
                 default -> null;
             };
             if (cured != null) {
                 EventHooks.onLivingConvert(e,cured);
                 EpicMagic.fx(level,ParticleTypes.HAPPY_VILLAGER,cured.getX(),cured.getY()+1,cured.getZ(),16,.4,.6,.4,0);
-            } else if (e.getType().is(EntityTypeTags.UNDEAD) && foe(p,e)) EffectGraph.entity(p,e,s,s.effects(),center,false);
+            } else if (e.getType().builtInRegistryHolder().is(EntityTypeTags.UNDEAD) && foe(p,e)) EffectGraph.entity(p,e,s,s.effects(),center,false);
         }
     }
 
     static void wellspring(ServerPlayer p, SpellDefinition s, boolean self) {
-        ServerLevel level = p.serverLevel();
+        ServerLevel level = p.level();
         Vec3 center = self ? p.position() : EpicMagic.focus(p);
         double radius = Math.clamp(s.number("radius",4),2,10);
         sound(level,center,SoundEvents.BUCKET_EMPTY,1.2f,.8f);
         SpellRuntime.repeat(p,Math.max(40,(int)s.number("duration_ticks",600)),age -> {
-            RandomSource r = level.random;
+            RandomSource r = level.getRandom();
             if (age % 2 == 0) {
                 for (int i = 0; i < 6; i++) {
                     double a = r.nextDouble()*Math.PI*2, t = r.nextDouble();

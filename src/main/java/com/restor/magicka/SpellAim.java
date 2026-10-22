@@ -10,7 +10,7 @@ import net.minecraft.world.phys.*;
 /** Trace as far as the loaded world allows, without a spell-distance cap or chunk generation. */
 public final class SpellAim {
     private static boolean loaded(Level level,Vec3 from,Vec3 to){
-        if(to.y<level.getMinBuildHeight() || to.y>=level.getMaxBuildHeight() || !level.getWorldBorder().isWithinBounds(BlockPos.containing(to)))return false;
+        if(to.y<level.getMinY() || to.y>=level.getMaxY() || !level.getWorldBorder().isWithinBounds(BlockPos.containing(to)))return false;
         int ax=BlockPos.containing(from).getX()>>4,bx=BlockPos.containing(to).getX()>>4,az=BlockPos.containing(from).getZ()>>4,bz=BlockPos.containing(to).getZ()>>4;
         for(int x=Math.min(ax,bx);x<=Math.max(ax,bx);x++)for(int z=Math.min(az,bz);z<=Math.max(az,bz);z++)if(!level.hasChunk(x,z))return false;
         return true;
@@ -20,7 +20,7 @@ public final class SpellAim {
         if(!Double.isFinite(look.x+look.y+look.z) || look.lengthSqr()<.1)return BlockHitResult.miss(from,Direction.UP,BlockPos.containing(from));
         while(true){
             Vec3 next=current.add(step);
-            if(!loaded(player.level(),current,next))return BlockHitResult.miss(current,Direction.getNearest(look.x,look.y,look.z),BlockPos.containing(current));
+            if(!loaded(player.level(),current,next))return BlockHitResult.miss(current,Direction.getApproximateNearest(look.x,look.y,look.z),BlockPos.containing(current));
             var hit=player.level().clip(new ClipContext(current,next,ClipContext.Block.COLLIDER,ClipContext.Fluid.NONE,player));
             if(hit.getType()!=HitResult.Type.MISS)return hit;current=next;
         }

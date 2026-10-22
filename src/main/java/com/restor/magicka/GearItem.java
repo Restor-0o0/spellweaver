@@ -29,7 +29,7 @@ public class GearItem extends Item {
     private final int cooldown;
 
     private GearItem(Builder builder) {
-        super(new Properties().stacksTo(1).rarity(builder.grade == Grade.LEGENDARY ? net.minecraft.world.item.Rarity.EPIC
+        super(new Properties().setId(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.ITEM, net.minecraft.resources.Identifier.fromNamespaceAndPath(Magicka.ID, builder.id))).stacksTo(1).rarity(builder.grade == Grade.LEGENDARY ? net.minecraft.world.item.Rarity.EPIC
                 : builder.grade == Grade.RARE ? net.minecraft.world.item.Rarity.RARE
                 : builder.grade == Grade.UNCOMMON ? net.minecraft.world.item.Rarity.UNCOMMON : net.minecraft.world.item.Rarity.COMMON));
         this.id = builder.id;
@@ -44,15 +44,15 @@ public class GearItem extends Item {
         this.cooldown = builder.cooldown;
     }
 
-    @Override public net.minecraft.world.InteractionResultHolder<ItemStack> use(net.minecraft.world.level.Level level,
+    @Override public net.minecraft.world.InteractionResult use(net.minecraft.world.level.Level level,
             net.minecraft.world.entity.player.Player player, net.minecraft.world.InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        if (action == null) return net.minecraft.world.InteractionResultHolder.pass(stack);
+        if (action == null) return net.minecraft.world.InteractionResult.PASS;
         if (player instanceof net.minecraft.server.level.ServerPlayer server) {
             action.run(server);
-            player.getCooldowns().addCooldown(this, cooldown);
+            player.getCooldowns().addCooldown(stack, cooldown);
         }
-        return net.minecraft.world.InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
+        return net.minecraft.world.InteractionResult.SUCCESS;
     }
 
     public Map<MagicStats.Stat, Integer> stats() { return stats; }
@@ -63,23 +63,23 @@ public class GearItem extends Item {
 
     @Override public Component getName(ItemStack stack) { return Component.translatable("gear.magicka." + id); }
 
-    @Override public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> lines, TooltipFlag flag) {
-        lines.add(Component.translatable("gear.magicka.kind." + kind.name().toLowerCase(Locale.ROOT))
+    @Override public void appendHoverText(ItemStack stack, TooltipContext context, net.minecraft.world.item.component.TooltipDisplay display, java.util.function.Consumer<Component> lines, TooltipFlag flag) {
+        lines.accept(Component.translatable("gear.magicka.kind." + kind.name().toLowerCase(Locale.ROOT))
                 .append(" · ").append(Component.translatable("gear.magicka.grade." + grade.name().toLowerCase(Locale.ROOT)))
                 .withStyle(ChatFormatting.DARK_GRAY));
-        stats.entrySet().stream().sorted(Comparator.comparingInt(e -> e.getKey().ordinal())).forEach(e -> lines.add(
+        stats.entrySet().stream().sorted(Comparator.comparingInt(e -> e.getKey().ordinal())).forEach(e -> lines.accept(
                 Component.literal(e.getValue() > 0 ? "+" + e.getValue() + "% " : e.getValue() + "% ")
                         .append(Component.translatable("book.magicka.stat." + e.getKey().key()))
                         .withStyle(e.getValue() > 0 ? ChatFormatting.GREEN : ChatFormatting.RED)));
-        for (Attr attr : attributes) lines.add(Component.literal(format(attr) + " ")
+        for (Attr attr : attributes) lines.accept(Component.literal(format(attr) + " ")
                 .append(Component.translatable(attr.attribute().value().getDescriptionId()))
                 .withStyle(attr.amount() > 0 ? ChatFormatting.GREEN : ChatFormatting.RED));
-        traits.stream().sorted().forEach(trait -> lines.add(Component.translatable("gear.magicka.trait." + trait.name().toLowerCase(Locale.ROOT)).withStyle(ChatFormatting.AQUA)));
+        traits.stream().sorted().forEach(trait -> lines.accept(Component.translatable("gear.magicka.trait." + trait.name().toLowerCase(Locale.ROOT)).withStyle(ChatFormatting.AQUA)));
         for (SpellFormula formula : patches.keySet().stream().sorted(Comparator.comparingInt(SpellFormula::size)).toList())
-            lines.add(Component.translatable("gear.magicka.replaces", RecipeRegistry.clientResolve(formula).displayName()).withStyle(ChatFormatting.LIGHT_PURPLE));
-        if (castBias != null) lines.add(Component.translatable("gear.magicka." + id + ".bias").withStyle(ChatFormatting.GRAY));
-        if (action != null) lines.add(Component.translatable("gear.magicka.active", cooldown / 20).withStyle(ChatFormatting.YELLOW));
-        lines.add(Component.translatable("gear.magicka." + id + ".desc").withStyle(ChatFormatting.DARK_GRAY));
+            lines.accept(Component.translatable("gear.magicka.replaces", RecipeRegistry.clientResolve(formula).displayName()).withStyle(ChatFormatting.LIGHT_PURPLE));
+        if (castBias != null) lines.accept(Component.translatable("gear.magicka." + id + ".bias").withStyle(ChatFormatting.GRAY));
+        if (action != null) lines.accept(Component.translatable("gear.magicka.active", cooldown / 20).withStyle(ChatFormatting.YELLOW));
+        lines.accept(Component.translatable("gear.magicka." + id + ".desc").withStyle(ChatFormatting.DARK_GRAY));
     }
 
     private static String format(Attr attr) {

@@ -1,17 +1,14 @@
 package com.restor.magicka;
 
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.gametest.framework.*;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
-import net.neoforged.neoforge.gametest.*;
-
-@GameTestHolder(Magicka.ID)
-@PrefixGameTestTemplate(false)
 public final class EpicGameTests {
     private static Zombie dummy(GameTestHelper h) {
-        Zombie zombie = h.spawn(EntityType.ZOMBIE, new Vec3(2.5, 2, 2.5));
+        Zombie zombie = h.spawn(EntityTypes.ZOMBIE, new Vec3(2.5, 2, 2.5));
         zombie.setNoAi(true);
         return zombie;
     }
@@ -19,7 +16,7 @@ public final class EpicGameTests {
         for (Element e : spell.spoken()) CastingServer.input(p, e == Element.DEATH ? 13 : e.ordinal());
     }
 
-    @GameTest(template="empty")
+    @MagicTest
     public static void epicUltimatesChannelOnlyWhileStandingStill(GameTestHelper h) {
         DeathGameTests.floor(h);
         var p = RecipeGameTests.caster(h); var server = new CastingServer();
@@ -47,7 +44,7 @@ public final class EpicGameTests {
         h.succeed();
     }
 
-    @GameTest(template="empty")
+    @MagicTest
     public static void stormLightningStrikesUnderTheCloud(GameTestHelper h) {
         DeathGameTests.floor(h);
         var p = RecipeGameTests.caster(h); var zombie = dummy(h);
@@ -56,7 +53,7 @@ public final class EpicGameTests {
         h.succeed();
     }
 
-    @GameTest(template="empty")
+    @MagicTest
     public static void meteorExplodesOnImpact(GameTestHelper h) {
         DeathGameTests.floor(h);
         var p = RecipeGameTests.caster(h); var zombie = dummy(h);
@@ -67,7 +64,7 @@ public final class EpicGameTests {
         });
     }
 
-    @GameTest(template="empty")
+    @MagicTest
     public static void epicUltimatesNeedOpenSky(GameTestHelper h) {
         DeathGameTests.floor(h);
         var p = RecipeGameTests.caster(h); p.setXRot(60);

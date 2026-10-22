@@ -1,6 +1,6 @@
 # Spellweaver (Magicka-like spellcasting)
 
-Magicka-style elemental spellcasting for **Minecraft 1.21.1 · NeoForge**. No wands, no mana bars
+Magicka-style elemental spellcasting for **Minecraft 26.3 · NeoForge**. No wands, no mana bars
 to grind: press up to five elements, then cast. Every combination does something.
 
 *Русское руководство: [docs/GUIDE_RU.md](docs/GUIDE_RU.md)*
@@ -42,7 +42,7 @@ Element keys only take over while magic mode is on. All keys can be rebound.
 
 ## Installation
 
-Requires **NeoForge 21.1.250+** for Minecraft **1.21.1** and Java 21. Install the same version on
+Requires **NeoForge 26.3.0.95+** for Minecraft **26.3** and Java 25. Install the same version on
 the client and the server. No other dependencies.
 
 Server settings (terrain damage, friendly fire, construction limits, block lifetimes, natural enemy

@@ -58,8 +58,8 @@ public class Countermage extends SpecialEnemy {
         playSound(SoundEvents.GLASS_BREAK, 1.2f, .8f);
         dust(position().add(0, getBbHeight() + .3, 0), 0xFFFFFF, 20, .5);
     }
-    @Override protected void customServerAiStep() {
-        super.customServerAiStep();
+    @Override protected void customServerAiStep(net.minecraft.server.level.ServerLevel serverLevel) {
+        super.customServerAiStep(serverLevel);
         if (boltCooldown > 0) boltCooldown--;
         if (tickCount % 20 == 0) for (int i = 0; i < weights.length; i++) weights[i] *= .88f;
         if (ward > 0) {
@@ -102,6 +102,6 @@ public class Countermage extends SpecialEnemy {
     @Override protected SoundEvent getHurtSound(DamageSource source) { return SoundEvents.PIGLIN_HURT; }
     @Override protected SoundEvent getDeathSound() { return SoundEvents.PIGLIN_DEATH; }
     @Override public float getVoicePitch() { return 1.25f; }
-    @Override public void addAdditionalSaveData(CompoundTag tag) { super.addAdditionalSaveData(tag); tag.putInt("Ward", ward); tag.putInt("WardElement", extra()); }
-    @Override public void readAdditionalSaveData(CompoundTag tag) { super.readAdditionalSaveData(tag); ward = tag.getInt("Ward"); setExtra(tag.getInt("WardElement")); setState(ward > 0 ? 1 : 0); }
+    @Override public void addAdditionalSaveData(net.minecraft.world.level.storage.ValueOutput tag) { super.addAdditionalSaveData(tag); tag.putInt("Ward", ward); tag.putInt("WardElement", extra()); }
+    @Override public void readAdditionalSaveData(net.minecraft.world.level.storage.ValueInput tag) { super.readAdditionalSaveData(tag); ward = tag.getIntOr("Ward", 0); setExtra(tag.getIntOr("WardElement", 0)); setState(ward > 0 ? 1 : 0); }
 }

@@ -6,7 +6,7 @@ import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.network.syncher.*;
 import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
+import net.minecraft.world.entity.projectile.hurtingprojectile.AbstractHurtingProjectile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.*;
 import org.joml.Vector3f;
@@ -22,7 +22,7 @@ public class EnemyBolt extends AbstractHurtingProjectile {
         Vec3 from = shooter.getEyePosition().add(shooter.getLookAngle().scale(.4));
         Vec3 aim = target.position().add(0, target.getBbHeight() * .55, 0).subtract(from).normalize();
         bolt.setOwner(shooter);
-        bolt.moveTo(from.x, from.y, from.z, shooter.getYRot(), shooter.getXRot());
+        bolt.snapTo(from.x, from.y, from.z, shooter.getYRot(), shooter.getXRot());
         bolt.setDeltaMovement(aim.scale(speed));
         bolt.entityData.set(ELEMENT, element.ordinal());
         bolt.damage = damage;
@@ -37,18 +37,18 @@ public class EnemyBolt extends AbstractHurtingProjectile {
     @Override public boolean isPickable() { return false; }
     @Override protected ParticleOptions getTrailParticle() {
         int c = element().color;
-        return new DustParticleOptions(new Vector3f((c >> 16 & 255) / 255f, (c >> 8 & 255) / 255f, (c & 255) / 255f), 1.4f);
+        return new DustParticleOptions(net.minecraft.util.ARGB.colorFromFloat(1f,(c >> 16 & 255) / 255f, (c >> 8 & 255) / 255f, (c & 255) / 255f), 1.4f);
     }
     @Override public void tick() {
         super.tick();
-        if (!level().isClientSide && tickCount > 80) discard();
+        if (!level().isClientSide() && tickCount > 80) discard();
     }
     @Override protected boolean canHitEntity(Entity entity) {
         return super.canHitEntity(entity) && !(entity instanceof LivingEntity living && SpecialEnemy.ally(living));
     }
     @Override protected void onHitEntity(EntityHitResult hit) {
         super.onHitEntity(hit);
-        if (level().isClientSide || !(hit.getEntity() instanceof LivingEntity target)) return;
+        if (level().isClientSide() || !(hit.getEntity() instanceof LivingEntity target)) return;
         Entity owner = getOwner();
         boolean conducts = element() == Element.LIGHTNING && MagicStatuses.has(target, MagicStatuses.Status.WET);
         target.hurt(damageSources().indirectMagic(this, owner instanceof LivingEntity o ? o : null), conducts ? damage * 2 : damage);
@@ -56,7 +56,7 @@ public class EnemyBolt extends AbstractHurtingProjectile {
             case WATER -> {
                 MagicStatuses.apply(target, MagicStatuses.Status.WET, 160, 1);
                 Vec3 push = getDeltaMovement().normalize().scale(.9);
-                target.push(push.x, .15, push.z); target.hurtMarked = true;
+                target.push(push.x, .15, push.z); target.syncVelocity = true;
             }
             case LIGHTNING -> MagicStatuses.charge(target, 30);
             case COLD -> MagicStatuses.temperature(target, -25);
@@ -66,6 +66,6 @@ public class EnemyBolt extends AbstractHurtingProjectile {
     }
     @Override protected void onHit(HitResult hit) {
         super.onHit(hit);
-        if (!level().isClientSide) discard();
+        if (!level().isClientSide()) discard();
     }
 }

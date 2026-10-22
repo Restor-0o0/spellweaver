@@ -3,7 +3,7 @@ package com.restor.magicka;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -20,8 +20,8 @@ import java.util.UUID;
 
 public final class SupportMagic {
     public static void effect(ServerPlayer caster, LivingEntity target, String id, int ticks, int strength) {
-        var key = ResourceLocation.tryParse(id);
-        var effect = key == null ? null : BuiltInRegistries.MOB_EFFECT.getHolder(key).orElse(null);
+        var key = Identifier.tryParse(id);
+        var effect = key == null ? null : BuiltInRegistries.MOB_EFFECT.get(key).orElse(null);
         if (effect == null || !effect.value().isBeneficial() && !EffectGraph.canHarm(caster, target)) return;
         target.addEffect(new MobEffectInstance(effect, Math.clamp(ticks, 1, 72000), Math.clamp(strength - 1, 0, 4)), caster);
     }
@@ -36,7 +36,7 @@ public final class SupportMagic {
         while (dy < 4 && !WorldPlacement.placeBlock(caster, pos.above(dy), state, UUID.randomUUID(), pos.above(dy), true, false, null)) dy++;
         if (dy == 4) return false;
         pos = pos.above(dy);
-        caster.serverLevel().playSound(null, pos, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, .8f, 1.4f);
+        caster.level().playSound(null, pos, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, .8f, 1.4f);
         return true;
     }
 
@@ -64,7 +64,7 @@ public final class SupportMagic {
     }
 
     public static int ring(ServerPlayer caster, Vec3 point, double radius, int count) {
-        var level = caster.serverLevel();
+        var level = caster.level();
         int placed = 0;
         count = Math.clamp(count, 1, 16);
         radius = Math.clamp(radius, 1, 32);
@@ -87,16 +87,16 @@ public final class SupportMagic {
 
     public static int reveal(ServerPlayer caster, Vec3 point, double radius, int ticks) {
         double r = Math.clamp(radius, 1, 128);
-        var found = caster.serverLevel().getEntitiesOfClass(LivingEntity.class, new AABB(point, point).inflate(r),
+        var found = caster.level().getEntitiesOfClass(LivingEntity.class, new AABB(point, point).inflate(r),
                 e -> e != caster && e.isAlive() && !e.isSpectator() && e.distanceToSqr(point) <= r * r && EffectGraph.canHarm(caster, e));
         for (var entity : found) entity.addEffect(new MobEffectInstance(MobEffects.GLOWING, Math.clamp(ticks, 20, 6000), 0, false, false), caster);
-        caster.serverLevel().sendParticles(ParticleTypes.FLASH, point.x, point.y + 1, point.z, 1, 0, 0, 0, 0);
-        caster.serverLevel().playSound(null, BlockPos.containing(point), SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, .6f, 1.8f);
+        caster.level().sendParticles(net.minecraft.core.particles.ColorParticleOption.create(ParticleTypes.FLASH,-1), point.x, point.y + 1, point.z, 1, 0, 0, 0, 0);
+        caster.level().playSound(null, BlockPos.containing(point), SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, .6f, 1.8f);
         return found.size();
     }
 
     public static int extinguish(ServerPlayer caster, Vec3 point, double radius) {
-        var level = caster.serverLevel();
+        var level = caster.level();
         int r = Math.clamp((int) Math.ceil(radius), 1, 32), doused = 0;
         BlockPos center = BlockPos.containing(point);
         for (BlockPos p : BlockPos.betweenClosed(center.offset(-r, -r, -r), center.offset(r, r, r))) {
@@ -104,7 +104,7 @@ public final class SupportMagic {
             BlockPos pos = p.immutable();
             BlockState state = level.getBlockState(pos);
             if (!state.is(BlockTags.FIRE) || !WorldPlacement.allowed(caster, pos)) continue;
-            if (NeoForge.EVENT_BUS.post(new BlockEvent.BreakEvent(level, pos, state, caster)).isCanceled()) continue;
+            if (NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.block.BreakBlockEvent(level, pos, state, caster)).isCanceled()) continue;
             if (level.removeBlock(pos, false)) {
                 doused++;
                 level.sendParticles(ParticleTypes.CLOUD, pos.getX() + .5, pos.getY() + .3, pos.getZ() + .5, 3, .2, .1, .2, .01);

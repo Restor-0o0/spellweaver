@@ -4,8 +4,9 @@ import com.restor.magicka.Magicka;
 import com.restor.magicka.MagicNetwork;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -26,18 +27,20 @@ public final class PolymorphVisuals {
 
     public static void clear() { SHAPES.clear(); }
 
-    @SubscribeEvent public static void render(RenderPlayerEvent.Pre event) {
-        Player player = event.getEntity();
+    @SubscribeEvent public static void render(RenderPlayerEvent.Pre<?> event) {
+        var mc = Minecraft.getInstance();
+        if (mc.level == null || !(mc.level.getEntity(event.getRenderState().id) instanceof Player player)) return;
         String id = MagicNetwork.clientShapes.get(player.getId());
         if (id == null) return;
         LivingEntity dummy = dummy(player, id);
         if (dummy == null) return;
         event.setCanceled(true);
-        float partial = event.getPartialTick();
         copy(player, dummy);
+        var renderer = renderer(dummy);
+        var state = renderer.createRenderState(dummy, event.getPartialTick());
         var pose = event.getPoseStack();
         pose.pushPose();
-        renderer(dummy).render(dummy, dummy.yBodyRot, partial, pose, event.getMultiBufferSource(), event.getPackedLight());
+        renderer.submit(state, pose, event.getSubmitNodeCollector(), mc.gameRenderer.gameRenderState().levelRenderState.cameraRenderState);
         pose.popPose();
     }
 
@@ -51,8 +54,8 @@ public final class PolymorphVisuals {
             SHAPES.keySet().removeIf(key -> !MagicNetwork.clientShapes.containsKey(key));
         Shape shape = SHAPES.get(player.getId());
         if (shape != null && shape.id.equals(id) && shape.dummy.level() == player.level()) return shape.dummy;
-        var type = BuiltInRegistries.ENTITY_TYPE.getOptional(ResourceLocation.tryParse(id)).orElse(null);
-        if (type == null || !(type.create(player.level()) instanceof LivingEntity created)) return null;
+        var type = BuiltInRegistries.ENTITY_TYPE.getOptional(Identifier.tryParse(id)).orElse(null);
+        if (type == null || !(type.create(player.level(), net.minecraft.world.entity.EntitySpawnReason.LOAD) instanceof LivingEntity created)) return null;
         SHAPES.put(player.getId(), new Shape(id, created));
         return created;
     }
@@ -76,13 +79,13 @@ public final class PolymorphVisuals {
         // The walk cycle advances once per client tick, not once per frame.
         if (dummy.tickCount != player.tickCount) {
             dummy.tickCount = player.tickCount;
-            dummy.walkAnimation.update(player.walkAnimation.speed(), 1);
+            dummy.walkAnimation.update(player.walkAnimation.speed(), 1, 1);
         }
     }
 
     @SuppressWarnings("unchecked")
-    private static EntityRenderer<Entity> renderer(Entity entity) {
-        return (EntityRenderer<Entity>) Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(entity);
+    private static EntityRenderer<Entity, EntityRenderState> renderer(Entity entity) {
+        return (EntityRenderer<Entity, EntityRenderState>) Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(entity);
     }
 
     private PolymorphVisuals() {}

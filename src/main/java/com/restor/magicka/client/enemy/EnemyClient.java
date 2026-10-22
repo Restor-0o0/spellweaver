@@ -12,7 +12,7 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import java.util.Map;
 
-@EventBusSubscriber(modid = Magicka.ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Magicka.ID, value = Dist.CLIENT)
 public final class EnemyClient {
     private static final Map<String, Float> SHADOWS = Map.ofEntries(
             Map.entry("cave_skitter", .45f), Map.entry("shield_beetle", .8f), Map.entry("stone_crawler", .9f), Map.entry("mushroom_nurse", .45f),

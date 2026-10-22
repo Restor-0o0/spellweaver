@@ -6,11 +6,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.gametest.*;
 import java.util.function.Predicate;
-
-@GameTestHolder(Magicka.ID)
-@PrefixGameTestTemplate(false)
 public final class EnemyGameTests {
     private static SpellDefinition find(Predicate<SpellDefinition> test) { return RecipeRegistry.recipes().stream().filter(test).findFirst().orElseThrow(); }
     private static <T extends SpecialEnemy> T mob(GameTestHelper h, EntityType<T> type, double x, double z, float yaw) {
@@ -24,7 +20,7 @@ public final class EnemyGameTests {
         return before - mob.getHealth();
     }
 
-    @GameTest(template="empty")
+    @MagicTest
     public static void elementLockRejectsInput(GameTestHelper h) {
         DeathGameTests.floor(h);
         ServerPlayer p = RecipeGameTests.caster(h);
@@ -41,7 +37,7 @@ public final class EnemyGameTests {
         h.succeed();
     }
 
-    @GameTest(template="empty")
+    @MagicTest
     public static void beetleShieldFacesFront(GameTestHelper h) {
         DeathGameTests.floor(h);
         ServerPlayer p = RecipeGameTests.caster(h);
@@ -56,7 +52,7 @@ public final class EnemyGameTests {
         h.succeed();
     }
 
-    @GameTest(template="empty")
+    @MagicTest
     public static void crawlerShattersOnBrittleEarth(GameTestHelper h) {
         DeathGameTests.floor(h);
         ServerPlayer p = RecipeGameTests.caster(h);
@@ -65,13 +61,13 @@ public final class EnemyGameTests {
         SpellDefinition earth = find(d -> d.formula().count(Element.EARTH) > 0);
         h.assertTrue(hit(crawler, p, fire, 10, false) <= 4.01f, "Armor soaks plain spells");
         h.assertTrue(crawler.armored(), "Armor holds without a brittle Earth hit");
-        crawler.invulnerableTime = 0;
+        crawler.setInvulnerableTime(0);
         hit(crawler, p, earth, 4, true);
         h.assertFalse(crawler.armored(), "Brittle Earth shatters the armor");
         h.succeed();
     }
 
-    @GameTest(template="empty")
+    @MagicTest
     public static void countermageWardsDominantElement(GameTestHelper h) {
         DeathGameTests.floor(h);
         ServerPlayer p = RecipeGameTests.caster(h);
@@ -79,7 +75,7 @@ public final class EnemyGameTests {
         ShieldBeetle guard = mob(h, MagicEnemies.SHIELD_BEETLE.get(), 1.5, 3.5, 0);
         SpellDefinition fire = find(d -> d.formula().size() >= 2 && d.formula().count(Element.FIRE) == d.formula().size());
         SpellDefinition water = find(d -> d.formula().size() > 0 && d.formula().count(Element.WATER) == d.formula().size());
-        for (int i = 0; i < 6; i++) { guard.invulnerableTime = 0; MagicEnemies.hurt(guard, guard.damageSources().magic(), .1f, p, fire, false); }
+        for (int i = 0; i < 6; i++) { guard.setInvulnerableTime(0); MagicEnemies.hurt(guard, guard.damageSources().magic(), .1f, p, fire, false); }
         h.assertTrue(mage.weight(Element.FIRE) >= Countermage.THRESHOLD, "Spells on allies are observed");
         mage.raiseWard(Element.FIRE);
         h.assertTrue(mage.warded() == Element.FIRE, "Ward takes the dominant element");
@@ -88,7 +84,7 @@ public final class EnemyGameTests {
         h.succeed();
     }
 
-    @GameTest(template="empty")
+    @MagicTest
     public static void encounterSpawnsOnCaveFloor(GameTestHelper h) {
         for (int x = -1; x <= 6; x++) for (int z = -1; z <= 6; z++) {
             h.setBlock(new net.minecraft.core.BlockPos(x, 1, z), net.minecraft.world.level.block.Blocks.STONE);
@@ -103,7 +99,7 @@ public final class EnemyGameTests {
         h.succeed();
     }
 
-    @GameTest(template="empty")
+    @MagicTest
     public static void goblinWarbandSpawns(GameTestHelper h) {
         DeathGameTests.floor(h);
         var mobs = MagicEnemies.encounter(h.getLevel(), h.absoluteVec(new Vec3(2.5, 2, 2.5)), "g");
@@ -113,7 +109,7 @@ public final class EnemyGameTests {
         h.succeed();
     }
 
-    @GameTest(template="empty")
+    @MagicTest
     public static void goblinBombExplodesButWaterDousesIt(GameTestHelper h) {
         DeathGameTests.floor(h);
         GoblinBomber bomber = mob(h, MagicEnemies.GOBLIN_BOMBER.get(), 5.5, 5.5, 0);
@@ -129,15 +125,15 @@ public final class EnemyGameTests {
         });
     }
 
-    @GameTest(template="empty")
+    @MagicTest
     public static void shamanRalliesOnlyGoblins(GameTestHelper h) {
         DeathGameTests.floor(h);
         GoblinShaman shaman = mob(h, MagicEnemies.GOBLIN_SHAMAN.get(), 2.5, 2.5, 0);
         GoblinWarrior warrior = mob(h, MagicEnemies.GOBLIN_WARRIOR.get(), 3.5, 2.5, 0);
         ShieldBeetle beetle = mob(h, MagicEnemies.SHIELD_BEETLE.get(), 1.5, 4.5, 0);
         shaman.rally();
-        h.assertTrue(warrior.hasEffect(net.minecraft.world.effect.MobEffects.DAMAGE_BOOST), "Goblins get the war chant");
-        h.assertFalse(beetle.hasEffect(net.minecraft.world.effect.MobEffects.DAMAGE_BOOST), "Other monsters do not");
+        h.assertTrue(warrior.hasEffect(net.minecraft.world.effect.MobEffects.STRENGTH), "Goblins get the war chant");
+        h.assertFalse(beetle.hasEffect(net.minecraft.world.effect.MobEffects.STRENGTH), "Other monsters do not");
         var mobs = MagicEnemies.encounter(h.getLevel(), h.absoluteVec(new Vec3(2.5, 2, 2.5)), "h");
         boolean kin = mobs.stream().allMatch(m -> m instanceof LivingEntity l && Goblin.kin(l));
         mobs.forEach(m -> m.discard());
@@ -145,7 +141,7 @@ public final class EnemyGameTests {
         h.succeed();
     }
 
-    @GameTest(template="empty")
+    @MagicTest
     public static void stoneEaterOnlyEatsMagic(GameTestHelper h) {
         h.assertFalse(StoneEater.edible(net.minecraft.world.level.block.Blocks.STONE.defaultBlockState()), "Natural stone is not food");
         h.assertFalse(StoneEater.edible(MagicBlocks.PUDDLE.get().defaultBlockState()), "Puddles are not food");

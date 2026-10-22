@@ -1,5 +1,6 @@
 package com.restor.magicka;
 
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.*;
 import net.minecraft.world.entity.EntityType;
@@ -7,15 +8,11 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.gametest.*;
-
-@GameTestHolder(Magicka.ID)
-@PrefixGameTestTemplate(false)
 public final class DeathGameTests {
     static void floor(GameTestHelper h){for(int x=0;x<5;x++)for(int z=0;z<5;z++)h.setBlock(new BlockPos(x,1,z),Blocks.STONE);}
-    static java.util.List<Mob> minions(GameTestHelper h){return h.getLevel().getEntitiesOfClass(Mob.class,new AABB(h.absolutePos(BlockPos.ZERO)).inflate(12),m->m.getTags().contains(UndeadMinions.TAG));}
+    static java.util.List<Mob> minions(GameTestHelper h){return h.getLevel().getEntitiesOfClass(Mob.class,new AABB(h.absolutePos(BlockPos.ZERO)).inflate(12),m->m.entityTags().contains(UndeadMinions.TAG));}
     static java.util.List<Mob> minions(GameTestHelper h,net.minecraft.server.level.ServerPlayer owner){return minions(h).stream().filter(m->UndeadMinions.ownedBy(m,owner)).toList();}
-    @GameTest(template="empty")
+    @MagicTest
     public static void deathInputAndLegacyPresets(GameTestHelper h){
         var p=RecipeGameTests.caster(h);
         CastingServer.input(p,7);CastingServer.input(p,13);CastingServer.input(p,13);
@@ -30,7 +27,7 @@ public final class DeathGameTests {
         h.assertTrue(SpellTags.of(RecipeGameTests.spell("Legion of the Dead")).contains("summon") && !SpellTags.of(RecipeGameTests.spell("Ember")).contains("destruction"),"Summon and destruction tags are precise");
         h.succeed();
     }
-    @GameTest(template="empty",timeoutTicks=80)
+    @MagicTest(timeoutTicks=80)
     public static void minionsServeTheirMaster(GameTestHelper h){
         floor(h);var p=RecipeGameTests.caster(h);
         SpellRuntime.cast(p,RecipeGameTests.spell("Grave Call"),true);
@@ -39,14 +36,14 @@ public final class DeathGameTests {
         var servant=raised.getFirst();servant.setTarget(p);
         h.assertTrue(servant.getTarget()==null,"A servant never targets its master");
         h.assertTrue(EffectGraph.canHarm(p,servant),"Master spells hurt own servants too");
-        var enemy=h.spawnWithNoFreeWill(EntityType.SKELETON,new BlockPos(3,2,3));
+        var enemy=h.spawnWithNoFreeWill(EntityTypes.SKELETON,new BlockPos(3,2,3));
         h.runAfterDelay(25,()->{
             h.assertTrue(raised.stream().anyMatch(m->m.getTarget()==enemy),"Servants attack nearby monsters");
             h.assertTrue(raised.stream().allMatch(m->m.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.HEAD).is(net.minecraft.world.item.Items.SKELETON_SKULL)),"Servants wear skulls against sunlight");
             h.succeed();
         });
     }
-    @GameTest(template="empty",timeoutTicks=80)
+    @MagicTest(timeoutTicks=80)
     public static void servantsGatherAndCrumble(GameTestHelper h){
         floor(h);var p=RecipeGameTests.caster(h);
         UndeadMinions.summon(p,p.position(),"minecraft:zombie",3,200);
@@ -62,7 +59,7 @@ public final class DeathGameTests {
             h.succeed();
         });
     }
-    @GameTest(template="empty",timeoutTicks=80)
+    @MagicTest(timeoutTicks=80)
     public static void servantsCauseFriendlyFire(GameTestHelper h){
         floor(h);var p=RecipeGameTests.caster(h);
         SpellRuntime.cast(p,RecipeGameTests.spell("Creeper Graves"),true);
@@ -80,18 +77,18 @@ public final class DeathGameTests {
         h.assertTrue(other.getTarget()==creeper,"A hurt servant strikes back");
         h.succeed();
     }
-    @GameTest(template="empty",timeoutTicks=80)
+    @MagicTest(timeoutTicks=80)
     public static void raiseDeadAndWithering(GameTestHelper h){
         floor(h);var p=RecipeGameTests.caster(h);
-        var fallen=h.spawnWithNoFreeWill(EntityType.SKELETON,new BlockPos(2,2,3));var corpse=fallen.position();
+        var fallen=h.spawnWithNoFreeWill(EntityTypes.SKELETON,new BlockPos(2,2,3));var corpse=fallen.position();
         fallen.hurt(p.damageSources().magic(),1000);
-        var pig=h.spawnWithNoFreeWill(EntityType.PIG,new BlockPos(0,2,3));
+        var pig=h.spawnWithNoFreeWill(EntityTypes.PIG,new BlockPos(0,2,3));
         MagicStatuses.apply(pig,MagicStatuses.Status.WITHERING,100,2);
         h.runAfterDelay(25,()->{
             h.assertTrue(RevivalManager.raise(p,corpse,3,4,200)==1,"The fallen skeleton rises");
-            h.assertTrue(minions(h).stream().anyMatch(m->m.getType()==EntityType.SKELETON),"Raised as its own kind");
+            h.assertTrue(minions(h).stream().anyMatch(m->m.getType()==EntityTypes.SKELETON),"Raised as its own kind");
             h.assertTrue(pig.getHealth()<pig.getMaxHealth(),"Withering hurts over time");
-            p.setHealth(4);var victim=h.spawnWithNoFreeWill(EntityType.ZOMBIE,new BlockPos(1,2,3));
+            p.setHealth(4);var victim=h.spawnWithNoFreeWill(EntityTypes.ZOMBIE,new BlockPos(1,2,3));
             EffectGraph.entity(p,victim,RecipeGameTests.spell("Soul Siphon"),RecipeGameTests.spell("Soul Siphon").effects(),p.position(),false);
             h.assertTrue(p.getHealth()>4 && victim.getHealth()<victim.getMaxHealth(),"Soul Siphon drains life");
             h.succeed();

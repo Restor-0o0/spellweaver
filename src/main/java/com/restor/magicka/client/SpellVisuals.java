@@ -25,7 +25,7 @@ public final class SpellVisuals {
         var mc=Minecraft.getInstance();if(mc.level==null){clear();return;}
         CUES.removeIf(c->++c.age>Math.min(100,c.packet.ticks()));
         for(Cue cue:CUES){
-            var p=cue.packet;if(p.from().distanceToSqr(mc.gameRenderer.getMainCamera().getPosition())>128*128)continue;
+            var p=cue.packet;if(p.from().distanceToSqr(mc.gameRenderer.mainCamera().position())>128*128)continue;
             var formula=Formula.unpack(p.formula());
             if(fire(formula.key()))flames(mc,cue);
             if(cue.age%3!=0)continue;
@@ -37,7 +37,7 @@ public final class SpellVisuals {
     }
     private static boolean fire(SpellFormula formula){return formula.fire()>0 && formula.death()==0 && formula.lightning()==0;}
     private static void flames(Minecraft mc,Cue cue){
-        var p=cue.packet;var random=mc.level.random;double progress=Math.min(1,cue.age/(double)Math.max(1,p.ticks()));
+        var p=cue.packet;var random=mc.level.getRandom();double progress=Math.min(1,cue.age/(double)Math.max(1,p.ticks()));
         double spread=Math.clamp(p.radius(),.15,6);
         int count=switch(p.kind()){case SpellVfx.BEAM,SpellVfx.ARC,SpellVfx.SPRAY->16;case SpellVfx.ORB->8;case SpellVfx.IMPACT,SpellVfx.ZONE->14;default->6;};
         count=(int)Math.round(count*Math.clamp(spread/2.5,1,3));
@@ -57,8 +57,22 @@ public final class SpellVisuals {
                     (random.nextDouble()-.5)*.03,.02+random.nextDouble()*.03,(random.nextDouble()-.5)*.03);
         }
     }
-    public static void render(PoseStack pose,MultiBufferSource.BufferSource buffers,Vec3 camera,float partial){
-        var mc=Minecraft.getInstance();var consumer=buffers.getBuffer(RenderType.lightning());
+    public static void render(PoseStack stack,SubmitNodeCollector collector,Vec3 camera,float partial){
+        var mc=Minecraft.getInstance();
+        for(Cue cue:CUES){
+            var p=cue.packet;var formula=Formula.unpack(p.formula()).key();
+            if(p.kind()!=SpellVfx.ORB || formula.earth()==0)continue;
+            float progress=Math.clamp((cue.age+partial)/Math.max(1,p.ticks()),0,1);
+            Vec3 center=p.from().lerp(p.to(),progress);float scale=(float)(Math.clamp(p.radius(),.05,16)*1.7);
+            stack.pushPose();stack.translate(center.x,center.y,center.z);stack.scale(scale,scale,scale);stack.rotate(Axis.YP.rotationDegrees(((mc.level==null?cue.age:mc.level.getGameTime())+partial)*18));stack.rotate(Axis.XP.rotationDegrees(25));
+            var item=formula.fire()>0?Items.MAGMA_BLOCK:formula.cold()>0?Items.PACKED_ICE:Items.COBBLESTONE;
+            var state=new net.minecraft.client.renderer.item.ItemStackRenderState();
+            mc.getItemModelResolver().updateForTopItem(state,new ItemStack(item),ItemDisplayContext.FIXED,mc.level,null,0);
+            state.submit(stack,collector,net.minecraft.util.LightCoordsUtil.FULL_BRIGHT,OverlayTexture.NO_OVERLAY,0);stack.popPose();
+        }
+        collector.submitCustomGeometry(stack,net.minecraft.client.renderer.rendertype.RenderTypes.lightning(),(pose,consumer)->strokes(pose,consumer,camera,partial));
+    }
+    private static void strokes(PoseStack.Pose pose,VertexConsumer consumer,Vec3 camera,float partial){
         for(Cue cue:CUES){
             var p=cue.packet;var formula=Formula.unpack(p.formula()).key();
             float progress=Math.clamp((cue.age+partial)/Math.max(1,p.ticks()),0,1),alpha=(1-progress)*.85f;
@@ -83,12 +97,6 @@ public final class SpellVisuals {
                     center=p.from().lerp(p.to(),progress);double orb=radius;
                     if(!flames){ring(pose,consumer,camera,center,orb,0,color,alpha,.05);ring(pose,consumer,camera,center,orb,1,color,alpha,.05);ring(pose,consumer,camera,center,orb,2,0xFFFFFF,alpha*.8f,.025);
                     stroke(pose,consumer,camera,p.from(),center,.09,color,alpha*.45f);}
-                    if(formula.earth()>0){
-                        pose.pushPose();pose.translate(center.x,center.y,center.z);float scale=(float)(orb*1.7);pose.scale(scale,scale,scale);pose.mulPose(Axis.YP.rotationDegrees(((mc.level==null?cue.age:mc.level.getGameTime())+partial)*18));pose.mulPose(Axis.XP.rotationDegrees(25));
-                        var item=formula.fire()>0?Items.MAGMA_BLOCK:formula.cold()>0?Items.PACKED_ICE:Items.COBBLESTONE;
-                        mc.getItemRenderer().renderStatic(new ItemStack(item),ItemDisplayContext.FIXED,LightTexture.FULL_BRIGHT,OverlayTexture.NO_OVERLAY,pose,buffers,mc.level,0);pose.popPose();
-                        consumer=buffers.getBuffer(RenderType.lightning());
-                    }
                 }
                 case SpellVfx.ZONE,SpellVfx.MINE,SpellVfx.TELEGRAPH -> {
                     double pulse=1+Math.sin((cue.age+partial)*.35)*.025;
@@ -105,20 +113,19 @@ public final class SpellVisuals {
                 default -> {}
             }
         }
-        buffers.endBatch(RenderType.lightning());
     }
     private static int color(SpellFormula formula){
         // Retain an elemental identity; mixed recipes show their other elements in the particle layer.
         Element element=formula.death()>0?Element.DEATH:formula.lightning()>0?Element.LIGHTNING:formula.fire()>0?Element.FIRE:formula.cold()>0?Element.COLD:formula.life()>0?Element.LIFE:formula.arcane()>0?Element.ARCANE:formula.water()>0?Element.WATER:Element.EARTH;
         return element.color;
     }
-    private static void ring(PoseStack pose,VertexConsumer consumer,Vec3 camera,Vec3 center,double radius,int plane,int color,float alpha,double width){
+    private static void ring(PoseStack.Pose pose,VertexConsumer consumer,Vec3 camera,Vec3 center,double radius,int plane,int color,float alpha,double width){
         Vec3 previous=null;for(int i=0;i<=40;i++){double a=i*Math.PI/20,x=Math.cos(a)*radius,y=Math.sin(a)*radius;Vec3 point=center.add(plane==2?0:x,plane==0?0:y,plane==0?y:plane==2?x:0);if(previous!=null)stroke(pose,consumer,camera,previous,point,width,color,alpha);previous=point;}
     }
-    private static void stroke(PoseStack pose,VertexConsumer out,Vec3 camera,Vec3 from,Vec3 to,double width,int color,float alpha){
+    private static void stroke(PoseStack.Pose pose,VertexConsumer out,Vec3 camera,Vec3 from,Vec3 to,double width,int color,float alpha){
         Vec3 side=to.subtract(from).cross(camera.subtract(from)).normalize().scale(width);if(side.lengthSqr()<1e-8)side=new Vec3(width,0,0);
         float r=((color>>16)&255)/255f,g=((color>>8)&255)/255f,b=(color&255)/255f;
-        for(Vec3 v:new Vec3[]{from.subtract(side),from.add(side),to.add(side),to.subtract(side)})out.addVertex(pose.last().pose(),(float)v.x,(float)v.y,(float)v.z).setColor(r,g,b,alpha);
+        for(Vec3 v:new Vec3[]{from.subtract(side),from.add(side),to.add(side),to.subtract(side)})out.addVertex(pose,(float)v.x,(float)v.y,(float)v.z).setColor(r,g,b,alpha);
     }
     private SpellVisuals(){}
 }

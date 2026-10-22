@@ -1,11 +1,11 @@
 package com.restor.magicka;
 
 import com.google.gson.*;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.*;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import java.io.*;
@@ -30,7 +30,7 @@ public final class RecipeRegistry {
         Map<SpellFormula, SpellDefinition> loaded = new HashMap<>();
         for (String text : definitions) {
             JsonObject json = JsonParser.parseString(text).getAsJsonObject();
-            var def = SpellDefinition.parse(ResourceLocation.parse(json.get("id").getAsString()), json);
+            var def = SpellDefinition.parse(Identifier.parse(json.get("id").getAsString()), json);
             if (loaded.put(def.formula(), def) != null) throw new IllegalArgumentException("Duplicate synced formula");
         }
         client = Map.copyOf(loaded);
@@ -42,7 +42,7 @@ public final class RecipeRegistry {
             JsonArray index = JsonParser.parseReader(new InputStreamReader(stream, StandardCharsets.UTF_8)).getAsJsonArray();
             Map<SpellFormula, SpellDefinition> loaded = new HashMap<>();
             for (JsonElement e : index) {
-                ResourceLocation id = ResourceLocation.parse(e.getAsString());
+                Identifier id = Identifier.parse(e.getAsString());
                 try (var data = RecipeRegistry.class.getResourceAsStream("/data/" + id.getNamespace() + "/magicka_spell/" + id.getPath() + ".json")) {
                     if (data == null) throw new IllegalStateException("Missing " + id);
                     var def = SpellDefinition.parse(id, JsonParser.parseReader(new InputStreamReader(data,StandardCharsets.UTF_8)).getAsJsonObject());
@@ -60,13 +60,13 @@ public final class RecipeRegistry {
         if (base != null) return base;
         throw new IllegalArgumentException("Invalid formula " + formula);
     }
-    @SubscribeEvent public void reload(AddReloadListenerEvent event) {
-        event.addListener(new SimpleJsonResourceReloadListener(GSON, "magicka_spell") {
-            @Override protected void apply(Map<ResourceLocation, JsonElement> entries, ResourceManager resources, ProfilerFiller profiler) {
+    @SubscribeEvent public void reload(AddServerReloadListenersEvent event) {
+        event.addListener(Identifier.fromNamespaceAndPath(Magicka.ID, "spells"), new SimpleJsonResourceReloadListener<JsonElement>(net.minecraft.util.ExtraCodecs.JSON, net.minecraft.resources.FileToIdConverter.json("magicka_spell")) {
+            @Override protected void apply(Map<Identifier, JsonElement> entries, ResourceManager resources, ProfilerFiller profiler) {
                 var loaded = new HashMap<SpellFormula, SpellDefinition>(BASE);
                 var custom=new HashSet<SpellFormula>();
                 // Base recipes are replaced by formula. This permits a custom namespace to override one base formula.
-                entries.entrySet().stream().sorted(Comparator.<Map.Entry<ResourceLocation,JsonElement>,Boolean>comparing(e -> !e.getKey().getNamespace().equals(Magicka.ID)).thenComparing(e->e.getKey().toString())).forEach(e -> {
+                entries.entrySet().stream().sorted(Comparator.<Map.Entry<Identifier,JsonElement>,Boolean>comparing(e -> !e.getKey().getNamespace().equals(Magicka.ID)).thenComparing(e->e.getKey().toString())).forEach(e -> {
                     SpellDefinition def = SpellDefinition.parse(e.getKey(), e.getValue().getAsJsonObject());
                     if(!e.getKey().getNamespace().equals(Magicka.ID) && !custom.add(def.formula()))throw new IllegalArgumentException("Multiple custom recipes for "+def.formula());
                     loaded.put(def.formula(),def);

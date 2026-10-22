@@ -1,5 +1,7 @@
 package com.restor.magicka.enemy;
 
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityTypes;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.restor.magicka.*;
 import net.minecraft.commands.Commands;
@@ -19,7 +21,6 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
@@ -37,7 +38,7 @@ public final class MagicEnemies {
     private static final Map<DeferredHolder<EntityType<?>, ? extends EntityType<? extends SpecialEnemy>>, Supplier<AttributeSupplier.Builder>> ATTRIBUTES = new LinkedHashMap<>();
 
     public static final DeferredHolder<EntityType<?>, EntityType<EnemyBolt>> BOLT = TYPES.register("enemy_bolt", () -> EntityType.Builder.<EnemyBolt>of(EnemyBolt::new, MobCategory.MISC)
-            .sized(.3125f, .3125f).clientTrackingRange(4).updateInterval(10).build("enemy_bolt"));
+            .sized(.3125f, .3125f).clientTrackingRange(4).updateInterval(10).build(key("enemy_bolt")));
     public static final DeferredHolder<EntityType<?>, EntityType<CaveSkitter>> CAVE_SKITTER = mob("cave_skitter", CaveSkitter::new, .9f, .5f, 0x4A4038, 0x8E8270, CaveSkitter::attributes);
     public static final DeferredHolder<EntityType<?>, EntityType<ShieldBeetle>> SHIELD_BEETLE = mob("shield_beetle", ShieldBeetle::new, 1.3f, 1.1f, 0x4A5238, 0x8C6E44, ShieldBeetle::attributes);
     public static final DeferredHolder<EntityType<?>, EntityType<StoneCrawler>> STONE_CRAWLER = mob("stone_crawler", StoneCrawler::new, 1.4f, 1.5f, 0x7D7F83, 0x4F6A32, StoneCrawler::attributes);
@@ -57,13 +58,16 @@ public final class MagicEnemies {
     public static final DeferredHolder<EntityType<?>, EntityType<GoblinBomber>> GOBLIN_BOMBER = mob("goblin_bomber", GoblinBomber::new, .6f, 1.4f, 0x6E8B3D, 0x9A7A4A, GoblinBomber::attributes);
     public static final DeferredHolder<EntityType<?>, EntityType<GoblinShaman>> GOBLIN_SHAMAN = mob("goblin_shaman", GoblinShaman::new, .6f, 1.4f, 0x6E8B3D, 0xDDD3BC, GoblinShaman::attributes);
     public static final DeferredHolder<EntityType<?>, EntityType<GoblinBomb>> GOBLIN_BOMB = TYPES.register("goblin_bomb", () -> EntityType.Builder.<GoblinBomb>of(GoblinBomb::new, MobCategory.MISC)
-            .sized(.4f, .4f).clientTrackingRange(6).updateInterval(5).build("goblin_bomb"));
+            .sized(.4f, .4f).clientTrackingRange(6).updateInterval(5).build(key("goblin_bomb")));
 
     private static <T extends SpecialEnemy> DeferredHolder<EntityType<?>, EntityType<T>> mob(String id, EntityType.EntityFactory<T> factory, float width, float height, int base, int spots, Supplier<AttributeSupplier.Builder> attributes) {
-        var holder = TYPES.register(id, () -> EntityType.Builder.of(factory, MobCategory.MONSTER).sized(width, height).clientTrackingRange(10).build(id));
-        EGGS.add(MagicItems.ITEMS.register(id + "_spawn_egg", () -> new DeferredSpawnEggItem(holder, base, spots, new Item.Properties())));
+        DeferredHolder<EntityType<?>, EntityType<T>> holder = TYPES.register(id, () -> EntityType.Builder.of(factory, MobCategory.MONSTER).sized(width, height).clientTrackingRange(10).build(key(id)));
+        EGGS.add(MagicItems.ITEMS.registerItem(id + "_spawn_egg", net.minecraft.world.item.SpawnEggItem::new, p -> p.spawnEgg(holder.get())));
         ATTRIBUTES.put(holder, attributes);
         return holder;
+    }
+    private static net.minecraft.resources.ResourceKey<EntityType<?>> key(String id) {
+        return net.minecraft.resources.ResourceKey.create(Registries.ENTITY_TYPE, net.minecraft.resources.Identifier.fromNamespaceAndPath(Magicka.ID, id));
     }
     public static void attributes(EntityAttributeCreationEvent event) {
         ATTRIBUTES.forEach((type, builder) -> event.put(type.get(), builder.get().build()));
@@ -73,7 +77,7 @@ public final class MagicEnemies {
     }
     private static <T extends Monster> void register(RegisterSpawnPlacementsEvent event, EntityType<T> type) {
         event.register(type, SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-                (t, level, reason, pos, random) -> (reason != MobSpawnType.NATURAL && reason != MobSpawnType.CHUNK_GENERATION || pos.getY() < 48 && MagicConfig.SPECIAL_SPAWNS.get())
+                (t, level, reason, pos, random) -> (reason != EntitySpawnReason.NATURAL && reason != EntitySpawnReason.CHUNK_GENERATION || pos.getY() < 48 && MagicConfig.SPECIAL_SPAWNS.get())
                         && Monster.checkMonsterSpawnRules(t, level, reason, pos, random), RegisterSpawnPlacementsEvent.Operation.REPLACE);
     }
 
@@ -142,7 +146,7 @@ public final class MagicEnemies {
     }
     public static List<Mob> encounter(ServerLevel level, Vec3 center, String id) {
         List<Mob> spawned = new ArrayList<>();
-        var fodder = List.of(EntityType.ZOMBIE, EntityType.SKELETON, EntityType.SPIDER);
+        var fodder = List.of(EntityTypes.ZOMBIE, EntityTypes.SKELETON, EntityTypes.SPIDER);
         int index = 0;
         for (String entry : ENCOUNTERS.getOrDefault(id, List.of())) {
             String[] parts = entry.split("\\*");
@@ -151,10 +155,10 @@ public final class MagicEnemies {
                 EntityType<?> type = parts[0].equals("fodder") ? fodder.get(i % fodder.size()) : TYPES.getEntries().stream().filter(h -> h.getId().getPath().equals(parts[0])).findFirst().orElseThrow().get();
                 double a = index * 2.4, r = 2 + index * .35;
                 Vec3 at = center.add(Math.cos(a) * r, 0, Math.sin(a) * r);
-                if (type.create(level) instanceof Mob mob) {
+                if (type.create(level, EntitySpawnReason.MOB_SUMMONED) instanceof Mob mob) {
                     Vec3 spot = floor(level, at, center);
-                    mob.moveTo(spot.x, spot.y, spot.z, level.random.nextFloat() * 360, 0);
-                    mob.finalizeSpawn(level, level.getCurrentDifficultyAt(mob.blockPosition()), MobSpawnType.COMMAND, null);
+                    mob.snapTo(spot.x, spot.y, spot.z, level.getRandom().nextFloat() * 360, 0);
+                    mob.finalizeSpawn(level, level.getCurrentDifficultyAt(mob.blockPosition()), EntitySpawnReason.COMMAND, null);
                     level.addFreshEntity(mob);
                     spawned.add(mob);
                 }
@@ -163,7 +167,7 @@ public final class MagicEnemies {
         return spawned;
     }
     @SubscribeEvent public void commands(RegisterCommandsEvent event) {
-        event.getDispatcher().register(Commands.literal("spellweaver").requires(s -> s.hasPermission(2))
+        event.getDispatcher().register(Commands.literal("spellweaver").requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .then(Commands.literal("encounter").then(Commands.argument("id", StringArgumentType.word())
                         .suggests((c, b) -> { ENCOUNTERS.keySet().forEach(b::suggest); return b.buildFuture(); })
                         .executes(c -> {

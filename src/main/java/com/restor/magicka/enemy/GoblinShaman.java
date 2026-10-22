@@ -23,8 +23,8 @@ public class GoblinShaman extends Goblin {
         return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 14).add(Attributes.MOVEMENT_SPEED, .26).add(Attributes.FOLLOW_RANGE, 24);
     }
     public List<LivingEntity> kin() { return allies(RANGE).stream().filter(Goblin::kin).toList(); }
-    @Override protected void customServerAiStep() {
-        super.customServerAiStep();
+    @Override protected void customServerAiStep(net.minecraft.server.level.ServerLevel serverLevel) {
+        super.customServerAiStep(serverLevel);
         LivingEntity target = getTarget();
         if (target == null || casting() || disabled()) return;
         keepDistance(target, 9, 15, 1);
@@ -32,8 +32,8 @@ public class GoblinShaman extends Goblin {
     }
     public void rally() {
         for (LivingEntity e : kin()) {
-            e.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 160, 0), this);
-            e.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 160, 0), this);
+            e.addEffect(new MobEffectInstance(MobEffects.STRENGTH, 160, 0), this);
+            e.addEffect(new MobEffectInstance(MobEffects.SPEED, 160, 0), this);
             e.heal(4);
             if (level() instanceof ServerLevel level) level.sendParticles(ParticleTypes.ANGRY_VILLAGER, e.getX(), e.getY() + e.getBbHeight() + .2, e.getZ(), 2, .2, .1, .2, 0);
         }

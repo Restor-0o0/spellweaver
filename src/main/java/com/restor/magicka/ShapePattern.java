@@ -17,7 +17,7 @@ public final class ShapePattern {
     public static long[] sanitize(long low,long high){return new long[]{low,high&HIGH_MASK};}
     public static long[] of(Player player){
         if(!(player instanceof ServerPlayer server))return MagicNetwork.clientPattern.clone();
-        long[] stored=server.getPersistentData().getLongArray(TAG);
+        long[] stored=server.getPersistentData().getLongArray(TAG).orElse(new long[0]);
         return stored.length==2?sanitize(stored[0],stored[1]):defaults();
     }
     public static void store(ServerPlayer player,long low,long high){
@@ -38,7 +38,7 @@ public final class ShapePattern {
     @SubscribeEvent public void login(PlayerEvent.PlayerLoggedInEvent event){if(event.getEntity() instanceof ServerPlayer p)sync(p);}
     @SubscribeEvent public void respawn(PlayerEvent.PlayerRespawnEvent event){if(event.getEntity() instanceof ServerPlayer p)sync(p);}
     @SubscribeEvent public void clone(PlayerEvent.Clone event){
-        long[] stored=event.getOriginal().getPersistentData().getLongArray(TAG);
+        long[] stored=event.getOriginal().getPersistentData().getLongArray(TAG).orElse(new long[0]);
         if(stored.length==2)event.getEntity().getPersistentData().putLongArray(TAG,stored.clone());
     }
     public ShapePattern(){}

@@ -35,8 +35,8 @@ public class MushroomNurse extends SpecialEnemy {
         return allies(12).stream().filter(e -> e.getHealth() < e.getMaxHealth() * .9 && hasLineOfSight(e))
                 .min(Comparator.comparingDouble(e -> e.getHealth() / e.getMaxHealth() - (e instanceof SpecialEnemy ? .25 : 0))).orElse(null);
     }
-    @Override protected void customServerAiStep() {
-        super.customServerAiStep();
+    @Override protected void customServerAiStep(net.minecraft.server.level.ServerLevel serverLevel) {
+        super.customServerAiStep(serverLevel);
         if (casting() || disabled()) return;
         if (cooldown == 0 && (patient = findPatient()) != null) {
             LivingEntity target = patient;
@@ -70,5 +70,5 @@ public class MushroomNurse extends SpecialEnemy {
     @Override protected SoundEvent getAmbientSound() { return SoundEvents.MOOSHROOM_EAT; }
     @Override protected SoundEvent getHurtSound(DamageSource source) { return SoundEvents.MOSS_HIT; }
     @Override protected SoundEvent getDeathSound() { return SoundEvents.MOSS_BREAK; }
-    @Override public boolean doHurtTarget(Entity target) { return false; }
+    @Override public boolean doHurtTarget(net.minecraft.server.level.ServerLevel serverLevel, Entity target) { return false; }
 }

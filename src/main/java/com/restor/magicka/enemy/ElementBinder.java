@@ -41,8 +41,8 @@ public class ElementBinder extends SpecialEnemy {
         ElementLocks.lock(player, mask, LOCK_TICKS);
         beam(getEyePosition(), player.getEyePosition(), 0xC77DFF);
     }
-    @Override protected void customServerAiStep() {
-        super.customServerAiStep();
+    @Override protected void customServerAiStep(net.minecraft.server.level.ServerLevel serverLevel) {
+        super.customServerAiStep(serverLevel);
         if (boltCooldown > 0) boltCooldown--;
         if (tickCount % 20 == 0 && !casting()) { ServerPlayer pick = pickTarget(); if (pick != null) setTarget(pick); }
         LivingEntity target = getTarget();

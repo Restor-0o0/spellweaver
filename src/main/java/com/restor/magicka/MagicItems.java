@@ -25,7 +25,7 @@ import static com.restor.magicka.MagicStats.Stat.*;
 
 public final class MagicItems {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(Magicka.ID);
-    public static final DeferredItem<Item> SPELLBOOK = ITEMS.registerSimpleItem("spellbook", new Item.Properties().stacksTo(1));
+    public static final DeferredItem<Item> SPELLBOOK = ITEMS.registerSimpleItem("spellbook", p -> p.stacksTo(1));
     private static final List<DeferredItem<GearItem>> GEAR = new ArrayList<>();
 
     private static DeferredItem<GearItem> gear(String id, GearItem.Kind kind, GearItem.Grade grade, UnaryOperator<GearItem.Builder> setup) {
@@ -123,7 +123,7 @@ public final class MagicItems {
             .action(80, player -> {
                 Vec3 look = player.getLookAngle();
                 player.push(look.x * .9, Math.max(.5, look.y * .9 + .4), look.z * .9);
-                player.hurtMarked = true;
+                player.syncVelocity = true;
                 MagicStatuses.apply(player, MagicStatuses.Status.SLOW_FALLING, 100, 1);
             }));
     public static final DeferredItem<GearItem> SURVEY_SCANNER = gear("survey_scanner", TOOL, UNCOMMON, b -> b

@@ -54,7 +54,7 @@ public class ShieldBeetle extends SpecialEnemy {
         targetSelector.addGoal(1, new HurtByTargetGoal(this).setAlertOthers());
         targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
     }
-    @Override protected float tickHeadTurn(float yRot, float step) { yBodyRot = getYRot(); return step; }
+    @Override protected void tickHeadTurn(float yBodyRotT) { yBodyRot = getYRot(); }
     @Override public int getMaxHeadYRot() { return 15; }
 
     public boolean guarding() { return !disabled() && recovering == 0; }
@@ -67,7 +67,7 @@ public class ShieldBeetle extends SpecialEnemy {
         return to.lengthSqr() > 1e-4 && to.normalize().dot(Vec3.directionFromRotation(0, yBodyRot)) < -.5;
     }
     private float block(float amount) {
-        playSound(SoundEvents.SHIELD_BLOCK, 1f, .7f);
+        playSound(SoundEvents.SHIELD_BLOCK.value(), 1f, .7f);
         dust(position().add(Vec3.directionFromRotation(0, yBodyRot).scale(.9)).add(0, .7, 0), 0xC9A646, 6, .3);
         return amount * FRONT;
     }
@@ -82,18 +82,18 @@ public class ShieldBeetle extends SpecialEnemy {
         if (!guarding() || !front(from)) return amount;
         return source.getDirectEntity() instanceof Projectile ? block(amount) : amount * .5f;
     }
-    @Override protected void customServerAiStep() {
-        super.customServerAiStep();
+    @Override protected void customServerAiStep(net.minecraft.server.level.ServerLevel serverLevel) {
+        super.customServerAiStep(serverLevel);
         LivingEntity target = getTarget();
         if (charging > 0) {
             Vec3 forward = Vec3.directionFromRotation(0, getYRot());
             setDeltaMovement(forward.x * .55, getDeltaMovement().y, forward.z * .55);
             for (LivingEntity hit : level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(.3), e -> e != this && !ally(e))) {
                 hit.hurt(damageSources().mobAttack(this), 6);
-                hit.push(forward.x * 1.2, .3, forward.z * 1.2); hit.hurtMarked = true;
+                hit.push(forward.x * 1.2, .3, forward.z * 1.2); hit.syncVelocity = true;
                 charging = 1;
             }
-            if (--charging == 0 || horizontalCollision) { charging = 0; recovering = 40; setAction(RECOVER); playSound(SoundEvents.SHIELD_BREAK, .8f, 1.4f); }
+            if (--charging == 0 || horizontalCollision) { charging = 0; recovering = 40; setAction(RECOVER); playSound(SoundEvents.SHIELD_BREAK.value(), .8f, 1.4f); }
         } else if (recovering > 0) {
             getNavigation().stop();
             if (--recovering == 0) setAction(0);

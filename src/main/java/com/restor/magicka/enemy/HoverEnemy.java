@@ -36,11 +36,11 @@ public abstract class HoverEnemy extends SpecialEnemy {
         setDeltaMovement(getDeltaMovement().scale(.9));
     }
     @Override protected void checkFallDamage(double y, boolean ground, BlockState state, BlockPos pos) {}
-    @Override public boolean causeFallDamage(float distance, float multiplier, DamageSource source) { return false; }
+    @Override public boolean causeFallDamage(double distance, float multiplier, DamageSource source) { return false; }
     @Override public boolean onClimbable() { return false; }
 
-    @Override protected void customServerAiStep() {
-        super.customServerAiStep();
+    @Override protected void customServerAiStep(net.minecraft.server.level.ServerLevel serverLevel) {
+        super.customServerAiStep(serverLevel);
         boolean grounded = disabled();
         if (isNoGravity() == grounded) setNoGravity(!grounded);
         if (grounded) return;

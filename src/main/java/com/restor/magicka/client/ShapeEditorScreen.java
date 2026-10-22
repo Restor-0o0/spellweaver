@@ -1,13 +1,15 @@
 package com.restor.magicka.client;
 
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import com.restor.magicka.MagicNetwork;
 import com.restor.magicka.ShapePattern;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
 /** Paints the caster's 5x5x5 stencil as five floor plans, the bottom layer on the left. */
 public final class ShapeEditorScreen extends Screen {
@@ -57,7 +59,7 @@ public final class ShapeEditorScreen extends Screen {
         if(ShapePattern.filled(bits,x,layer,z)!=value){ShapePattern.set(bits,x,layer,z,value);changed();}
         return true;
     }
-    @Override public boolean mouseClicked(double mx,double my,int button){
+    @Override public boolean mouseClicked(MouseButtonEvent event,boolean doubleClick){double mx=event.x(),my=event.y();int button=event.button();
         int layer=layerAt(mx,my);
         if(layer>=0 && (button==0 || button==1)){
             int lx=gridX+layer*(SIZE*cell+gap);
@@ -65,14 +67,14 @@ public final class ShapeEditorScreen extends Screen {
             paintValue=button==0 && !ShapePattern.filled(bits,x,layer,z);
             painting=true;paint(mx,my,paintValue);return true;
         }
-        return super.mouseClicked(mx,my,button);
+        return super.mouseClicked(event,doubleClick);
     }
-    @Override public boolean mouseDragged(double mx,double my,int button,double dx,double dy){
+    @Override public boolean mouseDragged(MouseButtonEvent event,double dx,double dy){double mx=event.x(),my=event.y();int button=event.button();
         if(painting){paint(mx,my,paintValue);return true;}
-        return super.mouseDragged(mx,my,button,dx,dy);
+        return super.mouseDragged(event,dx,dy);
     }
-    @Override public boolean mouseReleased(double mx,double my,int button){painting=false;return super.mouseReleased(mx,my,button);}
-    @Override public void render(GuiGraphics g,int mouseX,int mouseY,float partialTick){
+    @Override public boolean mouseReleased(MouseButtonEvent event){double mx=event.x(),my=event.y();int button=event.button();painting=false;return super.mouseReleased(event);}
+    @Override public void extractRenderState(GuiGraphicsExtractor g,int mouseX,int mouseY,float partialTick){
         g.fill(0,0,width,height,0xB810101B);
         MagicUi.panel(g,panelX,panelY,panelW,panelH);
         MagicUi.text(g,title,panelX+12,panelY+10,MagicUi.GOLD);
@@ -80,8 +82,8 @@ public final class ShapeEditorScreen extends Screen {
         MagicUi.small(g,count,panelX+panelW-14-(int)Math.ceil(font.width(count)*.75f),panelY+12,MagicUi.MUTED);
         var hint=font.split(Component.translatable("shape.magicka.hint"),(int)((panelW-24)/.75));
         for(int i=0;i<Math.min(2,hint.size());i++){
-            g.pose().pushPose();g.pose().translate(panelX+12,panelY+26+i*8,0);g.pose().scale(.75f,.75f,1);
-            g.drawString(font,hint.get(i),0,0,MagicUi.MUTED,false);g.pose().popPose();
+            g.pose().pushMatrix();g.pose().translate(panelX+12,panelY+26+i*8);g.pose().scale(.75f,.75f);
+            g.text(font,hint.get(i),0,0,MagicUi.MUTED,false);g.pose().popMatrix();
         }
         MagicUi.small(g,Component.translatable("shape.magicka.spell"),panelX+12,panelY+46,0xFFA8D8A0);
         for(int layer=0;layer<SIZE;layer++){
@@ -93,19 +95,19 @@ public final class ShapeEditorScreen extends Screen {
                 boolean hover=mouseX>=cx && mouseX<cx+cell && mouseY>=cy && mouseY<cy+cell;
                 g.fill(cx,cy,cx+cell,cy+cell,filled?0xFF8A6A46:0xFF171B23);
                 if(!filled && layer>0 && ShapePattern.filled(bits,x,layer-1,z))g.fill(cx+cell/2-1,cy+cell/2-1,cx+cell/2+1,cy+cell/2+1,0xFF4C5A45);
-                g.renderOutline(cx,cy,cell,cell,hover?MagicUi.GOLD:filled?0xFFC9A96E:0xFF343040);
+                g.outline(cx,cy,cell,cell,hover?MagicUi.GOLD:filled?0xFFC9A96E:0xFF343040);
             }
         }
-        super.render(g,mouseX,mouseY,partialTick);
+        super.extractRenderState(g,mouseX,mouseY,partialTick);
     }
-    @Override public boolean keyPressed(int key,int scan,int modifiers){
-        if(MagicClient.shapeMatches(key,scan)){onClose();return true;}
-        return super.keyPressed(key,scan,modifiers);
+    @Override public boolean keyPressed(KeyEvent event){
+        if(MagicClient.shapeMatches(event)){onClose();return true;}
+        return super.keyPressed(event);
     }
     @Override public void removed(){
-        if(dirty && Minecraft.getInstance().getConnection()!=null)PacketDistributor.sendToServer(new MagicNetwork.SetShapeGrid(bits[0],bits[1]));
+        if(dirty && Minecraft.getInstance().getConnection()!=null)ClientPacketDistributor.sendToServer(new MagicNetwork.SetShapeGrid(bits[0],bits[1]));
         super.removed();
     }
     @Override public boolean isPauseScreen(){return false;}
-    @Override public void renderBackground(GuiGraphics g,int mouseX,int mouseY,float partialTick){}
+    @Override public void extractBackground(GuiGraphicsExtractor g,int mouseX,int mouseY,float partialTick){}
 }

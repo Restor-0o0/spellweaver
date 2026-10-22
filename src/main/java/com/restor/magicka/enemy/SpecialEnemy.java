@@ -65,8 +65,8 @@ public abstract class SpecialEnemy extends Monster {
     protected float interruptDamage() { return 4; }
     public boolean disabled() { return MagicStatuses.has(this, MagicStatuses.Status.STUNNED) || MagicStatuses.has(this, MagicStatuses.Status.FROZEN); }
 
-    @Override protected void customServerAiStep() {
-        super.customServerAiStep();
+    @Override protected void customServerAiStep(net.minecraft.server.level.ServerLevel serverLevel) {
+        super.customServerAiStep(serverLevel);
         if (cooldown > 0) cooldown--;
         if (!casting()) return;
         if (disabled()) { interrupt(); return; }
@@ -83,16 +83,16 @@ public abstract class SpecialEnemy extends Monster {
     protected float physicalDamage(DamageSource source, float amount) { return amount; }
     protected float spellDamage(ServerPlayer caster, SpellDefinition spell, float amount, boolean brittle) { return amount; }
 
-    @Override public boolean hurt(DamageSource source, float amount) {
-        if (!level().isClientSide && !MagicEnemies.bySpell) amount = physicalDamage(source, amount);
+    @Override public boolean hurtServer(ServerLevel serverLevel, DamageSource source, float amount) {
+        if (!MagicEnemies.bySpell) amount = physicalDamage(source, amount);
         if (amount <= 0) return false;
-        boolean hurt = super.hurt(source, amount);
+        boolean hurt = super.hurtServer(serverLevel, source, amount);
         if (hurt && casting() && amount >= interruptDamage()) interrupt();
         return hurt;
     }
 
     public static boolean ally(LivingEntity other) {
-        return other instanceof Enemy && !other.getTags().contains(UndeadMinions.TAG) && other.isAlive();
+        return other instanceof Enemy && !other.entityTags().contains(UndeadMinions.TAG) && other.isAlive();
     }
     protected List<LivingEntity> allies(double radius) {
         return level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(radius), e -> e != this && ally(e));
@@ -100,7 +100,7 @@ public abstract class SpecialEnemy extends Monster {
     protected static Vec3 flat(Vec3 v) { return new Vec3(v.x, 0, v.z); }
     protected void dust(Vec3 at, int color, int count, double spread) {
         if (level() instanceof ServerLevel level)
-            level.sendParticles(new DustParticleOptions(new Vector3f((color >> 16 & 255) / 255f, (color >> 8 & 255) / 255f, (color & 255) / 255f), 1.2f), at.x, at.y, at.z, count, spread, spread, spread, 0);
+            level.sendParticles(new DustParticleOptions(net.minecraft.util.ARGB.colorFromFloat(1f,(color >> 16 & 255) / 255f, (color >> 8 & 255) / 255f, (color & 255) / 255f), 1.2f), at.x, at.y, at.z, count, spread, spread, spread, 0);
     }
     protected void beam(Vec3 from, Vec3 to, int color) {
         int steps = (int)Math.ceil(from.distanceTo(to) * 3);
@@ -122,6 +122,6 @@ public abstract class SpecialEnemy extends Monster {
     }
     protected static boolean player(LivingEntity e) { return e instanceof Player p && !p.isCreative() && !p.isSpectator(); }
 
-    @Override public void addAdditionalSaveData(CompoundTag tag) { super.addAdditionalSaveData(tag); tag.putInt("MagickaCooldown", cooldown); }
-    @Override public void readAdditionalSaveData(CompoundTag tag) { super.readAdditionalSaveData(tag); cooldown = tag.getInt("MagickaCooldown"); }
+    @Override public void addAdditionalSaveData(net.minecraft.world.level.storage.ValueOutput tag) { super.addAdditionalSaveData(tag); tag.putInt("MagickaCooldown", cooldown); }
+    @Override public void readAdditionalSaveData(net.minecraft.world.level.storage.ValueInput tag) { super.readAdditionalSaveData(tag); cooldown = tag.getIntOr("MagickaCooldown", 0); }
 }

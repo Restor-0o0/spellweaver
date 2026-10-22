@@ -1,5 +1,6 @@
 package com.restor.magicka;
 
+import net.minecraft.world.entity.EntitySpawnReason;
 import com.google.gson.JsonObject;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
@@ -42,13 +43,13 @@ public class ElementalTitan extends Entity implements ElementalBody {
     public ElementalTitan(EntityType<? extends ElementalTitan> type, Level level) { super(type, level); noPhysics = true; setNoGravity(true); }
 
     static void rise(ServerPlayer p, SpellDefinition s, EpicMagic.Channel c) {
-        ServerLevel level = p.serverLevel();
-        ElementalTitan titan = Elementals.TITAN.get().create(level);
+        ServerLevel level = p.level();
+        ElementalTitan titan = Elementals.TITAN.get().create(level, EntitySpawnReason.MOB_SUMMONED);
         if (titan == null) return;
         titan.owner = p; titan.spell = s; titan.channel = c;
         titan.slam = SpellDefinition.graph(s.delivery(), "slam");
         titan.entityData.set(ELEMENT, Elementals.element(s).ordinal());
-        titan.moveTo(c.focus.x, c.focus.y, c.focus.z, p.getYRot(), 0);
+        titan.snapTo(c.focus.x, c.focus.y, c.focus.z, p.getYRot(), 0);
         titan.setYHeadRot(p.getYRot());
         if (!level.addFreshEntity(titan)) return;
         level.playSound(null, c.focus.x, c.focus.y, c.focus.z, SoundEvents.WARDEN_EMERGE, SoundSource.PLAYERS, 2f, .7f);
@@ -61,12 +62,12 @@ public class ElementalTitan extends Entity implements ElementalBody {
         if (ACTION.equals(key)) { previous = shown; shown = entityData.get(ACTION); actionStart = tickCount; }
         if (SINKING.equals(key) && sinking()) sinkStart = tickCount;
     }
-    @Override protected void readAdditionalSaveData(CompoundTag tag) {}
-    @Override protected void addAdditionalSaveData(CompoundTag tag) {}
+    @Override protected void readAdditionalSaveData(net.minecraft.world.level.storage.ValueInput tag) {}
+    @Override protected void addAdditionalSaveData(net.minecraft.world.level.storage.ValueOutput tag) {}
     @Override public boolean shouldBeSaved() { return false; }
     @Override public boolean isPickable() { return false; }
     @Override public boolean isPushable() { return false; }
-    @Override public boolean hurt(DamageSource source, float amount) { return false; }
+    @Override public boolean hurtServer(ServerLevel level, DamageSource source, float amount) { return false; }
     @Override public boolean fireImmune() { return true; }
     @Override public boolean isAttackable() { return false; }
     @Override protected Component getTypeName() { return Component.translatable("entity.magicka." + modelId()); }
@@ -93,7 +94,7 @@ public class ElementalTitan extends Entity implements ElementalBody {
 
     @Override public void tick() {
         super.tick();
-        if (level().isClientSide) { ambient(); return; }
+        if (level().isClientSide()) { ambient(); return; }
         ServerLevel level = (ServerLevel) level();
         if (!sinking() && (owner == null || channel == null || !channel.live || !owner.isAlive() || owner.isRemoved() || owner.level() != level)) sink(level);
         if (sinking()) {
@@ -208,7 +209,7 @@ public class ElementalTitan extends Entity implements ElementalBody {
         }
         Elementals.blast(owner, spell, e, at, SLAM_RADIUS, slam, true);
         for (var v : level.getEntitiesOfClass(LivingEntity.class, new AABB(at, at).inflate(SLAM_RADIUS), v -> Elementals.hostile(owner, v) && v.distanceToSqr(at) < SLAM_RADIUS * SLAM_RADIUS)) {
-            v.push(0, .45, 0); v.hurtMarked = true;
+            v.push(0, .45, 0); v.syncVelocity = true;
         }
     }
 

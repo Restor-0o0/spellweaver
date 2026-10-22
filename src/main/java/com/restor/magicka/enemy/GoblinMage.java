@@ -24,8 +24,8 @@ public class GoblinMage extends Goblin {
     protected float boltDamage() { return 4; }
     protected int tellColor() { return 0xE0602A; }
     protected void hit(LivingEntity target) {}
-    @Override protected void customServerAiStep() {
-        super.customServerAiStep();
+    @Override protected void customServerAiStep(net.minecraft.server.level.ServerLevel serverLevel) {
+        super.customServerAiStep(serverLevel);
         LivingEntity target = getTarget();
         if (target == null || casting() || disabled()) return;
         keepDistance(target, 6, 12, 1);
@@ -47,7 +47,7 @@ public class GoblinMage extends Goblin {
         @Override public Element element() { return Element.COLD; }
         @Override protected float boltDamage() { return 3; }
         @Override protected int tellColor() { return 0xBFE4F2; }
-        @Override protected void hit(LivingEntity target) { target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 1), this); }
+        @Override protected void hit(LivingEntity target) { target.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 60, 1), this); }
         @Override protected SoundEvent release() { return SoundEvents.PLAYER_HURT_FREEZE; }
         @Override protected SoundEvent castSound() { return SoundEvents.POWDER_SNOW_STEP; }
     }
@@ -59,10 +59,10 @@ public class GoblinMage extends Goblin {
         @Override protected int tellColor() { return 0xB8C8FF; }
         @Override protected SoundEvent release() { return SoundEvents.TRIDENT_THUNDER.value(); }
         @Override protected SoundEvent castSound() { return SoundEvents.BEACON_POWER_SELECT; }
-        @Override protected void customServerAiStep() {
+        @Override protected void customServerAiStep(net.minecraft.server.level.ServerLevel serverLevel) {
             LivingEntity target = getTarget();
             if (target != null && MagicStatuses.has(target, MagicStatuses.Status.WET) && cooldown > 20) cooldown--;
-            super.customServerAiStep();
+            super.customServerAiStep(serverLevel);
         }
     }
 }

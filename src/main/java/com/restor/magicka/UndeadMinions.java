@@ -1,16 +1,18 @@
 package com.restor.magicka;
 
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.monster.Enemy;
-import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -31,24 +33,24 @@ public final class UndeadMinions {
     private static final Map<UUID, Minion> MINIONS = new LinkedHashMap<>();
 
     public static int summon(ServerPlayer owner, Vec3 point, String id, int count, int ticks) {
-        var type = BuiltInRegistries.ENTITY_TYPE.getOptional(ResourceLocation.tryParse(id)).orElse(EntityType.ZOMBIE);
+        var type = BuiltInRegistries.ENTITY_TYPE.getOptional(Identifier.tryParse(id)).orElse(EntityTypes.ZOMBIE);
         int spawned = 0;
         for (int i = 0; i < Math.clamp(count, 1, 128); i++) if (spawn(owner, type, point, i, ticks)) spawned++;
         return spawned;
     }
 
     public static boolean spawn(ServerPlayer owner, EntityType<?> type, Vec3 point, int index, int ticks) {
-        ServerLevel level = owner.serverLevel();
-        Entity created = type.create(level);
-        if (!(created instanceof Mob mob) || !(created instanceof Enemy) || type == EntityType.WITHER || type == EntityType.ENDER_DRAGON || type == EntityType.WARDEN) {
+        ServerLevel level = owner.level();
+        Entity created = type.create(level, EntitySpawnReason.MOB_SUMMONED);
+        if (!(created instanceof Mob mob) || !(created instanceof Enemy) || type == EntityTypes.WITHER || type == EntityTypes.ENDER_DRAGON || type == EntityTypes.WARDEN) {
             if (created != null) created.discard();
-            if (type == EntityType.ZOMBIE) return false;
-            return spawn(owner, EntityType.ZOMBIE, point, index, ticks);
+            if (type == EntityTypes.ZOMBIE) return false;
+            return spawn(owner, EntityTypes.ZOMBIE, point, index, ticks);
         }
         Vec3 at = place(level, mob, point, index);
         if (at == null || !WorldPlacement.allowed(owner, BlockPos.containing(at))) { mob.discard(); return false; }
-        mob.moveTo(at.x, at.y, at.z, owner.getYRot() + index * 45, 0);
-        mob.finalizeSpawn(level, level.getCurrentDifficultyAt(mob.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
+        mob.snapTo(at.x, at.y, at.z, owner.getYRot() + index * 45, 0);
+        mob.finalizeSpawn(level, level.getCurrentDifficultyAt(mob.blockPosition()), EntitySpawnReason.MOB_SUMMONED, null);
         if (mob.getVehicle() != null) { Entity vehicle = mob.getVehicle(); mob.stopRiding(); vehicle.discard(); }
         if (mob instanceof Zombie zombie) zombie.setBaby(false);
         if (mob.getItemBySlot(EquipmentSlot.HEAD).isEmpty()) mob.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.SKELETON_SKULL));
@@ -70,8 +72,8 @@ public final class UndeadMinions {
 
     private static Vec3 place(ServerLevel level, Mob mob, Vec3 point, int index) {
         for (int attempt = 0; attempt < 16; attempt++) {
-            double angle = index * 2.39996 + attempt * 1.13 + level.random.nextDouble() * .7;
-            double distance = 1.3 + (index % 6) * .45 + level.random.nextDouble() * .9;
+            double angle = index * 2.39996 + attempt * 1.13 + level.getRandom().nextDouble() * .7;
+            double distance = 1.3 + (index % 6) * .45 + level.getRandom().nextDouble() * .9;
             BlockPos column = BlockPos.containing(point.x + Math.cos(angle) * distance, point.y + 1, point.z + Math.sin(angle) * distance);
             for (int dy = 0; dy < 5; dy++) {
                 BlockPos feet = column.below(dy);
@@ -124,11 +126,11 @@ public final class UndeadMinions {
         if (minion != null && !allowed(minion, event.getNewAboutToBeSetTarget())) event.setCanceled(true);
     }
 
-    @SubscribeEvent public void drops(LivingDropsEvent event) { if (event.getEntity().getTags().contains(TAG)) event.setCanceled(true); }
-    @SubscribeEvent public void experience(LivingExperienceDropEvent event) { if (event.getEntity().getTags().contains(TAG)) event.setCanceled(true); }
+    @SubscribeEvent public void drops(LivingDropsEvent event) { if (event.getEntity().entityTags().contains(TAG)) event.setCanceled(true); }
+    @SubscribeEvent public void experience(LivingExperienceDropEvent event) { if (event.getEntity().entityTags().contains(TAG)) event.setCanceled(true); }
 
     @SubscribeEvent public void join(EntityJoinLevelEvent event) {
-        if (!event.getLevel().isClientSide && event.getEntity().getTags().contains(TAG) && !MINIONS.containsKey(event.getEntity().getUUID())) event.setCanceled(true);
+        if (!event.getLevel().isClientSide() && event.getEntity().entityTags().contains(TAG) && !MINIONS.containsKey(event.getEntity().getUUID())) event.setCanceled(true);
     }
 
     @SubscribeEvent public void tick(ServerTickEvent.Post event) {

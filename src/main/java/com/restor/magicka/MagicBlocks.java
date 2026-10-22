@@ -23,29 +23,29 @@ import java.util.UUID;
 public final class MagicBlocks {
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(Magicka.ID);
     public static final DeferredRegister<BlockEntityType<?>> ENTITIES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, Magicka.ID);
-    public static final DeferredBlock<Block> EARTH = BLOCKS.register("magic_earth", () -> new TemporaryBlock(
-            properties().strength(1.5F).sound(SoundType.STONE)));
-    public static final DeferredBlock<Block> ICE = BLOCKS.register("magic_ice", () -> new TemporaryBlock(
-            properties().strength(0.4F).friction(0.98F).sound(SoundType.GLASS)));
-    public static final DeferredBlock<Block> ROOT = BLOCKS.register("magic_root", () -> new TemporaryBlock(
-            properties().strength(0.8F).sound(SoundType.WOOD)));
-    public static final DeferredBlock<Block> ARCANE = BLOCKS.register("magic_arcane", () -> new TemporaryBlock(
-            properties().strength(1F).lightLevel(s -> 10).sound(SoundType.AMETHYST)));
-    public static final DeferredBlock<Block> PUDDLE = BLOCKS.register("magic_puddle", () -> new TemporaryBlock(
-            properties().strength(0F).noCollission().noOcclusion().sound(SoundType.SLIME_BLOCK)));
-    public static final DeferredBlock<Block> LIGHT = BLOCKS.register("magic_light", () -> new TemporaryBlock(
-            properties().strength(0F).noCollission().noOcclusion().lightLevel(s -> 15).sound(SoundType.AMETHYST_CLUSTER)));
-    public static final DeferredBlock<Block> GLOW = BLOCKS.register("magic_glowstone", () -> new TemporaryBlock(
-            properties().strength(0.3F).lightLevel(s -> 15).sound(SoundType.GLASS)));
-    public static final DeferredBlock<Block> COPPER = BLOCKS.register("magic_copper", () -> new TemporaryBlock(
-            properties().strength(1.5F).sound(SoundType.COPPER)));
-    public static final DeferredBlock<Block> COIL = BLOCKS.register("magic_tesla_coil", () -> new TemporaryBlock(
-            properties().strength(1.5F).lightLevel(s -> 13).sound(SoundType.COPPER_BULB)));
+    public static final DeferredBlock<Block> EARTH = BLOCKS.registerBlock("magic_earth", TemporaryBlock::new,
+            () -> properties().strength(1.5F).sound(SoundType.STONE));
+    public static final DeferredBlock<Block> ICE = BLOCKS.registerBlock("magic_ice", TemporaryBlock::new,
+            () -> properties().strength(0.4F).friction(0.98F).sound(SoundType.GLASS));
+    public static final DeferredBlock<Block> ROOT = BLOCKS.registerBlock("magic_root", TemporaryBlock::new,
+            () -> properties().strength(0.8F).sound(SoundType.WOOD));
+    public static final DeferredBlock<Block> ARCANE = BLOCKS.registerBlock("magic_arcane", TemporaryBlock::new,
+            () -> properties().strength(1F).lightLevel(s -> 10).sound(SoundType.AMETHYST));
+    public static final DeferredBlock<Block> PUDDLE = BLOCKS.registerBlock("magic_puddle", TemporaryBlock::new,
+            () -> properties().strength(0F).noCollision().noOcclusion().sound(SoundType.SLIME_BLOCK));
+    public static final DeferredBlock<Block> LIGHT = BLOCKS.registerBlock("magic_light", TemporaryBlock::new,
+            () -> properties().strength(0F).noCollision().noOcclusion().lightLevel(s -> 15).sound(SoundType.AMETHYST_CLUSTER));
+    public static final DeferredBlock<Block> GLOW = BLOCKS.registerBlock("magic_glowstone", TemporaryBlock::new,
+            () -> properties().strength(0.3F).lightLevel(s -> 15).sound(SoundType.GLASS));
+    public static final DeferredBlock<Block> COPPER = BLOCKS.registerBlock("magic_copper", TemporaryBlock::new,
+            () -> properties().strength(1.5F).sound(SoundType.COPPER));
+    public static final DeferredBlock<Block> COIL = BLOCKS.registerBlock("magic_tesla_coil", TemporaryBlock::new,
+            () -> properties().strength(1.5F).lightLevel(s -> 13).sound(SoundType.COPPER_BULB));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MagicBlockEntity>> DATA = ENTITIES.register(
-            "construction", () -> BlockEntityType.Builder.of(MagicBlockEntity::new, EARTH.get(), ICE.get(), ROOT.get(), ARCANE.get(), PUDDLE.get(), LIGHT.get(), GLOW.get(), COPPER.get(), COIL.get()).build(null));
+            "construction", () -> new BlockEntityType<>(MagicBlockEntity::new, EARTH.get(), ICE.get(), ROOT.get(), ARCANE.get(), PUDDLE.get(), LIGHT.get(), GLOW.get(), COPPER.get(), COIL.get()));
 
     private static BlockBehaviour.Properties properties() {
-        return BlockBehaviour.Properties.of().noLootTable().pushReaction(PushReaction.BLOCK);
+        return BlockBehaviour.Properties.of().noLootTable().pushReaction(PushReaction.IMMOVEABLE);
     }
 
     public static final class TemporaryBlock extends Block implements EntityBlock {
@@ -57,8 +57,8 @@ public final class MagicBlocks {
             if (state.is(LIGHT.get())) return Block.box(5, 5, 5, 11, 11, 11);
             return super.getShape(state, level, pos, context);
         }
-        @Override protected void entityInside(BlockState state, Level level, BlockPos pos, net.minecraft.world.entity.Entity entity) {
-            if (!level.isClientSide && state.is(PUDDLE.get()) && entity instanceof net.minecraft.world.entity.LivingEntity living) {
+        @Override protected void entityInside(BlockState state, Level level, BlockPos pos, net.minecraft.world.entity.Entity entity, net.minecraft.world.entity.InsideBlockEffectApplier effects, boolean precise) {
+            if (!level.isClientSide() && state.is(PUDDLE.get()) && entity instanceof net.minecraft.world.entity.LivingEntity living) {
                 MagicStatuses.apply(living, MagicStatuses.Status.WET, 100, 1); living.clearFire();
             }
             if (state.is(ROOT.get()) && entity instanceof net.minecraft.world.entity.Mob living) {
@@ -77,7 +77,7 @@ public final class MagicBlocks {
         @Override public BlockEntity newBlockEntity(BlockPos pos, BlockState state) { return new MagicBlockEntity(pos, state); }
         @Override public boolean isLadder(BlockState state,net.minecraft.world.level.LevelReader level,BlockPos pos,net.minecraft.world.entity.LivingEntity entity){return state.is(ROOT.get());}
         @Override public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-            if (level.isClientSide || type != DATA.get()) return null;
+            if (level.isClientSide() || type != DATA.get()) return null;
             return (world, pos, block, data) -> ((MagicBlockEntity) data).tick((ServerLevel) world);
         }
     }
@@ -127,21 +127,21 @@ public final class MagicBlocks {
             if (world.hasChunkAt(root) && (!(world.getBlockEntity(root) instanceof MagicBlockEntity anchor)
                     || !anchor.construction.equals(construction))) world.removeBlock(worldPosition, false);
         }
-        @Override protected void saveAdditional(CompoundTag tag, HolderLookup.Provider lookup) {
-            super.saveAdditional(tag, lookup);
-            tag.putUUID("Owner", owner); tag.putUUID("Construction", construction);
+        @Override protected void saveAdditional(net.minecraft.world.level.storage.ValueOutput tag) {
+            super.saveAdditional(tag);
+            tag.store("Owner", net.minecraft.core.UUIDUtil.CODEC, owner); tag.store("Construction", net.minecraft.core.UUIDUtil.CODEC, construction);
             tag.putLong("Root", root.asLong()); tag.putLong("Expires", expires); tag.putBoolean("Floating", floating);
             tag.putFloat("Integrity",integrity);tag.putFloat("MaxIntegrity",maxIntegrity);tag.putFloat("Heat",heat);tag.putString("Material",material);tag.putBoolean("Regenerates",regenerates);
         }
-        @Override protected void loadAdditional(CompoundTag tag, HolderLookup.Provider lookup) {
-            super.loadAdditional(tag, lookup);
-            if (tag.hasUUID("Owner")) owner = tag.getUUID("Owner");
-            if (tag.hasUUID("Construction")) construction = tag.getUUID("Construction");
-            root = tag.contains("Root") ? BlockPos.of(tag.getLong("Root")) : worldPosition;
-            expires = tag.contains("Expires") ? tag.getLong("Expires") : 0;
-            floating = tag.getBoolean("Floating");
-            integrity=tag.contains("Integrity") ? tag.getFloat("Integrity") : 8;maxIntegrity=tag.contains("MaxIntegrity") ? tag.getFloat("MaxIntegrity") : 8;
-            heat=tag.getFloat("Heat");material=tag.contains("Material") ? tag.getString("Material") : "earth";regenerates=tag.getBoolean("Regenerates");
+        @Override protected void loadAdditional(net.minecraft.world.level.storage.ValueInput tag) {
+            super.loadAdditional(tag);
+            tag.read("Owner", net.minecraft.core.UUIDUtil.CODEC).ifPresent(id -> owner = id);
+            tag.read("Construction", net.minecraft.core.UUIDUtil.CODEC).ifPresent(id -> construction = id);
+            root = tag.getLong("Root").map(BlockPos::of).orElse(worldPosition);
+            expires = tag.getLongOr("Expires", 0);
+            floating = tag.getBooleanOr("Floating", false);
+            integrity=tag.getFloatOr("Integrity", 8);maxIntegrity=tag.getFloatOr("MaxIntegrity", 8);
+            heat=tag.getFloatOr("Heat", 0);material=tag.getStringOr("Material", "earth");regenerates=tag.getBooleanOr("Regenerates", false);
         }
     }
     private MagicBlocks() {}

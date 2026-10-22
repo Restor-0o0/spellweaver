@@ -26,13 +26,13 @@ public final class MagicStats {
 
     public static int[] defaults(){int[] v=new int[COUNT];Arrays.fill(v,DEFAULT);return v;}
     public static int[] get(Player player){
-        int[] values=defaults();CompoundTag tag=player.getPersistentData().getCompound(TAG);
-        for(Stat s:Stat.values())if(tag.contains(s.key()))values[s.ordinal()]=s.clamp(tag.getInt(s.key()));
+        int[] values=defaults();CompoundTag tag=player.getPersistentData().getCompoundOrEmpty(TAG);
+        for(Stat s:Stat.values())if(tag.contains(s.key()))values[s.ordinal()]=s.clamp(tag.getIntOr(s.key(), 0));
         return values;
     }
     public static void set(ServerPlayer player,int index,int value){
         if(index<0 || index>=COUNT)return;
-        Stat stat=Stat.values()[index];var data=player.getPersistentData();CompoundTag tag=data.getCompound(TAG);
+        Stat stat=Stat.values()[index];var data=player.getPersistentData();CompoundTag tag=data.getCompoundOrEmpty(TAG);
         tag.putInt(stat.key(),stat.clamp(value));
         data.put(TAG,tag);CACHE.remove(player.getUUID());sync(player);
     }
@@ -149,7 +149,7 @@ public final class MagicStats {
     @SubscribeEvent public void respawn(PlayerEvent.PlayerRespawnEvent event){if(event.getEntity() instanceof ServerPlayer p)sync(p);}
     @SubscribeEvent public void logout(PlayerEvent.PlayerLoggedOutEvent event){CACHE.remove(event.getEntity().getUUID());}
     @SubscribeEvent public void clone(PlayerEvent.Clone event){
-        var tag=event.getOriginal().getPersistentData().getCompound(TAG);
+        var tag=event.getOriginal().getPersistentData().getCompoundOrEmpty(TAG);
         if(!tag.isEmpty())event.getEntity().getPersistentData().put(TAG,tag.copy());
         CACHE.remove(event.getEntity().getUUID());
     }

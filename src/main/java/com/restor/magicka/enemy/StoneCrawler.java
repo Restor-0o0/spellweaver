@@ -73,8 +73,8 @@ public class StoneCrawler extends SpecialEnemy {
     @Override protected float physicalDamage(DamageSource source, float amount) {
         return armored() && !source.is(DamageTypes.GENERIC_KILL) && !source.is(DamageTypes.FELL_OUT_OF_WORLD) ? amount * ARMORED : amount;
     }
-    @Override protected void customServerAiStep() {
-        super.customServerAiStep();
+    @Override protected void customServerAiStep(net.minecraft.server.level.ServerLevel serverLevel) {
+        super.customServerAiStep(serverLevel);
         if (shattered > 0 && --shattered == 0) regrow();
         LivingEntity target = getTarget();
         if (target != null && cooldown == 0 && !casting() && !disabled() && distanceTo(target) < 3.5) {
@@ -84,7 +84,7 @@ public class StoneCrawler extends SpecialEnemy {
                     level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.STONE.defaultBlockState()), getX(), getY() + .1, getZ(), 50, 1.8, .1, 1.8, .15);
                 for (LivingEntity hit : level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(3, 1, 3), e -> e != this && !ally(e) && e.distanceToSqr(this) < 16)) {
                     hit.hurt(damageSources().mobAttack(this), 8);
-                    hit.push(0, .5, 0); hit.hurtMarked = true;
+                    hit.push(0, .5, 0); hit.syncVelocity = true;
                 }
                 cooldown = 70;
             });
@@ -96,10 +96,10 @@ public class StoneCrawler extends SpecialEnemy {
     @Override protected SoundEvent getHurtSound(DamageSource source) { return armored() ? SoundEvents.STONE_HIT : SoundEvents.RAVAGER_HURT; }
     @Override protected SoundEvent getDeathSound() { return SoundEvents.RAVAGER_DEATH; }
     @Override protected void playStepSound(BlockPos pos, BlockState state) { playSound(SoundEvents.IRON_GOLEM_STEP, .6f, .6f); }
-    @Override public void addAdditionalSaveData(CompoundTag tag) { super.addAdditionalSaveData(tag); tag.putInt("Shattered", shattered); }
-    @Override public void readAdditionalSaveData(CompoundTag tag) {
+    @Override public void addAdditionalSaveData(net.minecraft.world.level.storage.ValueOutput tag) { super.addAdditionalSaveData(tag); tag.putInt("Shattered", shattered); }
+    @Override public void readAdditionalSaveData(net.minecraft.world.level.storage.ValueInput tag) {
         super.readAdditionalSaveData(tag);
-        shattered = tag.getInt("Shattered");
+        shattered = tag.getIntOr("Shattered", 0);
         if (shattered > 0) { setState(1); getAttribute(Attributes.ARMOR).setBaseValue(0); }
     }
 }

@@ -60,23 +60,23 @@ public class Elemental extends PathfinderMob implements ElementalBody {
     @Override public boolean shouldBeSaved() { return false; }
     @Override public void checkDespawn() {}
     @Override public boolean removeWhenFarAway(double distance) { return false; }
-    @Override protected boolean shouldDropLoot() { return false; }
-    @Override public boolean causeFallDamage(float distance, float multiplier, DamageSource source) { return false; }
+    @Override protected boolean shouldDropLoot(ServerLevel level) { return false; }
+    @Override public boolean causeFallDamage(double distance, float multiplier, DamageSource source) { return false; }
     @Override public boolean fireImmune() { return element() == Element.FIRE || super.fireImmune(); }
     @Override public boolean canFreeze() { return element() != Element.COLD && super.canFreeze(); }
     @Override public void thunderHit(ServerLevel level, LightningBolt bolt) { if (element() != Element.LIGHTNING) super.thunderHit(level, bolt); }
     @Override public boolean canBeLeashed() { return false; }
-    @Override public boolean isAlliedTo(Entity other) {
+    @Override protected boolean considersEntityAsAlly(Entity other) {
         if (owner != null && (other == owner || other instanceof Elemental e && e.owner == owner || UndeadMinions.ownedBy(other, owner))) return true;
-        return super.isAlliedTo(other);
+        return super.considersEntityAsAlly(other);
     }
-    @Override public boolean hurt(DamageSource source, float amount) {
+    @Override public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
         if (owner != null && source.getEntity() != null && isAlliedTo(source.getEntity())) return false;
         if (element() == Element.FIRE && source.is(net.minecraft.tags.DamageTypeTags.IS_FIRE) || source.is(net.minecraft.world.damagesource.DamageTypes.DROWN)) return false;
-        return super.hurt(source, amount);
+        return super.hurtServer(level, source, amount);
     }
     @Override public void remove(RemovalReason reason) {
-        if (!level().isClientSide) Elementals.forget(this);
+        if (!level().isClientSide()) Elementals.forget(this);
         super.remove(reason);
     }
     void vanish() {
@@ -89,14 +89,14 @@ public class Elemental extends PathfinderMob implements ElementalBody {
 
     @Override public void tick() {
         super.tick();
-        if (level().isClientSide && tickCount % 2 == 0) {
+        if (level().isClientSide() && tickCount % 2 == 0) {
             var r = random;
             level().addParticle(Elementals.trail(element()), getX() + r.nextGaussian() * .2, getY() + getBbHeight() * (.3 + r.nextFloat() * .6), getZ() + r.nextGaussian() * .2, 0, flyer() ? -.02 : .02, 0);
         }
     }
 
-    @Override protected void customServerAiStep() {
-        if (!(level() instanceof ServerLevel level)) return;
+    @Override protected void customServerAiStep(net.minecraft.server.level.ServerLevel serverLevel) {
+        ServerLevel level = serverLevel;
         if (owner == null || spell == null || !owner.isAlive() || owner.isRemoved() || owner.level() != level || level.getGameTime() > until) { vanish(); return; }
         if (distanceToSqr(owner) > 24 * 24) { home(level); return; }
         if (target != null && !valid(target)) target = null;
@@ -123,7 +123,7 @@ public class Elemental extends PathfinderMob implements ElementalBody {
         Vec3 ground = EpicMagic.drop(level, side.add(0, 1.5, 0), 4, this);
         Vec3 at = ground == null ? owner.position() : ground;
         getNavigation().stop();
-        moveTo(at.x, at.y + (flyer() ? 1 : 0), at.z, owner.getYRot(), 0);
+        snapTo(at.x, at.y + (flyer() ? 1 : 0), at.z, owner.getYRot(), 0);
         setDeltaMovement(Vec3.ZERO);
         Elementals.burst(level, element(), at.add(0, .8, 0), 16, .4);
     }
@@ -185,10 +185,10 @@ public class Elemental extends PathfinderMob implements ElementalBody {
             case LIGHTNING, ARCANE -> Elementals.beam(owner, spell, e, hand(), target, graph);
             case DEATH -> { Elementals.beam(owner, spell, e, hand(), target, graph); heal(2); }
             case EARTH -> {
-                swing(net.minecraft.world.InteractionHand.MAIN_HAND);
+                swing(net.minecraft.world.InteractionHand.MAIN_HAND,net.minecraft.world.item.component.SwingAnimation.DEFAULT,false);
                 EffectGraph.entity(owner, target, spell, graph, position(), false);
                 Vec3 push = target.position().subtract(position()).multiply(1, 0, 1);
-                if (push.lengthSqr() > 1e-4) target.knockback(.8, -push.x, -push.z);
+                if (push.lengthSqr() > 1e-4) target.knockback(.8, -push.x, -push.z, damageSources().mobAttack(this), 0);
                 Elementals.burst(level, e, target.position().add(0, .3, 0), 18, .4);
                 level.playSound(null, getX(), getY(), getZ(), Elementals.shot(e), SoundSource.PLAYERS, 1f, .8f);
             }

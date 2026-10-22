@@ -16,7 +16,7 @@ public final class EffectGraph {
         String type = text(node,"type","");
         if (!TYPES.contains(type) || depth > 6) throw new IllegalArgumentException("Invalid effect graph node " + type);
         if (node.has("status")) MagicStatuses.Status.valueOf(text(node,"status","").toUpperCase(Locale.ROOT));
-        if (type.equals("apply_effect") && net.minecraft.resources.ResourceLocation.tryParse(text(node,"effect","")) == null) throw new IllegalArgumentException("Invalid mob effect " + text(node,"effect",""));
+        if (type.equals("apply_effect") && net.minecraft.resources.Identifier.tryParse(text(node,"effect","")) == null) throw new IllegalArgumentException("Invalid mob effect " + text(node,"effect",""));
         for (var field : node.entrySet()) if (field.getValue().isJsonPrimitive() && field.getValue().getAsJsonPrimitive().isNumber()) {
             double value = field.getValue().getAsDouble();
             if (!Double.isFinite(value) || Math.abs(value) > 72000) throw new IllegalArgumentException("Invalid effect number " + field.getKey());
@@ -78,7 +78,7 @@ public final class EffectGraph {
                     if (!canHarm(caster,target)) break;
                     Vec3 direction = target.position().subtract(origin).normalize();
                     if (direction.lengthSqr() < .001) direction = caster.getLookAngle();
-                    target.push(direction.x*amount,number(node,"lift",0),direction.z*amount); target.hurtMarked = true;
+                    target.push(direction.x*amount,number(node,"lift",0),direction.z*amount); target.syncVelocity = true;
                 }
                 case "conditional" -> {
                     boolean passes = switch(text(node,"condition","")) { case "wet" -> MagicStatuses.has(target,MagicStatuses.Status.WET); case "was_frozen","brittle" -> frozen; case "self" -> self; default -> false; };

@@ -31,8 +31,8 @@ public class FloodCaster extends SpecialEnemy {
         targetSelector.addGoal(1, new HurtByTargetGoal(this));
         targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, false));
     }
-    @Override protected void customServerAiStep() {
-        super.customServerAiStep();
+    @Override protected void customServerAiStep(net.minecraft.server.level.ServerLevel serverLevel) {
+        super.customServerAiStep(serverLevel);
         if (sprayCooldown > 0) sprayCooldown--;
         LivingEntity target = getTarget();
         if (target == null || casting() || disabled()) return;

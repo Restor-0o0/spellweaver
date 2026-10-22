@@ -4,14 +4,10 @@ import net.minecraft.gametest.framework.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.block.Blocks;
-import net.neoforged.neoforge.gametest.*;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import java.nio.file.*;
-
-@GameTestHolder(Magicka.ID)
-@PrefixGameTestTemplate(false)
 public final class QuickCastGameTests {
-    @GameTest(template="empty")
+    @MagicTest
     public static void gradualFillNeverAutoCasts(GameTestHelper h){
         var p=RecipeGameTests.caster(h);int packed=RecipeGameTests.spell("Stone Stair").formula().prepared().packed();
         CastingServer.quickFill(p,packed);h.assertTrue(CastingServer.snapshot(p).formula()==0,"Fill starts empty");
@@ -24,7 +20,7 @@ public final class QuickCastGameTests {
         h.assertTrue(Formula.unpack(CastingServer.snapshot(p).formula()).key().equals(Formula.unpack(packed).key()),"Final formula matches preset");
         CastingServer.input(p,9);h.assertTrue(CastingServer.snapshot(p).remaining()>0,"Player can cast manually after filling");h.succeed();
     }
-    @GameTest(template="empty")
+    @MagicTest
     public static void presetsPackTheSpokenOrder(GameTestHelper h){
         var ultimate=RecipeGameTests.spell("Absolute Zero");int packed=ultimate.spokenPacked();
         h.assertTrue(Formula.unpack(packed).elements().equals(ultimate.spoken()),"Preset keeps the incantation order");
@@ -37,7 +33,7 @@ public final class QuickCastGameTests {
         h.assertTrue(CastingServer.spoken(ultimate.formula().prepared()).elements().equals(ultimate.spoken()),"Any stored order is filled as the incantation");
         h.succeed();
     }
-    @GameTest(template="empty")
+    @MagicTest
     public static void quickFilledIncantationCastsTheUltimate(GameTestHelper h){
         var p=RecipeGameTests.caster(h);var ultimate=RecipeGameTests.spell("Absolute Zero");var server=new CastingServer();
         CastingServer.quickFill(p,ultimate.spokenPacked());
@@ -47,7 +43,7 @@ public final class QuickCastGameTests {
         h.assertTrue(cast!=null && cast.id().equals(ultimate.id()),"Preset casts the ultimate, got "+(cast==null?"nothing":cast.name()));
         h.succeed();
     }
-    @GameTest(template="empty",timeoutTicks=100)
+    @MagicTest(timeoutTicks=100)
     public static void presetsSavedBeforeTheFixStillWork(GameTestHelper h){
         var errors=new java.util.ArrayList<String>();var server=new CastingServer();
         for(var ultimate:RecipeRegistry.recipes().stream().filter(d->!d.incantation().isEmpty()).toList()){
@@ -61,7 +57,7 @@ public final class QuickCastGameTests {
         }
         if(errors.isEmpty())h.succeed();else h.fail("Presets saved in element order must still cast: "+String.join("; ",errors));
     }
-    @GameTest(template="empty")
+    @MagicTest
     public static void typingTheWrongOrderStillFizzles(GameTestHelper h){
         var p=RecipeGameTests.caster(h);var ultimate=RecipeGameTests.spell("Absolute Zero");
         CastingServer.input(p,7);
@@ -71,7 +67,7 @@ public final class QuickCastGameTests {
         h.assertTrue(cast.formula().size()==ultimate.formula().size()-1,"Broken incantation drops to the lesser spell, got "+cast.name());
         h.succeed();
     }
-    @GameTest(template="empty")
+    @MagicTest
     public static void cancelFillAndProtectCommittedCast(GameTestHelper h){
         var p=RecipeGameTests.caster(h);var other=RecipeGameTests.caster(h);int f=RecipeGameTests.spell("Firebomb").formula().prepared().packed();
         CastingServer.quickFill(p,f);var server=new CastingServer();for(int i=0;i<8;i++)server.tick(new PlayerTickEvent.Post(p));
@@ -81,7 +77,7 @@ public final class QuickCastGameTests {
         CastingServer.quickFill(p,f);h.assertTrue(CastingServer.snapshot(p).equals(before),"Preset cannot replace committed cast");
         CastingServer.quickFill(other,f);h.assertTrue(CastingServer.snapshot(p).equals(before),"Other player's fill is independent");h.succeed();
     }
-    @GameTest(template="empty")
+    @MagicTest
     public static void presetPersistenceAndValidation(GameTestHelper h){
         Path file=null;
         try{
@@ -91,14 +87,14 @@ public final class QuickCastGameTests {
             h.assertFalse(GrimoireState.valid(-1),"Negative formula rejected");h.assertFalse(GrimoireState.valid(formula|(1<<24)),"Oversized formula rejected");h.succeed();
         }catch(Exception e){h.fail(e.toString());}finally{if(file!=null)try{Files.deleteIfExists(file);}catch(Exception ignored){}}
     }
-    @GameTest(template="empty")
+    @MagicTest
     public static void constructionTagsReflectBehavior(GameTestHelper h){
         h.assertTrue(SpellTags.of(RecipeGameTests.spell("Stone Stair")).contains("construction"),"Stairs have creation tag");
         h.assertTrue(SpellTags.of(RecipeGameTests.spell("Ice Step")).contains("construction"),"Ice foothold has creation tag");
         h.assertFalse(SpellTags.of(RecipeGameTests.spell("Pebble")).contains("construction"),"Earth projectile is not a building spell");
         h.assertTrue(SpellTags.of(RecipeGameTests.spell("Guardian Stone")).contains("summon"),"Summons have their own category");h.succeed();
     }
-    @GameTest(template="empty",timeoutTicks=40)
+    @MagicTest(timeoutTicks=40)
     public static void instantModeCastsWithoutWindup(GameTestHelper h){
         var p=RecipeGameTests.caster(h);p.setXRot(-45);h.setBlock(new BlockPos(1,1,2),Blocks.STONE);
         var spike=RecipeGameTests.spell("Ice Spike");var plan=new MagicConstructionManager.Plan(p,spike,true,null);
@@ -119,7 +115,7 @@ public final class QuickCastGameTests {
             h.assertTrue(placed.size()>=5,"Whole spike appears in one tick, got "+placed);h.succeed();
         });
     }
-    @GameTest(template="empty")
+    @MagicTest
     public static void channeledSpellsRunWhileHeld(GameTestHelper h){
         var p=RecipeGameTests.caster(h);var server=new CastingServer();
         CastingServer.input(p,7);CastingServer.input(p,11);CastingServer.input(p,1);CastingServer.input(p,1);CastingServer.input(p,9);
@@ -133,7 +129,7 @@ public final class QuickCastGameTests {
         h.assertFalse(CastingServer.snapshot(p).instant(),"Mode toggles off");CastingServer.input(p,9);
         h.assertTrue(CastingServer.snapshot(p).remaining()>0 && !CastingServer.snapshot(p).channeling(),"Normal mode keeps windup");h.succeed();
     }
-    @GameTest(template="empty",timeoutTicks=80)
+    @MagicTest(timeoutTicks=80)
     public static void secretSequenceRaisesTower(GameTestHelper h){
         var p=RecipeGameTests.caster(h);var level=h.getLevel();p.setXRot(-30);
         BlockPos base=SecretBuild.base(p);var shape=SecretBuild.shape(base,p.getDirection());
@@ -144,12 +140,12 @@ public final class QuickCastGameTests {
         h.assertTrue(CastingServer.snapshot(p).formula()==0,"Wrong order is a normal cast");
         for(int e:new int[]{4,5,5,4})CastingServer.input(p,e);CastingServer.input(p,9);
         h.runAfterDelay(45,()->{
-            h.assertTrue(level.getBlockState(obstacle).is(Blocks.PINK_TERRACOTTA),"Obstacle replaced by the shaft, got "+level.getBlockState(obstacle));
+            h.assertTrue(level.getBlockState(obstacle).is(Blocks.DYED_TERRACOTTA.pink()),"Obstacle replaced by the shaft, got "+level.getBlockState(obstacle));
             h.assertFalse(level.getBlockState(base.above(SecretBuild.HEIGHT-1)).isAir(),"Tip reaches full height");
             h.assertTrue(RecipeRegistry.recipes().stream().noneMatch(d->d.name().toLowerCase(java.util.Locale.ROOT).contains("secret")),"Hidden from the book");h.succeed();
         });
     }
-    @GameTest(template="empty",timeoutTicks=100)
+    @MagicTest(timeoutTicks=100)
     public static void tappedSkybridgeKeepsGrowing(GameTestHelper h){
         var p=RecipeGameTests.caster(h);h.setBlock(new BlockPos(1,1,4),Blocks.STONE);p.setXRot(30);var server=new CastingServer();
         CastingServer.input(p,7);CastingServer.input(p,11);for(int e:new int[]{4,4,4,6})CastingServer.input(p,e);CastingServer.input(p,9);CastingServer.input(p,12);
@@ -160,7 +156,7 @@ public final class QuickCastGameTests {
             h.assertTrue(blocks>=5,"Bridge keeps growing after a tap, got "+blocks);h.succeed();
         });
     }
-    @GameTest(template="empty",timeoutTicks=100)
+    @MagicTest(timeoutTicks=100)
     public static void everyRecipeInstant(GameTestHelper h){
         var errors=new java.util.ArrayList<String>();
         for(var d:RecipeRegistry.recipes())for(boolean self:new boolean[]{false,true}){
@@ -171,26 +167,26 @@ public final class QuickCastGameTests {
         }
         if(errors.isEmpty())h.succeed();else h.fail(String.join("; ",errors.subList(0,Math.min(20,errors.size()))));
     }
-    @GameTest(template="empty")
+    @MagicTest
     public static void rootsAreClimbable(GameTestHelper h){
         var p=RecipeGameTests.caster(h);p.setPos(h.absoluteVec(new Vec3(1.5,2,1.65)));h.setBlock(new BlockPos(1,2,2),MagicBlocks.ROOT.get());
         p.setDeltaMovement(Vec3.ZERO);p.horizontalCollision=true;
         MagicBlocks.climbRoots(new PlayerTickEvent.Pre(p));
         h.assertTrue(p.getDeltaMovement().y>=.2,"Pushing into roots lifts the player");h.succeed();
     }
-    @GameTest(template="empty",batch="distant",timeoutTicks=100)
+    @MagicTest(batch="distant",timeoutTicks=100)
     public static void meteorBeyondTenChunks(GameTestHelper h){
         var p=RecipeGameTests.caster(h);var level=h.getLevel();
         BlockPos target=h.absolutePos(new BlockPos(1,3,170));var forced=new java.util.ArrayList<net.minecraft.world.level.ChunkPos>();
         for(int z=p.blockPosition().getZ()>>4;z<=(target.getZ()>>4)+1;z++){
             var chunk=new net.minecraft.world.level.ChunkPos(target.getX()>>4,z);
-            if(!level.getForcedChunks().contains(chunk.toLong())){level.setChunkForced(chunk.x,chunk.z,true);forced.add(chunk);}
-            level.getChunk(chunk.x,chunk.z);
+            if(level.setChunkForced(chunk.x(),chunk.z(),true))forced.add(chunk);
+            level.getChunk(chunk.x(),chunk.z());
         }
         for(int z=p.blockPosition().getZ()+1;z<target.getZ();z++)for(int y=target.getY();y<=target.getY()+1;y++)level.setBlock(new BlockPos(target.getX(),y,z),Blocks.AIR.defaultBlockState(),3);
         level.setBlock(target,Blocks.STONE.defaultBlockState(),3);p.setYRot(0);p.setXRot(0);
         var hit=SpellAim.hit(p);h.assertTrue(hit.getBlockPos().equals(target) && p.distanceToSqr(hit.getLocation())>160*160,"Aim reaches a target over ten chunks away");
         SpellRuntime.cast(p,RecipeGameTests.spell("Arcane Meteor"),false);
-        h.runAfterDelay(45,()->{try{h.assertTrue(level.getBlockState(target).isAir(),"Meteor reaches and destroys distant target");h.succeed();}finally{for(var c:forced)level.setChunkForced(c.x,c.z,false);}});
+        h.runAfterDelay(45,()->{try{h.assertTrue(level.getBlockState(target).isAir(),"Meteor reaches and destroys distant target");h.succeed();}finally{for(var c:forced)level.setChunkForced(c.x(),c.z(),false);}});
     }
 }

@@ -4,7 +4,7 @@ import com.restor.magicka.GearItem;
 import com.restor.magicka.GearMenu;
 import com.restor.magicka.MagicGear;
 import com.restor.magicka.MagicStats;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
@@ -17,16 +17,15 @@ public final class GearScreen extends AbstractContainerScreen<GearMenu> {
     private static final int[] ROW_Y = {21, 53, 85};
 
     public GearScreen(GearMenu menu, Inventory inventory, Component title) {
-        super(menu, inventory, title);
-        imageWidth = 214;
-        imageHeight = 222;
+        super(menu, inventory, title, 214, 222);
         titleLabelX = 10;
         titleLabelY = 7;
         inventoryLabelX = 26;
         inventoryLabelY = 127;
     }
 
-    @Override protected void renderBg(GuiGraphics g, float partial, int mouseX, int mouseY) {
+    @Override public void extractBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float partial) {
+        super.extractBackground(g, mouseX, mouseY, partial);
         MagicUi.panel(g, leftPos, topPos, imageWidth, imageHeight);
         MagicUi.panel(g, leftPos + 18, topPos + 16, 104, 102);
         MagicUi.panel(g, leftPos + 126, topPos + 16, 80, 102);
@@ -42,12 +41,12 @@ public final class GearScreen extends AbstractContainerScreen<GearMenu> {
         summary(g);
     }
 
-    private static void socket(GuiGraphics g, int x, int y, boolean filled) {
+    private static void socket(GuiGraphicsExtractor g, int x, int y, boolean filled) {
         g.fill(x, y, x + 18, y + 18, 0xFF0E1119);
-        g.renderOutline(x, y, 18, 18, filled ? MagicUi.GOLD : 0xFF423E4C);
+        g.outline(x, y, 18, 18, filled ? MagicUi.GOLD : 0xFF423E4C);
     }
 
-    private void summary(GuiGraphics g) {
+    private void summary(GuiGraphicsExtractor g) {
         int[] deltas = new int[MagicStats.COUNT];
         Set<MagicGear.Trait> traits = EnumSet.noneOf(MagicGear.Trait.class);
         int replaced = 0;
@@ -94,20 +93,14 @@ public final class GearScreen extends AbstractContainerScreen<GearMenu> {
         return roles;
     }
 
-    @Override protected void renderTooltip(GuiGraphics g, int x, int y) {
+    @Override protected void extractTooltip(GuiGraphicsExtractor g, int x, int y) {
         Slot slot = hoveredSlot;
         if (slot instanceof GearMenu.GearSlot gear && !slot.hasItem())
-            g.renderTooltip(font, Component.translatable("screen.magicka.slot." + gear.gear.key()), x, y);
-        else super.renderTooltip(g, x, y);
+            g.setTooltipForNextFrame(font, Component.translatable("screen.magicka.slot." + gear.gear.key()), x, y);
+        else super.extractTooltip(g, x, y);
     }
 
-    @Override public void render(GuiGraphics g, int mouseX, int mouseY, float partial) {
-        renderBackground(g, mouseX, mouseY, partial);
-        super.render(g, mouseX, mouseY, partial);
-        renderTooltip(g, mouseX, mouseY);
-    }
-
-    @Override protected void renderLabels(GuiGraphics g, int mouseX, int mouseY) {
+    @Override protected void extractLabels(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         MagicUi.text(g, title, titleLabelX, titleLabelY, MagicUi.GOLD);
         MagicUi.text(g, playerInventoryTitle, inventoryLabelX, inventoryLabelY, MagicUi.MUTED);
     }

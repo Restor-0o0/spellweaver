@@ -22,11 +22,11 @@ public class SparkImp extends HoverEnemy {
     @Override protected double altitude() { return 3; }
     @Override protected double speed() { return .12; }
     @Override protected int chargeTicks() { return 12; }
-    @Override protected void customServerAiStep() {
+    @Override protected void customServerAiStep(net.minecraft.server.level.ServerLevel serverLevel) {
         if (tickCount % 20 == 0 && !casting())
             level().getEntitiesOfClass(ServerPlayer.class, getBoundingBox().inflate(18), SpecialEnemy::player).stream()
                     .min(Comparator.comparingDouble(p -> distanceToSqr(p) * (MagicStatuses.has(p, MagicStatuses.Status.WET) ? .25 : 1))).ifPresent(this::setTarget);
-        super.customServerAiStep();
+        super.customServerAiStep(serverLevel);
     }
     @Override protected void attack(LivingEntity target) {
         EnemyBolt.shoot(this, target, Element.LIGHTNING, 2, 1.1);

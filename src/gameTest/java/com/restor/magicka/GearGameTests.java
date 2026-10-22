@@ -3,17 +3,13 @@ package com.restor.magicka;
 import net.minecraft.gametest.framework.*;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.gametest.*;
-
-@GameTestHolder(Magicka.ID)
-@PrefixGameTestTemplate(false)
 public final class GearGameTests {
     private static void equip(ServerPlayer player, MagicGear.Slot slot, net.neoforged.neoforge.registries.DeferredItem<GearItem> item) {
         MagicGear.Loadout loadout = new MagicGear.Loadout(player);
         loadout.setItem(slot.ordinal(), new ItemStack(item.get()));
     }
 
-    @GameTest(template="empty")
+    @MagicTest
     public static void gearStatsAndAttributes(GameTestHelper h) {
         DeathGameTests.floor(h);
         ServerPlayer p = RecipeGameTests.caster(h);
@@ -29,7 +25,7 @@ public final class GearGameTests {
         h.succeed();
     }
 
-    @GameTest(template="empty")
+    @MagicTest
     public static void gearPatchesRecipe(GameTestHelper h) {
         DeathGameTests.floor(h);
         ServerPlayer p = RecipeGameTests.caster(h);
@@ -41,7 +37,7 @@ public final class GearGameTests {
         h.succeed();
     }
 
-    @GameTest(template="empty")
+    @MagicTest
     public static void gearSlotsRejectWrongKind(GameTestHelper h) {
         ItemStack ring = new ItemStack(MagicItems.CONDUCTOR_RING.get()), trinket = new ItemStack(MagicItems.GLASS_HEART.get());
         h.assertFalse(MagicGear.Slot.FOCUS.accepts(ring), "A ring is not a focus");
@@ -52,7 +48,7 @@ public final class GearGameTests {
         h.succeed();
     }
 
-    @GameTest(template="empty")
+    @MagicTest
     public static void gearCastBiasAndPersistence(GameTestHelper h) {
         DeathGameTests.floor(h);
         ServerPlayer p = RecipeGameTests.caster(h);

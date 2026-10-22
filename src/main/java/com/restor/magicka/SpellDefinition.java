@@ -1,13 +1,13 @@
 package com.restor.magicka;
 
 import com.google.gson.*;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import java.util.*;
 
-public record SpellDefinition(ResourceLocation id, SpellFormula formula, String name, String tier, String tags,
+public record SpellDefinition(Identifier id, SpellFormula formula, String name, String tier, String tags,
         SpellShape shape, OriginMode origin, int castTicks, List<JsonObject> effects, List<JsonObject> selfEffects,
         String selfMode, JsonObject delivery, JsonObject construction, String primaryText, String selfText, JsonObject source) {
-    public static SpellDefinition parse(ResourceLocation id, JsonObject json) {
+    public static SpellDefinition parse(Identifier id, JsonObject json) {
         JsonObject f = json.getAsJsonObject("formula");
         if (f == null) throw new IllegalArgumentException(id + ": missing formula");
         for (String key : f.keySet()) Element.valueOf(key.toUpperCase(Locale.ROOT));
@@ -68,7 +68,7 @@ public record SpellDefinition(ResourceLocation id, SpellFormula formula, String 
         return ordered;
     }
     public int spokenPacked() { return spokenFormula().packed(); }
-    private static SpellFormula ritual(ResourceLocation id, String order) {
+    private static SpellFormula ritual(Identifier id, String order) {
         Formula formula = new Formula();
         for (int i = 0; i < order.length(); i++) {
             int index = order.charAt(i) - '1';
