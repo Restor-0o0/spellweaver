@@ -4,7 +4,7 @@
     "life": 1,
     "arcane": 3
   },
-  "name": "Protego Maxima",
+  "name": "Great Aegis",
   "tier": "Signature",
   "tags": "DEF/CC",
   "shape": "targeted_zone",
@@ -33,6 +33,6 @@
     ]
   },
   "balanced": true,
-  "primary": "The great shield charm from Harry Potter. A golden dome of radius 6 rises where you stand for 10 s:\n• You and allies inside get resistance I\n• Foes can't get in: they are pushed out and take 0.5 ❤ arcane once a second while touching it\n• Hostile projectiles bounce off the dome and now count as yours",
+  "primary": "A great shield charm. A golden dome of radius 6 rises where you stand for 10 s:\n• You and allies inside get resistance I\n• Foes can't get in: they are pushed out and take 0.5 ❤ arcane once a second while touching it\n• Hostile projectiles bounce off the dome and now count as yours",
   "self_description": "A smaller dome of radius 3.5 moves with you."
 }

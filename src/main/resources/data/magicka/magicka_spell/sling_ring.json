@@ -5,7 +5,7 @@
     "life": 1,
     "arcane": 2
   },
-  "name": "Sling Ring Portal",
+  "name": "Spark Portal",
   "tier": "Signature",
   "tags": "MOVE/UTIL",
   "shape": "summon_object",
@@ -35,6 +35,6 @@
     ]
   },
   "balanced": true,
-  "primary": "Doctor Strange's sling ring. Two rings of orange sparks open for 12 s: one right in front of you, the other at the aimed spot. Anyone who steps into one comes out of the other, you included, and falls slowly for 2 s.",
+  "primary": "Two rings of orange sparks open for 12 s: one right in front of you, the other at the aimed spot. Anyone who steps into one comes out of the other, you included, and falls slowly for 2 s.",
   "self_description": "The second ring opens at your respawn point (or world spawn) — a way home."
 }

@@ -14,12 +14,12 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import java.util.*;
 
-public final class SecretBuild {
+public final class SecretBuild implements SecretSpell {
     static final String SEQUENCE = "5665";
     public static final int HEIGHT = 20;
     public static final boolean ENABLED = Boolean.getBoolean("magicka.secret") || SecretBuild.class.getResource("/magicka_secret.flag") != null;
 
-    public static boolean matches(String typed) { return ENABLED && typed.equals(SEQUENCE); }
+    @Override public boolean matches(String typed) { return ENABLED && typed.equals(SEQUENCE); }
 
     public static Map<BlockPos, Block> shape(BlockPos base, Direction facing) {
         Direction right = facing.getClockWise();
@@ -56,7 +56,7 @@ public final class SecretBuild {
                 : player.blockPosition().relative(facing, 8);
     }
 
-    public static void cast(ServerPlayer player) {
+    @Override public void cast(ServerPlayer player) {
         var level = player.serverLevel();
         Direction facing = player.getDirection();
         final BlockPos origin = base(player);
@@ -87,5 +87,4 @@ public final class SecretBuild {
         level.setBlock(pos, state, Block.UPDATE_ALL);
     }
 
-    private SecretBuild() {}
 }

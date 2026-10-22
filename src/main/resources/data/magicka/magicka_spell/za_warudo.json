@@ -4,7 +4,7 @@
     "cold": 1,
     "arcane": 3
   },
-  "name": "Za Warudo",
+  "name": "Time Stop",
   "tier": "Signature",
   "tags": "CC/UTIL",
   "shape": "nova",
@@ -35,6 +35,6 @@
     ]
   },
   "balanced": true,
-  "primary": "Dio's stand power from JoJo's Bizarre Adventure. Time stops within 16 blocks of you for 5 s. Every mob there that is not your ally freezes in place, even mid-air, and arrows and fireballs hang still. You move freely and can strike the frozen. When time resumes, projectiles fly on and every frozen mob is stunned for 1 s more.",
+  "primary": "Time stops within 16 blocks of you for 5 s. Every mob there that is not your ally freezes in place, even mid-air, and arrows and fireballs hang still. You move freely and can strike the frozen. When time resumes, projectiles fly on and every frozen mob is stunned for 1 s more.",
   "self_description": "Works the same: time stops around you."
 }

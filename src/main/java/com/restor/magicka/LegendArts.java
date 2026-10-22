@@ -29,7 +29,7 @@ import java.util.function.Predicate;
 
 import static com.restor.magicka.LegendMagic.*;
 
-/** Pop-culture signatures: anime, comics, games and the Witcher's signs. */
+/** Legendary signatures and the five elemental signs. */
 final class LegendArts {
     static void amaterasu(ServerPlayer p, SpellDefinition s, boolean self) {
         ServerLevel level = p.serverLevel();

@@ -5,7 +5,7 @@
     "earth": 1,
     "arcane": 2
   },
-  "name": "You Shall Not Pass",
+  "name": "Bridge Warden",
   "tier": "Signature",
   "tags": "CC/DMG",
   "shape": "targeted_zone",
@@ -45,6 +45,6 @@
     ]
   },
   "balanced": true,
-  "primary": "Gandalf on the bridge of Khazad-dûm. You strike the ground with your staff and a shining barrier 9 blocks wide rises 3 blocks ahead of you for 8 s. Foes that step into it are thrown back to the far side; at most once a second:\n• Damage 2 ❤ lightning (×2 on wet)\n• Stun for 1 s\nEnemy projectiles crossing the barrier burn up. You and your allies pass freely.",
+  "primary": "You strike the ground with your staff and a shining barrier 9 blocks wide rises 3 blocks ahead of you for 8 s. Foes that step into it are thrown back to the far side; at most once a second:\n• Damage 2 ❤ lightning (×2 on wet)\n• Stun for 1 s\nEnemy projectiles crossing the barrier burn up. You and your allies pass freely.",
   "self_description": "The barrier rises as a ring of radius 4 around you and throws foes outward."
 }

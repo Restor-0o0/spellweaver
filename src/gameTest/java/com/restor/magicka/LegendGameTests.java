@@ -21,10 +21,10 @@ import java.util.List;
 @GameTestHolder(Magicka.ID)
 @PrefixGameTestTemplate(false)
 public final class LegendGameTests {
-    private static final List<String> LEGENDS = List.of("Field of Flowers", "Zoltraak", "Kamehameha", "Rasengan", "Chidori", "Expelliarmus",
-            "Expecto Patronum", "Fus Ro Dah", "Explosion", "Za Warudo", "You Shall Not Pass", "Defibrillator", "Life Drain", "Purifying Flame",
-            "Cryosleep", "Phoenix Tears", "Kaioken", "Protego Maxima", "Zombie Cure", "Wellspring", "Amaterasu", "Mjolnir", "Accio", "Infinity",
-            "Scale of Obedience", "Judradjim", "Igni", "Aard", "Quen", "Axii", "Yrden", "Sling Ring Portal");
+    private static final List<String> LEGENDS = List.of("Field of Flowers", "Piercing Rays", "Spirit Wave", "Spiral Sphere", "Storm Lunge", "Disarming Bolt",
+            "Silver Stag", "Thunderous Shout", "Explosion", "Time Stop", "Bridge Warden", "Defibrillator", "Life Drain", "Purifying Flame",
+            "Cryosleep", "Phoenix Tears", "Crimson Aura", "Great Aegis", "Zombie Cure", "Wellspring", "Black Flame", "Mjolnir", "Beckon", "Infinity",
+            "Scales of Judgment", "Thunder Call", "Flame Sign", "Force Sign", "Ward Sign", "Calming Sign", "Trap Sign", "Spark Portal");
 
     private static Zombie dummy(GameTestHelper h, Vec3 at) {
         Zombie zombie = h.spawn(EntityType.ZOMBIE, at);
@@ -62,7 +62,7 @@ public final class LegendGameTests {
         var p = RecipeGameTests.caster(h);
         var zombie = dummy(h, new Vec3(1.5, 2, 4.5));
         zombie.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
-        SpellRuntime.cast(p, RecipeGameTests.spell("Expelliarmus"), false);
+        SpellRuntime.cast(p, RecipeGameTests.spell("Disarming Bolt"), false);
         h.succeedWhen(() -> {
             h.assertTrue(zombie.getMainHandItem().isEmpty(), "The zombie loses its sword");
             var dropped = h.getLevel().getEntitiesOfClass(ItemEntity.class, new AABB(h.absolutePos(BlockPos.ZERO)).inflate(8), i -> i.getItem().is(Items.IRON_SWORD));
@@ -77,7 +77,7 @@ public final class LegendGameTests {
         var p = RecipeGameTests.caster(h);
         Zombie zombie = h.spawn(EntityType.ZOMBIE, new Vec3(3.5, 2, 3.5));
         zombie.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.LEATHER_HELMET));
-        SpellRuntime.cast(p, RecipeGameTests.spell("Za Warudo"), false);
+        SpellRuntime.cast(p, RecipeGameTests.spell("Time Stop"), false);
         h.runAfterDelay(5, () -> h.assertTrue(zombie.isNoAi() && zombie.getPersistentData().getBoolean(LegendMagic.STOPPED_TAG), "The zombie freezes"));
         h.runAfterDelay(115, () -> {
             h.assertFalse(zombie.isNoAi() || zombie.getPersistentData().contains(LegendMagic.STOPPED_TAG), "Time resumes for the zombie");
@@ -92,7 +92,7 @@ public final class LegendGameTests {
         var p = RecipeGameTests.caster(h);
         var ahead = dummy(h, new Vec3(1.5, 2, 4.5));
         var behind = dummy(h, new Vec3(1.5, 2, -2.5));
-        SpellRuntime.cast(p, RecipeGameTests.spell("Fus Ro Dah"), false);
+        SpellRuntime.cast(p, RecipeGameTests.spell("Thunderous Shout"), false);
         h.succeedWhen(() -> {
             h.assertTrue(ahead.getHealth() < ahead.getMaxHealth(), "The shout hits the zombie ahead");
             h.assertTrue(behind.getHealth() == behind.getMaxHealth(), "The zombie behind is spared");
@@ -163,14 +163,14 @@ public final class LegendGameTests {
     @GameTest(template="empty", timeoutTicks=60, batch="legend_life")
     public static void quenShieldsTheCaster(GameTestHelper h) {
         var p = RecipeGameTests.caster(h);
-        SpellRuntime.cast(p, RecipeGameTests.spell("Quen"), false);
+        SpellRuntime.cast(p, RecipeGameTests.spell("Ward Sign"), false);
         h.succeedWhen(() -> h.assertTrue(p.hasEffect(MobEffects.ABSORPTION) && p.getAbsorptionAmount() > 0, "Quen grants absorption"));
     }
 
     @GameTest(template="empty", timeoutTicks=60, batch="legend_life")
     public static void kaiokenPowersUp(GameTestHelper h) {
         var p = RecipeGameTests.caster(h);
-        SpellRuntime.cast(p, RecipeGameTests.spell("Kaioken"), false);
+        SpellRuntime.cast(p, RecipeGameTests.spell("Crimson Aura"), false);
         h.succeedWhen(() -> h.assertTrue(p.hasEffect(MobEffects.DAMAGE_BOOST) && p.hasEffect(MobEffects.JUMP), "Kaioken grants strength and jump"));
     }
 
@@ -180,7 +180,7 @@ public final class LegendGameTests {
         var p = RecipeGameTests.caster(h);
         var ahead = dummy(h, new Vec3(1.5, 2, 4.5));
         var behind = dummy(h, new Vec3(1.5, 2, -2.5));
-        SpellRuntime.cast(p, RecipeGameTests.spell("Igni"), false);
+        SpellRuntime.cast(p, RecipeGameTests.spell("Flame Sign"), false);
         h.succeedWhen(() -> {
             h.assertTrue(ahead.getHealth() < ahead.getMaxHealth() && ahead.isOnFire(), "Igni burns the zombie ahead");
             h.assertTrue(behind.getHealth() == behind.getMaxHealth(), "The zombie behind is spared");
@@ -192,7 +192,7 @@ public final class LegendGameTests {
         DeathGameTests.floor(h);
         var p = RecipeGameTests.caster(h);
         var zombie = dummy(h, new Vec3(3.5, 2, 3.5));
-        SpellRuntime.cast(p, RecipeGameTests.spell("Judradjim"), true);
+        SpellRuntime.cast(p, RecipeGameTests.spell("Thunder Call"), true);
         h.runAfterDelay(10, () -> h.assertTrue(zombie.getHealth() == zombie.getMaxHealth(), "The cloud gathers first"));
         h.succeedWhen(() -> h.assertTrue(zombie.getHealth() < zombie.getMaxHealth(), "The thunder strikes the zombie"));
     }
@@ -204,7 +204,7 @@ public final class LegendGameTests {
         ItemEntity item = new ItemEntity(h.getLevel(), h.absoluteVec(new Vec3(3.5, 2, 3.5)).x, h.absoluteVec(new Vec3(3.5, 2, 3.5)).y, h.absoluteVec(new Vec3(3.5, 2, 3.5)).z, new ItemStack(Items.DIAMOND));
         item.setDeltaMovement(Vec3.ZERO);
         h.getLevel().addFreshEntity(item);
-        SpellRuntime.cast(p, RecipeGameTests.spell("Accio"), true);
+        SpellRuntime.cast(p, RecipeGameTests.spell("Beckon"), true);
         h.succeedWhen(() -> {
             h.assertTrue(item.getDeltaMovement().horizontalDistanceSqr() > 0 || item.distanceToSqr(p) < 4, "The diamond flies to the caster");
             item.discard();

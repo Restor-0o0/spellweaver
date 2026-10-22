@@ -81,12 +81,12 @@ public final class CastingServer {
                 s.windup = Math.max(1,(int)Math.round(s.recipe.castTicks()*MagicConfig.CAST_SCALE.get()));
                 boolean construction = s.intent == Intent.PRIMARY && s.recipe.shape().construction() || s.intent == Intent.SELF && s.recipe.selfMode().equals("construct");
                 s.total = s.windup + (construction ? s.recipe.budget()*s.recipe.interval() : 0);
-                s.secret = s.intent == Intent.PRIMARY && s.typed.length() == s.formula.size() && SecretBuild.matches(s.typed.toString());
+                s.secret = s.intent == Intent.PRIMARY && s.typed.length() == s.formula.size() && SecretSpell.INSTANCE.matches(s.typed.toString());
                 if (s.secret) s.total = s.windup;
                 boolean epic = !s.secret && s.intent == Intent.PRIMARY && s.recipe.epic();
                 s.anchor = epic ? player.position() : null;
                 if (s.secret && s.instant) {
-                    SecretBuild.cast(player);
+                    SecretSpell.INSTANCE.cast(player);
                     s.formula.clear(); s.recipe = null; s.total = 0;
                 } else if (epic && EpicMagic.cramped(player)) {
                     deny(player);
@@ -192,7 +192,7 @@ public final class CastingServer {
         }
         if (s.elapsed < s.windup && s.elapsed % 3 == 0) SpellRuntime.particles(player,s.recipe,player.getEyePosition().add(player.getLookAngle().scale(.6)),3,.15);
         if (s.elapsed == s.windup && s.anchor != null) { startEpic(player, s); sync(player, s); return; }
-        if (s.elapsed == s.windup) { if (s.secret) SecretBuild.cast(player); else { SpellRuntime.cast(player,s.recipe,s.intent == Intent.SELF); MagicGear.cast(player,s.recipe,s.intent == Intent.SELF); } }
+        if (s.elapsed == s.windup) { if (s.secret) SecretSpell.INSTANCE.cast(player); else { SpellRuntime.cast(player,s.recipe,s.intent == Intent.SELF); MagicGear.cast(player,s.recipe,s.intent == Intent.SELF); } }
         if (s.remaining == 0) { s.formula.clear(); s.recipe = null; }
         sync(player, s);
     }

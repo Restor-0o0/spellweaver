@@ -5,7 +5,7 @@
     "lightning": 1,
     "arcane": 2
   },
-  "name": "Kamehameha",
+  "name": "Spirit Wave",
   "tier": "Signature",
   "tags": "DMG/CC",
   "shape": "beam",
@@ -42,6 +42,6 @@
     ]
   },
   "balanced": true,
-  "primary": "From Dragon Ball. \"Ka… me… ha… me…\" — you gather a glowing ball of energy for 1.5 s, then release a thick blue beam that follows your aim for 1.2 s, up to 32 blocks. Every 0.2 s everyone in the beam:\n• Damage 1 ❤ arcane + 0.5 ❤ lightning (×2 on wet)\n• Pushed along the beam",
+  "primary": "You gather a glowing ball of energy for 1.5 s, then release a thick blue beam that follows your aim for 1.2 s, up to 32 blocks. Every 0.2 s everyone in the beam:\n• Damage 1 ❤ arcane + 0.5 ❤ lightning (×2 on wet)\n• Pushed along the beam",
   "self_description": "After the charge the beam fires straight down and launches you high into the air with slow falling for 5 s. Whoever stands below takes the beam's damage."
 }

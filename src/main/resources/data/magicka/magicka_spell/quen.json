@@ -5,7 +5,7 @@
     "earth": 1,
     "life": 1
   },
-  "name": "Quen",
+  "name": "Ward Sign",
   "tier": "Signature",
   "tags": "DEF",
   "shape": "nova",
@@ -45,6 +45,6 @@
     ]
   },
   "balanced": true,
-  "primary": "The Witcher's protective sign. An amber shield surrounds you for 20 s:\n• Absorbs 4 ❤ of damage\n• Whoever hits the shield within 8 blocks gets a spark back: damage 1 ❤ lightning and shock\nThe shield fades when it has absorbed everything.",
-  "self_description": "Quen always shields you."
+  "primary": "A protective sign. An amber shield surrounds you for 20 s:\n• Absorbs 4 ❤ of damage\n• Whoever hits the shield within 8 blocks gets a spark back: damage 1 ❤ lightning and shock\nThe shield fades when it has absorbed everything.",
+  "self_description": "The ward always shields you."
 }

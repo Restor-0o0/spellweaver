@@ -4,7 +4,7 @@
     "cold": 1,
     "arcane": 2
   },
-  "name": "Expelliarmus",
+  "name": "Disarming Bolt",
   "tier": "Signature",
   "tags": "CC/UTIL",
   "shape": "projectile",
@@ -48,6 +48,6 @@
     ]
   },
   "balanced": true,
-  "primary": "From Harry Potter. A fast red bolt flies up to 44 blocks. The first creature hit:\n• Damage 1 ❤ arcane\n• Stun for 0.5 s\n• A monster drops the item from its main hand, and it flies toward you",
+  "primary": "A fast red bolt flies up to 44 blocks. The first creature hit:\n• Damage 1 ❤ arcane\n• Stun for 0.5 s\n• A monster drops the item from its main hand, and it flies toward you",
   "self_description": "Breaks what binds you:\n• Removes roots, stun, freezing and chill"
 }

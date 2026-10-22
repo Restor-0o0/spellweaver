@@ -18,7 +18,12 @@ repositories {
 }
 
 base {
-    archivesName = mod_id
+    archivesName = "spellweaver-neoforge-${minecraft_version}"
+}
+
+def licenseName = "LICENSE_${mod_id}"
+tasks.withType(Jar).configureEach {
+    from('LICENSE') { rename { licenseName } }
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
@@ -28,9 +33,13 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 sourceSets {
-    gameTest {
+    secret {
         compileClasspath += sourceSets.main.output + sourceSets.main.compileClasspath
         runtimeClasspath += sourceSets.main.output + sourceSets.main.runtimeClasspath
+    }
+    gameTest {
+        compileClasspath += sourceSets.main.output + sourceSets.secret.output + sourceSets.main.compileClasspath
+        runtimeClasspath += sourceSets.main.output + sourceSets.secret.output + sourceSets.main.runtimeClasspath
     }
 }
 
@@ -101,6 +110,7 @@ neoForge {
         // but multi mod projects should define one per mod
         "${mod_id}" {
             sourceSet(sourceSets.main)
+            sourceSet(sourceSets.secret)
             sourceSet(sourceSets.gameTest)
         }
     }
@@ -162,7 +172,7 @@ tasks.register('secretJar', Jar) {
     group = 'build'
     archiveClassifier = 'secret'
     from sourceSets.main.output
-    from 'src/secret/resources'
+    from sourceSets.secret.output
     manifest.from(tasks.jar.manifest)
 }
 tasks.named('assemble') { dependsOn 'secretJar' }

@@ -4,7 +4,7 @@
     "fire": 2,
     "death": 1
   },
-  "name": "Amaterasu",
+  "name": "Black Flame",
   "tier": "Signature",
   "tags": "DMG",
   "shape": "direct_target",
@@ -32,6 +32,6 @@
     ]
   },
   "balanced": true,
-  "primary": "Itachi's black flames from Naruto. The creature you look at within 32 blocks bursts into black fire that water can't put out, for 10 s:\n• Constant burning\n• Damage 0.75 ❤ death every second\n• If the victim dies, the flames jump to the nearest foe within 4 blocks",
+  "primary": "Unquenchable black flames. The creature you look at within 32 blocks bursts into black fire that water can't put out, for 10 s:\n• Constant burning\n• Damage 0.75 ❤ death every second\n• If the victim dies, the flames jump to the nearest foe within 4 blocks",
   "self_description": "A ring of black flames of radius 3 surrounds you for 5 s: foes who touch it burn and take 0.75 ❤ death once a second."
 }

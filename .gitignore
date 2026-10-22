@@ -5,3 +5,18 @@ run/
 run-data/
 *.iml
 __pycache__/
+repo/
+
+# local-only notes, design sources and modpack tooling
+CODEX_SESSION.md
+PACK.md
+*.zip
+Minecraft_Magicka_*.md
+docs/MEGADUNGEON_PACK.md
+tools/pack_*
+tools/kubejs/
+tools/launch_depths.bat
+tools/inspect_depths_world.py
+tools/densify_structures.py
+*.bat
+!gradlew.bat

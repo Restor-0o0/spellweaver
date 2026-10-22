@@ -36,6 +36,6 @@
     ]
   },
   "balanced": true,
-  "primary": "Gojo's Limitless from Jujutsu Kaisen. For 5 s an infinite space surrounds you, radius 3:\n• Hostile projectiles freeze in the air and fall when it ends\n• Foes can't come closer than 2 blocks: they are pushed away and chilled for 2 s once a second",
+  "primary": "For 5 s an infinite space surrounds you, radius 3:\n• Hostile projectiles freeze in the air and fall when it ends\n• Foes can't come closer than 2 blocks: they are pushed away and chilled for 2 s once a second",
   "self_description": "Infinity always surrounds you."
 }

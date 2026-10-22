@@ -4,7 +4,7 @@
     "lightning": 1,
     "earth": 2
   },
-  "name": "Judradjim",
+  "name": "Thunder Call",
   "tier": "Signature",
   "tags": "DMG/CC",
   "shape": "targeted_zone",
@@ -54,6 +54,6 @@
     ]
   },
   "balanced": true,
-  "primary": "The thunder-calling spell from Frieren. A storm cloud gathers over the aimed spot for 1.5 s, then three bolts strike. Foes within 4 blocks:\n• Damage 4 ❤ lightning (×2 on wet)\n• Stun for 1.5 s\n• Knocked back",
+  "primary": "A thunder-calling spell. A storm cloud gathers over the aimed spot for 1.5 s, then three bolts strike. Foes within 4 blocks:\n• Damage 4 ❤ lightning (×2 on wet)\n• Stun for 1.5 s\n• Knocked back",
   "self_description": "The storm gathers right above you; you are not hurt."
 }

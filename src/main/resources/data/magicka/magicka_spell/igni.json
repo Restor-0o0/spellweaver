@@ -5,7 +5,7 @@
     "cold": 1,
     "lightning": 1
   },
-  "name": "Igni",
+  "name": "Flame Sign",
   "tier": "Signature",
   "tags": "DMG",
   "shape": "spray",
@@ -45,6 +45,6 @@
     ]
   },
   "balanced": true,
-  "primary": "The Witcher's sign of fire. A stream of flame bursts from your hand in a 60° cone, 7 blocks long. Every foe in it:\n• Damage 1.5 ❤ fire (halved on wet)\n• Burning for 4 s",
+  "primary": "A sign of fire. A stream of flame bursts from your hand in a 60° cone, 7 blocks long. Every foe in it:\n• Damage 1.5 ❤ fire (halved on wet)\n• Burning for 4 s",
   "self_description": "The flame bursts in all directions around you."
 }

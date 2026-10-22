@@ -4,7 +4,7 @@
     "water": 1,
     "earth": 2
   },
-  "name": "Aard",
+  "name": "Force Sign",
   "tier": "Signature",
   "tags": "CC/UTIL",
   "shape": "spray",
@@ -44,6 +44,6 @@
     ]
   },
   "balanced": true,
-  "primary": "The Witcher's telekinetic sign. A wave of force sweeps a 70° cone, 8 blocks long. Every foe in it:\n• Damage 0.5 ❤ earth\n• Stun for 1 s\n• Thrown far back\nThe wave also shatters fragile blocks like glass and leaves.",
+  "primary": "A telekinetic sign. A wave of force sweeps a 70° cone, 8 blocks long. Every foe in it:\n• Damage 0.5 ❤ earth\n• Stun for 1 s\n• Thrown far back\nThe wave also shatters fragile blocks like glass and leaves.",
   "self_description": "The wave bursts in all directions around you."
 }

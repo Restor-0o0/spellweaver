@@ -4,7 +4,7 @@
     "lightning": 2,
     "arcane": 2
   },
-  "name": "Chidori",
+  "name": "Storm Lunge",
   "tier": "Signature",
   "tags": "DMG/CC/MOVE",
   "shape": "dash",
@@ -46,6 +46,6 @@
     ]
   },
   "balanced": true,
-  "primary": "From Naruto. Lightning chirps like a thousand birds in your hand for 0.3 s, then you dash about 12 blocks forward. Everyone you pass through, once each:\n• Damage 3 ❤ lightning (×2 on wet)\n• Charge 30\n• Stun for 1.5 s\nThe dash stops at a wall; you take no fall damage.",
+  "primary": "Lightning chirps like a thousand birds in your hand for 0.3 s, then you dash about 12 blocks forward. Everyone you pass through, once each:\n• Damage 3 ❤ lightning (×2 on wet)\n• Charge 30\n• Stun for 1.5 s\nThe dash stops at a wall; you take no fall damage.",
   "self_description": "On you:\n• Charge 30\n• Speed III, 8 s"
 }

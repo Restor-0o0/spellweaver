@@ -5,7 +5,7 @@
     "arcane": 1,
     "death": 1
   },
-  "name": "Accio",
+  "name": "Beckon",
   "tier": "Signature",
   "tags": "UTIL/CC",
   "shape": "projectile",
@@ -34,6 +34,6 @@
     ]
   },
   "balanced": true,
-  "primary": "The summoning charm from Harry Potter. The first thing along your aim within 40 blocks flies into your hands: an item, experience, an arrow or a creature. Items lying next to it come along. A pulled foe is stunned for 0.5 s.",
+  "primary": "A summoning charm. The first thing along your aim within 40 blocks flies into your hands: an item, experience, an arrow or a creature. Items lying next to it come along. A pulled foe is stunned for 0.5 s.",
   "self_description": "All items and experience within 16 blocks fly to you."
 }

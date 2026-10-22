@@ -4,7 +4,7 @@
     "water": 1,
     "arcane": 2
   },
-  "name": "Rasengan",
+  "name": "Spiral Sphere",
   "tier": "Signature",
   "tags": "DMG/MOVE",
   "shape": "dash",
@@ -36,6 +36,6 @@
     ]
   },
   "balanced": true,
-  "primary": "From Naruto. A spinning sphere of chakra forms in your hand and you lunge forward. The first creature it touches within 0.7 s:\n• Damage 3 ❤ arcane\n• Wet for 3 s\n• Hurled far away in a spiral burst\nYou take no fall damage during the lunge.",
+  "primary": "A spinning sphere of energy forms in your hand and you lunge forward. The first creature it touches within 0.7 s:\n• Damage 3 ❤ arcane\n• Wet for 3 s\n• Hurled far away in a spiral burst\nYou take no fall damage during the lunge.",
   "self_description": "On you:\n• Speed III, 8 s"
 }

@@ -5,7 +5,7 @@
     "lightning": 1,
     "earth": 1
   },
-  "name": "Yrden",
+  "name": "Trap Sign",
   "tier": "Signature",
   "tags": "CC/ZONE",
   "shape": "targeted_zone",
@@ -34,6 +34,6 @@
     ]
   },
   "balanced": true,
-  "primary": "The Witcher's magic trap. A violet glyph of radius 4 glows at the aimed spot for 12 s:\n• Foes inside get slowness III and glow\n• Damage 0.5 ❤ lightning every second\n• Hostile projectiles flying through it slow down",
+  "primary": "A magic trap. A violet glyph of radius 4 glows at the aimed spot for 12 s:\n• Foes inside get slowness III and glow\n• Damage 0.5 ❤ lightning every second\n• Hostile projectiles flying through it slow down",
   "self_description": "The glyph is drawn under your feet."
 }
