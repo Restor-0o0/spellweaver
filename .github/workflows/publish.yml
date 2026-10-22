@@ -24,7 +24,7 @@ jobs:
         with:
           modrinth-id: WN5er9NK
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
-          curseforge-id: @CFID@
+          curseforge-id: 1759626
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           files: build/libs/!(*-secret).jar
