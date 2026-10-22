@@ -1,7 +1,7 @@
 package com.restor.magicka;
 
 import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -13,7 +13,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -95,7 +94,7 @@ final class LegendArts {
     }
     private static void hammer(ServerPlayer p, SpellDefinition s, Vec3 at) {
         ServerLevel level = p.level();
-        var bolt = EntityTypes.LIGHTNING_BOLT.create(level, EntitySpawnReason.MOB_SUMMONED);
+        var bolt = EntityType.LIGHTNING_BOLT.create(level, EntitySpawnReason.MOB_SUMMONED);
         if (bolt != null) { bolt.snapTo(at.x,at.y,at.z); bolt.setVisualOnly(true); level.addFreshEntity(bolt); }
         sound(level,at,SoundEvents.LIGHTNING_BOLT_THUNDER,2f,1f);
         sound(level,at,SoundEvents.ANVIL_LAND,1.2f,.5f);
@@ -237,7 +236,7 @@ final class LegendArts {
             }
             if (age != charge) return;
             for (int i = 0; i < 3; i++) {
-                var bolt = EntityTypes.LIGHTNING_BOLT.create(level, EntitySpawnReason.MOB_SUMMONED);
+                var bolt = EntityType.LIGHTNING_BOLT.create(level, EntitySpawnReason.MOB_SUMMONED);
                 if (bolt == null) continue;
                 double a = i*Math.PI*2/3;
                 bolt.snapTo(at.x+(i == 0 ? 0 : Math.cos(a)*1.5),at.y,at.z+(i == 0 ? 0 : Math.sin(a)*1.5));

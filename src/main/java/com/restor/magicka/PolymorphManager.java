@@ -1,7 +1,7 @@
 package com.restor.magicka;
 
 import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -12,7 +12,6 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -38,15 +37,15 @@ import java.util.*;
 public final class PolymorphManager {
     public static final String TAG = "magicka_polymorph";
     private static final String DATA = "magicka:polymorph", UNTIL = "magicka:polymorph_until", SHAPE = "magicka:polymorph_shape";
-    private static final Set<EntityType<?>> DENIED = Set.of(EntityTypes.ENDER_DRAGON, EntityTypes.WITHER,
-            EntityTypes.WARDEN, EntityTypes.ELDER_GUARDIAN);
+    private static final Set<EntityType<?>> DENIED = Set.of(EntityType.ENDER_DRAGON, EntityType.WITHER,
+            EntityType.WARDEN, EntityType.ELDER_GUARDIAN);
     private static final Map<UUID, LivingEntity> ACTIVE = new LinkedHashMap<>();
     private static final Map<UUID, String> PLAYERS = new LinkedHashMap<>();
 
     public static boolean apply(ServerPlayer caster, LivingEntity target, String id, int ticks) {
         if (!(target.level() instanceof ServerLevel level) || !EffectGraph.canHarm(caster, target)) return false;
         ticks = Math.clamp(ticks, 20, 24000);
-        EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.getOptional(Identifier.tryParse(id)).orElse(EntityTypes.SHEEP);
+        EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.getOptional(Identifier.tryParse(id)).orElse(EntityType.SHEEP);
         if (target instanceof Player) return target instanceof ServerPlayer victim && living(type, level) && applyPlayer(victim, type, ticks);
         if (ACTIVE.containsKey(target.getUUID())) {
             target.getPersistentData().putLong(UNTIL, level.getGameTime() + ticks);
@@ -129,7 +128,7 @@ public final class PolymorphManager {
         if (!(shape.level() instanceof ServerLevel level)) return null;
         CompoundTag original = shape.getPersistentData().getCompoundOrEmpty(DATA);
         shape.getPersistentData().remove(DATA);
-        Entity restored = original.isEmpty() ? null : EntityType.loadEntityRecursive(original, level, new net.minecraft.world.entity.EntitySpawnRequest(EntitySpawnReason.LOAD, false), entity -> entity);
+        Entity restored = original.isEmpty() ? null : EntityType.loadEntityRecursive(original, level, EntitySpawnReason.LOAD, entity -> entity);
         if (restored != null) {
             restored.snapTo(shape.getX(), shape.getY(), shape.getZ(), shape.getYRot(), shape.getXRot());
             if (restored instanceof LivingEntity living)

@@ -85,8 +85,8 @@ public final class MagicHud {
         }
     }
     public static void render(GuiGraphicsExtractor g){
-        var mc=Minecraft.getInstance();if(mc.player==null || mc.gui.hud.isHidden() || mc.player.isSpectator() || mc.gui.screen()!=null)return;
-        render(g,MagicNetwork.clientState,Math.max(mc.gui.hud.leftHeight,mc.gui.hud.rightHeight));
+        var mc=Minecraft.getInstance();if(mc.player==null || mc.options.hideGui || mc.player.isSpectator() || mc.screen!=null)return;
+        render(g,MagicNetwork.clientState,Math.max(mc.gui.leftHeight,mc.gui.rightHeight));
     }
     private MagicHud(){}
 }

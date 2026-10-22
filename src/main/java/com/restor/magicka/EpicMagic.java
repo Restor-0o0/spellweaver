@@ -1,7 +1,7 @@
 package com.restor.magicka;
 
 import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import com.google.gson.JsonObject;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -16,7 +16,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Enemy;
@@ -132,7 +131,7 @@ public final class EpicMagic {
         LivingEntity target = r.nextFloat() < .65f ? prey(p,area(p,focus,radius,6,cloud-focus.y+2),r) : null;
         Vec3 at = target != null ? target.position() : drop(level,scatter(r,focus,radius,cloud-1),cloud-focus.y+12,p);
         if (at == null) return;
-        var bolt = EntityTypes.LIGHTNING_BOLT.create(level, EntitySpawnReason.MOB_SUMMONED);
+        var bolt = EntityType.LIGHTNING_BOLT.create(level, EntitySpawnReason.MOB_SUMMONED);
         if (bolt != null) { bolt.snapTo(at.x,at.y,at.z); bolt.setVisualOnly(true); level.addFreshEntity(bolt); }
         sound(level,at,SoundEvents.LIGHTNING_BOLT_IMPACT,2f,.9f+r.nextFloat()*.3f);
         fx(level,ParticleTypes.ELECTRIC_SPARK,at.x,at.y+.3,at.z,24,.6,.4,.6,.15);

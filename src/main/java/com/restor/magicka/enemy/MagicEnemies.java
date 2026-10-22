@@ -1,7 +1,7 @@
 package com.restor.magicka.enemy;
 
 import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.restor.magicka.*;
 import net.minecraft.commands.Commands;
@@ -146,7 +146,7 @@ public final class MagicEnemies {
     }
     public static List<Mob> encounter(ServerLevel level, Vec3 center, String id) {
         List<Mob> spawned = new ArrayList<>();
-        var fodder = List.of(EntityTypes.ZOMBIE, EntityTypes.SKELETON, EntityTypes.SPIDER);
+        var fodder = List.of(EntityType.ZOMBIE, EntityType.SKELETON, EntityType.SPIDER);
         int index = 0;
         for (String entry : ENCOUNTERS.getOrDefault(id, List.of())) {
             String[] parts = entry.split("\\*");

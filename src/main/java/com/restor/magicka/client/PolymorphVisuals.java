@@ -40,7 +40,7 @@ public final class PolymorphVisuals {
         var state = renderer.createRenderState(dummy, event.getPartialTick());
         var pose = event.getPoseStack();
         pose.pushPose();
-        renderer.submit(state, pose, event.getSubmitNodeCollector(), mc.gameRenderer.gameRenderState().levelRenderState.cameraRenderState);
+        renderer.submit(state, pose, event.getSubmitNodeCollector(), mc.gameRenderer.getGameRenderState().levelRenderState.cameraRenderState);
         pose.popPose();
     }
 

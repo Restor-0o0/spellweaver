@@ -78,7 +78,7 @@ public final class MagicGameTests {
         BlockPos local = new BlockPos(1, 2, 1), pos = helper.absolutePos(local);
         helper.setBlock(local.below(), Blocks.STONE);
         var player = FakePlayerFactory.getMinecraft(helper.getLevel());
-        var pig = helper.spawnWithNoFreeWill(net.minecraft.world.entity.EntityTypes.PIG, local);
+        var pig = helper.spawnWithNoFreeWill(net.minecraft.world.entity.EntityType.PIG, local);
         helper.assertFalse(WorldPlacement.placeBlock(player, pos, MagicBlocks.EARTH.get().defaultBlockState(), UUID.randomUUID(), pos, false, false, null), "No suffocation placement");
         pig.discard(); helper.setBlock(local, Blocks.CHEST);
         helper.assertFalse(WorldPlacement.placeBlock(player, pos, MagicBlocks.EARTH.get().defaultBlockState(), UUID.randomUUID(), pos, false, false, null), "Do not replace terrain or containers");

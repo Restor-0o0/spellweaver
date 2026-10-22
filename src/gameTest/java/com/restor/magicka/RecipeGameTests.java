@@ -1,11 +1,10 @@
 package com.restor.magicka;
 
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import com.google.gson.JsonParser;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.*;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
@@ -59,7 +58,7 @@ public final class RecipeGameTests {
     public static void projectileTravelsAndHits(GameTestHelper h){
         var p=caster(h);Vec3 start=h.absoluteVec(new Vec3(1.5,2.5,1.5));
         h.setBlock(new BlockPos(1,1,5),Blocks.STONE);
-        var pig=h.spawnWithNoFreeWill(EntityTypes.PIG,new BlockPos(1,2,5));float health=pig.getHealth();
+        var pig=h.spawnWithNoFreeWill(EntityType.PIG,new BlockPos(1,2,5));float health=pig.getHealth();
         pig.setNoGravity(true);
         SpellRuntime.projectile(p,spell("Ember"),start,new Vec3(0,0,1),false);
         h.assertTrue(pig.getHealth()==health,"Projectile does not hit instantly");
@@ -68,7 +67,7 @@ public final class RecipeGameTests {
     @MagicTest(timeoutTicks=70)
     public static void waterZoneAndFreeze(GameTestHelper h){
         var p=caster(h);BlockPos local=new BlockPos(2,2,2);h.setBlock(local.below(),Blocks.STONE);
-        var pig=h.spawnWithNoFreeWill(EntityTypes.PIG,local);Vec3 point=Vec3.atCenterOf(h.absolutePos(local));
+        var pig=h.spawnWithNoFreeWill(EntityType.PIG,local);Vec3 point=Vec3.atCenterOf(h.absolutePos(local));
         SpellRuntime.wetZone(p,point,2,100);
         h.runAfterDelay(12,()->{
             h.assertTrue(MagicStatuses.has(pig,MagicStatuses.Status.WET),"Persistent zone wets occupants");
@@ -100,7 +99,7 @@ public final class RecipeGameTests {
     }
     @MagicTest(timeoutTicks=80)
     public static void mineAndHealingObject(GameTestHelper h){
-        var p=caster(h);var pig=h.spawnWithNoFreeWill(EntityTypes.PIG,new BlockPos(2,2,2));pig.setHealth(3);
+        var p=caster(h);var pig=h.spawnWithNoFreeWill(EntityType.PIG,new BlockPos(2,2,2));pig.setHealth(3);
         SpellRuntime.cast(p,spell("Healing Spring"),true);
         h.runAfterDelay(24,()->{
             h.assertTrue(pig.getHealth()>3,"Healing summon pulses");
@@ -114,7 +113,7 @@ public final class RecipeGameTests {
     }
     @MagicTest(timeoutTicks=80)
     public static void lightningChainAndRevival(GameTestHelper h){
-        var p=caster(h);var a=h.spawnWithNoFreeWill(EntityTypes.PIG,new BlockPos(1,2,2));var b=h.spawnWithNoFreeWill(EntityTypes.PIG,new BlockPos(3,2,2));
+        var p=caster(h);var a=h.spawnWithNoFreeWill(EntityType.PIG,new BlockPos(1,2,2));var b=h.spawnWithNoFreeWill(EntityType.PIG,new BlockPos(3,2,2));
         MagicStatuses.apply(a,MagicStatuses.Status.WET,100,1);MagicStatuses.apply(b,MagicStatuses.Status.WET,100,1);
         SpellRuntime.chain(p,spell("Stormwater"),a.position(),2,5,1);
         h.assertTrue(a.getHealth()<10 && b.getHealth()<10,"Water/lightning reaches multiple targets");
@@ -136,7 +135,7 @@ public final class RecipeGameTests {
     }
     @MagicTest(timeoutTicks=60)
     public static void projectileBlockedByWall(GameTestHelper h){
-        var p=caster(h);var pig=h.spawnWithNoFreeWill(EntityTypes.PIG,new BlockPos(1,2,5));pig.setNoGravity(true);
+        var p=caster(h);var pig=h.spawnWithNoFreeWill(EntityType.PIG,new BlockPos(1,2,5));pig.setNoGravity(true);
         for(int y=1;y<=4;y++)h.setBlock(new BlockPos(1,y,3),Blocks.STONE);
         SpellRuntime.projectile(p,spell("Ember"),h.absoluteVec(new Vec3(1.5,2.5,1.5)),new Vec3(0,0,1),false);
         h.runAfterDelay(15,()->{h.assertTrue(pig.getHealth()==10 && !MagicStatuses.has(pig,MagicStatuses.Status.BURNING),"Wall intercepts projectile before target");h.succeed();});
@@ -146,7 +145,7 @@ public final class RecipeGameTests {
         var p=caster(h);var point=h.absoluteVec(new Vec3(2,2,2));
         SpellRuntime.zone(p,spell("Steam Mine"),point,100,2,false,true);
         h.runAfterDelay(22,()->{
-            var pig=h.spawnWithNoFreeWill(EntityTypes.PIG,new BlockPos(2,2,2));pig.setNoGravity(true);
+            var pig=h.spawnWithNoFreeWill(EntityType.PIG,new BlockPos(2,2,2));pig.setNoGravity(true);
             h.runAfterDelay(12,()->{h.assertTrue(pig.getHealth()<10,"Armed persistent mine triggers on arriving target");h.succeed();});
         });
     }

@@ -25,7 +25,7 @@ public final class SpellVisuals {
         var mc=Minecraft.getInstance();if(mc.level==null){clear();return;}
         CUES.removeIf(c->++c.age>Math.min(100,c.packet.ticks()));
         for(Cue cue:CUES){
-            var p=cue.packet;if(p.from().distanceToSqr(mc.gameRenderer.mainCamera().position())>128*128)continue;
+            var p=cue.packet;if(p.from().distanceToSqr(mc.gameRenderer.getMainCamera().position())>128*128)continue;
             var formula=Formula.unpack(p.formula());
             if(fire(formula.key()))flames(mc,cue);
             if(cue.age%3!=0)continue;

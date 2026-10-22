@@ -1,14 +1,13 @@
 package com.restor.magicka;
 
-import net.minecraft.world.entity.EntityTypes;
-import net.minecraft.gametest.framework.*;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.gametest.framework.*;
 import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 public final class ElementalGameTests {
     private static Zombie dummy(GameTestHelper h, Vec3 at) {
-        Zombie zombie = h.spawn(EntityTypes.ZOMBIE, at);
+        Zombie zombie = h.spawn(EntityType.ZOMBIE, at);
         zombie.setNoAi(true);
         return zombie;
     }

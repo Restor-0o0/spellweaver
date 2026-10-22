@@ -71,7 +71,7 @@ public final class MagicClient {
     }
     private static boolean playable() {
         var mc = Minecraft.getInstance();
-        return mc.player != null && mc.level != null && mc.gui.screen() == null && !mc.player.isSpectator();
+        return mc.player != null && mc.level != null && mc.screen == null && !mc.player.isSpectator();
     }
     private static boolean dispatch(java.util.function.Predicate<KeyMapping> matches) {
         if (!playable()) return false;
@@ -81,11 +81,11 @@ public final class MagicClient {
             else Minecraft.getInstance().player.sendOverlayMessage(Component.translatable("hud.magicka.quick_empty",i+1));
             return true;
         }
-        if (matches.test(BOOK)) { Minecraft.getInstance().gui.setScreen(new SpellbookScreen()); return true; }
-        if (matches.test(SHAPE)) { Minecraft.getInstance().gui.setScreen(new ShapeEditorScreen()); return true; }
+        if (matches.test(BOOK)) { Minecraft.getInstance().setScreen(new SpellbookScreen()); return true; }
+        if (matches.test(SHAPE)) { Minecraft.getInstance().setScreen(new ShapeEditorScreen()); return true; }
         if (matches.test(LOADOUT)) { send(14); return true; }
         if (matches.test(SELF) && Minecraft.getInstance().player.getMainHandItem().is(com.restor.magicka.MagicItems.SPELLBOOK.get())) {
-            Minecraft.getInstance().gui.setScreen(new SpellbookScreen()); return true;
+            Minecraft.getInstance().setScreen(new SpellbookScreen()); return true;
         }
         var state = MagicNetwork.clientState;
         if (matches.test(TOGGLE)) {
@@ -117,7 +117,7 @@ public final class MagicClient {
     }
     @SubscribeEvent public static void useBook(net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.RightClickItem event) {
         if (event.getLevel().isClientSide() && event.getItemStack().is(com.restor.magicka.MagicItems.SPELLBOOK.get())) {
-            Minecraft.getInstance().gui.setScreen(new SpellbookScreen());
+            Minecraft.getInstance().setScreen(new SpellbookScreen());
             event.setCancellationResult(net.minecraft.world.InteractionResult.SUCCESS);
             event.setCanceled(true);
         }

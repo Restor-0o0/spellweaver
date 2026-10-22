@@ -140,7 +140,7 @@ public final class QuickCastGameTests {
         h.assertTrue(CastingServer.snapshot(p).formula()==0,"Wrong order is a normal cast");
         for(int e:new int[]{4,5,5,4})CastingServer.input(p,e);CastingServer.input(p,9);
         h.runAfterDelay(45,()->{
-            h.assertTrue(level.getBlockState(obstacle).is(Blocks.DYED_TERRACOTTA.pink()),"Obstacle replaced by the shaft, got "+level.getBlockState(obstacle));
+            h.assertTrue(level.getBlockState(obstacle).is(Blocks.PINK_TERRACOTTA),"Obstacle replaced by the shaft, got "+level.getBlockState(obstacle));
             h.assertFalse(level.getBlockState(base.above(SecretBuild.HEIGHT-1)).isAir(),"Tip reaches full height");
             h.assertTrue(RecipeRegistry.recipes().stream().noneMatch(d->d.name().toLowerCase(java.util.Locale.ROOT).contains("secret")),"Hidden from the book");h.succeed();
         });

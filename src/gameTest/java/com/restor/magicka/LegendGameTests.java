@@ -1,10 +1,9 @@
 package com.restor.magicka;
 
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.*;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.zombie.Zombie;
@@ -24,7 +23,7 @@ public final class LegendGameTests {
             "Scales of Judgment", "Thunder Call", "Flame Sign", "Force Sign", "Ward Sign", "Calming Sign", "Trap Sign", "Spark Portal");
 
     private static Zombie dummy(GameTestHelper h, Vec3 at) {
-        Zombie zombie = h.spawn(EntityTypes.ZOMBIE, at);
+        Zombie zombie = h.spawn(EntityType.ZOMBIE, at);
         zombie.setNoAi(true);
         zombie.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.LEATHER_HELMET));
         return zombie;
@@ -72,7 +71,7 @@ public final class LegendGameTests {
     public static void zaWarudoStopsAndResumesTime(GameTestHelper h) {
         DeathGameTests.floor(h);
         var p = RecipeGameTests.caster(h);
-        Zombie zombie = h.spawn(EntityTypes.ZOMBIE, new Vec3(3.5, 2, 3.5));
+        Zombie zombie = h.spawn(EntityType.ZOMBIE, new Vec3(3.5, 2, 3.5));
         zombie.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.LEATHER_HELMET));
         SpellRuntime.cast(p, RecipeGameTests.spell("Time Stop"), false);
         h.runAfterDelay(5, () -> h.assertTrue(zombie.isNoAi() && zombie.getPersistentData().getBooleanOr(LegendMagic.STOPPED_TAG, false), "The zombie freezes"));
@@ -135,12 +134,12 @@ public final class LegendGameTests {
     public static void zombieCureRestoresVillagers(GameTestHelper h) {
         DeathGameTests.floor(h);
         var p = RecipeGameTests.caster(h);
-        ZombieVillager zv = h.spawn(EntityTypes.ZOMBIE_VILLAGER, new Vec3(2.5, 2, 2.5));
+        ZombieVillager zv = h.spawn(EntityType.ZOMBIE_VILLAGER, new Vec3(2.5, 2, 2.5));
         zv.setNoAi(true);
         SpellRuntime.cast(p, RecipeGameTests.spell("Zombie Cure"), true);
         h.succeedWhen(() -> {
             h.assertFalse(zv.isAlive(), "The zombie villager is gone");
-            h.assertEntityPresent(EntityTypes.VILLAGER);
+            h.assertEntityPresent(EntityType.VILLAGER);
         });
     }
 

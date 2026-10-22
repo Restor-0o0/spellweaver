@@ -1,9 +1,8 @@
 package com.restor.magicka;
 
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.*;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.phys.Vec3;
 public final class AuditGameTests {
     @MagicTest
@@ -45,8 +44,8 @@ public final class AuditGameTests {
     @MagicTest
     public static void lightningLeavesHandAndChains(GameTestHelper h){
         DeathGameTests.floor(h);var p=RecipeGameTests.caster(h);
-        var aimed=h.spawnWithNoFreeWill(EntityTypes.ZOMBIE,new BlockPos(1,2,4));var near=h.spawnWithNoFreeWill(EntityTypes.ZOMBIE,new BlockPos(3,2,4));
-        var far=h.spawnWithNoFreeWill(EntityTypes.ZOMBIE,new BlockPos(1,2,14));
+        var aimed=h.spawnWithNoFreeWill(EntityType.ZOMBIE,new BlockPos(1,2,4));var near=h.spawnWithNoFreeWill(EntityType.ZOMBIE,new BlockPos(3,2,4));
+        var far=h.spawnWithNoFreeWill(EntityType.ZOMBIE,new BlockPos(1,2,14));
         SpellRuntime.cast(p,RecipeGameTests.spell("Bolt"),false);
         h.assertTrue(aimed.getHealth()<aimed.getMaxHealth(),"Aimed creature is struck");
         h.assertTrue(near.getHealth()<near.getMaxHealth(),"Lightning chains to a neighbour");
@@ -55,7 +54,7 @@ public final class AuditGameTests {
     @MagicTest
     public static void thunderLancePiercesLine(GameTestHelper h){
         DeathGameTests.floor(h);var p=RecipeGameTests.caster(h);
-        var first=h.spawnWithNoFreeWill(EntityTypes.ZOMBIE,new BlockPos(1,2,3));var second=h.spawnWithNoFreeWill(EntityTypes.ZOMBIE,new BlockPos(1,2,5));
+        var first=h.spawnWithNoFreeWill(EntityType.ZOMBIE,new BlockPos(1,2,3));var second=h.spawnWithNoFreeWill(EntityType.ZOMBIE,new BlockPos(1,2,5));
         h.setBlock(new BlockPos(1,2,8),net.minecraft.world.level.block.Blocks.STONE);h.setBlock(new BlockPos(1,3,8),net.minecraft.world.level.block.Blocks.STONE);
         SpellRuntime.cast(p,RecipeGameTests.spell("Thunder Lance"),false);
         h.assertTrue(first.getHealth()<first.getMaxHealth() && second.getHealth()<second.getMaxHealth(),"Every creature on the line is struck");h.succeed();
@@ -63,7 +62,7 @@ public final class AuditGameTests {
     @MagicTest(timeoutTicks=160)
     public static void teslaSpireBuildsCoilAndZaps(GameTestHelper h){
         DeathGameTests.floor(h);var p=RecipeGameTests.caster(h);
-        var enemy=h.spawnWithNoFreeWill(EntityTypes.ZOMBIE,new BlockPos(2,2,2));
+        var enemy=h.spawnWithNoFreeWill(EntityType.ZOMBIE,new BlockPos(2,2,2));
         SpellRuntime.cast(p,RecipeGameTests.spell("Tesla Spire"),true);
         h.runAfterDelay(120,()->{
             var blocks=MagicConstructionManager.get(h.getLevel()).structures().stream().filter(c->c.owner.equals(p.getUUID())).flatMap(c->c.blocks.stream()).toList();
@@ -122,7 +121,7 @@ public final class AuditGameTests {
     @MagicTest(timeoutTicks=40)
     public static void bubbleLiftRaisesEveryoneAround(GameTestHelper h){
         DeathGameTests.floor(h);var p=RecipeGameTests.caster(h);
-        var a=h.spawnWithNoFreeWill(EntityTypes.PIG,new BlockPos(2,2,3));var b=h.spawnWithNoFreeWill(EntityTypes.PIG,new BlockPos(3,2,2));
+        var a=h.spawnWithNoFreeWill(EntityType.PIG,new BlockPos(2,2,3));var b=h.spawnWithNoFreeWill(EntityType.PIG,new BlockPos(3,2,2));
         SpellRuntime.cast(p,RecipeGameTests.spell("Bubble Lift"),true);
         h.assertTrue(MagicStatuses.has(a,MagicStatuses.Status.LEVITATING) && MagicStatuses.has(b,MagicStatuses.Status.LEVITATING) && MagicStatuses.has(p,MagicStatuses.Status.LEVITATING),"Everyone nearby floats");h.succeed();
     }

@@ -1,9 +1,8 @@
 package com.restor.magicka;
 
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.*;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
@@ -36,7 +35,7 @@ public final class DeathGameTests {
         var servant=raised.getFirst();servant.setTarget(p);
         h.assertTrue(servant.getTarget()==null,"A servant never targets its master");
         h.assertTrue(EffectGraph.canHarm(p,servant),"Master spells hurt own servants too");
-        var enemy=h.spawnWithNoFreeWill(EntityTypes.SKELETON,new BlockPos(3,2,3));
+        var enemy=h.spawnWithNoFreeWill(EntityType.SKELETON,new BlockPos(3,2,3));
         h.runAfterDelay(25,()->{
             h.assertTrue(raised.stream().anyMatch(m->m.getTarget()==enemy),"Servants attack nearby monsters");
             h.assertTrue(raised.stream().allMatch(m->m.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.HEAD).is(net.minecraft.world.item.Items.SKELETON_SKULL)),"Servants wear skulls against sunlight");
@@ -80,15 +79,15 @@ public final class DeathGameTests {
     @MagicTest(timeoutTicks=80)
     public static void raiseDeadAndWithering(GameTestHelper h){
         floor(h);var p=RecipeGameTests.caster(h);
-        var fallen=h.spawnWithNoFreeWill(EntityTypes.SKELETON,new BlockPos(2,2,3));var corpse=fallen.position();
+        var fallen=h.spawnWithNoFreeWill(EntityType.SKELETON,new BlockPos(2,2,3));var corpse=fallen.position();
         fallen.hurt(p.damageSources().magic(),1000);
-        var pig=h.spawnWithNoFreeWill(EntityTypes.PIG,new BlockPos(0,2,3));
+        var pig=h.spawnWithNoFreeWill(EntityType.PIG,new BlockPos(0,2,3));
         MagicStatuses.apply(pig,MagicStatuses.Status.WITHERING,100,2);
         h.runAfterDelay(25,()->{
             h.assertTrue(RevivalManager.raise(p,corpse,3,4,200)==1,"The fallen skeleton rises");
-            h.assertTrue(minions(h).stream().anyMatch(m->m.getType()==EntityTypes.SKELETON),"Raised as its own kind");
+            h.assertTrue(minions(h).stream().anyMatch(m->m.getType()==EntityType.SKELETON),"Raised as its own kind");
             h.assertTrue(pig.getHealth()<pig.getMaxHealth(),"Withering hurts over time");
-            p.setHealth(4);var victim=h.spawnWithNoFreeWill(EntityTypes.ZOMBIE,new BlockPos(1,2,3));
+            p.setHealth(4);var victim=h.spawnWithNoFreeWill(EntityType.ZOMBIE,new BlockPos(1,2,3));
             EffectGraph.entity(p,victim,RecipeGameTests.spell("Soul Siphon"),RecipeGameTests.spell("Soul Siphon").effects(),p.position(),false);
             h.assertTrue(p.getHealth()>4 && victim.getHealth()<victim.getMaxHealth(),"Soul Siphon drains life");
             h.succeed();

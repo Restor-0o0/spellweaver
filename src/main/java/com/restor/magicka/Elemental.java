@@ -188,7 +188,7 @@ public class Elemental extends PathfinderMob implements ElementalBody {
                 swing(net.minecraft.world.InteractionHand.MAIN_HAND,false);
                 EffectGraph.entity(owner, target, spell, graph, position(), false);
                 Vec3 push = target.position().subtract(position()).multiply(1, 0, 1);
-                if (push.lengthSqr() > 1e-4) target.knockback(.8, -push.x, -push.z, damageSources().mobAttack(this), 0);
+                if (push.lengthSqr() > 1e-4) target.knockback(.8, -push.x, -push.z);
                 Elementals.burst(level, e, target.position().add(0, .3, 0), 18, .4);
                 level.playSound(null, getX(), getY(), getZ(), Elementals.shot(e), SoundSource.PLAYERS, 1f, .8f);
             }

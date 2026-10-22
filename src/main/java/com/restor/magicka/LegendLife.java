@@ -1,6 +1,6 @@
 package com.restor.magicka;
 
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
@@ -11,7 +11,6 @@ import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.equine.ZombieHorse;
 import net.minecraft.world.entity.monster.Enemy;
@@ -254,7 +253,7 @@ final class LegendLife {
         for (LivingEntity e : near(p,center,radius)) {
             LivingEntity cured = switch (e) {
                 case ZombieVillager zv -> {
-                    var villager = zv.convertTo(EntityTypes.VILLAGER,net.minecraft.world.entity.ConversionParams.single(zv,false,false),v -> {});
+                    var villager = zv.convertTo(EntityType.VILLAGER,net.minecraft.world.entity.ConversionParams.single(zv,false,false),v -> {});
                     if (villager != null) {
                         villager.setVillagerData(zv.getVillagerData());
                         villager.setVillagerXp(zv.getVillagerXp());
@@ -262,9 +261,9 @@ final class LegendLife {
                     }
                     yield villager;
                 }
-                case ZombifiedPiglin zp -> { var piglin = zp.convertTo(EntityTypes.PIGLIN,net.minecraft.world.entity.ConversionParams.single(zp,true,false),v -> {}); if (piglin != null) piglin.setImmuneToZombification(true); yield piglin; }
-                case Zoglin zg -> { var hoglin = zg.convertTo(EntityTypes.HOGLIN,net.minecraft.world.entity.ConversionParams.single(zg,true,false),v -> {}); if (hoglin != null) hoglin.setImmuneToZombification(true); yield hoglin; }
-                case ZombieHorse zh -> zh.convertTo(EntityTypes.HORSE,net.minecraft.world.entity.ConversionParams.single(zh,false,false),v -> {});
+                case ZombifiedPiglin zp -> { var piglin = zp.convertTo(EntityType.PIGLIN,net.minecraft.world.entity.ConversionParams.single(zp,true,false),v -> {}); if (piglin != null) piglin.setImmuneToZombification(true); yield piglin; }
+                case Zoglin zg -> { var hoglin = zg.convertTo(EntityType.HOGLIN,net.minecraft.world.entity.ConversionParams.single(zg,true,false),v -> {}); if (hoglin != null) hoglin.setImmuneToZombification(true); yield hoglin; }
+                case ZombieHorse zh -> zh.convertTo(EntityType.HORSE,net.minecraft.world.entity.ConversionParams.single(zh,false,false),v -> {});
                 default -> null;
             };
             if (cured != null) {

@@ -1,7 +1,7 @@
 package com.restor.magicka;
 
 import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.*;
 import net.minecraft.world.entity.*;
@@ -20,7 +20,7 @@ public final class RevivalManager {
     @SubscribeEvent(priority=net.neoforged.bus.api.EventPriority.LOWEST) public void death(LivingDeathEvent event) {
         if (event.getEntity().level() instanceof ServerLevel world && !event.isCanceled()) {
             var e = event.getEntity();
-            if (e.getType() == EntityTypes.ENDER_DRAGON || e.getType() == EntityTypes.WITHER || e.entityTags().contains("magicka_object") || e.entityTags().contains("magicka_revived")) return;
+            if (e.getType() == EntityType.ENDER_DRAGON || e.getType() == EntityType.WITHER || e.entityTags().contains("magicka_object") || e.entityTags().contains("magicka_revived")) return;
             if (SOULS.size() >= 256) return;
             SOULS.put(e.getUUID(),new Remains(e.getUUID(),world,e.position(),e.getType(),e instanceof ServerPlayer,world.getGameTime()+MagicConfig.REVIVE_TICKS.get()));
         }

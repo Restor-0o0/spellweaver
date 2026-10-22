@@ -1,14 +1,13 @@
 package com.restor.magicka;
 
-import net.minecraft.world.entity.EntityTypes;
-import net.minecraft.gametest.framework.*;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.gametest.framework.*;
 import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 public final class EpicGameTests {
     private static Zombie dummy(GameTestHelper h) {
-        Zombie zombie = h.spawn(EntityTypes.ZOMBIE, new Vec3(2.5, 2, 2.5));
+        Zombie zombie = h.spawn(EntityType.ZOMBIE, new Vec3(2.5, 2, 2.5));
         zombie.setNoAi(true);
         return zombie;
     }

@@ -1,7 +1,7 @@
 package com.restor.magicka;
 
 import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -33,7 +33,7 @@ public final class UndeadMinions {
     private static final Map<UUID, Minion> MINIONS = new LinkedHashMap<>();
 
     public static int summon(ServerPlayer owner, Vec3 point, String id, int count, int ticks) {
-        var type = BuiltInRegistries.ENTITY_TYPE.getOptional(Identifier.tryParse(id)).orElse(EntityTypes.ZOMBIE);
+        var type = BuiltInRegistries.ENTITY_TYPE.getOptional(Identifier.tryParse(id)).orElse(EntityType.ZOMBIE);
         int spawned = 0;
         for (int i = 0; i < Math.clamp(count, 1, 128); i++) if (spawn(owner, type, point, i, ticks)) spawned++;
         return spawned;
@@ -42,10 +42,10 @@ public final class UndeadMinions {
     public static boolean spawn(ServerPlayer owner, EntityType<?> type, Vec3 point, int index, int ticks) {
         ServerLevel level = owner.level();
         Entity created = type.create(level, EntitySpawnReason.MOB_SUMMONED);
-        if (!(created instanceof Mob mob) || !(created instanceof Enemy) || type == EntityTypes.WITHER || type == EntityTypes.ENDER_DRAGON || type == EntityTypes.WARDEN) {
+        if (!(created instanceof Mob mob) || !(created instanceof Enemy) || type == EntityType.WITHER || type == EntityType.ENDER_DRAGON || type == EntityType.WARDEN) {
             if (created != null) created.discard();
-            if (type == EntityTypes.ZOMBIE) return false;
-            return spawn(owner, EntityTypes.ZOMBIE, point, index, ticks);
+            if (type == EntityType.ZOMBIE) return false;
+            return spawn(owner, EntityType.ZOMBIE, point, index, ticks);
         }
         Vec3 at = place(level, mob, point, index);
         if (at == null || !WorldPlacement.allowed(owner, BlockPos.containing(at))) { mob.discard(); return false; }
