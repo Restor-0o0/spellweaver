@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " A ",
+    "ATA",
+    " A "
+  ],
+  "key": {
+    "A": "minecraft:amethyst_shard",
+    "T": "minecraft:snowball"
+  },
+  "result": {
+    "id": "magicka:charm_frostbite",
+    "count": 1
+  }
+}

@@ -118,7 +118,7 @@ public final class GearGameTests {
         ServerPlayer p = RecipeGameTests.caster(h);
         ItemStack plain = new ItemStack(MagicItems.WAND.get()), rolled = new ItemStack(MagicItems.WAND.get());
         rolled.set(GearBonus.TYPE.get(), new GearBonus(Map.of("fire", 25), List.of("quickening"),
-                List.of("{\"elements\":[\"fire\"],\"patch\":{\"delivery\":{\"hot_zone\":true}}}")));
+                List.of("{\"elements\":[\"fire\"],\"patch\":{\"delivery\":{\"hot_zone\":true}}}"), List.of()));
         new MagicGear.Loadout(p).setItem(MagicGear.Slot.FOCUS.ordinal(), plain);
         int base = MagicGear.total(p)[MagicStats.Stat.FIRE.ordinal()];
         h.assertFalse(MagicGear.has(p, MagicGear.Trait.QUICKENING), "A plain wand has no bonus trait");
@@ -144,9 +144,79 @@ public final class GearGameTests {
         h.succeed();
     }
 
+    private static ItemStack charmed(ItemStack base, net.neoforged.neoforge.registries.DeferredItem<CharmItem> charm) {
+        return CharmItem.socket(base, new ItemStack(charm.get()));
+    }
+
+    @MagicTest
+    public static void charmSockets(GameTestHelper h) {
+        ItemStack sword = charmed(new ItemStack(net.minecraft.world.item.Items.IRON_SWORD), MagicItems.CHARM_POWER);
+        h.assertFalse(sword.isEmpty(), "Vanilla tools accept a charm");
+        h.assertTrue(charmed(sword, MagicItems.CHARM_SWIFT).isEmpty(), "Vanilla tools have one socket");
+        h.assertTrue(charmed(new ItemStack(net.minecraft.world.item.Items.DIRT), MagicItems.CHARM_POWER).isEmpty(), "Plain blocks take no charms");
+        ItemStack lens = charmed(new ItemStack(MagicItems.SPLITTING_LENS.get()), MagicItems.CHARM_POWER);
+        h.assertTrue(charmed(lens, MagicItems.CHARM_POWER).isEmpty(), "The same charm cannot be inserted twice");
+        lens = charmed(charmed(lens, MagicItems.CHARM_SWIFT), MagicItems.CHARM_REACH);
+        h.assertTrue(GearBonus.of(lens).charms().size() == 3, "Rare gear has three sockets");
+        h.assertTrue(charmed(lens, MagicItems.CHARM_LEECH).isEmpty(), "A fourth charm does not fit");
+        h.assertTrue(GearBonus.of(CharmItem.strip(lens)).charms().isEmpty(), "A grindstone strips every charm");
+        h.succeed();
+    }
+
+    @MagicTest
+    public static void charmsOnVanillaArmor(GameTestHelper h) {
+        DeathGameTests.floor(h);
+        ServerPlayer p = RecipeGameTests.caster(h);
+        int base = MagicGear.total(p)[MagicStats.Stat.DAMAGE.ordinal()];
+        p.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST, charmed(new ItemStack(net.minecraft.world.item.Items.IRON_CHESTPLATE), MagicItems.CHARM_POWER));
+        p.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, charmed(new ItemStack(net.minecraft.world.item.Items.IRON_SWORD), MagicItems.CHARM_HOMING));
+        MagicGear.invalidate(p);
+        h.assertTrue(MagicGear.total(p)[MagicStats.Stat.DAMAGE.ordinal()] == base + 8, "A charmed chestplate adds its stats");
+        h.assertTrue(MagicGear.patch(p, RecipeGameTests.spell("Firebolt")).delivery().has("homing"), "A charmed sword changes projectiles");
+        h.succeed();
+    }
+
+    @MagicTest
+    public static void charmRulesChangeSpells(GameTestHelper h) {
+        DeathGameTests.floor(h);
+        ServerPlayer p = RecipeGameTests.caster(h);
+        ItemStack lens = charmed(charmed(charmed(new ItemStack(MagicItems.SPLITTING_LENS.get()), MagicItems.CHARM_RICOCHET), MagicItems.CHARM_DRIFT), MagicItems.CHARM_LEECH);
+        new MagicGear.Loadout(p).setItem(MagicGear.Slot.TRINKET_1.ordinal(), lens);
+        h.assertTrue(MagicGear.patch(p, RecipeGameTests.spell("Arcane Beam")).number("ricochet", 0) == 1, "Beams ricochet");
+        h.assertTrue(MagicGear.patch(p, RecipeGameTests.spell("Conductive Flood")).delivery().has("follow"), "Zones follow the caster");
+        h.assertTrue(hasEffect(MagicGear.patch(p, RecipeGameTests.spell("Firebolt")), "drain_life", null), "Damage spells drain life");
+        equip(p, MagicGear.Slot.TRINKET_2, MagicItems.THRAIN_GAUNTLET);
+        h.assertTrue(MagicGear.patch(p, RecipeGameTests.spell("Pebble")).number("bounce", 0) == 2, "Thrain's gauntlet bounces earth projectiles");
+        h.assertTrue(MagicItems.THRAIN_GAUNTLET.get().named, "Named gear is marked");
+        h.succeed();
+    }
+
+    @MagicTest
+    public static void sharedBlessingReachesAllies(GameTestHelper h) {
+        DeathGameTests.floor(h);
+        ServerPlayer p = RecipeGameTests.caster(h);
+        SpellDefinition cautery = RecipeGameTests.spell("Cautery");
+        h.assertFalse(cautery.selfEffects().isEmpty(), "Cautery has a self branch");
+        var friend = h.spawnWithNoFreeWill(EntityTypes.ZOMBIE, new BlockPos(2, 2, 1));
+        var scoreboard = h.getLevel().getScoreboard();
+        var team = scoreboard.addPlayerTeam("magicka_share_" + p.getUUID().toString().substring(0, 8));
+        scoreboard.addPlayerToTeam(p.getScoreboardName(), team);
+        scoreboard.addPlayerToTeam(friend.getScoreboardName(), team);
+        try {
+            h.assertTrue(MagicGear.share(p, cautery) >= 1, "Allies nearby share self spells");
+        } finally {
+            scoreboard.removePlayerTeam(team);
+        }
+        h.succeed();
+    }
+
     @MagicTest
     public static void gearHasRecipes(GameTestHelper h) {
-        for (var item : MagicItems.GEAR) {
+        for (var item : MagicItems.charms()) {
+            String id = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(item.get()).getPath();
+            h.assertTrue(GearGameTests.class.getResource("/data/magicka/recipe/" + id + ".json") != null, "Missing recipe for " + id);
+        }
+        for (var item : MagicItems.gear()) {
             String id = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(item.get()).getPath();
             h.assertTrue(GearGameTests.class.getResource("/data/magicka/recipe/" + id + ".json") != null, "Missing recipe for " + id);
         }
