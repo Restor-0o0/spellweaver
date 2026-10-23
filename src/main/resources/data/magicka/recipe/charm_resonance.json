@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " A ",
+    "ATA",
+    " A "
+  ],
+  "key": {
+    "A": "minecraft:amethyst_shard",
+    "T": "minecraft:echo_shard"
+  },
+  "result": {
+    "id": "magicka:charm_resonance",
+    "count": 1
+  }
+}

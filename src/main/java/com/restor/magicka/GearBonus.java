@@ -12,12 +12,13 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import java.util.*;
 
-public record GearBonus(Map<String, Integer> stats, List<String> traits, List<String> rules) {
-    public static final GearBonus EMPTY = new GearBonus(Map.of(), List.of(), List.of());
+public record GearBonus(Map<String, Integer> stats, List<String> traits, List<String> rules, List<String> charms) {
+    public static final GearBonus EMPTY = new GearBonus(Map.of(), List.of(), List.of(), List.of());
     public static final Codec<GearBonus> CODEC = RecordCodecBuilder.create(i -> i.group(
             Codec.unboundedMap(Codec.STRING, Codec.INT).optionalFieldOf("stats", Map.of()).forGetter(GearBonus::stats),
             Codec.STRING.listOf().optionalFieldOf("traits", List.of()).forGetter(GearBonus::traits),
-            Codec.STRING.listOf().optionalFieldOf("rules", List.of()).forGetter(GearBonus::rules)
+            Codec.STRING.listOf().optionalFieldOf("rules", List.of()).forGetter(GearBonus::rules),
+            Codec.STRING.listOf().optionalFieldOf("charms", List.of()).forGetter(GearBonus::charms)
     ).apply(i, GearBonus::new));
     public static final StreamCodec<ByteBuf, GearBonus> STREAM_CODEC = ByteBufCodecs.fromCodec(CODEC);
 
@@ -47,5 +48,30 @@ public record GearBonus(Map<String, Integer> stats, List<String> traits, List<St
         return result;
     }
 
-    public boolean isEmpty() { return stats.isEmpty() && traits.isEmpty() && rules.isEmpty(); }
+    public List<CharmItem> charmList() {
+        List<CharmItem> result = new ArrayList<>();
+        for (String id : charms) { CharmItem charm = CharmItem.byId(id); if (charm != null) result.add(charm); }
+        return result;
+    }
+
+    public void collect(int[] deltas, Set<MagicGear.Trait> traitsOut, List<GearRule> rulesOut) {
+        statMap().forEach((stat, delta) -> deltas[stat.ordinal()] += delta);
+        traitsOut.addAll(traitSet());
+        rulesOut.addAll(ruleList());
+        for (CharmItem charm : charmList()) {
+            charm.stats().forEach((stat, delta) -> deltas[stat.ordinal()] += delta);
+            traitsOut.addAll(charm.traits());
+            rulesOut.addAll(charm.rules());
+        }
+    }
+
+    public GearBonus withCharm(String id) {
+        List<String> next = new ArrayList<>(charms);
+        next.add(id);
+        return new GearBonus(stats, traits, rules, List.copyOf(next));
+    }
+
+    public GearBonus withoutCharms() { return new GearBonus(stats, traits, rules, List.of()); }
+
+    public boolean isEmpty() { return stats.isEmpty() && traits.isEmpty() && rules.isEmpty() && charms.isEmpty(); }
 }

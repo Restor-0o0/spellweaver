@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    " G ",
+    "GTG",
+    " G "
+  ],
+  "key": {
+    "G": "minecraft:diamond",
+    "T": "minecraft:brick"
+  },
+  "result": {
+    "id": "magicka:thrain_gauntlet",
+    "count": 1
+  }
+}
