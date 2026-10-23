@@ -11,6 +11,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -19,6 +20,9 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.AnvilUpdateEvent;
+import net.neoforged.neoforge.event.GrindstoneEvent;
+import net.neoforged.neoforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
@@ -27,7 +31,8 @@ import java.util.*;
 public final class MagicGear {
     public enum Trait {
         SHOCK_WARD, FROST_WARD, LIVING_REGEN, FIRE_FRAIL, STONEHEART, GLASS_HEART, BLOOD_FOCUS,
-        GRAVE_BELL, MIRROR_PRISM, SECOND_TONGUE, CHAOS_LENS, SELF_CONDUCTIVE, QUICKENING, DESPERATE_MENDING
+        GRAVE_BELL, MIRROR_PRISM, SECOND_TONGUE, CHAOS_LENS, SELF_CONDUCTIVE, QUICKENING, DESPERATE_MENDING,
+        SHARED_BLESSING, RESONANCE
     }
 
     public enum Slot {
@@ -55,6 +60,7 @@ public final class MagicGear {
     private static final Map<UUID, Integer> REVISIONS = new HashMap<>();
     private static final Map<UUID, Long> ECHOES = new HashMap<>();
     private static final Set<UUID> QUICKENED = new HashSet<>();
+    private static final Map<UUID, Integer> RESONANCE = new HashMap<>();
 
     public static final class Loadout extends SimpleContainer {
         private final Player owner;
@@ -120,11 +126,12 @@ public final class MagicGear {
             ItemStack stack = item(player, slot);
             if (!(stack.getItem() instanceof GearItem gear)) continue;
             items.add(gear);
-            GearBonus bonus = GearBonus.of(stack);
-            bonus.statMap().forEach((stat, delta) -> deltas[stat.ordinal()] += delta);
-            traits.addAll(bonus.traitSet());
             rules.addAll(gear.rules());
-            rules.addAll(bonus.ruleList());
+            GearBonus.of(stack).collect(deltas, traits, rules);
+        }
+        for (EquipmentSlot slot : EquipmentSlot.values()) {
+            ItemStack stack = player.getItemBySlot(slot);
+            if (!(stack.getItem() instanceof GearItem)) GearBonus.of(stack).collect(deltas, traits, rules);
         }
         Map<SpellFormula, JsonObject> patches = new HashMap<>();
         double[] bias = {1, 1, 1, 1, 1};
@@ -188,12 +195,33 @@ public final class MagicGear {
             MagicStatuses.charge(player, .12 * recipe.formula().lightning());
         if (profile.traits.contains(Trait.CHAOS_LENS) && recipe.formula().size() >= 4 && player.getRandom().nextFloat() < .25f)
             MagicStatuses.apply(player, MagicStatuses.Status.ARCANE_UNSTABLE, 100, 1);
-        if (!profile.traits.contains(Trait.MIRROR_PRISM) || recipe.shape().construction()) return;
+        if (self && profile.traits.contains(Trait.SHARED_BLESSING)) share(player, recipe);
+        if (recipe.shape().construction() || recipe.ultimate()) return;
+        if (profile.traits.contains(Trait.RESONANCE) && RESONANCE.merge(player.getUUID(), 1, Integer::sum) % 5 == 0) {
+            echo(player, recipe, self);
+            return;
+        }
+        if (!profile.traits.contains(Trait.MIRROR_PRISM)) return;
         long now = player.level().getGameTime();
         if (now - ECHOES.getOrDefault(player.getUUID(), -1000L) < 100) return;
         ECHOES.put(player.getUUID(), now);
+        echo(player, recipe, self);
+    }
+
+    private static void echo(ServerPlayer player, SpellDefinition recipe, boolean self) {
         SpellDefinition echo = weaken(recipe);
         SpellRuntime.delay(player, 25, () -> { if (player.isAlive()) SpellRuntime.cast(player, echo, self); });
+    }
+
+    public static int share(ServerPlayer player, SpellDefinition recipe) {
+        if (recipe.selfEffects().isEmpty()) return 0;
+        int shared = 0;
+        for (LivingEntity ally : player.level().getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(3),
+                e -> e != player && e.isAlive() && EffectGraph.ally(player, e))) {
+            EffectGraph.entity(player, ally, recipe, recipe.selfEffects(), player.position(), true);
+            shared++;
+        }
+        return shared;
     }
 
     private static SpellDefinition weaken(SpellDefinition recipe) {
@@ -273,6 +301,29 @@ public final class MagicGear {
         PROFILES.remove(event.getEntity().getUUID());
         ECHOES.remove(event.getEntity().getUUID());
         QUICKENED.remove(event.getEntity().getUUID());
+        RESONANCE.remove(event.getEntity().getUUID());
+    }
+
+    @SubscribeEvent public void equip(LivingEquipmentChangeEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player
+                && (!GearBonus.of(event.getFrom()).charms().isEmpty() || !GearBonus.of(event.getTo()).charms().isEmpty())) invalidate(player);
+    }
+
+    @SubscribeEvent public void anvil(AnvilUpdateEvent event) {
+        ItemStack result = CharmItem.socket(event.getLeft(), event.getRight());
+        if (result.isEmpty()) return;
+        event.setOutput(result);
+        event.setXpCost(3 + 2 * GearBonus.of(event.getLeft()).charms().size());
+        event.setMaterialCost(1);
+    }
+
+    @SubscribeEvent public void grindstone(GrindstoneEvent.OnPlaceItem event) {
+        ItemStack top = event.getTopItem(), bottom = event.getBottomItem();
+        if (!top.isEmpty() && !bottom.isEmpty()) return;
+        ItemStack result = CharmItem.strip(top.isEmpty() ? bottom : top);
+        if (result.isEmpty()) return;
+        event.setOutput(result);
+        event.setXp(0);
     }
     @SubscribeEvent public void clone(PlayerEvent.Clone event) {
         CompoundTag tag = event.getOriginal().getPersistentData().getCompoundOrEmpty(TAG);

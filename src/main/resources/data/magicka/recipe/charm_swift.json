@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " A ",
+    "ATA",
+    " A "
+  ],
+  "key": {
+    "A": "minecraft:amethyst_shard",
+    "T": "minecraft:sugar"
+  },
+  "result": {
+    "id": "magicka:charm_swift",
+    "count": 1
+  }
+}

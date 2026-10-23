@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " A ",
+    "ATA",
+    " A "
+  ],
+  "key": {
+    "A": "minecraft:amethyst_shard",
+    "T": "minecraft:prismarine_shard"
+  },
+  "result": {
+    "id": "magicka:charm_ricochet",
+    "count": 1
+  }
+}
