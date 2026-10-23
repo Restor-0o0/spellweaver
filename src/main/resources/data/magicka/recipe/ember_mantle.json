@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "L L",
+    "LTL",
+    "LGL"
+  ],
+  "key": {
+    "L": "minecraft:leather",
+    "G": "minecraft:iron_ingot",
+    "T": "minecraft:magma_cream"
+  },
+  "result": {
+    "id": "magicka:ember_mantle",
+    "count": 1
+  }
+}

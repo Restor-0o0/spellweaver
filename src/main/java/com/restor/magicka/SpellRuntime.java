@@ -108,7 +108,7 @@ public final class SpellRuntime {
         if (s.shape().construction()) { MagicConstructionManager.start(p,s,false,point); return; }
         if (s.delivery().has("meteor")) { meteor(p,s,point,false); return; }
         switch(s.shape()) {
-            case PROJECTILE, BURST_PROJECTILE -> projectile(p,s,p.getEyePosition().add(p.getLookAngle().scale(.7)),p.getLookAngle(),false);
+            case PROJECTILE, BURST_PROJECTILE -> fan(p,s);
             case BEAM -> beam(p,s,false);
             case SPRAY -> beam(p,s,true);
             case CHAIN -> lightning(p,s);
@@ -199,6 +199,11 @@ public final class SpellRuntime {
                 if(!victims.isEmpty())level.playSound(null,from.x,from.y,from.z,net.minecraft.sounds.SoundEvents.LIGHTNING_BOLT_IMPACT,net.minecraft.sounds.SoundSource.PLAYERS,.5f,1.8f);
                 return false;
             }});
+    }
+    private static void fan(ServerPlayer p,SpellDefinition s) {
+        int count=Math.clamp((int)s.number("fan",1),1,7);
+        Vec3 look=p.getLookAngle(),start=p.getEyePosition().add(look.scale(.7));
+        for(int i=0;i<count;i++)projectile(p,s,start,look.yRot((float)Math.toRadians((i-(count-1)/2.0)*12)),false);
     }
     public static void projectile(ServerPlayer p,SpellDefinition s,Vec3 start,Vec3 direction,boolean self) {
         add(new Active() {

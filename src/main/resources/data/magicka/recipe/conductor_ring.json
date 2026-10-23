@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    " G ",
+    "GTG",
+    " G "
+  ],
+  "key": {
+    "G": "minecraft:iron_ingot",
+    "T": "minecraft:copper_ingot"
+  },
+  "result": {
+    "id": "magicka:conductor_ring",
+    "count": 1
+  }
+}

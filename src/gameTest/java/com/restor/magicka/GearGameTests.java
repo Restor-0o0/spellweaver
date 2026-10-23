@@ -1,8 +1,15 @@
 package com.restor.magicka;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.*;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.item.ItemStack;
+import java.util.List;
+import java.util.Map;
 public final class GearGameTests {
     private static void equip(ServerPlayer player, MagicGear.Slot slot, net.neoforged.neoforge.registries.DeferredItem<GearItem> item) {
         MagicGear.Loadout loadout = new MagicGear.Loadout(player);
@@ -57,6 +64,92 @@ public final class GearGameTests {
         h.assertTrue(MagicGear.castBias(p, 1) < 1 && MagicGear.castBias(p, 5) > 1, "The wand rushes short formulas and drags long ones");
         h.assertTrue(MagicGear.item(p, MagicGear.Slot.FOCUS).getItem() == MagicItems.WAND.get(), "Gear is stored on the player");
         h.assertTrue(new MagicGear.Loadout(p).getItem(0).getItem() == MagicItems.WAND.get(), "Gear reloads into a fresh loadout");
+        h.succeed();
+    }
+
+    private static double damage(SpellDefinition spell) {
+        double total = 0;
+        for (JsonElement e : spell.source().getAsJsonArray("effects")) {
+            JsonObject node = e.getAsJsonObject();
+            if (EffectGraph.text(node, "type", "").equals("deal_damage") && node.has("amount")) total += node.get("amount").getAsDouble();
+        }
+        return total;
+    }
+
+    private static boolean hasEffect(SpellDefinition spell, String type, String status) {
+        JsonArray effects = spell.source().getAsJsonArray("effects");
+        for (JsonElement e : effects) {
+            JsonObject node = e.getAsJsonObject();
+            if (EffectGraph.text(node, "type", "").equals(type) && (status == null || EffectGraph.text(node, "status", "").equals(status))) return true;
+        }
+        return false;
+    }
+
+    @MagicTest
+    public static void gearRulesFilterSpells(GameTestHelper h) {
+        DeathGameTests.floor(h);
+        ServerPlayer p = RecipeGameTests.caster(h);
+        SpellDefinition firebolt = RecipeGameTests.spell("Firebolt"), frost = RecipeGameTests.spell("Frost Bolt");
+        equip(p, MagicGear.Slot.FOCUS, MagicItems.SMOLDERING_FOCUS);
+        equip(p, MagicGear.Slot.RING_1, MagicItems.RIME_BAND);
+        h.assertTrue(MagicGear.patch(p, firebolt).delivery().has("hot_zone"), "Fire projectiles leave burning ground");
+        h.assertFalse(MagicGear.patch(p, frost).delivery().has("hot_zone"), "Cold projectiles are not set on fire");
+        h.assertTrue(hasEffect(MagicGear.patch(p, frost), "apply_status", "chilled"), "Cold spells gain a chill");
+        h.assertFalse(hasEffect(firebolt, "apply_status", "chilled"), "The base recipe is left untouched");
+        h.assertTrue(MagicGear.patch(p, RecipeGameTests.spell("Stone Platform")) == RecipeGameTests.spell("Stone Platform"), "Unmatched spells are not copied");
+        h.succeed();
+    }
+
+    @MagicTest
+    public static void gearRulesScaleDamage(GameTestHelper h) {
+        DeathGameTests.floor(h);
+        ServerPlayer p = RecipeGameTests.caster(h);
+        SpellDefinition firebolt = RecipeGameTests.spell("Firebolt");
+        equip(p, MagicGear.Slot.TRINKET_1, MagicItems.SPLITTING_LENS);
+        SpellDefinition split = MagicGear.patch(p, firebolt);
+        h.assertTrue(split.number("fan", 1) == 3, "The lens fans projectiles into three");
+        h.assertTrue(Math.abs(damage(split) - damage(firebolt) * .45) < 1e-6, "Each fanned projectile is weaker");
+        h.succeed();
+    }
+
+    @MagicTest
+    public static void gearStackBonus(GameTestHelper h) {
+        DeathGameTests.floor(h);
+        ServerPlayer p = RecipeGameTests.caster(h);
+        ItemStack plain = new ItemStack(MagicItems.WAND.get()), rolled = new ItemStack(MagicItems.WAND.get());
+        rolled.set(GearBonus.TYPE.get(), new GearBonus(Map.of("fire", 25), List.of("quickening"),
+                List.of("{\"elements\":[\"fire\"],\"patch\":{\"delivery\":{\"hot_zone\":true}}}")));
+        new MagicGear.Loadout(p).setItem(MagicGear.Slot.FOCUS.ordinal(), plain);
+        int base = MagicGear.total(p)[MagicStats.Stat.FIRE.ordinal()];
+        h.assertFalse(MagicGear.has(p, MagicGear.Trait.QUICKENING), "A plain wand has no bonus trait");
+        new MagicGear.Loadout(p).setItem(MagicGear.Slot.FOCUS.ordinal(), rolled);
+        h.assertTrue(MagicGear.total(p)[MagicStats.Stat.FIRE.ordinal()] == base + 25, "Stack bonus adds stats");
+        h.assertTrue(MagicGear.has(p, MagicGear.Trait.QUICKENING), "Stack bonus adds traits");
+        h.assertTrue(MagicGear.patch(p, RecipeGameTests.spell("Firebolt")).delivery().has("hot_zone"), "Stack bonus adds spell rules");
+        h.assertTrue(GearBonus.of(new MagicGear.Loadout(p).getItem(0)).stats().get("fire") == 25, "Stack bonus survives a reload");
+        h.succeed();
+    }
+
+    @MagicTest
+    public static void gearQuickening(GameTestHelper h) {
+        DeathGameTests.floor(h);
+        ServerPlayer p = RecipeGameTests.caster(h);
+        equip(p, MagicGear.Slot.TRINKET_1, MagicItems.HUNTERS_MARK);
+        double before = MagicGear.castBias(p, 3);
+        var zombie = h.spawnWithNoFreeWill(EntityTypes.ZOMBIE, new BlockPos(1, 2, 3));
+        zombie.hurtServer(h.getLevel(), p.damageSources().playerAttack(p), 1000);
+        h.assertTrue(MagicGear.quickened(p) && MagicGear.castBias(p, 3) < before * .5, "A kill readies an instant cast");
+        MagicGear.cast(p, RecipeGameTests.spell("Firebolt"), false);
+        h.assertFalse(MagicGear.quickened(p), "The quick cast is spent");
+        h.succeed();
+    }
+
+    @MagicTest
+    public static void gearHasRecipes(GameTestHelper h) {
+        for (var item : MagicItems.GEAR) {
+            String id = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(item.get()).getPath();
+            h.assertTrue(GearGameTests.class.getResource("/data/magicka/recipe/" + id + ".json") != null, "Missing recipe for " + id);
+        }
         h.succeed();
     }
 }
