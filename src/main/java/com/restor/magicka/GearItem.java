@@ -20,6 +20,7 @@ public class GearItem extends Item {
     public final String id;
     public final Kind kind;
     public final Grade grade;
+    public final boolean named;
     private final Map<MagicStats.Stat, Integer> stats;
     private final Set<MagicGear.Trait> traits;
     private final Map<SpellFormula, JsonObject> patches;
@@ -36,6 +37,7 @@ public class GearItem extends Item {
         this.id = builder.id;
         this.kind = builder.kind;
         this.grade = builder.grade;
+        this.named = builder.named;
         this.stats = Map.copyOf(builder.stats);
         this.traits = Set.copyOf(builder.traits);
         this.patches = Map.copyOf(builder.patches);
@@ -64,12 +66,18 @@ public class GearItem extends Item {
     public List<Attr> attributes() { return attributes; }
     public double castBias(int size) { return castBias == null || size < 1 || size > 5 ? 1 : castBias[size - 1]; }
 
-    @Override public Component getName(ItemStack stack) { return Component.translatable("gear.magicka." + id); }
+    @Override public Component getName(ItemStack stack) {
+        Component name = Component.translatable("gear.magicka." + id);
+        return named ? name.copy().withStyle(ChatFormatting.GOLD) : name;
+    }
+
+    @Override public boolean canGrindstoneRepair(ItemStack stack) { return !GearBonus.of(stack).charms().isEmpty(); }
 
     @Override public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> lines, TooltipFlag flag) {
         lines.add(Component.translatable("gear.magicka.kind." + kind.name().toLowerCase(Locale.ROOT))
                 .append(" · ").append(Component.translatable("gear.magicka.grade." + grade.name().toLowerCase(Locale.ROOT)))
                 .withStyle(ChatFormatting.DARK_GRAY));
+        if (named) lines.add(Component.translatable("gear.magicka.named").withStyle(ChatFormatting.GOLD, ChatFormatting.ITALIC));
         GearBonus bonus = GearBonus.of(stack);
         Map<MagicStats.Stat, Integer> total = new EnumMap<>(MagicStats.Stat.class);
         total.putAll(stats);
@@ -112,12 +120,14 @@ public class GearItem extends Item {
         private double[] castBias;
         private Action action;
         private int cooldown = 40;
+        private boolean named;
         private Builder(String id, Kind kind, Grade grade) { this.id = id; this.kind = kind; this.grade = grade; }
         public Builder action(int cooldown, Action action) { this.cooldown = cooldown; this.action = action; return this; }
         public Builder stat(MagicStats.Stat stat, int delta) { stats.merge(stat, delta, Integer::sum); return this; }
         public Builder trait(MagicGear.Trait trait) { traits.add(trait); return this; }
         public Builder patch(SpellFormula formula, JsonObject patch) { patches.put(formula, patch); return this; }
         public Builder rule(String json) { rules.add(GearRule.parse(json)); return this; }
+        public Builder named() { named = true; return this; }
         public Builder attribute(Holder<Attribute> attribute, AttributeModifier.Operation operation, double amount) { attributes.add(new Attr(attribute, operation, amount)); return this; }
         public Builder bias(double one, double two, double three, double four, double five) { castBias = new double[]{one, two, three, four, five}; return this; }
         public GearItem build() { return new GearItem(this); }

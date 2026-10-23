@@ -26,11 +26,18 @@ import static com.restor.magicka.MagicStats.Stat.*;
 public final class MagicItems {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(Magicka.ID);
     public static final DeferredItem<Item> SPELLBOOK = ITEMS.registerSimpleItem("spellbook", new Item.Properties().stacksTo(1));
-    static final List<DeferredItem<GearItem>> GEAR = new ArrayList<>();
+    private static final List<DeferredItem<GearItem>> GEAR = new ArrayList<>();
 
     private static DeferredItem<GearItem> gear(String id, GearItem.Kind kind, GearItem.Grade grade, UnaryOperator<GearItem.Builder> setup) {
         DeferredItem<GearItem> item = ITEMS.register(id, () -> setup.apply(GearItem.of(id, kind, grade)).build());
         GEAR.add(item);
+        return item;
+    }
+    private static final List<DeferredItem<CharmItem>> CHARMS = new ArrayList<>();
+
+    private static DeferredItem<CharmItem> charm(String id, UnaryOperator<CharmItem.Builder> setup) {
+        DeferredItem<CharmItem> item = ITEMS.register(id, () -> setup.apply(CharmItem.of(id)).build());
+        CHARMS.add(item);
         return item;
     }
     private static JsonObject patch(String json) { return JsonParser.parseString(json).getAsJsonObject(); }
@@ -143,6 +150,41 @@ public final class MagicItems {
     public static final DeferredItem<GearItem> HUNTERS_MARK = gear("hunters_mark", TRINKET, LEGENDARY, b -> b
             .trait(MagicGear.Trait.QUICKENING).stat(DAMAGE, -10));
 
+    public static final DeferredItem<GearItem> VELTAR_STAFF = gear("veltar_staff", FOCUS, LEGENDARY, b -> b.named()
+            .stat(FIRE, 20).rule("{\"elements\":[\"fire\"],\"shapes\":[\"projectile\",\"burst_projectile\"],\"patch\":{\"delivery\":{\"homing\":true,\"hot_zone\":true}}}"));
+    public static final DeferredItem<GearItem> MYRRA_RING = gear("myrra_ring", RING, LEGENDARY, b -> b.named()
+            .stat(WATER, 15).rule("{\"elements\":[\"water\"],\"tags\":[\"zone\"],\"patch\":{\"delivery\":{\"follow\":true}},\"append\":[{\"type\":\"apply_force\",\"amount\":0.4,\"lift\":0.1}]}"));
+    public static final DeferredItem<GearItem> ALDER_MANTLE = gear("alder_mantle", ROBE, LEGENDARY, b -> b.named()
+            .trait(MagicGear.Trait.SHARED_BLESSING).stat(HEALING, 20).stat(LIFE, 10));
+    public static final DeferredItem<GearItem> GRIMHALL_BELL = gear("grimhall_bell", TRINKET, LEGENDARY, b -> b.named()
+            .trait(MagicGear.Trait.RESONANCE).stat(DEATH, 15));
+    public static final DeferredItem<GearItem> ISKANDER_PRISM = gear("iskander_prism", TRINKET, LEGENDARY, b -> b.named()
+            .stat(ARCANE, 15).rule("{\"shapes\":[\"beam\",\"spray\"],\"patch\":{\"delivery\":{\"ricochet\":2}}}"));
+    public static final DeferredItem<GearItem> THRAIN_GAUNTLET = gear("thrain_gauntlet", RING, LEGENDARY, b -> b.named()
+            .stat(EARTH, 15).rule("{\"elements\":[\"earth\"],\"shapes\":[\"projectile\",\"burst_projectile\"],\"patch\":{\"delivery\":{\"bounce\":2,\"shards\":3}}}"));
+    public static final DeferredItem<GearItem> LISA_CROWN = gear("lisa_crown", TRINKET, LEGENDARY, b -> b.named()
+            .stat(LIGHTNING, 20).stat(CHAINS, 30));
+    public static final DeferredItem<GearItem> MORROW_LANTERN = gear("morrow_lantern", TOOL, LEGENDARY, b -> b.named()
+            .stat(LIFE, 15).rule("{\"elements\":[\"life\"],\"tags\":[\"zone\"],\"patch\":{\"delivery\":{\"follow\":true}},\"healing\":1.25}"));
+
+    public static final DeferredItem<CharmItem> CHARM_HOMING = charm("charm_homing", b -> b
+            .rule("{\"shapes\":[\"projectile\",\"burst_projectile\"],\"patch\":{\"delivery\":{\"homing\":true}}}"));
+    public static final DeferredItem<CharmItem> CHARM_BOUNCE = charm("charm_bounce", b -> b
+            .rule("{\"shapes\":[\"projectile\",\"burst_projectile\"],\"patch\":{\"delivery\":{\"bounce\":1}}}"));
+    public static final DeferredItem<CharmItem> CHARM_RICOCHET = charm("charm_ricochet", b -> b
+            .rule("{\"shapes\":[\"beam\",\"spray\"],\"patch\":{\"delivery\":{\"ricochet\":1}}}"));
+    public static final DeferredItem<CharmItem> CHARM_DRIFT = charm("charm_drift", b -> b
+            .rule("{\"tags\":[\"zone\"],\"patch\":{\"delivery\":{\"follow\":true}}}"));
+    public static final DeferredItem<CharmItem> CHARM_LEECH = charm("charm_leech", b -> b
+            .rule("{\"tags\":[\"damage\"],\"append\":[{\"type\":\"drain_life\",\"amount\":1,\"fraction\":0.5}]}"));
+    public static final DeferredItem<CharmItem> CHARM_FROSTBITE = charm("charm_frostbite", b -> b
+            .rule("{\"elements\":[\"cold\"],\"append\":[{\"type\":\"apply_status\",\"status\":\"brittle\",\"duration_ticks\":60,\"strength\":1}]}"));
+    public static final DeferredItem<CharmItem> CHARM_SHARING = charm("charm_sharing", b -> b.trait(MagicGear.Trait.SHARED_BLESSING));
+    public static final DeferredItem<CharmItem> CHARM_RESONANCE = charm("charm_resonance", b -> b.trait(MagicGear.Trait.RESONANCE));
+    public static final DeferredItem<CharmItem> CHARM_POWER = charm("charm_power", b -> b.stat(DAMAGE, 8));
+    public static final DeferredItem<CharmItem> CHARM_REACH = charm("charm_reach", b -> b.stat(AREA, 10));
+    public static final DeferredItem<CharmItem> CHARM_SWIFT = charm("charm_swift", b -> b.stat(CAST_SPEED, 8));
+
     public static final DeferredItem<GearItem> EXPEDITION_BEACON = gear("expedition_beacon", TOOL, COMMON, b -> b
             .action(60, player -> SupportMagic.glowstone(player, SpellAim.hit(player).getLocation(), .5)));
     public static final DeferredItem<GearItem> ROPE_LAUNCHER = gear("rope_launcher", TOOL, UNCOMMON, b -> b
@@ -173,6 +215,7 @@ public final class MagicItems {
                 output.accept(SPELLBOOK.get());
                 for (GearItem.Kind kind : GearItem.Kind.values())
                     GEAR.stream().map(DeferredItem::get).filter(item -> item.kind == kind).forEach(output::accept);
+                CHARMS.forEach(charm -> output.accept(charm.get()));
                 com.restor.magicka.enemy.MagicEnemies.EGGS.forEach(egg -> output.accept(egg.get()));
             })
             .build());
@@ -182,5 +225,6 @@ public final class MagicItems {
         if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS) com.restor.magicka.enemy.MagicEnemies.EGGS.forEach(event::accept);
     }
     public static List<DeferredItem<GearItem>> gear() { return List.copyOf(GEAR); }
+    public static List<DeferredItem<CharmItem>> charms() { return List.copyOf(CHARMS); }
     private MagicItems() {}
 }

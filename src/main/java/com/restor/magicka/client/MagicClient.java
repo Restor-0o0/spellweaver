@@ -1,6 +1,7 @@
 package com.restor.magicka.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.restor.magicka.CharmItem;
 import com.restor.magicka.Element;
 import com.restor.magicka.Formula;
 import com.restor.magicka.Magicka;
@@ -24,6 +25,9 @@ import org.lwjgl.glfw.GLFW;
 @EventBusSubscriber(modid = Magicka.ID, value = Dist.CLIENT)
 public final class MagicClient {
     static {MagicNetwork.visualReceiver=SpellVisuals::receive;}
+    @SubscribeEvent public static void charms(net.neoforged.neoforge.event.entity.player.ItemTooltipEvent event) {
+        CharmItem.describe(event.getItemStack(), event.getToolTip()::add);
+    }
     @SubscribeEvent public static void visualsTick(net.neoforged.neoforge.client.event.ClientTickEvent.Post event){
         SpellVisuals.tick();
         var player=Minecraft.getInstance().player;
