@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "L L",
+    "LTL",
+    "LGL"
+  ],
+  "key": {
+    "L": "minecraft:leather",
+    "G": "minecraft:copper_ingot",
+    "T": "minecraft:leather_chestplate"
+  },
+  "result": {
+    "id": "magicka:heavy_expedition_coat",
+    "count": 1
+  }
+}

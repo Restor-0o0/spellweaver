@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "GTG",
+    " S ",
+    " S "
+  ],
+  "key": {
+    "S": "minecraft:stick",
+    "G": "minecraft:copper_ingot",
+    "T": "minecraft:bundle"
+  },
+  "result": {
+    "id": "magicka:ingredient_case",
+    "count": 1
+  }
+}

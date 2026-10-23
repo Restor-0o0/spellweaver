@@ -26,7 +26,7 @@ import static com.restor.magicka.MagicStats.Stat.*;
 public final class MagicItems {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(Magicka.ID);
     public static final DeferredItem<Item> SPELLBOOK = ITEMS.registerSimpleItem("spellbook", p -> p.stacksTo(1));
-    private static final List<DeferredItem<GearItem>> GEAR = new ArrayList<>();
+    static final List<DeferredItem<GearItem>> GEAR = new ArrayList<>();
 
     private static DeferredItem<GearItem> gear(String id, GearItem.Kind kind, GearItem.Grade grade, UnaryOperator<GearItem.Builder> setup) {
         DeferredItem<GearItem> item = ITEMS.register(id, () -> setup.apply(GearItem.of(id, kind, grade)).build());
@@ -116,6 +116,32 @@ public final class MagicItems {
             .stat(WATER, 40).stat(DURATION, 20));
     public static final DeferredItem<GearItem> BRITTLE_CHARM = gear("brittle_charm", TRINKET, UNCOMMON, b -> b
             .stat(COLD, 25).stat(DESTRUCTION, 30));
+
+    public static final DeferredItem<GearItem> SMOLDERING_FOCUS = gear("smoldering_focus", FOCUS, RARE, b -> b
+            .bias(.9, .95, 1, 1.05, 1.1).stat(FIRE, 15)
+            .rule("{\"elements\":[\"fire\"],\"shapes\":[\"projectile\",\"burst_projectile\"],\"patch\":{\"delivery\":{\"hot_zone\":true}}}"));
+    public static final DeferredItem<GearItem> EMBER_MANTLE = gear("ember_mantle", ROBE, UNCOMMON, b -> b
+            .stat(COLD, -15).rule("{\"elements\":[\"fire\"],\"min_size\":3,\"damage\":1.2}"));
+    public static final DeferredItem<GearItem> MENDERS_VOW = gear("menders_vow", ROBE, RARE, b -> b
+            .trait(MagicGear.Trait.DESPERATE_MENDING).stat(HEALING, 15).stat(LIFE, 10).attribute(Attributes.MAX_HEALTH, Operation.ADD_VALUE, -2));
+    public static final DeferredItem<GearItem> GROUNDING_ROD = gear("grounding_rod", RING, UNCOMMON, b -> b
+            .rule("{\"elements\":[\"lightning\"],\"append\":[{\"type\":\"chain_targets\",\"count\":2,\"range\":5,\"amount\":1.5}]}"));
+    public static final DeferredItem<GearItem> RIME_BAND = gear("rime_band", RING, UNCOMMON, b -> b
+            .rule("{\"elements\":[\"cold\"],\"append\":[{\"type\":\"apply_status\",\"status\":\"chilled\",\"duration_ticks\":80,\"strength\":1}]}"));
+    public static final DeferredItem<GearItem> WAVE_CREST = gear("wave_crest", RING, UNCOMMON, b -> b
+            .rule("{\"elements\":[\"water\"],\"append\":[{\"type\":\"apply_force\",\"amount\":0.6,\"lift\":0.2}]}"));
+    public static final DeferredItem<GearItem> VENOM_FANG = gear("venom_fang", RING, UNCOMMON, b -> b
+            .rule("{\"elements\":[\"death\"],\"append\":[{\"type\":\"apply_status\",\"status\":\"withering\",\"duration_ticks\":80,\"strength\":1}]}"));
+    public static final DeferredItem<GearItem> SPLITTING_LENS = gear("splitting_lens", TRINKET, RARE, b -> b
+            .rule("{\"shapes\":[\"projectile\"],\"patch\":{\"delivery\":{\"fan\":3}},\"damage\":0.45}"));
+    public static final DeferredItem<GearItem> SHATTER_CHARM = gear("shatter_charm", TRINKET, RARE, b -> b
+            .stat(EARTH, 10).rule("{\"elements\":[\"earth\"],\"shapes\":[\"projectile\",\"burst_projectile\"],\"patch\":{\"delivery\":{\"shards\":4}}}"));
+    public static final DeferredItem<GearItem> VERDANT_BLOOM = gear("verdant_bloom", TRINKET, UNCOMMON, b -> b
+            .rule("{\"tags\":[\"heal\"],\"append\":[{\"type\":\"grow_plants\",\"budget\":4}],\"healing\":1.2}"));
+    public static final DeferredItem<GearItem> VOLATILE_CORE = gear("volatile_core", TRINKET, WEIRD, b -> b
+            .stat(CAST_SPEED, -10).rule("{\"shapes\":[\"projectile\",\"burst_projectile\"],\"patch\":{\"delivery\":{\"volatile\":true}},\"damage\":1.25}"));
+    public static final DeferredItem<GearItem> HUNTERS_MARK = gear("hunters_mark", TRINKET, LEGENDARY, b -> b
+            .trait(MagicGear.Trait.QUICKENING).stat(DAMAGE, -10));
 
     public static final DeferredItem<GearItem> EXPEDITION_BEACON = gear("expedition_beacon", TOOL, COMMON, b -> b
             .action(60, player -> SupportMagic.glowstone(player, SpellAim.hit(player).getLocation(), .5)));

@@ -27,7 +27,7 @@ import java.util.*;
 public final class MagicGear {
     public enum Trait {
         SHOCK_WARD, FROST_WARD, LIVING_REGEN, FIRE_FRAIL, STONEHEART, GLASS_HEART, BLOOD_FOCUS,
-        GRAVE_BELL, MIRROR_PRISM, SECOND_TONGUE, CHAOS_LENS, SELF_CONDUCTIVE
+        GRAVE_BELL, MIRROR_PRISM, SECOND_TONGUE, CHAOS_LENS, SELF_CONDUCTIVE, QUICKENING, DESPERATE_MENDING
     }
 
     public enum Slot {
@@ -50,10 +50,11 @@ public final class MagicGear {
             Attributes.ARMOR_TOUGHNESS, Attributes.KNOCKBACK_RESISTANCE, Attributes.MOVEMENT_SPEED);
 
     private record Profile(int revision, List<GearItem> items, int[] deltas, Set<Trait> traits,
-                           Map<SpellFormula, JsonObject> patches, double[] bias) {}
+                           Map<SpellFormula, JsonObject> patches, List<GearRule> rules, double[] bias) {}
     private static final Map<UUID, Profile> PROFILES = new HashMap<>();
     private static final Map<UUID, Integer> REVISIONS = new HashMap<>();
     private static final Map<UUID, Long> ECHOES = new HashMap<>();
+    private static final Set<UUID> QUICKENED = new HashSet<>();
 
     public static final class Loadout extends SimpleContainer {
         private final Player owner;
@@ -112,9 +113,19 @@ public final class MagicGear {
         int revision = revision(player);
         if (cached != null && cached.revision == revision) return cached;
         List<GearItem> items = new ArrayList<>();
-        for (Slot slot : Slot.values()) if (item(player, slot).getItem() instanceof GearItem gear) items.add(gear);
         int[] deltas = new int[MagicStats.COUNT];
         Set<Trait> traits = EnumSet.noneOf(Trait.class);
+        List<GearRule> rules = new ArrayList<>();
+        for (Slot slot : Slot.values()) {
+            ItemStack stack = item(player, slot);
+            if (!(stack.getItem() instanceof GearItem gear)) continue;
+            items.add(gear);
+            GearBonus bonus = GearBonus.of(stack);
+            bonus.statMap().forEach((stat, delta) -> deltas[stat.ordinal()] += delta);
+            traits.addAll(bonus.traitSet());
+            rules.addAll(gear.rules());
+            rules.addAll(bonus.ruleList());
+        }
         Map<SpellFormula, JsonObject> patches = new HashMap<>();
         double[] bias = {1, 1, 1, 1, 1};
         for (GearItem gear : items) {
@@ -123,7 +134,7 @@ public final class MagicGear {
             gear.patches().forEach((formula, patch) -> merge(patches.computeIfAbsent(formula, key -> new JsonObject()), patch));
             for (int size = 1; size <= 5; size++) bias[size - 1] *= gear.castBias(size);
         }
-        Profile built = new Profile(revision, List.copyOf(items), deltas, traits, patches, bias);
+        Profile built = new Profile(revision, List.copyOf(items), deltas, traits, patches, List.copyOf(rules), bias);
         PROFILES.put(player.getUUID(), built);
         return built;
     }
@@ -131,7 +142,11 @@ public final class MagicGear {
     public static List<GearItem> equipped(Player player) { return profile(player).items; }
     public static int[] deltas(Player player) { return profile(player).deltas.clone(); }
     public static boolean has(Player player, Trait trait) { return profile(player).traits.contains(trait); }
-    public static double castBias(Player player, int size) { return size < 1 || size > 5 ? 1 : profile(player).bias[size - 1]; }
+    public static double castBias(Player player, int size) {
+        double quick = QUICKENED.contains(player.getUUID()) ? .15 : 1;
+        return size < 1 || size > 5 ? quick : profile(player).bias[size - 1] * quick;
+    }
+    public static boolean quickened(Player player) { return QUICKENED.contains(player.getUUID()); }
 
     public static int[] total(Player player) {
         int[] values = MagicStats.get(player), deltas = profile(player).deltas;
@@ -141,11 +156,14 @@ public final class MagicGear {
     }
 
     public static SpellDefinition patch(Player player, SpellDefinition base) {
-        JsonObject patch = profile(player).patches.get(base.formula());
-        if (patch == null) return base;
+        Profile profile = profile(player);
+        JsonObject patch = profile.patches.get(base.formula());
+        List<GearRule> rules = profile.rules.stream().filter(rule -> rule.matches(base)).toList();
+        if (patch == null && rules.isEmpty()) return base;
         try {
             JsonObject json = base.source().deepCopy();
-            merge(json, patch);
+            if (patch != null) merge(json, patch);
+            for (GearRule rule : rules) rule.apply(json);
             return SpellDefinition.parse(base.id(), json);
         } catch (RuntimeException e) {
             return base;
@@ -164,6 +182,7 @@ public final class MagicGear {
 
     public static void cast(ServerPlayer player, SpellDefinition recipe, boolean self) {
         if (recipe == null) return;
+        if (QUICKENED.remove(player.getUUID())) MagicStats.invalidate(player);
         Profile profile = profile(player);
         if (profile.traits.contains(Trait.SELF_CONDUCTIVE) && recipe.formula().lightning() > 0)
             MagicStatuses.charge(player, .12 * recipe.formula().lightning());
@@ -186,6 +205,7 @@ public final class MagicGear {
 
     public static float heal(ServerPlayer caster, LivingEntity target, float amount) {
         Profile profile = profile(caster);
+        if (profile.traits.contains(Trait.DESPERATE_MENDING) && caster.getHealth() < caster.getMaxHealth() * .4f) amount *= 2;
         if (target == caster) return profile.traits.contains(Trait.GLASS_HEART) ? amount * 1.5f : amount;
         if (!profile.traits.contains(Trait.BLOOD_FOCUS)) return amount;
         caster.hurt(caster.damageSources().magic(), amount * .3f);
@@ -242,11 +262,17 @@ public final class MagicGear {
             event.setAmount(event.getAmount() * 1.5f);
     }
 
+    @SubscribeEvent public void kill(net.neoforged.neoforge.event.entity.living.LivingDeathEvent event) {
+        if (!(event.getSource().getEntity() instanceof ServerPlayer player) || event.getEntity() == player || !has(player, Trait.QUICKENING)) return;
+        if (QUICKENED.add(player.getUUID())) MagicStats.invalidate(player);
+    }
+
     @SubscribeEvent public void login(PlayerEvent.PlayerLoggedInEvent event) { if (event.getEntity() instanceof ServerPlayer p) invalidate(p); }
     @SubscribeEvent public void respawn(PlayerEvent.PlayerRespawnEvent event) { if (event.getEntity() instanceof ServerPlayer p) invalidate(p); }
     @SubscribeEvent public void logout(PlayerEvent.PlayerLoggedOutEvent event) {
         PROFILES.remove(event.getEntity().getUUID());
         ECHOES.remove(event.getEntity().getUUID());
+        QUICKENED.remove(event.getEntity().getUUID());
     }
     @SubscribeEvent public void clone(PlayerEvent.Clone event) {
         CompoundTag tag = event.getOriginal().getPersistentData().getCompoundOrEmpty(TAG);

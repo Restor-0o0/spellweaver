@@ -15,6 +15,7 @@ public final class Magicka {
         Elementals.TYPES.register(bus);
         MagicBlocks.BLOCKS.register(bus);
         MagicBlocks.ENTITIES.register(bus);
+        GearBonus.COMPONENTS.register(bus);
         MagicItems.ITEMS.register(bus);
         MagicItems.TABS.register(bus);
         GearMenu.MENUS.register(bus);
