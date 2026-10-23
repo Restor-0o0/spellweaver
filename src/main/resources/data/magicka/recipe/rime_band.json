@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    " G ",
+    "GTG",
+    " G "
+  ],
+  "key": {
+    "G": "minecraft:iron_ingot",
+    "T": "minecraft:snowball"
+  },
+  "result": {
+    "id": "magicka:rime_band",
+    "count": 1
+  }
+}

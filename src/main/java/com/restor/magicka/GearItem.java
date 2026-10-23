@@ -23,6 +23,7 @@ public class GearItem extends Item {
     private final Map<MagicStats.Stat, Integer> stats;
     private final Set<MagicGear.Trait> traits;
     private final Map<SpellFormula, JsonObject> patches;
+    private final List<GearRule> rules;
     private final List<Attr> attributes;
     private final double[] castBias;
     private final Action action;
@@ -38,6 +39,7 @@ public class GearItem extends Item {
         this.stats = Map.copyOf(builder.stats);
         this.traits = Set.copyOf(builder.traits);
         this.patches = Map.copyOf(builder.patches);
+        this.rules = List.copyOf(builder.rules);
         this.attributes = List.copyOf(builder.attributes);
         this.castBias = builder.castBias;
         this.action = builder.action;
@@ -58,6 +60,7 @@ public class GearItem extends Item {
     public Map<MagicStats.Stat, Integer> stats() { return stats; }
     public Set<MagicGear.Trait> traits() { return traits; }
     public Map<SpellFormula, JsonObject> patches() { return patches; }
+    public List<GearRule> rules() { return rules; }
     public List<Attr> attributes() { return attributes; }
     public double castBias(int size) { return castBias == null || size < 1 || size > 5 ? 1 : castBias[size - 1]; }
 
@@ -67,16 +70,25 @@ public class GearItem extends Item {
         lines.accept(Component.translatable("gear.magicka.kind." + kind.name().toLowerCase(Locale.ROOT))
                 .append(" · ").append(Component.translatable("gear.magicka.grade." + grade.name().toLowerCase(Locale.ROOT)))
                 .withStyle(ChatFormatting.DARK_GRAY));
-        stats.entrySet().stream().sorted(Comparator.comparingInt(e -> e.getKey().ordinal())).forEach(e -> lines.accept(
+        GearBonus bonus = GearBonus.of(stack);
+        Map<MagicStats.Stat, Integer> total = new EnumMap<>(MagicStats.Stat.class);
+        total.putAll(stats);
+        bonus.statMap().forEach((stat, delta) -> total.merge(stat, delta, Integer::sum));
+        total.entrySet().stream().filter(e -> e.getValue() != 0).sorted(Comparator.comparingInt(e -> e.getKey().ordinal())).forEach(e -> lines.accept(
                 Component.literal(e.getValue() > 0 ? "+" + e.getValue() + "% " : e.getValue() + "% ")
                         .append(Component.translatable("book.magicka.stat." + e.getKey().key()))
                         .withStyle(e.getValue() > 0 ? ChatFormatting.GREEN : ChatFormatting.RED)));
         for (Attr attr : attributes) lines.accept(Component.literal(format(attr) + " ")
                 .append(Component.translatable(attr.attribute().value().getDescriptionId()))
                 .withStyle(attr.amount() > 0 ? ChatFormatting.GREEN : ChatFormatting.RED));
-        traits.stream().sorted().forEach(trait -> lines.accept(Component.translatable("gear.magicka.trait." + trait.name().toLowerCase(Locale.ROOT)).withStyle(ChatFormatting.AQUA)));
+        Set<MagicGear.Trait> allTraits = EnumSet.noneOf(MagicGear.Trait.class);
+        allTraits.addAll(traits);
+        allTraits.addAll(bonus.traitSet());
+        allTraits.stream().sorted().forEach(trait -> lines.accept(Component.translatable("gear.magicka.trait." + trait.name().toLowerCase(Locale.ROOT)).withStyle(ChatFormatting.AQUA)));
         for (SpellFormula formula : patches.keySet().stream().sorted(Comparator.comparingInt(SpellFormula::size)).toList())
             lines.accept(Component.translatable("gear.magicka.replaces", RecipeRegistry.clientResolve(formula).displayName()).withStyle(ChatFormatting.LIGHT_PURPLE));
+        if (!rules.isEmpty()) lines.accept(Component.translatable("gear.magicka." + id + ".effect").withStyle(ChatFormatting.LIGHT_PURPLE));
+        if (!bonus.rules().isEmpty()) lines.accept(Component.translatable("gear.magicka.extra_rules", bonus.rules().size()).withStyle(ChatFormatting.LIGHT_PURPLE));
         if (castBias != null) lines.accept(Component.translatable("gear.magicka." + id + ".bias").withStyle(ChatFormatting.GRAY));
         if (action != null) lines.accept(Component.translatable("gear.magicka.active", cooldown / 20).withStyle(ChatFormatting.YELLOW));
         lines.accept(Component.translatable("gear.magicka." + id + ".desc").withStyle(ChatFormatting.DARK_GRAY));
@@ -96,6 +108,7 @@ public class GearItem extends Item {
         private final Set<MagicGear.Trait> traits = EnumSet.noneOf(MagicGear.Trait.class);
         private final Map<SpellFormula, JsonObject> patches = new HashMap<>();
         private final List<Attr> attributes = new ArrayList<>();
+        private final List<GearRule> rules = new ArrayList<>();
         private double[] castBias;
         private Action action;
         private int cooldown = 40;
@@ -104,6 +117,7 @@ public class GearItem extends Item {
         public Builder stat(MagicStats.Stat stat, int delta) { stats.merge(stat, delta, Integer::sum); return this; }
         public Builder trait(MagicGear.Trait trait) { traits.add(trait); return this; }
         public Builder patch(SpellFormula formula, JsonObject patch) { patches.put(formula, patch); return this; }
+        public Builder rule(String json) { rules.add(GearRule.parse(json)); return this; }
         public Builder attribute(Holder<Attribute> attribute, AttributeModifier.Operation operation, double amount) { attributes.add(new Attr(attribute, operation, amount)); return this; }
         public Builder bias(double one, double two, double three, double four, double five) { castBias = new double[]{one, two, three, four, five}; return this; }
         public GearItem build() { return new GearItem(this); }

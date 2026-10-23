@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    " G ",
+    "GTG",
+    " G "
+  ],
+  "key": {
+    "G": "minecraft:iron_ingot",
+    "T": "minecraft:brick"
+  },
+  "result": {
+    "id": "magicka:architects_finger",
+    "count": 1
+  }
+}

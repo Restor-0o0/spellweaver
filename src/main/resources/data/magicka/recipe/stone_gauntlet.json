@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    " G ",
+    " T ",
+    " S "
+  ],
+  "key": {
+    "S": "minecraft:stick",
+    "G": "minecraft:iron_ingot",
+    "T": "minecraft:iron_ingot"
+  },
+  "result": {
+    "id": "magicka:stone_gauntlet",
+    "count": 1
+  }
+}
