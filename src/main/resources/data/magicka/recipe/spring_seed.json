@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    " S ",
+    "GTG",
+    " G "
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:string"
+    },
+    "G": {
+      "item": "minecraft:iron_ingot"
+    },
+    "T": {
+      "item": "minecraft:wheat_seeds"
+    }
+  },
+  "result": {
+    "id": "magicka:spring_seed",
+    "count": 1
+  }
+}
