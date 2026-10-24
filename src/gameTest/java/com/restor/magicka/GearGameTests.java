@@ -211,6 +211,70 @@ public final class GearGameTests {
     }
 
     @MagicTest
+    public static void gearSummonModifiers(GameTestHelper h) {
+        DeathGameTests.floor(h);
+        ServerPlayer p = RecipeGameTests.caster(h);
+        SpellDefinition husks = RecipeGameTests.spell("Crypt Husks");
+        equip(p, MagicGear.Slot.TRINKET_1, MagicItems.LEGION_BANNER);
+        SpellDefinition legion = MagicGear.patch(p, husks);
+        h.assertTrue(legion.number("summon_extra", 0) == 1, "The banner calls one more creature");
+        h.assertTrue(Math.abs(legion.number("summon_health", 1) - .6) < 1e-6, "Bannered summons are frailer");
+        h.assertTrue(MagicGear.patch(p, RecipeGameTests.spell("Firebolt")) == RecipeGameTests.spell("Firebolt"), "Other spells are untouched");
+        var zombie = h.spawnWithNoFreeWill(EntityTypes.ZOMBIE, new BlockPos(1, 2, 3));
+        MagicGear.frail(zombie, .5);
+        h.assertTrue(zombie.getMaxHealth() == 10 && zombie.getHealth() == 10, "Summon health is scaled and refilled");
+        h.succeed();
+    }
+
+    @MagicTest
+    public static void gearAdaptation(GameTestHelper h) {
+        DeathGameTests.floor(h);
+        ServerPlayer p = RecipeGameTests.caster(h);
+        h.assertTrue(MagicGear.element(p.damageSources().onFire()) == Element.FIRE, "Burning is fire damage");
+        h.assertTrue(MagicGear.element(p.damageSources().generic()) == null, "Plain damage has no element");
+        h.assertTrue(MagicGear.adapt(p, Element.FIRE, 10) == 10, "Without the hide nothing adapts");
+        equip(p, MagicGear.Slot.ROBE, MagicItems.CHAMELEON_HIDE);
+        int fire = MagicGear.total(p)[MagicStats.Stat.FIRE.ordinal()];
+        h.assertTrue(MagicGear.adapt(p, Element.FIRE, 10) == 10, "The first hit lands in full");
+        h.assertTrue(MagicGear.adapted(p) == Element.FIRE, "The hide takes on fire");
+        h.assertTrue(MagicGear.total(p)[MagicStats.Stat.FIRE.ordinal()] == fire + MagicGear.ADAPT_BONUS, "Adapted element is empowered");
+        h.assertTrue(MagicGear.adapt(p, Element.FIRE, 10) == 7, "Repeat hits are resisted");
+        h.assertTrue(MagicGear.adapt(p, Element.COLD, 10) == 10 && MagicGear.adapted(p) == Element.COLD, "A new element replaces the old");
+        h.assertTrue(MagicGear.total(p)[MagicStats.Stat.FIRE.ordinal()] == fire, "The old bonus fades");
+        h.succeed();
+    }
+
+    @MagicTest
+    public static void gearTransmutesFormula(GameTestHelper h) {
+        DeathGameTests.floor(h);
+        ServerPlayer p = RecipeGameTests.caster(h);
+        SpellFormula water = new SpellFormula(0, 4, 0, 0, 0, 0, 0, 0), firebolt = RecipeGameTests.spell("Firebolt").formula();
+        h.assertTrue(MagicGear.transmute(p, water) == water, "Bare hands keep the formula");
+        equip(p, MagicGear.Slot.RING_1, MagicItems.STEAM_RING);
+        h.assertTrue(MagicGear.transmute(p, water).equals(new SpellFormula(4, 0, 0, 0, 0, 0, 0, 0)), "Water boils into fire");
+        equip(p, MagicGear.Slot.TRINKET_1, MagicItems.WHISPERING_SHARD);
+        SpellFormula whispered = MagicGear.transmute(p, firebolt);
+        h.assertTrue(whispered.count(Element.ARCANE) == 1 && whispered.size() == firebolt.size() + 1, "The shard adds arcane");
+        SpellFormula full = new SpellFormula(5, 0, 0, 0, 0, 0, 0, 0);
+        h.assertTrue(MagicGear.transmute(p, full).equals(full), "Full formulas have no room for arcane");
+        h.assertTrue(MagicStats.resolve(p, firebolt).formula().equals(whispered), "Casting resolves the transmuted formula");
+        h.succeed();
+    }
+
+    @MagicTest
+    public static void gearWorldRoots(GameTestHelper h) {
+        DeathGameTests.floor(h);
+        ServerPlayer p = RecipeGameTests.caster(h);
+        SpellDefinition wall = RecipeGameTests.spell("Stone Wall");
+        equip(p, MagicGear.Slot.TRINKET_1, MagicItems.WORLD_ROOTS);
+        SpellDefinition rooted = MagicGear.patch(p, wall);
+        h.assertTrue(rooted.source().getAsJsonObject("construction").get("lifetime_scale").getAsDouble() == 2, "Earth constructions last twice as long");
+        h.assertTrue(rooted.castTicks() == Math.round(wall.castTicks() * 1.5), "Earth constructions are slower to raise");
+        h.assertTrue(MagicGear.patch(p, RecipeGameTests.spell("Firebolt")) == RecipeGameTests.spell("Firebolt"), "Other spells are untouched");
+        h.succeed();
+    }
+
+    @MagicTest
     public static void gearHasRecipes(GameTestHelper h) {
         for (var item : MagicItems.charms()) {
             String id = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(item.get()).getPath();
