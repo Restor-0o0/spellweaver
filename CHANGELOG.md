@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Spell scrolls: elementals, ultimates, legendary and the strongest signature spells are sealed in survival until you read their scroll. A sealed formula casts the spell one element shorter, and sealed spells are hidden in the grimoire. Scrolls are never used up and are found in structure chests. Creative mode and the `unlockAllSpells` server option open everything.
+
 ## 1.2.0 — gear that changes spells
 
 - Every gear item can now be crafted in survival.

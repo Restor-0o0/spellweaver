@@ -7,6 +7,7 @@
   },
   "name": "Volcanic Vent",
   "tier": "Signature",
+  "scroll": true,
   "tags": "AOE/DOT/BREAK",
   "shape": "targeted_zone",
   "origin": "aim_ground",

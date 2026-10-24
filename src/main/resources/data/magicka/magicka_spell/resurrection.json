@@ -6,6 +6,7 @@
   },
   "name": "Resurrection",
   "tier": "Signature",
+  "scroll": true,
   "tags": "HEAL/REVIVE",
   "shape": "direct_target",
   "origin": "aim_hit",

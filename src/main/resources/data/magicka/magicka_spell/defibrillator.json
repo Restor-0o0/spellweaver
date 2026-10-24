@@ -6,6 +6,7 @@
   },
   "name": "Defibrillator",
   "tier": "Signature",
+  "scroll": true,
   "tags": "HEAL",
   "shape": "direct_target",
   "origin": "aim_hit",

@@ -19,6 +19,7 @@ public final class Magicka {
         MagicItems.ITEMS.register(bus);
         MagicItems.TABS.register(bus);
         GearMenu.MENUS.register(bus);
+        SpellScrollLoot.MODIFIERS.register(bus);
         bus.addListener(MagicItems::creative);
         bus.addListener(com.restor.magicka.enemy.MagicEnemies::attributes);
         bus.addListener(com.restor.magicka.enemy.MagicEnemies::placements);
@@ -32,6 +33,7 @@ public final class Magicka {
         NeoForge.EVENT_BUS.register(new CastingServer());
         NeoForge.EVENT_BUS.register(new MagicStats());
         NeoForge.EVENT_BUS.register(new MagicGear());
+        NeoForge.EVENT_BUS.register(new SpellScrolls());
         NeoForge.EVENT_BUS.register(new RecipeRegistry());
         NeoForge.EVENT_BUS.register(new MagicStatuses());
         NeoForge.EVENT_BUS.register(new SpellRuntime());

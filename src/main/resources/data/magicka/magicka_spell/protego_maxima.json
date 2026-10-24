@@ -6,6 +6,7 @@
   },
   "name": "Great Aegis",
   "tier": "Signature",
+  "scroll": true,
   "tags": "DEF/CC",
   "shape": "targeted_zone",
   "origin": "caster_feet",

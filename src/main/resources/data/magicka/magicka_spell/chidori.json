@@ -6,6 +6,7 @@
   },
   "name": "Storm Lunge",
   "tier": "Signature",
+  "scroll": true,
   "tags": "DMG/CC/MOVE",
   "shape": "dash",
   "origin": "caster_front",
