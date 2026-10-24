@@ -54,6 +54,7 @@ public final class Elementals {
         if (mob == null) return;
         Element e = element(s);
         mob.setup(p, s, e, level.getGameTime() + Math.clamp((int)s.number("duration_ticks",1200), 20, 12000));
+        MagicGear.frail(mob, s.number("summon_health",1));
         Vec3 at = place(level, mob, point);
         if (at == null) at = place(level, mob, p.position().add(0,1,0));
         if (at == null || !WorldPlacement.allowed(p, BlockPos.containing(at))) { mob.discard(); return; }

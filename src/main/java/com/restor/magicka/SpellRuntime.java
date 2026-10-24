@@ -347,7 +347,7 @@ public final class SpellRuntime {
     private static void summon(ServerPlayer p,SpellDefinition s,Vec3 point,boolean self){
         String kind=SpellDefinition.string(s.delivery(),"object_kind","anchor");
         if(kind.equals("anchor")){MagicConstructionManager.start(p,s,self,point);return;}
-        if(kind.equals("elemental")){Elementals.companion(p,s,self?p.position():point);return;}
+        if(kind.equals("elemental")){for(int i=0;i<=Math.min(3,(int)s.number("summon_extra",0));i++)Elementals.companion(p,s,self?p.position():point);return;}
         if(kind.equals("undead")){var graph=self?s.selfEffects():s.effects();for(var e:near(p,point,s.number("radius",2)))if(e!=p || self)EffectGraph.entity(p,e,s,graph,point,self);EffectGraph.world(p,s,graph,point,self,true);particles(p,s,point,20,.8);return;}
         if(kind.equals("bubble")){
             int lift=(int)s.number("lift_ticks",100);
@@ -357,7 +357,7 @@ public final class SpellRuntime {
             return;
         }
         if(!WorldPlacement.allowed(p,BlockPos.containing(point)))return;
-        MagicSummon stand=new MagicSummon(p.serverLevel(),point,(float)s.number("object_health",12));
+        MagicSummon stand=new MagicSummon(p.serverLevel(),point,(float)(s.number("object_health",12)*s.number("summon_health",1)));
         stand.setItemSlot(EquipmentSlot.HEAD,new ItemStack(kind.equals("healer")?Items.SEA_LANTERN:Items.AMETHYST_BLOCK));
         stand.setCustomName(s.displayName());stand.setCustomNameVisible(true);
         if(!p.serverLevel().addFreshEntity(stand))return;
