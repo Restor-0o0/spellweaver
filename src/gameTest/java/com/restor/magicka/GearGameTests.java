@@ -220,7 +220,7 @@ public final class GearGameTests {
         h.assertTrue(legion.number("summon_extra", 0) == 1, "The banner calls one more creature");
         h.assertTrue(Math.abs(legion.number("summon_health", 1) - .6) < 1e-6, "Bannered summons are frailer");
         h.assertTrue(MagicGear.patch(p, RecipeGameTests.spell("Firebolt")) == RecipeGameTests.spell("Firebolt"), "Other spells are untouched");
-        var zombie = h.spawnWithNoFreeWill(EntityTypes.ZOMBIE, new BlockPos(1, 2, 3));
+        var zombie = h.spawnWithNoFreeWill(EntityType.ZOMBIE, new BlockPos(1, 2, 3));
         MagicGear.frail(zombie, .5);
         h.assertTrue(zombie.getMaxHealth() == 10 && zombie.getHealth() == 10, "Summon health is scaled and refilled");
         h.succeed();

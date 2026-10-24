@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 public final class MagicTestRegistry {
     private static final Class<?>[] SUITES = {AuditGameTests.class, DeathGameTests.class, ElementalGameTests.class, EnemyGameTests.class,
             EpicGameTests.class, GearGameTests.class, LegendGameTests.class, MagicGameTests.class, QuickCastGameTests.class,
-            RecipeGameTests.class, SupportGameTests.class};
+            RecipeGameTests.class, SupportGameTests.class, PotionGameTests.class};
     private static final Identifier STRUCTURE = Identifier.fromNamespaceAndPath(Magicka.ID, "empty");
 
     private record Entry(Identifier id, Method method, MagicTest test) {}

@@ -4,7 +4,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.minecraft.core.Holder;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
@@ -14,7 +13,6 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import java.util.Comparator;
-import java.util.Optional;
 
 public class SpellScrollLoot extends LootModifier {
     public static final MapCodec<SpellScrollLoot> CODEC = RecordCodecBuilder.mapCodec(i -> codecStart(i).and(i.group(
@@ -27,8 +25,8 @@ public class SpellScrollLoot extends LootModifier {
     private final double chance;
     private final int ultimateWeight, weight;
 
-    public SpellScrollLoot(Optional<Holder<LootItemCondition>> condition, int priority, double chance, int ultimateWeight, int weight) {
-        super(condition, priority);
+    public SpellScrollLoot(LootItemCondition[] conditions, int priority, double chance, int ultimateWeight, int weight) {
+        super(conditions, priority);
         this.chance = chance;
         this.ultimateWeight = ultimateWeight;
         this.weight = weight;
