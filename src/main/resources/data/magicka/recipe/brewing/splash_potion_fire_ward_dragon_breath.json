@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:brewing",
+  "input": {
+    "item": "minecraft:splash_potion",
+    "potion_contents": {
+      "potions": "magicka:fire_ward"
+    }
+  },
+  "output": {
+    "components": {
+      "minecraft:potion_contents": {
+        "potion": "magicka:fire_ward"
+      }
+    },
+    "id": "minecraft:lingering_potion"
+  },
+  "reagent": {
+    "item": "minecraft:dragon_breath"
+  }
+}

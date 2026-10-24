@@ -35,6 +35,9 @@ public final class MagicClient {
         SpellVisuals.tick();
         var player=Minecraft.getInstance().player;
         if(player!=null && MagicNetwork.clientState.channeling() && !directedHeld && player.tickCount%5==0)send(12);
+        for(int i=0;i<POTIONS.length;i++)if(potionHeld[i]>=0 && potionHeld[i]<WHEEL_TICKS && ++potionHeld[i]==WHEEL_TICKS){
+            if(playable())PotionWheelScreen.open(i);else potionHeld[i]=-1;
+        }
     }
     @SubscribeEvent public static void visuals(net.neoforged.neoforge.client.event.SubmitCustomGeometryEvent event){
         var mc=Minecraft.getInstance();
@@ -59,6 +62,10 @@ public final class MagicClient {
     private static final KeyMapping LOADOUT = key("loadout", InputConstants.Type.KEYBOARD, InputConstants.KEY_J);
     private static final KeyMapping[] QUICK=java.util.stream.IntStream.range(0,4).mapToObj(i->new KeyMapping("key.magicka.quick_"+(i+1),KeyConflictContext.IN_GAME,
             net.neoforged.neoforge.client.settings.KeyModifier.ALT,InputConstants.Type.KEYBOARD,InputConstants.KEY_1+i,CATEGORY)).toArray(KeyMapping[]::new);
+    private static final KeyMapping[] POTIONS = {key("potion_1", InputConstants.Type.KEYBOARD, InputConstants.KEY_Z), key("potion_2", InputConstants.Type.KEYBOARD, InputConstants.KEY_X)};
+    private static final int WHEEL_TICKS = 6;
+    private static final int[] potionHeld = {-1, -1};
+    public static Component potionKey(int index) { return POTIONS[index].getTranslatedKeyMessage(); }
     public static Component quickKey(int index){return QUICK[index].getTranslatedKeyMessage();}
     public static Component elementKey(Element element) { return ELEMENTS[element.ordinal()].getTranslatedKeyMessage(); }
     public static Component bookKey() { return BOOK.getTranslatedKeyMessage(); }
@@ -89,6 +96,7 @@ public final class MagicClient {
         if (matches.test(BOOK)) { Minecraft.getInstance().gui.setScreen(new SpellbookScreen()); return true; }
         if (matches.test(SHAPE)) { Minecraft.getInstance().gui.setScreen(new ShapeEditorScreen()); return true; }
         if (matches.test(LOADOUT)) { send(14); return true; }
+        for (int i = 0; i < POTIONS.length; i++) if (matches.test(POTIONS[i])) { if (potionHeld[i] < 0) potionHeld[i] = 0; return true; }
         if (matches.test(SELF) && Minecraft.getInstance().player.getMainHandItem().is(com.restor.magicka.MagicItems.SPELLBOOK.get())) {
             Minecraft.getInstance().gui.setScreen(new SpellbookScreen()); return true;
         }
@@ -137,6 +145,12 @@ public final class MagicClient {
     }
     private static boolean directedHeld;
     private static void release(java.util.function.Predicate<KeyMapping> matches) {
+        for (int i = 0; i < POTIONS.length; i++) if (matches.test(POTIONS[i]) && potionHeld[i] >= 0) {
+            boolean wheel = potionHeld[i] >= WHEEL_TICKS;
+            potionHeld[i] = -1;
+            if (!wheel) ClientPacketDistributor.sendToServer(new MagicNetwork.BeltAction(i, -1));
+            else if (Minecraft.getInstance().gui.screen() instanceof PotionWheelScreen screen && screen.button == i) screen.confirm();
+        }
         if (!matches.test(DIRECTED)) return;
         directedHeld = false;
         if (MagicNetwork.clientState.channeling()) send(12);
@@ -164,6 +178,7 @@ public final class MagicClient {
     }
     @SubscribeEvent public static void logout(ClientPlayerNetworkEvent.LoggingOut event) {
         MagicNetwork.clearClient();
+        java.util.Arrays.fill(potionHeld, -1);
         SpellVisuals.clear();
         PolymorphVisuals.clear();
     }
@@ -208,6 +223,7 @@ public final class MagicClient {
             for (KeyMapping key : ELEMENTS) event.register(key);
             for(KeyMapping key:QUICK)event.register(key);
             for (KeyMapping key : new KeyMapping[]{TOGGLE, CLEAR, DIRECTED, SELF, INSTANT, BOOK, SHAPE, LOADOUT}) event.register(key);
+            for (KeyMapping key : POTIONS) event.register(key);
         }
         @SubscribeEvent public static void screens(net.neoforged.neoforge.client.event.RegisterMenuScreensEvent event) {
             event.register(com.restor.magicka.GearMenu.TYPE.get(), GearScreen::new);

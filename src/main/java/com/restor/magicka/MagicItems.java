@@ -229,6 +229,7 @@ public final class MagicItems {
                 for (GearItem.Kind kind : GearItem.Kind.values())
                     GEAR.stream().map(DeferredItem::get).filter(item -> item.kind == kind).forEach(output::accept);
                 CHARMS.forEach(charm -> output.accept(charm.get()));
+                MagicPotions.ALL.values().forEach(potion -> output.accept(net.minecraft.world.item.alchemy.PotionContents.createItemStack(net.minecraft.world.item.Items.POTION, potion)));
                 RecipeRegistry.baseRecipes().stream().filter(SpellScrolls::locked).sorted(java.util.Comparator.comparing(spell -> spell.id().toString()))
                         .forEach(spell -> output.accept(SpellScrollItem.of(spell)));
                 com.restor.magicka.enemy.MagicEnemies.EGGS.forEach(egg -> output.accept(egg.get()));

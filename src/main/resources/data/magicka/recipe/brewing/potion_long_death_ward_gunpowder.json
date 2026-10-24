@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:brewing",
+  "input": {
+    "item": "minecraft:potion",
+    "potion_contents": {
+      "potions": "magicka:long_death_ward"
+    }
+  },
+  "output": {
+    "components": {
+      "minecraft:potion_contents": {
+        "potion": "magicka:long_death_ward"
+      }
+    },
+    "id": "minecraft:splash_potion"
+  },
+  "reagent": {
+    "item": "minecraft:gunpowder"
+  }
+}
