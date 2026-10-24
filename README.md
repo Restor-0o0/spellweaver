@@ -1,3 +1,5 @@
+<p align="center"><img src="src/main/resources/spellweaver.png" alt="Spellweaver" width="160"></p>
+
 # Spellweaver (Magicka-like spellcasting)
 
 Magicka-style elemental spellcasting for **Minecraft 26.3 · NeoForge**. No wands, no mana bars
