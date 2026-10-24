@@ -27,6 +27,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 public final class MagicClient {
     private static final KeyMapping.Category CATEGORY = KeyMapping.Category.register(Identifier.fromNamespaceAndPath(Magicka.ID, "main"));
     static {MagicNetwork.visualReceiver=SpellVisuals::receive;}
+    public static com.restor.magicka.SpellDefinition spell(com.restor.magicka.SpellFormula formula) { return com.restor.magicka.SpellScrolls.clientResolve(Minecraft.getInstance().player, formula); }
     @SubscribeEvent public static void charms(net.neoforged.neoforge.event.entity.player.ItemTooltipEvent event) {
         CharmItem.describe(event.getItemStack(), event.getToolTip()::add);
     }
@@ -169,11 +170,11 @@ public final class MagicClient {
     private static void preview(com.mojang.blaze3d.vertex.PoseStack stack, net.minecraft.client.renderer.SubmitNodeCollector collector) {
         if (!playable()) return;
         var state = MagicNetwork.clientState;
-        if (!state.enabled() || state.remaining() > 0 || state.formula()==0 || !com.restor.magicka.RecipeRegistry.clientResolve(Formula.unpack(state.formula()).key()).shape().construction()) return;
+        if (!state.enabled() || state.remaining() > 0 || state.formula()==0 || !spell(Formula.unpack(state.formula()).key()).shape().construction()) return;
         var mc = Minecraft.getInstance();
         if (!com.restor.magicka.MagicConfig.CONSTRUCTION.get()) return;
         Formula formula = Formula.unpack(state.formula());
-        var recipe = com.restor.magicka.RecipeRegistry.clientResolve(formula.key());
+        var recipe = spell(formula.key());
         var path = new com.restor.magicka.MagicConstructionManager.Plan(mc.player, recipe, false, com.restor.magicka.SpellRuntime.origin(mc.player,recipe.origin()));
         boolean stencil = com.restor.magicka.SpellDefinition.string(recipe.construction(),"template","").equals("custom");
         int shown = stencil && path.template != null ? path.template.size() : Math.min(3, state.budget());

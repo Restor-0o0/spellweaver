@@ -6,6 +6,7 @@
   },
   "name": "Purifying Flame",
   "tier": "Signature",
+  "scroll": true,
   "tags": "DMG/HEAL",
   "shape": "targeted_zone",
   "origin": "aim_ground",

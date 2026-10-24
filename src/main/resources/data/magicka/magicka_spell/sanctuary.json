@@ -6,6 +6,7 @@
   },
   "name": "Sanctuary",
   "tier": "Signature",
+  "scroll": true,
   "tags": "HEAL/DEF/AOE",
   "shape": "targeted_zone",
   "origin": "aim_ground",

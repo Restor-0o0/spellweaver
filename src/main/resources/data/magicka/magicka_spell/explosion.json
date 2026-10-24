@@ -6,6 +6,7 @@
   },
   "name": "Explosion",
   "tier": "Signature",
+  "scroll": true,
   "tags": "DMG/AOE/BREAK",
   "shape": "targeted_explosion",
   "origin": "aim_ground",

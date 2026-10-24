@@ -15,7 +15,8 @@ public final class RecipeGameTests {
     static SpellDefinition spell(String name){return RecipeRegistry.recipes().stream().filter(d->d.name().equals(name)).findFirst().orElseThrow();}
     static net.minecraft.server.level.ServerPlayer caster(GameTestHelper h){
         var p=FakePlayerFactory.get(h.getLevel(),new com.mojang.authlib.GameProfile(UUID.randomUUID(),"RecipeTester"));
-        p.setPos(h.absoluteVec(new Vec3(1.5,2,1.5)));p.setYRot(0);p.setXRot(0);return p;
+        p.setPos(h.absoluteVec(new Vec3(1.5,2,1.5)));p.setYRot(0);p.setXRot(0);
+        RecipeRegistry.recipes().stream().filter(SpellScrolls::locked).forEach(d->SpellScrolls.learn(p,d.id()));return p;
     }
     @MagicTest
     public static void catalogAndDataOverride(GameTestHelper h){
@@ -174,6 +175,44 @@ public final class RecipeGameTests {
         h.setBlock(local,Blocks.CHEST);
         EffectGraph.world(p,quake,List.of(node),point,false,false);
         h.assertBlockPresent(Blocks.CHEST,local);
+        h.succeed();
+    }
+    @MagicTest
+    public static void scrollsSealStrongSpells(GameTestHelper h){
+        var p=caster(h);SpellScrolls.forget(p);
+        var wave=spell("Spirit Wave");
+        h.assertTrue(SpellScrolls.locked(wave),"Spirit Wave needs a scroll");
+        var weaker=MagicStats.resolve(p,wave.formula());
+        h.assertTrue(!weaker.id().equals(wave.id()) && weaker.formula().size()==wave.formula().size()-1 && SpellScrolls.open(p,weaker),"Sealed formula casts a shorter open spell, got "+weaker.id());
+        for(var d:RecipeRegistry.recipes())if(SpellScrolls.locked(d)){
+            var cast=SpellScrolls.resolve(p,d);
+            h.assertTrue(SpellScrolls.open(p,cast) && !cast.ultimate() && cast.formula().size()<d.formula().size(),"Every sealed spell falls back to an open one: "+d.id());
+        }
+        var elementals=RecipeRegistry.recipes().stream().filter(d->"elemental".equals(SpellDefinition.string(d.delivery(),"object_kind",""))).toList();
+        h.assertTrue(elementals.stream().filter(d->!SpellScrolls.locked(d)).count()==1,"Exactly one elemental is open from the start");
+        h.assertTrue(RecipeRegistry.recipes().stream().filter(d->d.ultimate() && !SpellScrolls.locked(d)).count()==1,"Exactly one ultimate is open from the start");
+        h.assertTrue(SpellScrolls.learn(p,wave.id()) && !SpellScrolls.learn(p,wave.id()),"A spell is learned once");
+        h.assertTrue(MagicStats.resolve(p,wave.formula()).id().equals(wave.id()),"Learned scroll restores the spell");
+        var other=caster(h);SpellScrolls.forget(other);
+        h.assertTrue(!MagicStats.resolve(other,wave.formula()).id().equals(wave.id()),"Knowledge is per player");
+        other.setGameMode(net.minecraft.world.level.GameType.CREATIVE);
+        h.assertTrue(MagicStats.resolve(other,wave.formula()).id().equals(wave.id()),"Creative knows every spell");
+        SpellScrolls.forget(p);
+        h.succeed();
+    }
+    @MagicTest
+    public static void scrollIsNotConsumed(GameTestHelper h){
+        var p=caster(h);SpellScrolls.forget(p);
+        var titan=spell("Fire Titan");var stack=SpellScrollItem.of(titan);
+        p.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND,stack);
+        stack.getItem().use(h.getLevel(),p,net.minecraft.world.InteractionHand.MAIN_HAND);
+        h.assertTrue(p.getMainHandItem().getCount()==1 && p.getMainHandItem().is(MagicItems.SPELL_SCROLL.get()),"Scroll stays in hand");
+        h.assertTrue(SpellScrolls.known(p).contains(titan.id().toString()) && SpellScrolls.open(p,titan),"Reading the scroll teaches the spell");
+        SpellScrolls.acceptClient(false,List.of());
+        h.assertTrue(!SpellScrolls.clientOpen(p,titan) && SpellScrolls.clientOpen(p,spell("Stone Elemental")),"Book hides sealed spells it was not told about");
+        SpellScrolls.acceptClient(false,List.of(titan.id().toString()));
+        h.assertTrue(SpellScrolls.clientOpen(p,titan),"Book shows a learned spell");
+        SpellScrolls.acceptClient(false,List.of());SpellScrolls.forget(p);
         h.succeed();
     }
 }

@@ -7,6 +7,7 @@
   },
   "name": "Frost Elemental",
   "tier": "Signature",
+  "scroll": true,
   "tags": "SUMMON",
   "shape": "summon_object",
   "origin": "caster_front",

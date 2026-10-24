@@ -42,7 +42,7 @@ public final class MagicStats {
     public static void sync(ServerPlayer player){PacketDistributor.sendToPlayer(player,new MagicNetwork.Stats(get(player),MagicGear.deltas(player)));}
     public static int minionCap(ServerPlayer owner){int[] v=MagicGear.total(owner);return (int)Math.clamp(Math.round(MagicConfig.MAX_MINIONS.get()*Math.max(1,v[Stat.SUMMONS.ordinal()]/100.0*v[Stat.DEATH.ordinal()]/100.0)),1,512);}
 
-    public static SpellDefinition resolve(ServerPlayer player,SpellFormula key){return apply(player,RecipeRegistry.resolve(MagicGear.transmute(player,key)));}
+    public static SpellDefinition resolve(ServerPlayer player,SpellFormula key){return apply(player,SpellScrolls.resolve(player,RecipeRegistry.resolve(MagicGear.transmute(player,key))));}
     public static SpellDefinition apply(ServerPlayer player,SpellDefinition base){
         if(base==null)return null;
         var cache=CACHE.computeIfAbsent(player.getUUID(),id->new HashMap<>());

@@ -7,6 +7,7 @@
   },
   "name": "Infinity",
   "tier": "Signature",
+  "scroll": true,
   "tags": "DEF/CC",
   "shape": "nova",
   "origin": "caster",
