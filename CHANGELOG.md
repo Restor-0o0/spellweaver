@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.1 — scrolls from enemies
+
+- Specialist enemies now sometimes drop spell scrolls (4%; casters such as countermages, element binders, goblin mages and shamans 10%). They never drop ultimates.
+- Bosses always drop a scroll, and ultimates are three times as likely as other spells.
+- Enemy drops prefer a scroll the killer has not read yet.
+
 ## 1.3.0 — scrolls and potions
 
 - Spell scrolls: elementals, ultimates, legendary and the strongest signature spells are sealed in survival until you read their scroll. A sealed formula casts the spell one element shorter, and sealed spells are hidden in the grimoire. Scrolls are never used up and are found in structure chests. Creative mode and the `unlockAllSpells` server option open everything.
