@@ -84,11 +84,17 @@ public final class MagicNetwork {
         public static final StreamCodec<RegistryFriendlyByteBuf,SetStat> CODEC=StreamCodec.of((b,v)->{b.writeVarInt(v.index);b.writeVarInt(v.value);},b->new SetStat(b.readVarInt(),b.readVarInt()));
         @Override public Type<SetStat> type(){return TYPE;}
     }
+    public record Scrolls(boolean all, java.util.List<String> known) implements CustomPacketPayload {
+        public static final Type<Scrolls> TYPE=new Type<>(Identifier.fromNamespaceAndPath(Magicka.ID,"scrolls"));
+        public static final StreamCodec<RegistryFriendlyByteBuf,Scrolls> CODEC=StreamCodec.of((b,v)->{b.writeBoolean(v.all);b.writeVarInt(v.known.size());for(String s:v.known)b.writeUtf(s,256);},
+                b->{boolean all=b.readBoolean();int count=b.readVarInt();if(count<0 || count>RecipeRegistry.CATALOG_SIZE+256)throw new IllegalArgumentException("Too many scrolls");var known=new java.util.ArrayList<String>();for(int i=0;i<count;i++)known.add(b.readUtf(256));return new Scrolls(all,known);});
+        @Override public Type<Scrolls> type(){return TYPE;}
+    }
     public static int[] clientStats=MagicStats.defaults();
     public static int[] clientGear=new int[MagicStats.COUNT];
     private static final java.util.List<String> catalogBuffer=new java.util.ArrayList<>();
     public static final java.util.Map<Integer,Integer> clientStatuses=new java.util.HashMap<>();
-    public static void clearClient(){clientState=new State(false,0,0,0,0,0,false,false);clientQueue=new QueueState(0,0);catalogBuffer.clear();clientStatuses.clear();clientShapes.clear();clientConstruction=null;clientLocks=0;clientLocksUntil=0;clientStats=MagicStats.defaults();clientGear=new int[MagicStats.COUNT];clientPattern=ShapePattern.defaults();RecipeRegistry.resetClient();}
+    public static void clearClient(){clientState=new State(false,0,0,0,0,0,false,false);clientQueue=new QueueState(0,0);catalogBuffer.clear();clientStatuses.clear();clientShapes.clear();clientConstruction=null;clientLocks=0;clientLocksUntil=0;clientStats=MagicStats.defaults();clientGear=new int[MagicStats.COUNT];clientPattern=ShapePattern.defaults();RecipeRegistry.resetClient();SpellScrolls.acceptClient(false,java.util.List.of());}
     public static void construction(ServerPlayer player, java.util.UUID id, int placed, int remaining){
         Formula formula=Formula.unpack(CastingServer.snapshot(player).formula());
         if(!formula.empty()) CastingServer.construction(player,Math.max(0,MagicStats.resolve(player,formula.key()).budget()-remaining));
@@ -125,6 +131,7 @@ public final class MagicNetwork {
             int[] v=MagicStats.defaults();System.arraycopy(packet.values,0,v,0,Math.min(v.length,packet.values.length));clientStats=v;
             int[] g=new int[MagicStats.COUNT];System.arraycopy(packet.gear,0,g,0,Math.min(g.length,packet.gear.length));clientGear=g;
         });
+        registrar.playToClient(Scrolls.TYPE,Scrolls.CODEC,(packet,context)->SpellScrolls.acceptClient(packet.all,packet.known));
         registrar.playToClient(ShapeGrid.TYPE,ShapeGrid.CODEC,(packet,context)->clientPattern=ShapePattern.sanitize(packet.low,packet.high));
         registrar.playToServer(SetShapeGrid.TYPE,SetShapeGrid.CODEC,(packet,context)->{if(context.player() instanceof ServerPlayer p)ShapePattern.store(p,packet.low,packet.high);});
         registrar.playToServer(SetStat.TYPE,SetStat.CODEC,(packet,context)->{if(context.player() instanceof ServerPlayer p){if(packet.index<0)MagicStats.reset(p);else MagicStats.set(p,packet.index,packet.value);}});

@@ -6,6 +6,7 @@
   },
   "name": "Black Flame",
   "tier": "Signature",
+  "scroll": true,
   "tags": "DMG",
   "shape": "direct_target",
   "origin": "aim_hit",

@@ -18,6 +18,8 @@ public final class RecipeRegistry {
     private static final Map<SpellFormula, SpellDefinition> BASE = loadBase();
     private static volatile Map<SpellFormula, SpellDefinition> server = BASE;
     private static volatile Map<SpellFormula, SpellDefinition> client = BASE;
+    private static volatile Map<Identifier, SpellDefinition> serverIds = ids(BASE);
+    private static volatile Map<Identifier, SpellDefinition> clientIds = serverIds;
     private static int clientRevision;
     public static int clientRevision(){return clientRevision;}
     public static Collection<SpellDefinition> baseRecipes() { return BASE.values(); }
@@ -25,7 +27,14 @@ public final class RecipeRegistry {
     public static List<SpellDefinition> clientRecipes() { return client.values().stream().sorted(Comparator.comparingInt((SpellDefinition d) -> d.formula().size()).thenComparing(d -> d.id().toString())).toList(); }
     public static SpellDefinition resolve(SpellFormula formula) { var value=server.get(formula);return value==null?fallback(formula):value; }
     public static SpellDefinition clientResolve(SpellFormula formula) { var value=client.get(formula);return value==null?fallback(formula):value; }
-    public static void resetClient() { client = BASE;clientRevision++; }
+    public static SpellDefinition byId(Identifier id) { return serverIds.get(id); }
+    public static SpellDefinition clientById(Identifier id) { return clientIds.get(id); }
+    private static Map<Identifier, SpellDefinition> ids(Map<SpellFormula, SpellDefinition> recipes) {
+        var result = new HashMap<Identifier, SpellDefinition>();
+        for (var def : recipes.values()) result.put(def.id(), def);
+        return Map.copyOf(result);
+    }
+    public static void resetClient() { client = BASE;clientIds = ids(BASE);clientRevision++; }
     public static void acceptClient(List<String> definitions) {
         Map<SpellFormula, SpellDefinition> loaded = new HashMap<>();
         for (String text : definitions) {
@@ -34,6 +43,7 @@ public final class RecipeRegistry {
             if (loaded.put(def.formula(), def) != null) throw new IllegalArgumentException("Duplicate synced formula");
         }
         client = Map.copyOf(loaded);
+        clientIds = ids(client);
         clientRevision++;
     }
     private static Map<SpellFormula, SpellDefinition> loadBase() {
@@ -72,6 +82,7 @@ public final class RecipeRegistry {
                     loaded.put(def.formula(),def);
                 });
                 server = Map.copyOf(loaded);
+                serverIds = ids(server);
                 org.slf4j.LoggerFactory.getLogger(Magicka.ID).info("Loaded {} data-driven spell recipes", loaded.size());
             }
         });

@@ -7,6 +7,7 @@
   },
   "name": "Arcane Meteor",
   "tier": "Signature",
+  "scroll": true,
   "tags": "DMG/BREAK/AOE",
   "shape": "targeted_explosion",
   "origin": "aim_ground",

@@ -6,6 +6,7 @@
   },
   "name": "Silver Stag",
   "tier": "Signature",
+  "scroll": true,
   "tags": "DMG/CC",
   "shape": "summon_object",
   "origin": "caster_front",

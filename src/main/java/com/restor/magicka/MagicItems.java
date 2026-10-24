@@ -26,6 +26,8 @@ import static com.restor.magicka.MagicStats.Stat.*;
 public final class MagicItems {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(Magicka.ID);
     public static final DeferredItem<Item> SPELLBOOK = ITEMS.registerSimpleItem("spellbook", p -> p.stacksTo(1));
+    public static final DeferredItem<SpellScrollItem> SPELL_SCROLL = ITEMS.registerItem("spell_scroll", SpellScrollItem::new,
+            p -> p.stacksTo(1).rarity(net.minecraft.world.item.Rarity.RARE));
     private static final List<DeferredItem<GearItem>> GEAR = new ArrayList<>();
 
     private static DeferredItem<GearItem> gear(String id, GearItem.Kind kind, GearItem.Grade grade, UnaryOperator<GearItem.Builder> setup) {
@@ -227,6 +229,8 @@ public final class MagicItems {
                 for (GearItem.Kind kind : GearItem.Kind.values())
                     GEAR.stream().map(DeferredItem::get).filter(item -> item.kind == kind).forEach(output::accept);
                 CHARMS.forEach(charm -> output.accept(charm.get()));
+                RecipeRegistry.baseRecipes().stream().filter(SpellScrolls::locked).sorted(java.util.Comparator.comparing(spell -> spell.id().toString()))
+                        .forEach(spell -> output.accept(SpellScrollItem.of(spell)));
                 com.restor.magicka.enemy.MagicEnemies.EGGS.forEach(egg -> output.accept(egg.get()));
             })
             .build());

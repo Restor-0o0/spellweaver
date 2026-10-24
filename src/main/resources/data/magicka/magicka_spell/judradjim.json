@@ -6,6 +6,7 @@
   },
   "name": "Thunder Call",
   "tier": "Signature",
+  "scroll": true,
   "tags": "DMG/CC",
   "shape": "targeted_zone",
   "origin": "aim_ground",

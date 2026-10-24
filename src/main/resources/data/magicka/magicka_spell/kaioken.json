@@ -6,6 +6,7 @@
   },
   "name": "Crimson Aura",
   "tier": "Signature",
+  "scroll": true,
   "tags": "BUFF",
   "shape": "nova",
   "origin": "caster",

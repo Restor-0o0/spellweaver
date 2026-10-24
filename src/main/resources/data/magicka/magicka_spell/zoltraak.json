@@ -6,6 +6,7 @@
   },
   "name": "Piercing Rays",
   "tier": "Signature",
+  "scroll": true,
   "tags": "DMG",
   "shape": "beam",
   "origin": "caster_front",

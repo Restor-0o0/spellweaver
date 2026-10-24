@@ -5,6 +5,7 @@
   },
   "name": "Arcane Lance",
   "tier": "Signature",
+  "scroll": true,
   "tags": "SETUP",
   "shape": "beam",
   "origin": "aim_hit",

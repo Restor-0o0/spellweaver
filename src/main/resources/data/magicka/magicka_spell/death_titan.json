@@ -8,6 +8,7 @@
   "incantation": "58878",
   "name": "Death Titan",
   "tier": "Signature",
+  "scroll": true,
   "tags": "SUMMON/DMG/AOE",
   "shape": "targeted_zone",
   "origin": "aim_hit",

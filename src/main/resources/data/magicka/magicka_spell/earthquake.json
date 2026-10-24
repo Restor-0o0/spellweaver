@@ -8,6 +8,7 @@
   "incantation": "55135",
   "name": "Earthquake",
   "tier": "Signature",
+  "scroll": true,
   "tags": "DMG/BREAK/AOE",
   "shape": "targeted_zone",
   "origin": "aim_hit",

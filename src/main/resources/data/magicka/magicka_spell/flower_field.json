@@ -6,6 +6,7 @@
   },
   "name": "Field of Flowers",
   "tier": "Signature",
+  "scroll": true,
   "tags": "HEAL/BUFF/UTIL",
   "shape": "targeted_zone",
   "origin": "aim_ground",

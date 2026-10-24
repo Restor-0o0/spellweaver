@@ -5,6 +5,7 @@
   },
   "name": "Thunder Lance",
   "tier": "Signature",
+  "scroll": true,
   "tags": "DMG/CC",
   "shape": "chain",
   "origin": "aim_hit",

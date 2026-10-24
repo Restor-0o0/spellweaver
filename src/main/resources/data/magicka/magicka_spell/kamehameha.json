@@ -7,6 +7,7 @@
   },
   "name": "Spirit Wave",
   "tier": "Signature",
+  "scroll": true,
   "tags": "DMG/CC",
   "shape": "beam",
   "origin": "caster_front",

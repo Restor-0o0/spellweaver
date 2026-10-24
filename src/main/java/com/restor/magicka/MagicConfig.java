@@ -23,6 +23,7 @@ public final class MagicConfig {
     public static final ModConfigSpec.BooleanValue FRIENDLY_FIRE = B.define("friendlyFire", true);
     public static final ModConfigSpec.BooleanValue COLLAPSE = B.define("collapseWithRoot", true);
     public static final ModConfigSpec.BooleanValue SPECIAL_SPAWNS = B.define("specialEnemyNaturalSpawns", true);
+    public static final ModConfigSpec.BooleanValue UNLOCK_ALL = B.define("unlockAllSpells", false);
     public static final ModConfigSpec SPEC = B.build();
     public static boolean permanent(String material) {
         return switch(material) { case "earth" -> PERMANENT_EARTH.get(); case "root" -> PERMANENT_ROOTS.get(); case "light", "glowstone" -> true; default -> false; };

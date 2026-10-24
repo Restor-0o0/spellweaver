@@ -8,6 +8,7 @@
   "incantation": "53373",
   "name": "Frost Titan",
   "tier": "Signature",
+  "scroll": true,
   "tags": "SUMMON/DMG/AOE",
   "shape": "targeted_zone",
   "origin": "aim_hit",
