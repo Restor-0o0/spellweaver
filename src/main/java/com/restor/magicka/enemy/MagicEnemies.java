@@ -82,6 +82,7 @@ public final class MagicEnemies {
     }
 
     public static boolean bySpell;
+    public static SpellDefinition hurting;
     /** Every player-spell hit on a living target funnels through here so specialists can react to shape, element and angle. */
     public static void hurt(LivingEntity target, DamageSource source, float damage, ServerPlayer caster, SpellDefinition spell, boolean brittle) {
         if (spell != null) {
@@ -97,7 +98,8 @@ public final class MagicEnemies {
         }
         if (damage <= 0) return;
         bySpell = spell != null;
-        try { target.hurt(source, damage); } finally { bySpell = false; }
+        hurting = spell;
+        try { target.hurt(source, damage); } finally { bySpell = false; hurting = null; }
     }
 
     private record Flood(ResourceKey<Level> level, Vec3 center, double radius, long until) {}

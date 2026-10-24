@@ -26,6 +26,8 @@ public class GearItem extends Item {
     private final Map<SpellFormula, JsonObject> patches;
     private final List<GearRule> rules;
     private final List<Attr> attributes;
+    private final Map<Element, Element> swaps;
+    private final Set<Element> infusions;
     private final double[] castBias;
     private final Action action;
     private final int cooldown;
@@ -43,6 +45,8 @@ public class GearItem extends Item {
         this.patches = Map.copyOf(builder.patches);
         this.rules = List.copyOf(builder.rules);
         this.attributes = List.copyOf(builder.attributes);
+        this.swaps = Map.copyOf(builder.swaps);
+        this.infusions = Set.copyOf(builder.infusions);
         this.castBias = builder.castBias;
         this.action = builder.action;
         this.cooldown = builder.cooldown;
@@ -64,6 +68,8 @@ public class GearItem extends Item {
     public Map<SpellFormula, JsonObject> patches() { return patches; }
     public List<GearRule> rules() { return rules; }
     public List<Attr> attributes() { return attributes; }
+    public Map<Element, Element> swaps() { return swaps; }
+    public Set<Element> infusions() { return infusions; }
     public double castBias(int size) { return castBias == null || size < 1 || size > 5 ? 1 : castBias[size - 1]; }
 
     @Override public Component getName(ItemStack stack) {
@@ -95,7 +101,7 @@ public class GearItem extends Item {
         allTraits.stream().sorted().forEach(trait -> lines.accept(Component.translatable("gear.magicka.trait." + trait.name().toLowerCase(Locale.ROOT)).withStyle(ChatFormatting.AQUA)));
         for (SpellFormula formula : patches.keySet().stream().sorted(Comparator.comparingInt(SpellFormula::size)).toList())
             lines.accept(Component.translatable("gear.magicka.replaces", RecipeRegistry.clientResolve(formula).displayName()).withStyle(ChatFormatting.LIGHT_PURPLE));
-        if (!rules.isEmpty()) lines.accept(Component.translatable("gear.magicka." + id + ".effect").withStyle(ChatFormatting.LIGHT_PURPLE));
+        if (!rules.isEmpty() || !swaps.isEmpty() || !infusions.isEmpty()) lines.accept(Component.translatable("gear.magicka." + id + ".effect").withStyle(ChatFormatting.LIGHT_PURPLE));
         if (!bonus.rules().isEmpty()) lines.accept(Component.translatable("gear.magicka.extra_rules", bonus.rules().size()).withStyle(ChatFormatting.LIGHT_PURPLE));
         if (castBias != null) lines.accept(Component.translatable("gear.magicka." + id + ".bias").withStyle(ChatFormatting.GRAY));
         if (action != null) lines.accept(Component.translatable("gear.magicka.active", cooldown / 20).withStyle(ChatFormatting.YELLOW));
@@ -117,6 +123,8 @@ public class GearItem extends Item {
         private final Map<SpellFormula, JsonObject> patches = new HashMap<>();
         private final List<Attr> attributes = new ArrayList<>();
         private final List<GearRule> rules = new ArrayList<>();
+        private final Map<Element, Element> swaps = new EnumMap<>(Element.class);
+        private final Set<Element> infusions = EnumSet.noneOf(Element.class);
         private double[] castBias;
         private Action action;
         private int cooldown = 40;
@@ -128,6 +136,8 @@ public class GearItem extends Item {
         public Builder patch(SpellFormula formula, JsonObject patch) { patches.put(formula, patch); return this; }
         public Builder rule(String json) { rules.add(GearRule.parse(json)); return this; }
         public Builder named() { named = true; return this; }
+        public Builder swap(Element from, Element to) { swaps.put(from, to); return this; }
+        public Builder infuse(Element element) { infusions.add(element); return this; }
         public Builder attribute(Holder<Attribute> attribute, AttributeModifier.Operation operation, double amount) { attributes.add(new Attr(attribute, operation, amount)); return this; }
         public Builder bias(double one, double two, double three, double four, double five) { castBias = new double[]{one, two, three, four, five}; return this; }
         public GearItem build() { return new GearItem(this); }

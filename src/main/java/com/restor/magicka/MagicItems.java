@@ -167,6 +167,17 @@ public final class MagicItems {
     public static final DeferredItem<GearItem> MORROW_LANTERN = gear("morrow_lantern", TOOL, LEGENDARY, b -> b.named()
             .stat(LIFE, 15).rule("{\"elements\":[\"life\"],\"tags\":[\"zone\"],\"patch\":{\"delivery\":{\"follow\":true}},\"healing\":1.25}"));
 
+    public static final DeferredItem<GearItem> LEGION_BANNER = gear("legion_banner", TRINKET, RARE, b -> b
+            .stat(SUMMONS, 10).rule("{\"tags\":[\"summon\"],\"summons\":1,\"summon_health\":0.6}"));
+    public static final DeferredItem<GearItem> CHAMELEON_HIDE = gear("chameleon_hide", ROBE, RARE, b -> b
+            .trait(MagicGear.Trait.ADAPTATION).attribute(Attributes.ARMOR, Operation.ADD_VALUE, 2));
+    public static final DeferredItem<GearItem> STEAM_RING = gear("steam_ring", RING, RARE, b -> b
+            .swap(Element.WATER, Element.FIRE).stat(FIRE, 10));
+    public static final DeferredItem<GearItem> WHISPERING_SHARD = gear("whispering_shard", TRINKET, WEIRD, b -> b
+            .infuse(Element.ARCANE).stat(ARCANE, 20).stat(CAST_SPEED, -10));
+    public static final DeferredItem<GearItem> WORLD_ROOTS = gear("world_roots", TRINKET, RARE, b -> b
+            .stat(EARTH, 10).stat(CONSTRUCTION, 15).rule("{\"elements\":[\"earth\"],\"tags\":[\"construction\"],\"lifetime\":2,\"cast\":1.5}"));
+
     public static final DeferredItem<CharmItem> CHARM_HOMING = charm("charm_homing", b -> b
             .rule("{\"shapes\":[\"projectile\",\"burst_projectile\"],\"patch\":{\"delivery\":{\"homing\":true}}}"));
     public static final DeferredItem<CharmItem> CHARM_BOUNCE = charm("charm_bounce", b -> b

@@ -7,7 +7,8 @@ import com.google.gson.JsonParser;
 import java.util.*;
 
 public record GearRule(Set<Element> elements, Set<SpellShape> shapes, Set<String> tags, int minSize,
-                       JsonObject patch, List<JsonObject> append, double damage, double healing) {
+                       JsonObject patch, List<JsonObject> append, double damage, double healing,
+                       int summons, double summonHealth, double cast, double lifetime) {
     public static GearRule parse(String json) { return parse(JsonParser.parseString(json).getAsJsonObject()); }
 
     public static GearRule parse(JsonObject json) {
@@ -22,9 +23,19 @@ public record GearRule(Set<Element> elements, Set<SpellShape> shapes, Set<String
             append.add(effect);
         }
         double damage = json.has("damage") ? json.get("damage").getAsDouble() : 1, healing = json.has("healing") ? json.get("healing").getAsDouble() : 1;
+        double summonHealth = number(json, "summon_health"), cast = number(json, "cast"), lifetime = number(json, "lifetime");
+        int summons = json.has("summons") ? json.get("summons").getAsInt() : 0;
         if (!(damage >= 0 && damage <= 10 && healing >= 0 && healing <= 10)) throw new IllegalArgumentException("Gear rule multiplier out of range");
+        if (summons < 0 || summons > 3) throw new IllegalArgumentException("Gear rule summons out of range");
         return new GearRule(elements, shapes, Set.copyOf(strings(json, "tags")), json.has("min_size") ? json.get("min_size").getAsInt() : 1,
-                json.has("patch") ? json.getAsJsonObject("patch").deepCopy() : new JsonObject(), List.copyOf(append), damage, healing);
+                json.has("patch") ? json.getAsJsonObject("patch").deepCopy() : new JsonObject(), List.copyOf(append), damage, healing,
+                summons, summonHealth, cast, lifetime);
+    }
+
+    private static double number(JsonObject json, String key) {
+        double value = json.has(key) ? json.get(key).getAsDouble() : 1;
+        if (!(value >= .1 && value <= 10)) throw new IllegalArgumentException("Gear rule " + key + " out of range");
+        return value;
     }
 
     private static List<String> strings(JsonObject json, String key) {
@@ -41,7 +52,7 @@ public record GearRule(Set<Element> elements, Set<SpellShape> shapes, Set<String
         return tags.isEmpty() || SpellTags.of(spell).stream().anyMatch(tags::contains);
     }
 
-    public void apply(JsonObject json) {
+    public void apply(JsonObject json, SpellDefinition base) {
         MagicGear.merge(json, patch);
         if (!append.isEmpty()) {
             JsonArray effects = json.has("effects") ? json.getAsJsonArray("effects") : new JsonArray();
@@ -52,6 +63,29 @@ public record GearRule(Set<Element> elements, Set<SpellShape> shapes, Set<String
             scale(json.getAsJsonArray("effects"));
             if (json.has("self") && json.getAsJsonObject("self").has("effects")) scale(json.getAsJsonObject("self").getAsJsonArray("effects"));
         }
+        if (summons != 0 || summonHealth != 1) {
+            JsonObject delivery = object(json, "delivery");
+            delivery.addProperty("summon_extra", (delivery.has("summon_extra") ? delivery.get("summon_extra").getAsInt() : 0) + summons);
+            delivery.addProperty("summon_health", (delivery.has("summon_health") ? delivery.get("summon_health").getAsDouble() : 1) * summonHealth);
+        }
+        if (cast != 1) {
+            int ticks = json.has("cast_ticks") ? json.get("cast_ticks").getAsInt() : base.castTicks();
+            json.addProperty("cast_ticks", Math.clamp(Math.round(ticks * cast), 1, 200));
+            if (base.shape().construction()) {
+                JsonObject construction = object(json, "construction");
+                int interval = construction.has("interval_ticks") ? construction.get("interval_ticks").getAsInt() : base.interval();
+                construction.addProperty("interval_ticks", Math.clamp(Math.round(interval * cast), 1, 40));
+            }
+        }
+        if (lifetime != 1) {
+            JsonObject construction = object(json, "construction");
+            construction.addProperty("lifetime_scale", (construction.has("lifetime_scale") ? construction.get("lifetime_scale").getAsDouble() : 1) * lifetime);
+        }
+    }
+
+    private static JsonObject object(JsonObject json, String key) {
+        if (!json.has(key) || !json.get(key).isJsonObject()) json.add(key, new JsonObject());
+        return json.getAsJsonObject(key);
     }
 
     private void scale(JsonArray graph) {

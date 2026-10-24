@@ -264,7 +264,7 @@ public final class MagicConstructionManager extends SavedData {
                     var data=(MagicBlocks.MagicBlockEntity)level.getBlockEntity(pos);
                     int defaultLife=switch(build.spell.material()) {case "ice" -> MagicConfig.ICE_LIFE.get();case "root" -> MagicConfig.ROOT_LIFE.get();case "arcane" -> MagicConfig.ARCANE_LIFE.get();default -> MagicConfig.EARTH_LIFE.get();};
                     if (airAnchor) defaultLife=MagicConfig.ARCANE_LIFE.get();
-                    int life=SpellDefinition.integer(build.spell.construction(),"lifetime_ticks",defaultLife,20,72000);
+                    int life=(int)Math.clamp(SpellDefinition.integer(build.spell.construction(),"lifetime_ticks",defaultLife,20,72000)*EffectGraph.number(build.spell.construction(),"lifetime_scale",1),20,72000);
                     data.expires=MagicConfig.LIFETIME.get() && !MagicConfig.permanent(airAnchor ? "arcane" : build.spell.material()) ? level.getGameTime()+life : Long.MAX_VALUE;
                     data.integrity=(float)EffectGraph.number(build.spell.construction(),"integrity",8);data.maxIntegrity=data.integrity;
                     data.regenerates=build.spell.construction().has("regenerates") && build.spell.construction().get("regenerates").getAsBoolean();
