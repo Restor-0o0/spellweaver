@@ -224,6 +224,10 @@ public final class CastingServer {
         if (s.queued != null) { s.queued = null; PacketDistributor.sendToPlayer(player, new MagicNetwork.QueueState(0, 0)); }
         sync(player, s);
     }
+    static void clearFormula(ServerPlayer player) {
+        Session s = SESSIONS.get(player.getUUID());
+        if (s != null && s.remaining == 0 && !s.formula.empty()) { s.formula.clear(); sync(player, s); }
+    }
     static SpellDefinition casting(ServerPlayer player) { Session s=SESSIONS.get(player.getUUID()); return s==null?null:s.recipe; }
     static void construction(ServerPlayer player, int attempts) { Session s=SESSIONS.get(player.getUUID()); if(s!=null)s.attempts=attempts; }
     private static void reset(ServerPlayer player) {

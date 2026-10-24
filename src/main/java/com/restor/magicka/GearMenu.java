@@ -16,22 +16,24 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public final class GearMenu extends AbstractContainerMenu {
     public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(Registries.MENU, Magicka.ID);
     public static final DeferredHolder<MenuType<?>, MenuType<GearMenu>> TYPE = MENUS.register("loadout",
-            () -> IMenuTypeExtension.create((id, inventory, buffer) -> new GearMenu(id, inventory, new SimpleContainer(MagicGear.SLOTS))));
+            () -> IMenuTypeExtension.create((id, inventory, buffer) -> new GearMenu(id, inventory, new SimpleContainer(MagicGear.MENU_SIZE))));
 
     public static final int[][] POSITIONS = {{26, 30}, {62, 30}, {26, 62}, {62, 62}, {26, 94}, {62, 94}, {98, 94}, {98, 30}};
-    private static final int GEAR_END = MagicGear.SLOTS, INVENTORY_END = GEAR_END + 36;
+    public static final int BELT_X = 26, BELT_Y = 128, INVENTORY_Y = 163;
+    private static final int GEAR_END = MagicGear.MENU_SIZE, INVENTORY_END = GEAR_END + 36;
 
     private final Container loadout;
 
     public GearMenu(int id, Inventory inventory, Container loadout) {
         super(TYPE.get(), id);
-        checkContainerSize(loadout, MagicGear.SLOTS);
+        checkContainerSize(loadout, MagicGear.MENU_SIZE);
         this.loadout = loadout;
         for (MagicGear.Slot slot : MagicGear.Slot.values())
             addSlot(new GearSlot(loadout, slot, POSITIONS[slot.ordinal()][0], POSITIONS[slot.ordinal()][1]));
+        for (int i = 0; i < MagicGear.BELT; i++) addSlot(new BeltSlot(loadout, MagicGear.SLOTS + i, BELT_X + i * 18, BELT_Y));
         for (int row = 0; row < 3; row++) for (int column = 0; column < 9; column++)
-            addSlot(new Slot(inventory, column + row * 9 + 9, 26 + column * 18, 137 + row * 18));
-        for (int column = 0; column < 9; column++) addSlot(new Slot(inventory, column, 26 + column * 18, 195));
+            addSlot(new Slot(inventory, column + row * 9 + 9, 26 + column * 18, INVENTORY_Y + row * 18));
+        for (int column = 0; column < 9; column++) addSlot(new Slot(inventory, column, 26 + column * 18, INVENTORY_Y + 58));
     }
 
     public static final class GearSlot extends Slot {
@@ -41,6 +43,12 @@ public final class GearMenu extends AbstractContainerMenu {
             this.gear = gear;
         }
         @Override public boolean mayPlace(ItemStack stack) { return gear.accepts(stack); }
+        @Override public int getMaxStackSize() { return 1; }
+    }
+
+    public static final class BeltSlot extends Slot {
+        BeltSlot(Container container, int index, int x, int y) { super(container, index, x, y); }
+        @Override public boolean mayPlace(ItemStack stack) { return PotionBelt.accepts(stack); }
         @Override public int getMaxStackSize() { return 1; }
     }
 

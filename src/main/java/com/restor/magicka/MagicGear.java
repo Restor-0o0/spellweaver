@@ -49,7 +49,7 @@ public final class MagicGear {
         }
     }
 
-    public static final int SLOTS = Slot.values().length;
+    public static final int SLOTS = Slot.values().length, BELT = 6, MENU_SIZE = SLOTS + BELT;
     private static final String TAG = "magicka_gear";
     private static final List<Holder<Attribute>> MANAGED = List.of(Attributes.MAX_HEALTH, Attributes.ARMOR,
             Attributes.ARMOR_TOUGHNESS, Attributes.KNOCKBACK_RESISTANCE, Attributes.MOVEMENT_SPEED);
@@ -70,11 +70,13 @@ public final class MagicGear {
         private final Player owner;
         private boolean loading = true;
         public Loadout(Player owner) {
-            super(SLOTS);
+            super(MENU_SIZE);
             this.owner = owner;
             CompoundTag tag = owner.getPersistentData().getCompound(TAG);
             for (Slot slot : Slot.values()) if (tag.contains(slot.key()))
-                setItem(slot.ordinal(), ItemStack.parse(owner.registryAccess(), tag.getCompound(slot.key())).orElse(ItemStack.EMPTY));
+                setItem(slot.ordinal(), parse(owner, tag.getCompound(slot.key())));
+            for (int i = 0; i < BELT; i++) if (tag.contains(beltKey(i)))
+                setItem(SLOTS + i, parse(owner, tag.getCompound(beltKey(i))));
             loading = false;
         }
         @Override public void setChanged() {
@@ -92,10 +94,39 @@ public final class MagicGear {
         CompoundTag tag = new CompoundTag();
         for (Slot slot : Slot.values()) {
             ItemStack stack = loadout.getItem(slot.ordinal());
-            if (!stack.isEmpty()) tag.put(slot.key(), (CompoundTag) stack.save(player.registryAccess()));
+            if (!stack.isEmpty()) tag.put(slot.key(), encode(player, stack));
+        }
+        for (int i = 0; i < BELT; i++) {
+            ItemStack stack = loadout.getItem(SLOTS + i);
+            if (!stack.isEmpty()) tag.put(beltKey(i), encode(player, stack));
         }
         player.getPersistentData().put(TAG, tag);
-        if (player instanceof ServerPlayer server) invalidate(server);
+        if (player instanceof ServerPlayer server) {
+            invalidate(server);
+            PotionBelt.sync(server);
+        }
+    }
+
+    private static String beltKey(int index) { return "belt_" + index; }
+
+    private static net.minecraft.nbt.Tag encode(Player player, ItemStack stack) {
+        return ItemStack.OPTIONAL_CODEC.encodeStart(player.registryAccess().createSerializationContext(net.minecraft.nbt.NbtOps.INSTANCE), stack).getOrThrow();
+    }
+
+    private static ItemStack parse(Player player, CompoundTag tag) {
+        return ItemStack.OPTIONAL_CODEC.parse(player.registryAccess().createSerializationContext(net.minecraft.nbt.NbtOps.INSTANCE), tag).result().orElse(ItemStack.EMPTY);
+    }
+
+    public static ItemStack belt(Player player, int index) {
+        CompoundTag tag = player.getPersistentData().getCompound(TAG);
+        return index >= 0 && index < BELT && tag.contains(beltKey(index)) ? parse(player, tag.getCompound(beltKey(index))) : ItemStack.EMPTY;
+    }
+
+    public static void setBelt(ServerPlayer player, int index, ItemStack stack) {
+        CompoundTag tag = player.getPersistentData().getCompound(TAG);
+        if (stack.isEmpty()) tag.remove(beltKey(index)); else tag.put(beltKey(index), encode(player, stack));
+        player.getPersistentData().put(TAG, tag);
+        PotionBelt.sync(player);
     }
 
     public static ItemStack item(Player player, Slot slot) {
@@ -155,6 +186,7 @@ public final class MagicGear {
         int[] deltas = profile(player).deltas.clone();
         Element adapted = adapted(player);
         if (adapted != null) deltas[MagicStats.Stat.valueOf(adapted.name()).ordinal()] += ADAPT_BONUS;
+        MagicPotions.bonus(player, deltas);
         return deltas;
     }
     public static Element adapted(Player player) {
@@ -324,6 +356,7 @@ public final class MagicGear {
     }
 
     @SubscribeEvent public void hurt(LivingIncomingDamageEvent event) {
+        event.setAmount(MagicPotions.ward(event.getEntity(), element(event.getSource()), event.getAmount()));
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
         if (event.getSource().is(net.minecraft.tags.DamageTypeTags.IS_FIRE) && has(player, Trait.FIRE_FRAIL))
             event.setAmount(event.getAmount() * 1.5f);

@@ -4,6 +4,7 @@ import com.restor.magicka.GearItem;
 import com.restor.magicka.GearMenu;
 import com.restor.magicka.MagicGear;
 import com.restor.magicka.MagicStats;
+import com.restor.magicka.PotionBelt;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
@@ -15,15 +16,16 @@ import java.util.*;
 public final class GearScreen extends AbstractContainerScreen<GearMenu> {
     private static final String[] ROW_LABELS = {"equipment", "rings", "trinkets"};
     private static final int[] ROW_Y = {21, 53, 85};
+    public static final int[] BUTTON_COLORS = {0xFF7FD0FF, 0xFFFFB86B};
 
     public GearScreen(GearMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
         imageWidth = 214;
-        imageHeight = 222;
+        imageHeight = 248;
         titleLabelX = 10;
         titleLabelY = 7;
         inventoryLabelX = 26;
-        inventoryLabelY = 127;
+        inventoryLabelY = GearMenu.INVENTORY_Y - 10;
     }
 
     @Override protected void renderBg(GuiGraphics g, float partial, int mouseX, int mouseY) {
@@ -36,10 +38,25 @@ public final class GearScreen extends AbstractContainerScreen<GearMenu> {
             int[] position = GearMenu.POSITIONS[slot.ordinal()];
             socket(g, leftPos + position[0] - 1, topPos + position[1] - 1, menu.slots.get(slot.ordinal()).hasItem());
         }
+        belt(g);
         for (int row = 0; row < 3; row++) for (int column = 0; column < 9; column++)
-            socket(g, leftPos + 25 + column * 18, topPos + 136 + row * 18, false);
-        for (int column = 0; column < 9; column++) socket(g, leftPos + 25 + column * 18, topPos + 194, false);
+            socket(g, leftPos + 25 + column * 18, topPos + GearMenu.INVENTORY_Y - 1 + row * 18, false);
+        for (int column = 0; column < 9; column++) socket(g, leftPos + 25 + column * 18, topPos + GearMenu.INVENTORY_Y + 57, false);
         summary(g);
+    }
+
+    private void belt(GuiGraphics g) {
+        MagicUi.panel(g, leftPos + 18, topPos + 121, 188, 28);
+        for (int i = 0; i < MagicGear.BELT; i++) {
+            int x = leftPos + GearMenu.BELT_X - 1 + i * 18, y = topPos + GearMenu.BELT_Y - 1;
+            socket(g, x, y, menu.slots.get(MagicGear.SLOTS + i).hasItem());
+            for (int button = 0; button < PotionBelt.BUTTONS; button++)
+                if (PotionBelt.clientSelected(button) == i) g.fill(x + 1 + button * 9, y + 16, x + 8 + button * 9, y + 17, BUTTON_COLORS[button]);
+        }
+        int x = leftPos + GearMenu.BELT_X + MagicGear.BELT * 18 + 4;
+        MagicUi.small(g, Component.translatable("screen.magicka.row.belt"), x, topPos + 126, MagicUi.GOLD);
+        for (int button = 0; button < PotionBelt.BUTTONS; button++)
+            MagicUi.small(g, MagicClient.potionKey(button), x + button * 30, topPos + 137, BUTTON_COLORS[button]);
     }
 
     private static void socket(GuiGraphics g, int x, int y, boolean filled) {
@@ -98,6 +115,8 @@ public final class GearScreen extends AbstractContainerScreen<GearMenu> {
         Slot slot = hoveredSlot;
         if (slot instanceof GearMenu.GearSlot gear && !slot.hasItem())
             g.renderTooltip(font, Component.translatable("screen.magicka.slot." + gear.gear.key()), x, y);
+                else if (slot instanceof GearMenu.BeltSlot && !slot.hasItem())
+            g.renderTooltip(font, Component.translatable("screen.magicka.slot.belt"), x, y);
         else super.renderTooltip(g, x, y);
     }
 
