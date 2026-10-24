@@ -32,20 +32,24 @@ public final class UndeadMinions {
     private record Minion(Mob mob, ServerPlayer owner, long until) {}
     private static final Map<UUID, Minion> MINIONS = new LinkedHashMap<>();
 
-    public static int summon(ServerPlayer owner, Vec3 point, String id, int count, int ticks) {
+    public static int summon(ServerPlayer owner, Vec3 point, String id, int count, int ticks) { return summon(owner, point, id, count, ticks, 1); }
+
+    public static int summon(ServerPlayer owner, Vec3 point, String id, int count, int ticks, double health) {
         var type = BuiltInRegistries.ENTITY_TYPE.getOptional(Identifier.tryParse(id)).orElse(EntityType.ZOMBIE);
         int spawned = 0;
-        for (int i = 0; i < Math.clamp(count, 1, 128); i++) if (spawn(owner, type, point, i, ticks)) spawned++;
+        for (int i = 0; i < Math.clamp(count, 1, 128); i++) if (spawn(owner, type, point, i, ticks, health)) spawned++;
         return spawned;
     }
 
-    public static boolean spawn(ServerPlayer owner, EntityType<?> type, Vec3 point, int index, int ticks) {
+    public static boolean spawn(ServerPlayer owner, EntityType<?> type, Vec3 point, int index, int ticks) { return spawn(owner, type, point, index, ticks, 1); }
+
+    public static boolean spawn(ServerPlayer owner, EntityType<?> type, Vec3 point, int index, int ticks, double health) {
         ServerLevel level = owner.level();
         Entity created = type.create(level, EntitySpawnReason.MOB_SUMMONED);
         if (!(created instanceof Mob mob) || !(created instanceof Enemy) || type == EntityType.WITHER || type == EntityType.ENDER_DRAGON || type == EntityType.WARDEN) {
             if (created != null) created.discard();
             if (type == EntityType.ZOMBIE) return false;
-            return spawn(owner, EntityType.ZOMBIE, point, index, ticks);
+            return spawn(owner, EntityType.ZOMBIE, point, index, ticks, health);
         }
         Vec3 at = place(level, mob, point, index);
         if (at == null || !WorldPlacement.allowed(owner, BlockPos.containing(at))) { mob.discard(); return false; }
@@ -53,6 +57,7 @@ public final class UndeadMinions {
         mob.finalizeSpawn(level, level.getCurrentDifficultyAt(mob.blockPosition()), EntitySpawnReason.MOB_SUMMONED, null);
         if (mob.getVehicle() != null) { Entity vehicle = mob.getVehicle(); mob.stopRiding(); vehicle.discard(); }
         if (mob instanceof Zombie zombie) zombie.setBaby(false);
+        MagicGear.frail(mob, health);
         if (mob.getItemBySlot(EquipmentSlot.HEAD).isEmpty()) mob.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.SKELETON_SKULL));
         for (EquipmentSlot slot : EquipmentSlot.values()) mob.setDropChance(slot, 0);
         mob.setPersistenceRequired();
