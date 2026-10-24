@@ -6,6 +6,7 @@
   },
   "name": "Doom",
   "tier": "Signature",
+  "scroll": true,
   "tags": "DMG/DEBUFF",
   "shape": "direct_target",
   "origin": "aim_hit",

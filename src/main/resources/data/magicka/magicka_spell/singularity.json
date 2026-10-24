@@ -8,6 +8,7 @@
   "incantation": "73877",
   "name": "Singularity",
   "tier": "Signature",
+  "scroll": true,
   "tags": "DMG/CC/AOE",
   "shape": "targeted_zone",
   "origin": "aim_hit",

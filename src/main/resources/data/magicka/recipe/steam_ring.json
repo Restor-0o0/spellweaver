@@ -7,9 +7,15 @@
     " G "
   ],
   "key": {
-    "B": "minecraft:water_bucket",
-    "G": "minecraft:gold_ingot",
-    "T": "minecraft:blaze_powder"
+    "B": {
+      "item": "minecraft:water_bucket"
+    },
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "T": {
+      "item": "minecraft:blaze_powder"
+    }
   },
   "result": {
     "id": "magicka:steam_ring",

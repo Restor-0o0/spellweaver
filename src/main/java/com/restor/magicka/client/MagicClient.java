@@ -25,6 +25,7 @@ import org.lwjgl.glfw.GLFW;
 @EventBusSubscriber(modid = Magicka.ID, value = Dist.CLIENT)
 public final class MagicClient {
     static {MagicNetwork.visualReceiver=SpellVisuals::receive;}
+    public static com.restor.magicka.SpellDefinition spell(com.restor.magicka.SpellFormula formula) { return com.restor.magicka.SpellScrolls.clientResolve(Minecraft.getInstance().player, formula); }
     @SubscribeEvent public static void charms(net.neoforged.neoforge.event.entity.player.ItemTooltipEvent event) {
         CharmItem.describe(event.getItemStack(), event.getToolTip()::add);
     }
@@ -164,11 +165,11 @@ public final class MagicClient {
     @SubscribeEvent public static void preview(net.neoforged.neoforge.client.event.RenderLevelStageEvent event) {
         if (event.getStage() != net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS || !playable()) return;
         var state = MagicNetwork.clientState;
-        if (!state.enabled() || state.remaining() > 0 || state.formula()==0 || !com.restor.magicka.RecipeRegistry.clientResolve(Formula.unpack(state.formula()).key()).shape().construction()) return;
+        if (!state.enabled() || state.remaining() > 0 || state.formula()==0 || !spell(Formula.unpack(state.formula()).key()).shape().construction()) return;
         var mc = Minecraft.getInstance();
         if (!com.restor.magicka.MagicConfig.CONSTRUCTION.get()) return;
         Formula formula = Formula.unpack(state.formula());
-        var recipe = com.restor.magicka.RecipeRegistry.clientResolve(formula.key());
+        var recipe = spell(formula.key());
         var path = new com.restor.magicka.MagicConstructionManager.Plan(mc.player, recipe, false, com.restor.magicka.SpellRuntime.origin(mc.player,recipe.origin()));
         var camera = event.getCamera().getPosition();
         var stack = event.getPoseStack();

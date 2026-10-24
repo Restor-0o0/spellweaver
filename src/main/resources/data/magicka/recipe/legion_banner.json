@@ -7,9 +7,15 @@
     " G "
   ],
   "key": {
-    "S": "minecraft:string",
-    "G": "minecraft:bone",
-    "T": "minecraft:white_banner"
+    "S": {
+      "item": "minecraft:string"
+    },
+    "G": {
+      "item": "minecraft:bone"
+    },
+    "T": {
+      "item": "minecraft:white_banner"
+    }
   },
   "result": {
     "id": "magicka:legion_banner",

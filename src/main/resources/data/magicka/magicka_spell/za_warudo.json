@@ -6,6 +6,7 @@
   },
   "name": "Time Stop",
   "tier": "Signature",
+  "scroll": true,
   "tags": "CC/UTIL",
   "shape": "nova",
   "origin": "caster",

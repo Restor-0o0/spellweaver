@@ -6,6 +6,7 @@
   },
   "name": "Magma Boulder",
   "tier": "Signature",
+  "scroll": true,
   "tags": "DMG/BREAK/AOE",
   "shape": "projectile",
   "origin": "caster_front",

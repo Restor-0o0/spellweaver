@@ -7,9 +7,15 @@
     " G "
   ],
   "key": {
-    "S": "minecraft:string",
-    "G": "minecraft:amethyst_shard",
-    "T": "minecraft:echo_shard"
+    "S": {
+      "item": "minecraft:string"
+    },
+    "G": {
+      "item": "minecraft:amethyst_shard"
+    },
+    "T": {
+      "item": "minecraft:echo_shard"
+    }
   },
   "result": {
     "id": "magicka:whispering_shard",

@@ -8,6 +8,7 @@
   "incantation": "52223",
   "name": "Deluge",
   "tier": "Signature",
+  "scroll": true,
   "tags": "CC/AOE",
   "shape": "spray",
   "origin": "caster_front",

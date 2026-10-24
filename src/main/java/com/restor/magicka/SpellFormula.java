@@ -11,6 +11,11 @@ public record SpellFormula(int fire, int water, int cold, int lightning, int ear
     public SpellFormula(int fire, int water, int cold, int lightning, int earth, int life, int arcane) { this(fire, water, cold, lightning, earth, life, arcane, 0); }
     public int size() { return fire + water + cold + lightning + earth + life + arcane + death; }
     public int count(Element e) { return switch(e) { case FIRE -> fire; case WATER -> water; case COLD -> cold; case LIGHTNING -> lightning; case EARTH -> earth; case LIFE -> life; case ARCANE -> arcane; case DEATH -> death; }; }
+    public SpellFormula without(Element e) {
+        int[] c = new int[Element.values().length];
+        for (Element x : Element.values()) c[x.ordinal()] = count(x) - (x == e ? 1 : 0);
+        return new SpellFormula(c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7]);
+    }
     public Formula prepared() {
         Formula f = new Formula();
         for (Element e : Element.values()) for (int i = 0; i < count(e); i++) f.add(e);

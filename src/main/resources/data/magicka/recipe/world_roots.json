@@ -7,9 +7,15 @@
     " G "
   ],
   "key": {
-    "S": "minecraft:string",
-    "G": "minecraft:rooted_dirt",
-    "T": "minecraft:emerald"
+    "S": {
+      "item": "minecraft:string"
+    },
+    "G": {
+      "item": "minecraft:rooted_dirt"
+    },
+    "T": {
+      "item": "minecraft:emerald"
+    }
   },
   "result": {
     "id": "magicka:world_roots",

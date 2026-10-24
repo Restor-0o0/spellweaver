@@ -25,6 +25,8 @@ public record GearBonus(Map<String, Integer> stats, List<String> traits, List<St
     public static final DeferredRegister.DataComponents COMPONENTS = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, Magicka.ID);
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<GearBonus>> TYPE = COMPONENTS.registerComponentType("gear_bonus",
             builder -> builder.persistent(CODEC).networkSynchronized(STREAM_CODEC));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<net.minecraft.resources.ResourceLocation>> SCROLL = COMPONENTS.registerComponentType("scroll_spell",
+            builder -> builder.persistent(net.minecraft.resources.ResourceLocation.CODEC).networkSynchronized(net.minecraft.resources.ResourceLocation.STREAM_CODEC));
 
     public static GearBonus of(ItemStack stack) { return stack.getOrDefault(TYPE.get(), EMPTY); }
 

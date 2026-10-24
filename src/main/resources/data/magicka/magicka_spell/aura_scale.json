@@ -7,6 +7,7 @@
   },
   "name": "Scales of Judgment",
   "tier": "Signature",
+  "scroll": true,
   "tags": "CC",
   "shape": "direct_target",
   "origin": "aim_hit",

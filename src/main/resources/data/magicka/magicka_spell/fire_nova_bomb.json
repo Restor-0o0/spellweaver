@@ -6,6 +6,7 @@
   },
   "name": "Fire Nova Bomb",
   "tier": "Signature",
+  "scroll": true,
   "tags": "DMG/AOE/DOT",
   "shape": "burst_projectile",
   "origin": "caster_front",

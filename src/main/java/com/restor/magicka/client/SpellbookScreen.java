@@ -28,7 +28,7 @@ public final class SpellbookScreen extends Screen {
         tag=Arrays.asList(TAGS).contains(saved.tag)?saved.tag:"all";query=saved.query;page=saved.page;scroll=saved.scroll;restoreId=saved.selectedId;
         size=Math.clamp(saved.size,0,Formula.MAX);elements=Math.clamp(saved.elements,0,255);
     }
-    public static List<SpellDefinition> uniqueSpells(){return RecipeRegistry.clientRecipes().stream().filter(d->d.tier().equalsIgnoreCase("Signature")).toList();}
+    public static List<SpellDefinition> uniqueSpells(){return RecipeRegistry.clientRecipes().stream().filter(d->d.tier().equalsIgnoreCase("Signature") && com.restor.magicka.SpellScrolls.clientOpen(net.minecraft.client.Minecraft.getInstance().player,d)).toList();}
     private List<SpellDefinition> entries(){
         String q=query.toLowerCase(Locale.ROOT).replace("#","").trim();
         return uniqueSpells().stream().filter(d->tag.equals("all") || SpellTags.of(d).contains(tag))
@@ -145,7 +145,7 @@ public final class SpellbookScreen extends Screen {
             boolean hover=mouseX>=sx && mouseX<sx+sw && mouseY>=sy && mouseY<sy+29;
             g.fill(sx,sy,sx+sw,sy+29,hover?0xFF54445A:0xFF2B2935);g.renderOutline(sx,sy,sw,29,hover?MagicUi.GOLD:0xFF88714E);
             MagicUi.small(g,MagicClient.quickKey(i),sx+4,sy+3,MagicUi.GOLD);
-            String label=packed==0?Component.translatable("book.magicka.assign").getString():RecipeRegistry.clientResolve(Formula.unpack(packed).key()).displayName().getString();
+            String label=packed==0?Component.translatable("book.magicka.assign").getString():MagicClient.spell(Formula.unpack(packed).key()).displayName().getString();
             MagicUi.small(g,Component.literal(font.plainSubstrByWidth(label,(int)((sw-8)/.75))),sx+4,sy+17,0xFFF1E4C8);
         }
         super.render(g,mouseX,mouseY,partialTick);

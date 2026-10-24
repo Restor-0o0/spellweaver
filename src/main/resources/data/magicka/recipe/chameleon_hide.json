@@ -7,8 +7,12 @@
     "LLL"
   ],
   "key": {
-    "L": "minecraft:leather",
-    "T": "minecraft:turtle_scute"
+    "L": {
+      "item": "minecraft:leather"
+    },
+    "T": {
+      "item": "minecraft:turtle_scute"
+    }
   },
   "result": {
     "id": "magicka:chameleon_hide",
