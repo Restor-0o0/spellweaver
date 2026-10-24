@@ -206,6 +206,23 @@ public final class RecipeGameTests {
         h.succeed();
     }
     @GameTest(template="empty")
+    public static void enemiesDropUnlearnedScrolls(GameTestHelper h){
+        var p=caster(h);SpellScrolls.forget(p);
+        var level=h.getLevel();var random=net.minecraft.util.RandomSource.create(7);
+        var locked=RecipeRegistry.recipes().stream().filter(SpellScrolls::locked).toList();
+        var rest=locked.stream().filter(d->!d.name().equals("Fire Titan")).map(d->d.id().toString()).collect(java.util.stream.Collectors.toSet());
+        for(int i=0;i<20;i++)h.assertTrue(ScrollDrops.pick(random,rest,1,1).name().equals("Fire Titan"),"Drops prefer unlearned spells");
+        var all=locked.stream().map(d->d.id().toString()).collect(java.util.stream.Collectors.toSet());
+        h.assertTrue(ScrollDrops.pick(random,all,1,1)!=null,"Known spells still drop once all are learned");
+        for(int i=0;i<50;i++)h.assertTrue(!ScrollDrops.pick(random,Set.of(),0,1).ultimate(),"Specialists never drop ultimates");
+        var mage=com.restor.magicka.enemy.MagicEnemies.COUNTERMAGE.get().create(level);
+        var imp=com.restor.magicka.enemy.MagicEnemies.SPARK_IMP.get().create(level);
+        var boss=net.minecraft.world.entity.EntityType.WITHER.create(level);
+        var zombie=net.minecraft.world.entity.EntityType.ZOMBIE.create(level);
+        h.assertTrue(ScrollDrops.chance(boss)==1 && ScrollDrops.chance(mage)==ScrollDrops.CASTER_CHANCE && ScrollDrops.chance(imp)==ScrollDrops.SPECIALIST_CHANCE && ScrollDrops.chance(zombie)==0,"Drop chances by enemy kind");
+        h.succeed();
+    }
+    @GameTest(template="empty")
     public static void scrollIsNotConsumed(GameTestHelper h){
         var p=caster(h);SpellScrolls.forget(p);
         var titan=spell("Fire Titan");var stack=SpellScrollItem.of(titan);

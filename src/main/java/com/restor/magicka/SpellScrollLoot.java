@@ -12,7 +12,7 @@ import net.neoforged.neoforge.common.loot.LootModifier;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
-import java.util.Comparator;
+import java.util.Set;
 
 public class SpellScrollLoot extends LootModifier {
     public static final MapCodec<SpellScrollLoot> CODEC = RecordCodecBuilder.mapCodec(i -> codecStart(i)
@@ -34,18 +34,10 @@ public class SpellScrollLoot extends LootModifier {
 
     @Override protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> loot, LootContext context) {
         if (!context.getQueriedLootTableId().getPath().startsWith("chests/") || context.getRandom().nextDouble() >= chance) return loot;
-        var pool = RecipeRegistry.recipes().stream().filter(SpellScrolls::locked).sorted(Comparator.comparing(s -> s.id().toString())).toList();
-        int total = pool.stream().mapToInt(this::weight).sum();
-        if (total <= 0) return loot;
-        int roll = context.getRandom().nextInt(total);
-        for (SpellDefinition spell : pool) {
-            roll -= weight(spell);
-            if (roll < 0) { loot.add(SpellScrollItem.of(spell)); break; }
-        }
+        SpellDefinition spell = ScrollDrops.pick(context.getRandom(), Set.of(), ultimateWeight, weight);
+        if (spell != null) loot.add(SpellScrollItem.of(spell));
         return loot;
     }
-
-    private int weight(SpellDefinition spell) { return spell.ultimate() ? ultimateWeight : weight; }
 
     @Override public MapCodec<? extends IGlobalLootModifier> codec() { return TYPE.get(); }
 }
