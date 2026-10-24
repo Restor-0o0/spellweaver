@@ -1,8 +1,10 @@
 # Changelog
 
-## Unreleased
+## 1.3.0 — scrolls and potions
 
 - Spell scrolls: elementals, ultimates, legendary and the strongest signature spells are sealed in survival until you read their scroll. A sealed formula casts the spell one element shorter, and sealed spells are hidden in the grimoire. Scrolls are never used up and are found in structure chests. Creative mode and the `unlockAllSpells` server option open everything.
+- Potion belt: six potion slots on the loadout screen (J). Two belt keys (Z and X) each drink their own chosen potion; hold a key to pick its potion on a wheel. Drinking takes about half a second and clears the prepared formula, and the empty bottle comes back.
+- Seven new potions, brewed from Awkward Potion and extended with redstone: five elemental wards (fire, cold, lightning, arcane, death; 40% less damage of that element), Swift Casting (+25% cast speed) and Spell Focus (+20% spell damage). Splash and lingering versions work as usual.
 
 ## 1.2.0 — gear that changes spells
 

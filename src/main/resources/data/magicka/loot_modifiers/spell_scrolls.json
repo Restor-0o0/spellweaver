@@ -1,5 +1,6 @@
 {
   "type": "magicka:spell_scrolls",
+  "conditions": [],
   "chance": 0.06,
   "ultimate_weight": 1,
   "weight": 4
