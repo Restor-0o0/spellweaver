@@ -17,7 +17,7 @@ public final class SpellVisuals {
     private static final class Cue {final MagicNetwork.Visual packet;int age;Cue(MagicNetwork.Visual packet){this.packet=packet;}}
     public static void clear(){CUES.clear();}
     public static void receive(MagicNetwork.Visual packet){
-        if(packet.kind()<0 || packet.kind()>7 || !GrimoireState.valid(packet.formula()) || !Double.isFinite(packet.from().lengthSqr()+packet.to().lengthSqr()) || !Float.isFinite(packet.radius()))return;
+        if(packet.kind()<0 || packet.kind()>SpellVfx.SIGIL || !GrimoireState.valid(packet.formula()) || !Double.isFinite(packet.from().lengthSqr()+packet.to().lengthSqr()) || !Float.isFinite(packet.radius()))return;
         if(packet.kind()==SpellVfx.ZONE || packet.kind()==SpellVfx.MINE)CUES.removeIf(c->c.packet.kind()==packet.kind() && c.packet.formula()==packet.formula() && c.packet.from().distanceToSqr(packet.from())<.01);
         if(CUES.size()>=512)CUES.removeFirst();CUES.add(new Cue(packet));
     }
@@ -25,7 +25,7 @@ public final class SpellVisuals {
         var mc=Minecraft.getInstance();if(mc.level==null){clear();return;}
         CUES.removeIf(c->++c.age>Math.min(100,c.packet.ticks()));
         for(Cue cue:CUES){
-            var p=cue.packet;if(p.from().distanceToSqr(mc.gameRenderer.getMainCamera().position())>128*128)continue;
+            var p=cue.packet;if(p.kind()==SpellVfx.SIGIL || p.from().distanceToSqr(mc.gameRenderer.getMainCamera().position())>128*128)continue;
             var formula=Formula.unpack(p.formula());
             if(fire(formula.key()))flames(mc,cue);
             if(cue.age%3!=0)continue;
@@ -110,6 +110,12 @@ public final class SpellVisuals {
                     double wave=radius*(.2+progress);ring(pose,consumer,camera,center,wave,0,color,alpha,.09);ring(pose,consumer,camera,center,wave*.7,1,0xFFFFFF,alpha*.7f,.035);
                     for(int i=0;i<10;i++){double angle=i*Math.PI/5;Vec3 end=center.add(Math.cos(angle)*wave,(i%3)*wave*.35,Math.sin(angle)*wave);stroke(pose,consumer,camera,center.lerp(end,.55),end,.045,color,alpha);}
                 }
+                case SpellVfx.SIGIL -> {
+                    float age=cue.age+partial,life=Math.max(1,p.ticks());
+                    float fade=life<=3?.9f:.9f*Math.min(1,age/3)*Math.clamp((life-age)/4,0,1);
+                    double spin=((Minecraft.getInstance().level==null?0:Minecraft.getInstance().level.getGameTime())+partial)*.04;
+                    sigil(pose,consumer,camera,center,p.to().subtract(center),radius*Math.min(1,.55+age*.15),spin,color,fade);
+                }
                 default -> {}
             }
         }
@@ -118,6 +124,37 @@ public final class SpellVisuals {
         // Retain an elemental identity; mixed recipes show their other elements in the particle layer.
         Element element=formula.death()>0?Element.DEATH:formula.lightning()>0?Element.LIGHTNING:formula.fire()>0?Element.FIRE:formula.cold()>0?Element.COLD:formula.life()>0?Element.LIFE:formula.arcane()>0?Element.ARCANE:formula.water()>0?Element.WATER:Element.EARTH;
         return element.color;
+    }
+    private static final double[][] GLYPHS={
+        {-.6,-1,-.6,1, -.6,0,.6,.6},
+        {-.6,-1,0,1, 0,1,.6,-1, -.3,0,.3,0},
+        {0,-1,0,1, -.6,.4,0,1, .6,.4,0,1},
+        {-.6,-1,.6,-1, .6,-1,-.6,1, -.6,1,.6,1},
+        {-.6,1,.6,1, 0,1,0,-1, -.5,-.4,.5,-.4},
+        {-.6,-1,-.6,1, -.6,1,.6,0, .6,0,-.6,-.2, .6,-1,0,-.4},
+        {-.6,0,0,1, 0,1,.6,0, .6,0,0,-1, 0,-1,-.6,0},
+        {-.6,-1,.6,1, .6,-1,-.6,1, -.6,0,-.2,0}
+    };
+    private static void sigil(PoseStack.Pose pose,VertexConsumer consumer,Vec3 camera,Vec3 center,Vec3 normal,double radius,double spin,int color,float alpha){
+        Vec3 n=normal.normalize(),u=(Math.abs(n.y)>.95?new Vec3(1,0,0):new Vec3(0,1,0)).cross(n).normalize(),v=n.cross(u);
+        double line=Math.clamp(radius*.022,.012,.09);
+        arc(pose,consumer,camera,center,u,v,radius,line*1.6,color,alpha);
+        arc(pose,consumer,camera,center,u,v,radius*.8,line,color,alpha);
+        arc(pose,consumer,camera,center,u,v,radius*.36,line,0xFFFFFF,alpha*.8f);
+        int runes=Math.clamp((int)(radius*9),10,40);double size=radius*.075;
+        for(int k=0;k<runes;k++){
+            double a=spin+k*Math.PI*2/runes;Vec3 r=u.scale(Math.cos(a)).add(v.scale(Math.sin(a))),t=u.scale(-Math.sin(a)).add(v.scale(Math.cos(a))),base=center.add(r.scale(radius*.9));
+            double[] g=GLYPHS[(k*5+3)%GLYPHS.length];
+            for(int i=0;i+3<g.length;i+=4)stroke(pose,consumer,camera,base.add(t.scale(g[i]*size)).add(r.scale(g[i+1]*size)),base.add(t.scale(g[i+2]*size)).add(r.scale(g[i+3]*size)),line*.7,0xFFFFFF,alpha);
+        }
+        for(int i=0;i<6;i++){
+            double a=-spin*1.5+i*Math.PI/3,b=a+Math.PI*2/3;
+            stroke(pose,consumer,camera,center.add(u.scale(Math.cos(a)*radius*.8)).add(v.scale(Math.sin(a)*radius*.8)),center.add(u.scale(Math.cos(b)*radius*.8)).add(v.scale(Math.sin(b)*radius*.8)),line,color,alpha*.8f);
+        }
+    }
+    private static void arc(PoseStack.Pose pose,VertexConsumer consumer,Vec3 camera,Vec3 center,Vec3 u,Vec3 v,double radius,double width,int color,float alpha){
+        int steps=Math.clamp((int)(radius*16),24,96);Vec3 previous=null;
+        for(int i=0;i<=steps;i++){double a=i*Math.PI*2/steps;Vec3 point=center.add(u.scale(Math.cos(a)*radius)).add(v.scale(Math.sin(a)*radius));if(previous!=null)stroke(pose,consumer,camera,previous,point,width,color,alpha);previous=point;}
     }
     private static void ring(PoseStack.Pose pose,VertexConsumer consumer,Vec3 camera,Vec3 center,double radius,int plane,int color,float alpha,double width){
         Vec3 previous=null;for(int i=0;i<=40;i++){double a=i*Math.PI/20,x=Math.cos(a)*radius,y=Math.sin(a)*radius;Vec3 point=center.add(plane==2?0:x,plane==0?0:y,plane==0?y:plane==2?x:0);if(previous!=null)stroke(pose,consumer,camera,previous,point,width,color,alpha);previous=point;}
