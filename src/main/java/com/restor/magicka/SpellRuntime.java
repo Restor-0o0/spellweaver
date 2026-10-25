@@ -89,6 +89,11 @@ public final class SpellRuntime {
         if(s.origin()!=OriginMode.CASTER && s.origin()!=OriginMode.CASTER_FEET && s.origin()!=OriginMode.CASTER_FRONT){
             LivingEntity aimed=target(p);if(aimed!=null)point=aimed.position();
         }
+        if (s.ultimate()) {
+            Vec3 at = self ? p.position() : SpellAim.hit(p).getLocation();
+            double radius = Math.clamp(s.number("radius",5),3,10);
+            for (int i = 0; i < 3; i++) SpellVfx.sigil(p,s.formula(),at.add(0,.2+i*3,0),new Vec3(0,1,0),radius*(1-i*.25),30);
+        } else if (!self && s.formula().size() >= 3 && !s.channeled() && !s.delivery().has("legend")) SpellVfx.hand(p,s.formula(),.45+.1*s.formula().size(),10);
         if (LegendMagic.handles(s,self)) { LegendMagic.cast(p,s,self); return; }
         if (self) {
             switch(s.selfMode()) {

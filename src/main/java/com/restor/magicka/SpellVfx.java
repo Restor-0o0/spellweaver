@@ -8,9 +8,20 @@ import net.neoforged.neoforge.network.PacketDistributor;
 
 /** Compact visual cues are rendered locally, independently of the particle quality setting. */
 public final class SpellVfx {
-    public static final int ORB=0,BEAM=1,ARC=2,IMPACT=3,ZONE=4,MINE=5,TELEGRAPH=6,SPRAY=7;
+    public static final int ORB=0,BEAM=1,ARC=2,IMPACT=3,ZONE=4,MINE=5,TELEGRAPH=6,SPRAY=7,SIGIL=8;
     public static void cue(ServerPlayer p,SpellDefinition s,int kind,Vec3 from,Vec3 to,double radius,int ticks){
-        int packed=s==null?new SpellFormula(0,1,0,0,0,0,0).prepared().packed():s.formula().prepared().packed();
+        send(p,s==null?new SpellFormula(0,1,0,0,0,0,0):s.formula(),kind,from,to,radius,ticks);
+    }
+    public static void sigil(ServerPlayer p,SpellFormula formula,Vec3 center,Vec3 normal,double radius,int ticks){
+        send(p,formula,SIGIL,center,center.add(normal.normalize()),radius,ticks);
+    }
+    public static void hand(ServerPlayer p,SpellFormula formula,double radius,int ticks){
+        Vec3 look=p.getLookAngle(),side=look.cross(new Vec3(0,1,0));side=side.lengthSqr()<1e-4?new Vec3(1,0,0):side.normalize();
+        Vec3 up=side.cross(look).normalize();
+        sigil(p,formula,p.getEyePosition().add(look.scale(1.7)).add(side.scale(.35)).subtract(up.scale(.4)),look,radius,ticks);
+    }
+    private static void send(ServerPlayer p,SpellFormula formula,int kind,Vec3 from,Vec3 to,double radius,int ticks){
+        int packed=formula.prepared().packed();
         var packet=new MagicNetwork.Visual(kind,packed,from,to,(float)Math.clamp(radius,.05,16),Math.clamp(ticks,1,100));
         for(var viewer:p.serverLevel().players())if(viewer==p || viewer.distanceToSqr(from)<256*256 || viewer.distanceToSqr(to)<256*256)PacketDistributor.sendToPlayer(viewer,packet);
     }
