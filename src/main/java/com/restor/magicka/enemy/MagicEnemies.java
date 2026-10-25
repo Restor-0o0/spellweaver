@@ -166,6 +166,7 @@ public final class MagicEnemies {
     }
     @SubscribeEvent public void commands(RegisterCommandsEvent event) {
         event.getDispatcher().register(Commands.literal("spellweaver").requires(s -> s.hasPermission(2))
+                .then(ConfigCommand.node())
                 .then(Commands.literal("encounter").then(Commands.argument("id", StringArgumentType.word())
                         .suggests((c, b) -> { ENCOUNTERS.keySet().forEach(b::suggest); return b.buildFuture(); })
                         .executes(c -> {

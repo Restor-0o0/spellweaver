@@ -96,10 +96,24 @@ Element keys only take over while magic mode is on. All keys can be rebound.
 ## Configuration
 
 Every feature can be tuned or switched off. Don't like mage levels, scrolls from every mob or
-spells that break blocks? Turn them off. There are three ways.
+spells that break blocks? Turn them off. There are four ways.
 
 **In game.** Press Esc and click the book icon next to *Options…* (it is also next to *Done* in the
 Options screen), or go to *Mods → Spellweaver → Config*. Each option has a description. In multiplayer only the server can change settings.
+
+**With a command.** Operators (and singleplayer with cheats on) can change any option on a running server, no restart
+needed. Changes are saved to the file and sent to every player at once.
+
+| Command | Action |
+| --- | --- |
+| `/spellweaver config` | List all options; changed ones are yellow, click a name to edit it |
+| `/spellweaver config <option>` | Show the value, description, default and allowed range |
+| `/spellweaver config <option> <value>` | Set a value |
+| `/spellweaver config <option> default` | Restore the default |
+
+For example, `/spellweaver config instantCast false` brings back cast times for everyone, and
+`/spellweaver config mageLevels false` with `/spellweaver config unlockAllSpells true` opens all five
+elements and every spell from the start.
 
 **In the file.** Each world has its own settings in `saves/<world>/serverconfig/spellweaver-server.toml`
 (on a server: `world/serverconfig/`), created when the world is first loaded. Every option in it has

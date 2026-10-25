@@ -95,6 +95,11 @@ public final class MagicNetwork {
         public static final StreamCodec<RegistryFriendlyByteBuf,MageXp> CODEC=StreamCodec.of((b,v)->b.writeVarInt(v.xp),b->new MageXp(b.readVarInt()));
         @Override public Type<MageXp> type(){return TYPE;}
     }
+    public record Config(String file, byte[] data) implements CustomPacketPayload {
+        public static final Type<Config> TYPE=new Type<>(ResourceLocation.fromNamespaceAndPath(Magicka.ID,"config"));
+        public static final StreamCodec<RegistryFriendlyByteBuf,Config> CODEC=StreamCodec.of((b,v)->{b.writeUtf(v.file);b.writeByteArray(v.data);},b->new Config(b.readUtf(),b.readByteArray()));
+        @Override public Type<Config> type(){return TYPE;}
+    }
     public record Belt(java.util.List<net.minecraft.world.item.ItemStack> items, int first, int second) implements CustomPacketPayload {
         public static final Type<Belt> TYPE=new Type<>(ResourceLocation.fromNamespaceAndPath(Magicka.ID,"belt"));
         public static final StreamCodec<RegistryFriendlyByteBuf,Belt> CODEC=StreamCodec.of((b,v)->{b.writeVarInt(v.items.size());for(var s:v.items)net.minecraft.world.item.ItemStack.OPTIONAL_STREAM_CODEC.encode(b,s);b.writeVarInt(v.first);b.writeVarInt(v.second);},
@@ -150,6 +155,7 @@ public final class MagicNetwork {
         });
         registrar.playToClient(Belt.TYPE,Belt.CODEC,(packet,context)->PotionBelt.acceptClient(packet.items,packet.first,packet.second));
         registrar.playToServer(BeltAction.TYPE,BeltAction.CODEC,(packet,context)->{if(context.player() instanceof ServerPlayer p){if(packet.slot<0)PotionBelt.drink(p,packet.button);else PotionBelt.select(p,packet.button,packet.slot);}});
+        registrar.playToClient(Config.TYPE,Config.CODEC,(packet,context)->net.neoforged.neoforge.network.ConfigSync.receiveSyncedConfig(packet.data,packet.file));
         registrar.playToClient(MageXp.TYPE,MageXp.CODEC,(packet,context)->MageLevel.acceptClient(packet.xp));
         registrar.playToClient(Scrolls.TYPE,Scrolls.CODEC,(packet,context)->SpellScrolls.acceptClient(packet.all,packet.known));
         registrar.playToClient(ShapeGrid.TYPE,ShapeGrid.CODEC,(packet,context)->clientPattern=ShapePattern.sanitize(packet.low,packet.high));
