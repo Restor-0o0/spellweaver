@@ -77,6 +77,28 @@ public final class MagicClient {
     public static void openSettings(net.minecraft.client.gui.screens.Screen parent) {
         net.neoforged.fml.ModList.get().getModContainerById(Magicka.ID).ifPresent(mod -> net.minecraft.client.Minecraft.getInstance().gui.setScreen(new net.neoforged.neoforge.client.gui.ConfigurationScreen(mod, parent)));
     }
+    private static net.minecraft.client.gui.components.AbstractWidget settingsAnchor, settingsButton;
+    private static boolean labelled(net.minecraft.client.gui.components.events.GuiEventListener listener, String key) {
+        return listener instanceof net.minecraft.client.gui.components.Button button && button.getMessage().getContents() instanceof net.minecraft.network.chat.contents.TranslatableContents text && text.getKey().equals(key);
+    }
+    @SubscribeEvent public static void settingsButton(net.neoforged.neoforge.client.event.ScreenEvent.Init.Post event) {
+        settingsAnchor = settingsButton = null;
+        String key = event.getScreen() instanceof net.minecraft.client.gui.screens.PauseScreen ? "menu.options" : event.getScreen() instanceof net.minecraft.client.gui.screens.options.OptionsScreen ? "gui.done" : null;
+        if (key == null || Minecraft.getInstance().level == null) return;
+        var anchor = event.getListenersList().stream().filter(l -> labelled(l, key)).map(l -> (net.minecraft.client.gui.components.AbstractWidget) l).findFirst().orElse(null);
+        if (anchor == null) return;
+        Component title = Component.translatable("magicka.configuration.title");
+        var button = net.minecraft.client.gui.components.SpriteIconButton.builder(title, b -> openSettings(event.getScreen()), true)
+            .sprite(Identifier.fromNamespaceAndPath(Magicka.ID, "settings"), 15, 15).size(20, 20).withTootip().build();
+        settingsAnchor = anchor;
+        settingsButton = button;
+        place();
+        event.addListener(button);
+    }
+    @SubscribeEvent public static void settingsButtonFollow(net.neoforged.neoforge.client.event.ScreenEvent.Render.Pre event) { place(); }
+    private static void place() {
+        if (settingsAnchor != null) settingsButton.setPosition(settingsAnchor.getX() - 24, settingsAnchor.getY() + (settingsAnchor.getHeight() - 20) / 2);
+    }
     public static void openLoadout() { ClientPacketDistributor.sendToServer(new MagicNetwork.Input(14)); }
     public static Component castHint(String intent) {
         return Component.literal((intent.equals("self") ? "Self: " : "Primary: ")).append(intent.equals("self") ? SELF.getTranslatedKeyMessage() : DIRECTED.getTranslatedKeyMessage());
