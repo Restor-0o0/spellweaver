@@ -13,6 +13,7 @@ public final class MagicConfig {
     public static final ModConfigSpec.IntValue ROOT_LIFE = B.comment("Ticks before non-permanent roots wither").defineInRange("rootLifetimeTicks", 900, 20, 72000);
     public static final ModConfigSpec.IntValue ARCANE_LIFE = B.comment("Ticks before arcane blocks fade").defineInRange("arcaneLifetimeTicks", 400, 20, 72000);
     public static final ModConfigSpec.IntValue MAX_BLOCKS = B.comment("How many blocks one construction may place").defineInRange("maxConstructionBlocks", 16, 1, 64);
+    public static final ModConfigSpec.BooleanValue INSTANT_CAST = B.comment("Spells fire at once without a cast time; channeled spells last while the button is held. false brings back the cast time").define("instantCast", true);
     public static final ModConfigSpec.DoubleValue CAST_SCALE = B.comment("Scales every cast time; below 1 is faster").defineInRange("castTimeMultiplier", 1.0, 0.25, 4.0);
     public static final ModConfigSpec.IntValue CHANNEL_TICKS = B.comment("Maximum channel ticks per element in the formula").defineInRange("channelMaxTicksPerElement", 20, 5, 200);
     public static final ModConfigSpec.DoubleValue PLAYER_DAMAGE = B.comment("Multiplier for spell damage dealt to players").defineInRange("playerMagicDamageMultiplier", 0.5, 0.0, 2.0);
