@@ -58,11 +58,13 @@ public final class CastingServer {
                 int element = action == 13 ? Element.DEATH.ordinal() : action;
                 if (ElementLocks.locked(player, Element.values()[element])) { ElementLocks.reject(player, Element.values()[element]); sync(player, s); return; }
                 if (s.formula.empty()) s.typed.setLength(0);
+                int cap = MageLevel.maxElements(player);
+                if (s.formula.size() >= cap && cap < Formula.MAX) { MageLevel.reject(player, s.formula.size() + 1); sync(player, s); return; }
                 int before = s.formula.size();
                 s.formula.add(Element.values()[element]);
                 if (s.formula.size() > before) {
                     s.typed.append(element + 1);
-                    if (MagicGear.has(player, MagicGear.Trait.SECOND_TONGUE) && ++s.tongue % 4 == 0) {
+                    if (MagicGear.has(player, MagicGear.Trait.SECOND_TONGUE) && ++s.tongue % 4 == 0 && s.formula.size() < cap) {
                         int echoed = s.formula.size();
                         s.formula.add(Element.values()[element]);
                         if (s.formula.size() > echoed) s.typed.append(element + 1);
@@ -97,10 +99,10 @@ public final class CastingServer {
                     s.windup = 0; s.channeling = true; s.channelStart = now;
                     s.total = construction ? s.recipe.budget()*s.recipe.interval() : MagicConfig.CHANNEL_TICKS.get()*(1+s.recipe.formula().size());
                     SpellRuntime.cast(player, s.recipe, false);
-                    MagicGear.cast(player, s.recipe, false);
+                    MageLevel.cast(player, s.recipe, false);
                 } else if (s.instant) {
                     SpellRuntime.cast(player, s.recipe, s.intent == Intent.SELF, true);
-                    MagicGear.cast(player, s.recipe, s.intent == Intent.SELF);
+                    MageLevel.cast(player, s.recipe, s.intent == Intent.SELF);
                     s.formula.clear(); s.recipe = null; s.total = 0;
                 }
                 s.remaining = s.total;
@@ -150,7 +152,7 @@ public final class CastingServer {
         s.channeling = true; s.channelStart = player.level().getGameTime(); s.elapsed = 0;
         s.total = s.remaining = Math.clamp((int)s.recipe.number("duration_ticks",240),20,1200);
         s.epic = EpicMagic.start(player, s.recipe);
-        MagicGear.cast(player, s.recipe, false);
+        MageLevel.cast(player, s.recipe, false);
     }    public static void quickFill(ServerPlayer player,int packed){
         if(!player.isAlive() || player.isSpectator() || !GrimoireState.valid(packed))return;
         Session s=SESSIONS.computeIfAbsent(player.getUUID(),id->new Session());long now=player.level().getGameTime();
@@ -168,7 +170,10 @@ public final class CastingServer {
             int target=s.queueTicks/QUEUE_TICKS_PER_ELEMENT;
             while(s.queueIndex<target && s.queueIndex<s.queued.size()){
                 Element element=s.queued.elements().get(s.queueIndex++);
-                if(ElementLocks.locked(player,element)){ElementLocks.reject(player,element);s.queued=null;s.formula.clear();s.typed.setLength(0);sync(player,s);PacketDistributor.sendToPlayer(player,new MagicNetwork.QueueState(0,0));return;}
+                int cap=MageLevel.maxElements(player);
+                boolean tooLong=s.formula.size()>=cap && cap<Formula.MAX;
+                if(tooLong)MageLevel.reject(player,s.queued.size());
+                if(tooLong || ElementLocks.locked(player,element)){if(!tooLong)ElementLocks.reject(player,element);s.queued=null;s.formula.clear();s.typed.setLength(0);sync(player,s);PacketDistributor.sendToPlayer(player,new MagicNetwork.QueueState(0,0));return;}
                 s.formula.add(element);s.typed.append(element.ordinal()+1);
                 player.level().playSound(null,player.blockPosition(),net.minecraft.sounds.SoundEvents.AMETHYST_BLOCK_CHIME,net.minecraft.sounds.SoundSource.PLAYERS,.35f,.85f+s.queueIndex*.15f);
             }
@@ -192,7 +197,7 @@ public final class CastingServer {
         }
         if (s.elapsed < s.windup && s.elapsed % 3 == 0) SpellRuntime.particles(player,s.recipe,player.getEyePosition().add(player.getLookAngle().scale(.6)),3,.15);
         if (s.elapsed == s.windup && s.anchor != null) { startEpic(player, s); sync(player, s); return; }
-        if (s.elapsed == s.windup) { if (s.secret) SecretSpell.INSTANCE.cast(player); else { SpellRuntime.cast(player,s.recipe,s.intent == Intent.SELF); MagicGear.cast(player,s.recipe,s.intent == Intent.SELF); } }
+        if (s.elapsed == s.windup) { if (s.secret) SecretSpell.INSTANCE.cast(player); else { SpellRuntime.cast(player,s.recipe,s.intent == Intent.SELF); MageLevel.cast(player,s.recipe,s.intent == Intent.SELF); } }
         if (s.remaining == 0) { s.formula.clear(); s.recipe = null; }
         sync(player, s);
     }

@@ -1,0 +1,27 @@
+{
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "icon": {
+      "id": "magicka:spellbook"
+    },
+    "title": {
+      "translate": "advancements.magicka.mage.root.title"
+    },
+    "description": {
+      "translate": "advancements.magicka.mage.root.description"
+    },
+    "frame": "task",
+    "background": "minecraft:gui/advancements/backgrounds/stone",
+    "show_toast": true,
+    "announce_to_chat": false
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

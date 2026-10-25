@@ -1,0 +1,12 @@
+{
+  "values": [
+    {
+      "id": "cataclysm:the_harbinger",
+      "required": false
+    },
+    {
+      "id": "cataclysm:scylla",
+      "required": false
+    }
+  ]
+}

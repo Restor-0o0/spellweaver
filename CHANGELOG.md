@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.4.0 — the mage's path
+
+- Mage level: casting, magic kills and reading new scrolls give mage experience. New mages weave three-element formulas; four elements open at level 3, five at level 8. Each level adds 1% cast speed and 1% spell damage. Creative mode is never limited.
+- Any hostile mob from any mod can drop a spell scroll (0.5%; witches, evokers and other spellcasters 5%). Mobs with 150+ max health count as bosses and always drop one.
+- Nether scrolls lean towards fire, End scrolls towards arcane, and both carry more ultimates.
+- Mobs have elemental natures: fire-immune mobs resist fire and fear water and cold, undead resist death and suffer life magic, aquatic mobs resist water and conduct lightning, End creatures resist arcane. Tunable with `magicka:resists/<element>` and `magicka:weak/<element>` entity tags.
+- Dungeon mod support: bosses of L_Ender's Cataclysm, Mowzie's Mobs and Aquamirae count as bosses and have their own resistances; chests of When Dungeons Arise, YUNG's Better Dungeons and other structure mods can hold scrolls.
+- "Mage Path" advancements, from the first cast to the archmage rank.
+- The Grimoire shows your mage level, experience and scrolls read.
+- Every new feature can be tuned or switched off in `spellweaver-server.toml`.
+- Lower minimum NeoForge version.
+
 ## 1.3.1 — scrolls from enemies
 
 - Specialist enemies now sometimes drop spell scrolls (4%; casters such as countermages, element binders, goblin mages and shamans 10%). They never drop ultimates.

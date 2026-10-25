@@ -1,0 +1,16 @@
+{
+  "values": [
+    "minecraft:enderman",
+    "minecraft:endermite",
+    "minecraft:shulker",
+    "minecraft:ender_dragon",
+    {
+      "id": "cataclysm:ender_guardian",
+      "required": false
+    },
+    {
+      "id": "cataclysm:ender_golem",
+      "required": false
+    }
+  ]
+}

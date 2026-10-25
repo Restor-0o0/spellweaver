@@ -1,0 +1,14 @@
+{
+  "values": [
+    {
+      "id": "minecraft:creaking",
+      "required": false
+    },
+    "minecraft:spider",
+    "minecraft:cave_spider",
+    {
+      "id": "mowziesmobs:frostmaw",
+      "required": false
+    }
+  ]
+}

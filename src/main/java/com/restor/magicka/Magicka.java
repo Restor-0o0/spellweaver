@@ -37,6 +37,7 @@ public final class Magicka {
         NeoForge.EVENT_BUS.register(new MagicGear());
         NeoForge.EVENT_BUS.register(new SpellScrolls());
         NeoForge.EVENT_BUS.register(new ScrollDrops());
+        NeoForge.EVENT_BUS.register(new MageLevel());
         NeoForge.EVENT_BUS.register(new MagicPotions());
         NeoForge.EVENT_BUS.register(new PotionBelt());
         NeoForge.EVENT_BUS.register(new RecipeRegistry());

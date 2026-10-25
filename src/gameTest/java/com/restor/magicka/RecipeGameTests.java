@@ -214,7 +214,12 @@ public final class RecipeGameTests {
         var imp=com.restor.magicka.enemy.MagicEnemies.SPARK_IMP.get().create(level,net.minecraft.world.entity.EntitySpawnReason.MOB_SUMMONED);
         var boss=EntityType.WITHER.create(level,net.minecraft.world.entity.EntitySpawnReason.MOB_SUMMONED);
         var zombie=EntityType.ZOMBIE.create(level,net.minecraft.world.entity.EntitySpawnReason.MOB_SUMMONED);
-        h.assertTrue(ScrollDrops.chance(boss)==1 && ScrollDrops.chance(mage)==ScrollDrops.CASTER_CHANCE && ScrollDrops.chance(imp)==ScrollDrops.SPECIALIST_CHANCE && ScrollDrops.chance(zombie)==0,"Drop chances by enemy kind");
+        var witch=EntityType.WITCH.create(level,net.minecraft.world.entity.EntitySpawnReason.MOB_SUMMONED);
+        var cow=EntityType.COW.create(level,net.minecraft.world.entity.EntitySpawnReason.MOB_SUMMONED);
+        h.assertTrue(ScrollDrops.chance(boss)==MagicConfig.BOSS_SCROLL_CHANCE.get() && ScrollDrops.chance(mage)==MagicConfig.SPECIALIST_CASTER_SCROLL_CHANCE.get() && ScrollDrops.chance(imp)==MagicConfig.SPECIALIST_SCROLL_CHANCE.get(),"Drop chances by enemy kind");
+        h.assertTrue(ScrollDrops.chance(zombie)==MagicConfig.MOB_SCROLL_CHANCE.get() && ScrollDrops.chance(witch)==MagicConfig.CASTER_SCROLL_CHANCE.get() && ScrollDrops.chance(cow)==0,"Any hostile mob can drop a scroll, casters more often");
+        var fire=locked.stream().filter(d->d.formula().fire()>0 && !d.ultimate()).count();
+        h.assertTrue(fire>0 && ScrollDrops.bias(level.getServer().getLevel(net.minecraft.world.level.Level.NETHER),locked.stream().filter(d->d.formula().fire()>0).findFirst().orElseThrow())==3,"The Nether favours fire scrolls");
         h.succeed();
     }
     @MagicTest
@@ -230,6 +235,40 @@ public final class RecipeGameTests {
         SpellScrolls.acceptClient(false,List.of(titan.id().toString()));
         h.assertTrue(SpellScrolls.clientOpen(p,titan),"Book shows a learned spell");
         SpellScrolls.acceptClient(false,List.of());SpellScrolls.forget(p);
+        h.succeed();
+    }
+    @MagicTest
+    public static void dungeonModChestsGetScrolls(GameTestHelper h){
+        for(String path:List.of("chests/simple_dungeon","chests/frosted_prison_treasure","skeleton_dungeon/chests/common","bastion_treasure_chest"))h.assertTrue(SpellScrollLoot.chest(path),"Chest table "+path);
+        for(String path:List.of("blocks/chest","entities/zombie","gameplay/fishing","archaeology/desert_pyramid"))h.assertTrue(!SpellScrollLoot.chest(path),"Not a chest "+path);
+        h.succeed();
+    }
+    @MagicTest
+    public static void mobsResistTheirOwnElement(GameTestHelper h){
+        var level=h.getLevel();var spawn=net.minecraft.world.entity.EntitySpawnReason.MOB_SUMMONED;
+        var blaze=EntityType.BLAZE.create(level,spawn);var zombie=EntityType.ZOMBIE.create(level,spawn);var enderman=EntityType.ENDERMAN.create(level,spawn);var pig=EntityType.PIG.create(level,spawn);
+        h.assertTrue(MobResistances.multiplier(blaze,"fire")==MagicConfig.RESIST_MULTIPLIER.get() && MobResistances.multiplier(blaze,"water")==MagicConfig.WEAK_MULTIPLIER.get(),"Blazes resist fire and fear water");
+        h.assertTrue(MobResistances.multiplier(zombie,"death")<1 && MobResistances.multiplier(zombie,"life")>1,"Undead resist death and suffer life");
+        h.assertTrue(MobResistances.multiplier(enderman,"arcane")<1 && MobResistances.multiplier(enderman,"water")>1,"Endermen resist arcane and fear water");
+        h.assertTrue(MobResistances.multiplier(pig,"fire")==1 && MobResistances.multiplier(caster(h),"fire")==1,"Ordinary mobs and players are unaffected");
+        h.succeed();
+    }
+    @MagicTest
+    public static void mageLevelGrowsAndGatesFormulas(GameTestHelper h){
+        var p=new net.minecraft.server.level.ServerPlayer(h.getLevel().getServer(),h.getLevel(),new com.mojang.authlib.GameProfile(UUID.randomUUID(),"MageTester"),net.minecraft.server.level.ClientInformation.createDefault());
+        p.connection=FakePlayerFactory.getMinecraft(h.getLevel()).connection;p.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        h.assertTrue(MageLevel.level(0)==0 && MageLevel.level(24)==0 && MageLevel.level(25)==1 && MageLevel.level(99)==1 && MageLevel.level(100)==2,"Level curve");
+        h.assertTrue(MageLevel.level(Integer.MAX_VALUE)==MagicConfig.MAX_MAGE_LEVEL.get(),"Level is capped");
+        h.assertTrue(MageLevel.maxElements(p)==3,"Novices weave three elements");
+        int before=MagicGear.total(p)[MagicStats.Stat.DAMAGE.ordinal()];
+        MageLevel.gain(p,MageLevel.xpFor(MagicConfig.FIVE_ELEMENTS.get()));
+        h.assertTrue(MageLevel.level(p)==MagicConfig.FIVE_ELEMENTS.get() && MageLevel.maxElements(p)==5,"Experience unlocks longer formulas");
+        h.assertTrue(MagicGear.total(p)[MagicStats.Stat.DAMAGE.ordinal()]==before+MageLevel.level(p)*MagicConfig.LEVEL_DAMAGE.get(),"Levels add damage");
+        MageLevel.set(p,0);
+        p.setGameMode(net.minecraft.world.level.GameType.CREATIVE);
+        h.assertTrue(MageLevel.maxElements(p)==Formula.MAX,"Creative is not gated");
+        var fake=caster(h);MageLevel.gain(fake,100);
+        h.assertTrue(MageLevel.xp(fake)==0,"Fake players gain nothing");
         h.succeed();
     }
 }
