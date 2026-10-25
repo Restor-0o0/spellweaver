@@ -187,6 +187,7 @@ public final class MagicGear {
         Element adapted = adapted(player);
         if (adapted != null) deltas[MagicStats.Stat.valueOf(adapted.name()).ordinal()] += ADAPT_BONUS;
         MagicPotions.bonus(player, deltas);
+        MageLevel.bonus(player, deltas);
         return deltas;
     }
     public static Element adapted(Player player) {

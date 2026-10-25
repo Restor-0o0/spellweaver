@@ -1,0 +1,25 @@
+{
+  "parent": "magicka:mage/scrolls_half",
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "icon": {
+      "id": "magicka:ritual_focus"
+    },
+    "title": {
+      "translate": "advancements.magicka.mage.scrolls_all.title"
+    },
+    "description": {
+      "translate": "advancements.magicka.mage.scrolls_all.description"
+    },
+    "frame": "challenge"
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

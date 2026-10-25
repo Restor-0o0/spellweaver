@@ -35,10 +35,16 @@ public class SpellScrollLoot extends LootModifier {
     }
 
     @Override protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> loot, LootContext context) {
-        if (!context.getQueriedLootTableId().getPath().startsWith("chests/") || context.getRandom().nextDouble() >= chance) return loot;
-        SpellDefinition spell = ScrollDrops.pick(context.getRandom(), Set.of(), ultimateWeight, weight);
+        if (!chest(context.getQueriedLootTableId().getPath()) || context.getRandom().nextDouble() >= chance * MagicConfig.CHEST_SCROLLS.get()) return loot;
+        SpellDefinition spell = ScrollDrops.pick(context.getRandom(), Set.of(), ultimateWeight, weight, context.getLevel());
         if (spell != null) loot.add(SpellScrollItem.of(spell));
         return loot;
+    }
+
+    public static boolean chest(String path) {
+        if (path.startsWith("blocks/") || path.startsWith("entities/") || path.startsWith("gameplay/") || path.startsWith("archaeology/")) return false;
+        for (String part : path.split("/")) if (part.startsWith("chest") || part.endsWith("_chest") || part.endsWith("_chests")) return true;
+        return false;
     }
 
     @Override public MapCodec<? extends IGlobalLootModifier> codec() { return TYPE.get(); }

@@ -44,3 +44,9 @@ jobs:
           loaders: neoforge
           game-versions: 26.3
           java: 25
+          dependencies: |
+            cataclysm(optional){modrinth:46KJle7n}{curseforge:l_enders-cataclysm}#(ignore:github)
+            mowziesmobs(optional){modrinth:BFbX9xcm}{curseforge:mowzies-mobs}#(ignore:github)
+            dungeons_arise(optional){modrinth:8DfbfASn}{curseforge:when-dungeons-arise}#(ignore:github)
+            betterdungeons(optional){modrinth:o1C1Dkj5}{curseforge:yungs-better-dungeons}#(ignore:github)
+            aquamirae(optional){modrinth:k23mNPhZ}{curseforge:aquamirae}#(ignore:github)

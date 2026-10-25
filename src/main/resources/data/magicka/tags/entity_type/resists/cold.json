@@ -1,0 +1,10 @@
+{
+  "values": [
+    "minecraft:polar_bear",
+    "minecraft:stray",
+    {
+      "id": "mowziesmobs:frostmaw",
+      "required": false
+    }
+  ]
+}
