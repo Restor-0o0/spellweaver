@@ -1,0 +1,25 @@
+{
+  "parent": "magicka:mage/root",
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "icon": {
+      "id": "magicka:wand"
+    },
+    "title": {
+      "translate": "advancements.magicka.mage.four_elements.title"
+    },
+    "description": {
+      "translate": "advancements.magicka.mage.four_elements.description"
+    },
+    "frame": "task"
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

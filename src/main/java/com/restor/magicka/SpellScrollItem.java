@@ -42,6 +42,7 @@ public class SpellScrollItem extends Item {
             if (SpellScrolls.learn(server, id)) {
                 level.playSound(null, player.blockPosition(), SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.PLAYERS, 1f, 1f);
                 server.sendOverlayMessage(Component.translatable("scroll.magicka.learned", spell.displayName()).withStyle(ChatFormatting.LIGHT_PURPLE));
+                MagePath.learned(server, spell);
             } else server.sendOverlayMessage(Component.translatable("scroll.magicka.already", spell.displayName()));
         }
         return InteractionResult.SUCCESS;

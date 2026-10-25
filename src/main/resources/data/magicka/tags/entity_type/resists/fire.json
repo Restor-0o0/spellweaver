@@ -1,0 +1,16 @@
+{
+  "values": [
+    {
+      "id": "cataclysm:ignis",
+      "required": false
+    },
+    {
+      "id": "cataclysm:netherite_monstrosity",
+      "required": false
+    },
+    {
+      "id": "mowziesmobs:umvuthi",
+      "required": false
+    }
+  ]
+}
