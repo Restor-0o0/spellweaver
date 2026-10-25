@@ -68,7 +68,7 @@ public final class MagicConstructionManager extends SavedData {
             }
             else if (shape==SpellShape.SPIKE && spell.origin()==OriginMode.CASTER_FEET) start=spikeStart(player,direction);
             else if (spell.origin()==OriginMode.CASTER_FEET) start=player.blockPosition().relative(direction); // Reachable first step, one block up from the floor.
-            else if (shape==SpellShape.GROWTH) start=floor(player.level(),BlockPos.containing(self ? player.position() : origin));
+            else if (shape==SpellShape.GROWTH) start=floor(player.level(),BlockPos.containing(self ? player.position() : grip(player,origin)));
             else if (self || spell.origin()==OriginMode.UNDER_TARGET) start=BlockPos.containing(self ? player.position() : origin);
             else if (hit.getType()==HitResult.Type.BLOCK && spell.origin()!=OriginMode.AIM_POINT) start=hit.getBlockPos().relative(hit.getDirection());
             else start=BlockPos.containing(origin);
@@ -77,6 +77,10 @@ public final class MagicConstructionManager extends SavedData {
             var flat=new Vec3(look.x,0,look.z);
             heading=look.y>=0 ? look : flat.lengthSqr()>1e-4 ? flat.normalize() : Vec3.atLowerCornerOf(direction.getUnitVec3i());
             template=shape==SpellShape.SPIKE ? spike(player,self,heading) : spell.construction().has("template") ? structure(player,SpellDefinition.string(spell.construction(),"template","wall"),self) : null;
+        }
+        private static Vec3 grip(Player player, Vec3 origin) {
+            var target=SpellAim.entity(player,SpellAim.hit(player).getLocation());
+            return target!=null ? target.position() : origin;
         }
         private static BlockPos floor(net.minecraft.world.level.Level level, BlockPos pos) {
             if (!level.getBlockState(pos).getCollisionShape(level,pos).isEmpty()) pos=pos.above();

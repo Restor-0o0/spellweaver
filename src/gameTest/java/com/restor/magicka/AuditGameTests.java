@@ -273,4 +273,21 @@ public final class AuditGameTests {
             h.succeed();
         });
     }
+    @MagicTest(timeoutTicks=40)
+    public static void defensiveCircleBlocksHitsFromTheFront(GameTestHelper h){
+        DeathGameTests.floor(h);
+        var p=RecipeGameTests.caster(h);
+        var front=h.spawnWithNoFreeWill(net.minecraft.world.entity.EntityTypes.ZOMBIE,new BlockPos(1,2,4));
+        var back=h.spawnWithNoFreeWill(net.minecraft.world.entity.EntityTypes.ZOMBIE,new BlockPos(1,2,0));
+        SpellRuntime.cast(p,RecipeGameTests.spell("Piercing Rays"),true);
+        h.runAfterDelay(5,()->{
+            var hit=new net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent(p,new net.neoforged.neoforge.common.damagesource.DamageContainer(p.damageSources().mobAttack(front),4));
+            LegendMagic.ward(hit);
+            h.assertTrue(hit.isCanceled(),"The circle blocks a hit from the front");
+            hit=new net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent(p,new net.neoforged.neoforge.common.damagesource.DamageContainer(p.damageSources().mobAttack(back),4));
+            LegendMagic.ward(hit);
+            h.assertFalse(hit.isCanceled(),"A hit from behind still lands");
+            h.succeed();
+        });
+    }
 }

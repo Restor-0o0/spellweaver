@@ -37,6 +37,6 @@
     ]
   },
   "balanced": true,
-  "primary": "Up to 6 trees (oak, birch, spruce, cherry) shoot up from grass and dirt around the aimed spot within 10 blocks, at least 4 blocks apart. They stay for good. Every second you and your allies in the grove:\n• Regeneration for 3 s",
+  "primary": "Up to 6 trees of the local biome (oak, birch, spruce or cherry where it has none) shoot up from grass and dirt around the aimed spot within 10 blocks, at least 4 blocks apart. They stay for good. Every second you and your allies in the grove:\n• Regeneration for 3 s",
   "self_description": "The grove grows around you."
 }

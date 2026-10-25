@@ -12,7 +12,8 @@
   "origin": "caster_front",
   "cast_mode": "instant",
   "delivery": {
-    "legend": "zoltraak"
+    "legend": "zoltraak",
+    "ward_ticks": 100
   },
   "effects": [
     {
@@ -22,17 +23,10 @@
     }
   ],
   "self": {
-    "mode": "generic",
-    "effects": [
-      {
-        "type": "apply_status",
-        "status": "stone_shell",
-        "duration_ticks": 200,
-        "strength": 2
-      }
-    ]
+    "mode": "legend",
+    "effects": []
   },
   "balanced": true,
-  "primary": "Five thin white rays fire one after another from a ring around you toward your aim, up to 64 blocks. Each ray pierces every creature on its path:\n• Damage 2 ❤ arcane per ray, up to 10 ❤ in total",
-  "self_description": "Defensive magic. On you:\n• Stone skin (resistance II), 10 s"
+  "primary": "Five thin white rays fire one after another from five rune circles around you toward your aim, up to 64 blocks. Each ray pierces every creature on its path:\n• Damage 2 ❤ arcane per ray, up to 10 ❤ in total",
+  "self_description": "Defensive magic. A rune circle stands in front of you for 5 s and turns with your gaze:\n• Stops arrows and other shots that fly into it\n• Blocks every hit that comes from the front"
 }
