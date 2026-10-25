@@ -1,0 +1,14 @@
+{
+  "values": [
+    "minecraft:drowned",
+    "minecraft:iron_golem",
+    {
+      "id": "cataclysm:the_leviathan",
+      "required": false
+    },
+    {
+      "id": "aquamirae:captain_cornelia",
+      "required": false
+    }
+  ]
+}

@@ -90,6 +90,11 @@ public final class MagicNetwork {
                 b->{boolean all=b.readBoolean();int count=b.readVarInt();if(count<0 || count>RecipeRegistry.CATALOG_SIZE+256)throw new IllegalArgumentException("Too many scrolls");var known=new java.util.ArrayList<String>();for(int i=0;i<count;i++)known.add(b.readUtf(256));return new Scrolls(all,known);});
         @Override public Type<Scrolls> type(){return TYPE;}
     }
+    public record MageXp(int xp) implements CustomPacketPayload {
+        public static final Type<MageXp> TYPE=new Type<>(ResourceLocation.fromNamespaceAndPath(Magicka.ID,"mage_xp"));
+        public static final StreamCodec<RegistryFriendlyByteBuf,MageXp> CODEC=StreamCodec.of((b,v)->b.writeVarInt(v.xp),b->new MageXp(b.readVarInt()));
+        @Override public Type<MageXp> type(){return TYPE;}
+    }
     public record Belt(java.util.List<net.minecraft.world.item.ItemStack> items, int first, int second) implements CustomPacketPayload {
         public static final Type<Belt> TYPE=new Type<>(ResourceLocation.fromNamespaceAndPath(Magicka.ID,"belt"));
         public static final StreamCodec<RegistryFriendlyByteBuf,Belt> CODEC=StreamCodec.of((b,v)->{b.writeVarInt(v.items.size());for(var s:v.items)net.minecraft.world.item.ItemStack.OPTIONAL_STREAM_CODEC.encode(b,s);b.writeVarInt(v.first);b.writeVarInt(v.second);},
@@ -106,7 +111,7 @@ public final class MagicNetwork {
     public static int[] clientGear=new int[MagicStats.COUNT];
     private static final java.util.List<String> catalogBuffer=new java.util.ArrayList<>();
     public static final java.util.Map<Integer,Integer> clientStatuses=new java.util.HashMap<>();
-    public static void clearClient(){clientState=new State(false,0,0,0,0,0,false,false);clientQueue=new QueueState(0,0);catalogBuffer.clear();clientStatuses.clear();clientShapes.clear();clientConstruction=null;clientLocks=0;clientLocksUntil=0;clientStats=MagicStats.defaults();clientGear=new int[MagicStats.COUNT];clientPattern=ShapePattern.defaults();RecipeRegistry.resetClient();SpellScrolls.acceptClient(false,java.util.List.of());PotionBelt.clearClient();}
+    public static void clearClient(){clientState=new State(false,0,0,0,0,0,false,false);clientQueue=new QueueState(0,0);catalogBuffer.clear();clientStatuses.clear();clientShapes.clear();clientConstruction=null;clientLocks=0;clientLocksUntil=0;clientStats=MagicStats.defaults();clientGear=new int[MagicStats.COUNT];clientPattern=ShapePattern.defaults();RecipeRegistry.resetClient();SpellScrolls.acceptClient(false,java.util.List.of());MageLevel.acceptClient(0);PotionBelt.clearClient();}
     public static void construction(ServerPlayer player, java.util.UUID id, int placed, int remaining){
         Formula formula=Formula.unpack(CastingServer.snapshot(player).formula());
         if(!formula.empty()) CastingServer.construction(player,Math.max(0,MagicStats.resolve(player,formula.key()).budget()-remaining));
@@ -145,6 +150,7 @@ public final class MagicNetwork {
         });
         registrar.playToClient(Belt.TYPE,Belt.CODEC,(packet,context)->PotionBelt.acceptClient(packet.items,packet.first,packet.second));
         registrar.playToServer(BeltAction.TYPE,BeltAction.CODEC,(packet,context)->{if(context.player() instanceof ServerPlayer p){if(packet.slot<0)PotionBelt.drink(p,packet.button);else PotionBelt.select(p,packet.button,packet.slot);}});
+        registrar.playToClient(MageXp.TYPE,MageXp.CODEC,(packet,context)->MageLevel.acceptClient(packet.xp));
         registrar.playToClient(Scrolls.TYPE,Scrolls.CODEC,(packet,context)->SpellScrolls.acceptClient(packet.all,packet.known));
         registrar.playToClient(ShapeGrid.TYPE,ShapeGrid.CODEC,(packet,context)->clientPattern=ShapePattern.sanitize(packet.low,packet.high));
         registrar.playToServer(SetShapeGrid.TYPE,SetShapeGrid.CODEC,(packet,context)->{if(context.player() instanceof ServerPlayer p)ShapePattern.store(p,packet.low,packet.high);});

@@ -56,12 +56,12 @@ public final class EffectGraph {
                     if (!canHarm(caster,target)) break;
                     String element = text(node,"element","arcane");
                     double multiplier = element.equals("lightning") && MagicStatuses.has(target,MagicStatuses.Status.WET) ? 2 : element.equals("earth") && frozen ? 2 : element.equals("fire") && MagicStatuses.has(target,MagicStatuses.Status.WET) ? .5 : 1;
-                    damage += (float)(amount*multiplier);
+                    damage += (float)(amount*multiplier*MobResistances.multiplier(target,element));
                 }
                 case "heal" -> target.heal(MagicGear.heal(caster,target,(float)amount));
                 case "drain_life" -> {
                     if (!canHarm(caster,target) || target == caster) break;
-                    damage += (float)amount;
+                    damage += (float)(amount*MobResistances.multiplier(target,"death"));
                     caster.heal((float)(amount*number(node,"fraction",.5)));
                 }
                 case "set_wet" -> MagicStatuses.apply(target,MagicStatuses.Status.WET,ticks,1);

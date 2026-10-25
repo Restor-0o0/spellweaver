@@ -1,0 +1,12 @@
+{
+  "values": [
+    {
+      "id": "cataclysm:ignis",
+      "required": false
+    },
+    {
+      "id": "mowziesmobs:umvuthi",
+      "required": false
+    }
+  ]
+}

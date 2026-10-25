@@ -1,0 +1,10 @@
+{
+  "values": [
+    "minecraft:enderman",
+    "minecraft:snow_golem",
+    {
+      "id": "cataclysm:ender_guardian",
+      "required": false
+    }
+  ]
+}
