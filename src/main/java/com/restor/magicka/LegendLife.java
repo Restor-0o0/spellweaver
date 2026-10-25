@@ -66,7 +66,7 @@ final class LegendLife {
                 return;
             }
             Vec3 look = p.getLookAngle(), hand = p.getEyePosition().add(look.scale(.7)).add(0,-.3,0);
-            Vec3 to = reach(p,hand,look,20);
+            Vec3 to = reach(p,hand,look,32);
             LivingEntity victim = segment(p,hand,to,.4).stream().filter(e -> foe(p,e)).min(Comparator.comparingDouble(e -> e.distanceToSqr(hand))).orElse(null);
             Vec3 end = victim != null ? victim.getBoundingBox().getCenter() : to;
             int count = (int)Math.min(40,end.distanceTo(hand)/.5);

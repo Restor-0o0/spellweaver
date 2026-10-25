@@ -30,7 +30,8 @@
     "floating": false,
     "integrity": 12,
     "regenerates": true,
-    "uncapped": true
+    "uncapped": true,
+    "batch": 8
   },
   "effects": [
     {

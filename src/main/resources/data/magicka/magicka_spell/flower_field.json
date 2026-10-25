@@ -13,8 +13,9 @@
   "cast_mode": "instant",
   "delivery": {
     "legend": "flowers",
-    "radius": 7,
-    "duration_ticks": 200
+    "radius": 12,
+    "duration_ticks": 200,
+    "trees": 4
   },
   "effects": [
     {
@@ -44,6 +45,6 @@
     ]
   },
   "balanced": true,
-  "primary": "A wave of flowers blooms around the aimed spot within 7 blocks: poppies, cornflowers, tulips, daisies and more grow on grass and dirt and stay for good. Cherry petals drift over the field for 10 s. Every second you and your allies in the field:\n• Heal 1 ❤\n• Regeneration for 3 s",
+  "primary": "A wave of life blooms around the aimed spot within 12 blocks: flowers, grass and ferns grow on grass and dirt, and up to 4 young trees shoot up at once. Everything stays for good. Cherry petals drift over the field for 10 s. Every second you and your allies in the field:\n• Heal 1 ❤\n• Regeneration for 3 s",
   "self_description": "The field blooms around you."
 }

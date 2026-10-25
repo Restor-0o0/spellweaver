@@ -55,7 +55,7 @@ final class LegendArts {
             });
             return;
         }
-        LivingEntity first = aimed(p,32);
+        LivingEntity first = aimed(p,64);
         if (first == null) {
             Vec3 at = SpellAim.hit(p).getLocation();
             EpicMagic.fx(level,dust(0x0A0A0A,1.6f),at.x,at.y+.3,at.z,20,.3,.3,.3,0);
@@ -119,7 +119,7 @@ final class LegendArts {
             }
             return;
         }
-        Vec3 from = p.getEyePosition(), look = p.getLookAngle(), to = reach(p,from,look,40);
+        Vec3 from = p.getEyePosition(), look = p.getLookAngle(), to = reach(p,from,look,64);
         Entity hit = level.getEntities(p,new AABB(from,to).inflate(1),e -> e.isAlive() && !e.isSpectator() && (e instanceof LivingEntity || loot.test(e) || e instanceof Projectile)
                         && e.getBoundingBox().inflate(.3).clip(from,to).isPresent())
                 .stream().min(Comparator.comparingDouble(e -> e.distanceToSqr(from))).orElse(null);
@@ -420,7 +420,8 @@ final class LegendArts {
         for (Entity e : passing) {
             if (cooldown.getOrDefault(e.getUUID(),-99) > age) continue;
             cooldown.put(e.getUUID(),age+30);
-            Vec3 to = exit.add(0,-e.getBbHeight()/2,0);
+            Vec3 to = clear(level,e,exit.add(0,-e.getBbHeight()/2,0));
+            if (to == null) continue;
             if (e instanceof ServerPlayer player) player.teleportTo(level,to.x,to.y,to.z,java.util.Set.of(),player.getYRot(),player.getXRot(),false);
             else e.teleportTo(to.x,to.y,to.z);
             e.fallDistance = 0; e.hurtMarked = true;
@@ -428,6 +429,21 @@ final class LegendArts {
             sound(level,to,SoundEvents.ENDERMAN_TELEPORT,.8f,1.2f);
             EpicMagic.fx(level,ParticleTypes.FLAME,to.x,to.y+e.getBbHeight()/2,to.z,12,.3,.5,.3,.05);
         }
+    }
+
+    private static Vec3 clear(ServerLevel level, Entity e, Vec3 want) {
+        if (level.noCollision(e,e.getDimensions(e.getPose()).makeBoundingBox(want))) return want;
+        Vec3 best = null; double bestScore = Double.MAX_VALUE;
+        for (int dy = -2; dy <= 3; dy++) for (int dx = -3; dx <= 3; dx++) for (int dz = -3; dz <= 3; dz++) {
+            Vec3 at = new Vec3(Math.floor(want.x)+dx+.5,Math.floor(want.y)+dy,Math.floor(want.z)+dz+.5);
+            double score = at.distanceToSqr(want)+(dy < 0 ? 1 : 0);
+            if (score >= bestScore || !level.noCollision(e,e.getDimensions(e.getPose()).makeBoundingBox(at))) continue;
+            BlockPos below = BlockPos.containing(at).below();
+            boolean floor = !level.getBlockState(below).getCollisionShape(level,below).isEmpty();
+            if (!floor) score += 4;
+            if (score < bestScore) { best = at; bestScore = score; }
+        }
+        return best;
     }
 
     private LegendArts() {}
