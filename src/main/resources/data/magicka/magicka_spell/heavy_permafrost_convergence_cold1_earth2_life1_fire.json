@@ -28,7 +28,8 @@
     "height": 3,
     "floating": false,
     "integrity": 12,
-    "uncapped": true
+    "uncapped": true,
+    "batch": 8
   },
   "effects": [
     {
