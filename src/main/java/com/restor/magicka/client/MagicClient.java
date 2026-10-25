@@ -85,7 +85,7 @@ public final class MagicClient {
         if (anchor == null) return;
         Component title = Component.translatable("magicka.configuration.title");
         var button = net.minecraft.client.gui.components.SpriteIconButton.builder(title, b -> openSettings(event.getScreen()), true)
-            .sprite(ResourceLocation.fromNamespaceAndPath(Magicka.ID, "settings"), 15, 15).size(20, 20).build();
+            .sprite(ResourceLocation.fromNamespaceAndPath(Magicka.ID, "settings"), 16, 16).size(20, 20).build();
         button.setTooltip(net.minecraft.client.gui.components.Tooltip.create(title));
         settingsAnchor = anchor;
         settingsButton = button;
