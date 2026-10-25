@@ -14,16 +14,19 @@ import java.util.*;
 /** Bright world-space ribbons, persistent zone borders and vanilla block cores. No custom textures required. */
 public final class SpellVisuals {
     private static final List<Cue> CUES=new ArrayList<>();
-    private static final class Cue {final MagicNetwork.Visual packet;int age;Cue(MagicNetwork.Visual packet){this.packet=packet;}}
+    private static final class Cue {MagicNetwork.Visual packet;int age,until;Cue(MagicNetwork.Visual packet){this.packet=packet;until=Math.min(100,packet.ticks());}}
     public static void clear(){CUES.clear();}
     public static void receive(MagicNetwork.Visual packet){
         if(packet.kind()<0 || packet.kind()>SpellVfx.SIGIL || !GrimoireState.valid(packet.formula()) || !Double.isFinite(packet.from().lengthSqr()+packet.to().lengthSqr()) || !Float.isFinite(packet.radius()))return;
-        if(packet.kind()==SpellVfx.ZONE || packet.kind()==SpellVfx.MINE)CUES.removeIf(c->c.packet.kind()==packet.kind() && c.packet.formula()==packet.formula() && c.packet.from().distanceToSqr(packet.from())<.01);
+        if(packet.kind()==SpellVfx.ZONE || packet.kind()==SpellVfx.MINE || packet.kind()==SpellVfx.SIGIL)
+            for(Cue c:CUES)if(c.packet.kind()==packet.kind() && c.packet.formula()==packet.formula() && c.packet.anchor()==packet.anchor() && c.packet.from().distanceToSqr(packet.from())<.04){
+                c.packet=packet;c.until=Math.max(c.until,c.age+Math.min(100,packet.ticks()));return;
+            }
         if(CUES.size()>=512)CUES.removeFirst();CUES.add(new Cue(packet));
     }
     public static void tick(){
         var mc=Minecraft.getInstance();if(mc.level==null){clear();return;}
-        CUES.removeIf(c->++c.age>Math.min(100,c.packet.ticks()));
+        CUES.removeIf(c->++c.age>c.until || c.packet.anchor()>=0 && mc.level.getEntity(c.packet.anchor())==null);
         for(Cue cue:CUES){
             var p=cue.packet;if(p.kind()==SpellVfx.SIGIL || p.from().distanceToSqr(mc.gameRenderer.mainCamera().position())>128*128)continue;
             var formula=Formula.unpack(p.formula());
@@ -99,22 +102,24 @@ public final class SpellVisuals {
                     stroke(pose,consumer,camera,p.from(),center,.09,color,alpha*.45f);}
                 }
                 case SpellVfx.ZONE,SpellVfx.MINE,SpellVfx.TELEGRAPH -> {
-                    double pulse=1+Math.sin((cue.age+partial)*.35)*.025;
-                    ring(pose,consumer,camera,center.add(0,.06,0),radius,0,color,.65f,.045);
-                    ring(pose,consumer,camera,center.add(0,.08,0),radius*.92*pulse,0,color,.3f,.025);
-                    if(p.kind()!=SpellVfx.ZONE){stroke(pose,consumer,camera,center.add(-.4,.1,0),center.add(.4,.1,0),.04,color,.9f);stroke(pose,consumer,camera,center.add(0,.1,-.4),center.add(0,.1,.4),.04,color,.9f);}
+                    float in=Math.min(1,(cue.age+partial)/4);
+                    sigil(pose,consumer,camera,center.add(0,.07,0),new Vec3(0,1,0),radius,spin(partial,radius),p.formula(),.75f*in);
                     if(p.kind()==SpellVfx.TELEGRAPH)stroke(pose,consumer,camera,center,center.add(0,10,0),.045,color,alpha);
-                    for(int i=0;i<8;i++){double angle=i*Math.PI/4;Vec3 foot=center.add(Math.cos(angle)*radius,.06,Math.sin(angle)*radius);stroke(pose,consumer,camera,foot,foot.add(0,.6,0),.025,color,.5f);}
                 }
                 case SpellVfx.IMPACT -> {
                     double wave=radius*(.2+progress);ring(pose,consumer,camera,center,wave,0,color,alpha,.09);ring(pose,consumer,camera,center,wave*.7,1,0xFFFFFF,alpha*.7f,.035);
                     for(int i=0;i<10;i++){double angle=i*Math.PI/5;Vec3 end=center.add(Math.cos(angle)*wave,(i%3)*wave*.35,Math.sin(angle)*wave);stroke(pose,consumer,camera,center.lerp(end,.55),end,.045,color,alpha);}
                 }
                 case SpellVfx.SIGIL -> {
-                    float age=cue.age+partial,life=Math.max(1,p.ticks());
-                    float fade=life<=3?.9f:.9f*Math.min(1,age/3)*Math.clamp((life-age)/4,0,1);
-                    double spin=((Minecraft.getInstance().level==null?0:Minecraft.getInstance().level.getGameTime())+partial)*.04;
-                    sigil(pose,consumer,camera,center,p.to().subtract(center),radius*Math.min(1,.55+age*.15),spin,color,fade);
+                    float age=cue.age+partial,fade=.9f*Math.min(1,age/4)*Math.clamp((cue.until-age)/4,0,1);
+                    Vec3 normal=p.to().subtract(center);
+                    if(p.anchor()>=0){
+                        var owner=Minecraft.getInstance().level.getEntity(p.anchor());if(owner==null)continue;
+                        Vec3 forward=owner.getViewVector(partial),right=forward.cross(new Vec3(0,1,0));right=right.lengthSqr()<1e-4?new Vec3(1,0,0):right.normalize();Vec3 up=right.cross(forward);
+                        center=owner.getEyePosition(partial).add(forward.scale(p.from().x)).add(up.scale(p.from().y)).add(right.scale(p.from().z));
+                        normal=forward.scale(p.to().x).add(up.scale(p.to().y)).add(right.scale(p.to().z));
+                    }
+                    sigil(pose,consumer,camera,center,normal,radius*Math.min(1,.6+age*.1),spin(partial,radius),p.formula(),fade);
                 }
                 default -> {}
             }
@@ -126,31 +131,78 @@ public final class SpellVisuals {
         return element.color;
     }
     private static final double[][] GLYPHS={
-        {-.6,-1,-.6,1, -.6,0,.6,.6},
+        {-.6,-1,0,1, 0,1,.6,-1, -.6,-1,.6,-1},
+        {-.6,-1,0,.6, 0,.6,.6,-1, 0,1,0,-.4},
+        {-.5,-1,.5,-.3, .5,-.3,-.5,.3, -.5,.3,.5,1},
+        {-.6,.3,-.2,.6, -.2,.6,.2,.3, .2,.3,.6,.6, -.6,-.5,-.2,-.2, -.2,-.2,.2,-.5, .2,-.5,.6,-.2},
+        {-.6,1,.6,1, -.6,1,0,-1, .6,1,0,-1},
+        {-.6,1,-.6,-.6, -.6,-.6,.6,-.6, .6,-.6,.6,1, 0,.3,0,-1},
+        {0,-1,0,1, -.6,-.5,.6,.5, -.6,.5,.6,-.5},
+        {0,-1,0,1, -.5,0,.5,0, -.3,.7,.3,.7, -.3,-.7,.3,-.7},
+        {0,1,.5,0, .5,0,0,-1, 0,-1,-.5,0, -.5,0,0,1},
+        {.3,1,-.4,.1, -.4,.1,.4,-.1, .4,-.1,-.3,-1},
+        {-.6,-1,-.6,1, -.6,1,.6,-1, .6,-1,.6,1},
+        {-.5,1,.5,.3, .5,.3,-.5,-.3, -.5,-.3,.5,-1, .5,-1,.1,-1},
+        {-.5,-.8,.5,-.8, .5,-.8,.5,.8, .5,.8,-.5,.8, -.5,.8,-.5,-.8},
         {-.6,-1,0,1, 0,1,.6,-1, -.3,0,.3,0},
-        {0,-1,0,1, -.6,.4,0,1, .6,.4,0,1},
-        {-.6,-1,.6,-1, .6,-1,-.6,1, -.6,1,.6,1},
-        {-.6,1,.6,1, 0,1,0,-1, -.5,-.4,.5,-.4},
-        {-.6,-1,-.6,1, -.6,1,.6,0, .6,0,-.6,-.2, .6,-1,0,-.4},
-        {-.6,0,0,1, 0,1,.6,0, .6,0,0,-1, 0,-1,-.6,0},
-        {-.6,-1,.6,1, .6,-1,-.6,1, -.6,0,-.2,0}
+        {-.5,-1,-.5,1, -.5,1,.5,1, -.5,0,.3,0, -.5,-1,.5,-1},
+        {0,-1,0,1, 0,.2,-.5,.8, 0,.2,.5,.8, 0,-.4,-.4,0},
+        {0,-1,0,.3, -.5,.3,.5,.3, 0,.3,-.3,.8, -.3,.8,0,1, 0,1,.3,.8, .3,.8,0,.3},
+        {-.5,1,0,0, .5,1,0,0, 0,0,0,-1, -.3,-.6,.3,-.6},
+        {-.6,0,0,.6, 0,.6,.6,0, .6,0,0,-.6, 0,-.6,-.6,0, 0,.15,0,-.15},
+        {-.5,1,.5,1, .5,1,-.5,-1, -.5,-1,.5,-1, .5,-1,-.5,1},
+        {0,-1,0,1, -.6,0,.6,0, -.4,.6,.4,.6},
+        {0,-1,0,1, -.4,-.4,.4,-.4},
+        {-.6,-1,.6,1, .6,-1,-.6,1, -.6,1,.6,1},
+        {.4,1,-.3,.6, -.3,.6,-.5,0, -.5,0,-.3,-.6, -.3,-.6,.4,-1}
     };
-    private static void sigil(PoseStack.Pose pose,VertexConsumer consumer,Vec3 camera,Vec3 center,Vec3 normal,double radius,double spin,int color,float alpha){
+    private static final double[] SEPARATOR={0,.3,.15,0, .15,0,0,-.3, 0,-.3,-.15,0, -.15,0,0,.3};
+    private static double spin(float partial,double radius){
+        var level=Minecraft.getInstance().level;
+        return ((level==null?0:level.getGameTime())+partial)*.05/Math.max(1,radius*.4);
+    }
+    private static int tint(int color){return ((((color>>16)&255)+255)/2<<16)|((((color>>8)&255)+255)/2<<8)|(((color&255)+255)/2);}
+    /** Every formula seeds its own rune: a word of its element glyphs around the rim, a star and an inner ring. */
+    private static void sigil(PoseStack.Pose pose,VertexConsumer consumer,Vec3 camera,Vec3 center,Vec3 normal,double radius,double spin,int packed,float alpha){
+        if(alpha<=.01 || normal.lengthSqr()<1e-6)return;
+        var formula=Formula.unpack(packed);var elements=formula.elements();if(elements.isEmpty())return;
+        var distinct=elements.stream().distinct().toList();int color=color(formula.key());
+        var random=new Random(packed*0x9E3779B97F4A7C15L+0x632BE5AB);
         Vec3 n=normal.normalize(),u=(Math.abs(n.y)>.95?new Vec3(1,0,0):new Vec3(0,1,0)).cross(n).normalize(),v=n.cross(u);
-        double line=Math.clamp(radius*.022,.012,.09);
+        double line=Math.clamp(radius*.02,.012,.08);
+        int[] word=new int[Math.clamp(elements.size()*2,4,10)];
+        for(int i=0;i<word.length;i++)word[i]=elements.get(i%elements.size()).ordinal()*3+random.nextInt(3);
+        int points=new int[]{3,4,5,6,7,8}[(distinct.size()+random.nextInt(4))%6],step=points<5?1:points==6?2:(points-1)/2;
+        boolean doubled=random.nextBoolean(),inner=random.nextBoolean();
         arc(pose,consumer,camera,center,u,v,radius,line*1.6,color,alpha);
         arc(pose,consumer,camera,center,u,v,radius*.8,line,color,alpha);
-        arc(pose,consumer,camera,center,u,v,radius*.36,line,0xFFFFFF,alpha*.8f);
-        int runes=Math.clamp((int)(radius*9),10,40);double size=radius*.075;
-        for(int k=0;k<runes;k++){
-            double a=spin+k*Math.PI*2/runes;Vec3 r=u.scale(Math.cos(a)).add(v.scale(Math.sin(a))),t=u.scale(-Math.sin(a)).add(v.scale(Math.cos(a))),base=center.add(r.scale(radius*.9));
-            double[] g=GLYPHS[(k*5+3)%GLYPHS.length];
-            for(int i=0;i+3<g.length;i+=4)stroke(pose,consumer,camera,base.add(t.scale(g[i]*size)).add(r.scale(g[i+1]*size)),base.add(t.scale(g[i+2]*size)).add(r.scale(g[i+3]*size)),line*.7,0xFFFFFF,alpha);
+        if(doubled)arc(pose,consumer,camera,center,u,v,radius*.76,line*.6,color,alpha*.7f);
+        double size=radius*.07;int slots=word.length+1,count=Math.max(1,(int)Math.round(2*Math.PI*.9/(.07*2.7)/slots))*slots;
+        for(int k=0;k<count;k++){
+            int slot=k%slots;double angle=spin+k*Math.PI*2/count;
+            if(slot==word.length)glyph(pose,consumer,camera,center,u,v,angle,radius*.9,size,SEPARATOR,line*.7,color,alpha);
+            else glyph(pose,consumer,camera,center,u,v,angle,radius*.9,size,GLYPHS[word[slot]],line*.7,tint(Element.values()[word[slot]/3].color),alpha);
         }
-        for(int i=0;i<6;i++){
-            double a=-spin*1.5+i*Math.PI/3,b=a+Math.PI*2/3;
-            stroke(pose,consumer,camera,center.add(u.scale(Math.cos(a)*radius*.8)).add(v.scale(Math.sin(a)*radius*.8)),center.add(u.scale(Math.cos(b)*radius*.8)).add(v.scale(Math.sin(b)*radius*.8)),line,color,alpha*.8f);
+        double star=inner?radius*.72:radius*.8;
+        for(int i=0;i<points;i++){
+            double a=-spin*1.5+i*Math.PI*2/points,b=-spin*1.5+(i+step)*Math.PI*2/points;
+            stroke(pose,consumer,camera,center.add(u.scale(Math.cos(a)*star)).add(v.scale(Math.sin(a)*star)),center.add(u.scale(Math.cos(b)*star)).add(v.scale(Math.sin(b)*star)),line,color,alpha*.8f);
         }
+        if(points==4)for(int i=0;i<4;i++){
+            double a=-spin*1.5+Math.PI/4+i*Math.PI/2,b=a+Math.PI/2;
+            stroke(pose,consumer,camera,center.add(u.scale(Math.cos(a)*star)).add(v.scale(Math.sin(a)*star)),center.add(u.scale(Math.cos(b)*star)).add(v.scale(Math.sin(b)*star)),line,color,alpha*.8f);
+        }
+        if(inner)arc(pose,consumer,camera,center,u,v,star,line*.8,color,alpha*.6f);
+        double core=radius*.34;
+        arc(pose,consumer,camera,center,u,v,core,line,0xFFFFFF,alpha*.8f);
+        if(radius>.5)for(int i=0;i<distinct.size();i++){
+            Element e=distinct.get(i);
+            glyph(pose,consumer,camera,center,u,v,-spin*2+i*Math.PI*2/distinct.size(),core*.55,core*.28,GLYPHS[e.ordinal()*3+((packed>>>i)&3)%3],line*.7,tint(e.color),alpha);
+        }
+    }
+    private static void glyph(PoseStack.Pose pose,VertexConsumer consumer,Vec3 camera,Vec3 center,Vec3 u,Vec3 v,double angle,double distance,double size,double[] g,double width,int color,float alpha){
+        Vec3 r=u.scale(Math.cos(angle)).add(v.scale(Math.sin(angle))),t=u.scale(-Math.sin(angle)).add(v.scale(Math.cos(angle))),base=center.add(r.scale(distance));
+        for(int i=0;i+3<g.length;i+=4)stroke(pose,consumer,camera,base.add(t.scale(g[i]*size)).add(r.scale(g[i+1]*size)),base.add(t.scale(g[i+2]*size)).add(r.scale(g[i+3]*size)),width,color,alpha);
     }
     private static void arc(PoseStack.Pose pose,VertexConsumer consumer,Vec3 camera,Vec3 center,Vec3 u,Vec3 v,double radius,double width,int color,float alpha){
         int steps=Math.clamp((int)(radius*16),24,96);Vec3 previous=null;

@@ -382,6 +382,7 @@ final class LegendArts {
         sound(level,a,SoundEvents.BEACON_ACTIVATE,1.2f,1.6f);
         sound(level,a,SoundEvents.FIRECHARGE_USE,1f,1.2f);
         SpellRuntime.repeat(p,Math.max(20,(int)s.number("duration_ticks",240)),age -> {
+            if (age % 5 == 0) { SpellVfx.sigil(p,s.formula(),a,fwd,1.4,12); SpellVfx.sigil(p,s.formula(),b,fwd,1.4,12); }
             ring(level,a,fwd,across,age);
             ring(level,b,fwd,across,age);
             travel(p,s,a,b.add(fwd.scale(1.3)),cooldown,age);
@@ -405,11 +406,10 @@ final class LegendArts {
     }
     private static void ring(ServerLevel level, Vec3 c, Vec3 fwd, Vec3 across, int age) {
         if (age % 2 != 0) return;
-        for (int i = 0; i < 24; i++) {
-            double t = age*.12+i*Math.PI*2/24;
-            Vec3 at = c.add(across.scale(Math.cos(t)*1.2)).add(0,Math.sin(t)*1.4,0);
-            EpicMagic.fx(level,dust(i % 4 == 0 ? 0xFFE28A : 0xFF9A2E,1f),at.x,at.y,at.z,1,0,0,0,0);
-            if (i % 6 == 0) EpicMagic.fx(level,ParticleTypes.SMALL_FLAME,at.x,at.y,at.z,0,-Math.sin(t)*across.x*.1,Math.cos(t)*.1,-Math.sin(t)*across.z*.1,1);
+        for (int i = 0; i < 6; i++) {
+            double t = age*.12+i*Math.PI*2/6;
+            Vec3 at = c.add(across.scale(Math.cos(t)*1.4)).add(0,Math.sin(t)*1.4,0);
+            EpicMagic.fx(level,ParticleTypes.SMALL_FLAME,at.x,at.y,at.z,0,-Math.sin(t)*across.x*.1,Math.cos(t)*.1,-Math.sin(t)*across.z*.1,1);
         }
         EpicMagic.fx(level,dust(0xFFD28A,.5f),c.x,c.y,c.z,4,across.x*.6+fwd.x*.05,.7,across.z*.6+fwd.z*.05,0);
     }

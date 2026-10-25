@@ -20,18 +20,21 @@ final class Deluge {
         ServerLevel level = p.level();
         Vec3 dir = new Vec3(p.getLookAngle().x, 0, p.getLookAngle().z);
         dir = dir.lengthSqr() < 1e-4 ? Vec3.directionFromRotation(0, p.getYRot()) : dir.normalize();
-        Vec3 side = new Vec3(-dir.z, 0, dir.x), start = p.position().add(dir.scale(1.2));
         double range = Math.clamp(s.number("radius", 9), 3, 16), width = Math.clamp(s.number("burst_radius", 9), 3, 16);
+        Vec3 aim = SpellAim.hit(p).getLocation();
+        if (aim.distanceToSqr(p.getEyePosition()) > 64 * 64) aim = p.getEyePosition().add(p.getLookAngle().scale(64));
+        Vec3 back = aim.subtract(dir.scale(range * .5)), side = new Vec3(-dir.z, 0, dir.x);
+        Vec3 start = back.subtract(p.position()).dot(dir) < 1.2 ? p.position().add(dir.scale(1.2)) : back;
         int travel = Math.clamp((int) s.number("travel_ticks", 16), 6, 40), linger = Math.clamp((int) s.number("water_ticks", 60), 0, 200);
         boolean flood = MagicConfig.CONSTRUCTION.get() && linger > 0;
         var hitEffects = s.effects().stream().filter(n -> !SpellDefinition.string(n, "type", "").equals("extinguish")).toList();
         var worldEffects = s.effects().stream().filter(n -> SpellDefinition.string(n, "type", "").equals("extinguish")).toList();
-        EffectGraph.world(p, s, worldEffects, p.position(), false, true);
+        EffectGraph.world(p, s, worldEffects, aim, false, true);
         Set<UUID> struck = new HashSet<>();
         List<BlockPos> placed = new ArrayList<>();
         Vec3 direction = dir;
-        level.playSound(null, p.blockPosition(), SoundEvents.GENERIC_SPLASH, SoundSource.PLAYERS, 1.5f, .6f);
-        level.playSound(null, p.blockPosition(), SoundEvents.PLAYER_SPLASH_HIGH_SPEED, SoundSource.PLAYERS, 1.2f, .8f);
+        level.playSound(null, BlockPos.containing(start), SoundEvents.GENERIC_SPLASH, SoundSource.PLAYERS, 1.5f, .6f);
+        level.playSound(null, BlockPos.containing(start), SoundEvents.PLAYER_SPLASH_HIGH_SPEED, SoundSource.PLAYERS, 1.2f, .8f);
         SpellRuntime.timed(p, travel + linger, age -> {
             if (age >= travel) return;
             double t = (age + 1) / (double) travel, reach = range * t, half = 1.5 + (width / 2 - 1.5) * t;

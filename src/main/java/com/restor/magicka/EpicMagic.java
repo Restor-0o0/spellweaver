@@ -113,6 +113,7 @@ public final class EpicMagic {
         int[] next = {12}, fade = {0};
         SpellRuntime.sustain(p,age -> {
             if (!c.live && ++fade[0] > 30) return true;
+            if (c.live && age % 5 == 0) SpellVfx.sigil(p,s.formula(),new Vec3(c.focus.x,cloud-.6,c.focus.z),new Vec3(0,-1,0),Math.min(16,radius),12);
             int puffs = c.live ? 14 : 5;
             for (int i = 0; i < puffs; i++) {
                 Vec3 q = scatter(r,c.focus,radius*1.1,cloud+r.nextGaussian()*.6);
@@ -155,16 +156,20 @@ public final class EpicMagic {
         Vec3 slant = flat(p.getLookAngle());
         var ember = new DustParticleOptions(net.minecraft.util.ARGB.colorFromFloat(1f,.9f,.35f,.1f),3f);
         int[] next = {0};
+        double h = Math.max(8,clearance(level,c.focus,26)), disc = Math.min(16,radius*.8);
+        Vec3 gate = c.focus.add(slant.scale(-h*.45)).add(0,h,0), normal = c.focus.subtract(gate).normalize();
+        Vec3 u = (Math.abs(normal.y) > .95 ? new Vec3(1,0,0) : new Vec3(0,1,0)).cross(normal).normalize(), v = normal.cross(u);
         SpellRuntime.sustain(p,age -> {
             if (!c.live) return true;
-            for (int i = 0; i < 3; i++) { Vec3 q = scatter(r,c.focus,radius,c.focus.y+Math.max(6,clearance(level,c.focus,22))); fx(level,i == 0 ? ember : ParticleTypes.LARGE_SMOKE,q.x,q.y,q.z,0,0,-.02,0,1); }
+            if (age % 5 == 0) SpellVfx.sigil(p,s.formula(),gate,normal,disc,12);
+            for (int i = 0; i < 3; i++) { double a = r.nextDouble()*Math.PI*2, d = disc*Math.sqrt(r.nextDouble()); Vec3 q = gate.add(u.scale(Math.cos(a)*d)).add(v.scale(Math.sin(a)*d)); fx(level,i == 0 ? ember : ParticleTypes.LARGE_SMOKE,q.x,q.y,q.z,0,0,-.02,0,1); }
             if (age < next[0]) return false;
             next[0] = age+5+r.nextInt(3);
             LivingEntity target = r.nextFloat() < .35f ? prey(p,area(p,c.focus,radius,6,20),r) : null;
             Vec3 at = target != null ? target.position() : drop(level,scatter(r,c.focus,radius,c.focus.y+6),20,p);
             if (at == null) return false;
-            double h = Math.max(6,clearance(level,at,26));
-            meteor(p,s,at.add(slant.scale(-h*.45)).add(0,h,0),at);
+            double a = r.nextDouble()*Math.PI*2, d = disc*.75*Math.sqrt(r.nextDouble());
+            meteor(p,s,gate.add(u.scale(Math.cos(a)*d)).add(v.scale(Math.sin(a)*d)).add(normal.scale(.5)),at);
             return false;
         });
     }

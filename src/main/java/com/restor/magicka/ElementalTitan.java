@@ -52,6 +52,11 @@ public class ElementalTitan extends Entity implements ElementalBody {
         titan.snapTo(c.focus.x, c.focus.y, c.focus.z, p.getYRot(), 0);
         titan.setYHeadRot(p.getYRot());
         if (!level.addFreshEntity(titan)) return;
+        SpellRuntime.sustain(p, age -> {
+            if (!titan.isAlive() || !c.live) return true;
+            if (age % 5 == 0) SpellVfx.sigil(p, s.formula(), c.focus.add(0, .08, 0), new net.minecraft.world.phys.Vec3(0, 1, 0), 4.5, 12);
+            return false;
+        });
         level.playSound(null, c.focus.x, c.focus.y, c.focus.z, SoundEvents.WARDEN_EMERGE, SoundSource.PLAYERS, 2f, .7f);
         level.playSound(null, c.focus.x, c.focus.y, c.focus.z, Elementals.shot(titan.element()), SoundSource.PLAYERS, 2f, .5f);
     }
