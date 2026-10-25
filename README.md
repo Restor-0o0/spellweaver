@@ -87,7 +87,6 @@ Modpack makers can extend this with entity type tags:
 | V | Clear the formula |
 | B | Open the Grimoire |
 | Alt + 1–4 | Fill a formula from a quick slot |
-| H | Toggle instant cast |
 | K | Shape editor |
 | J | Loadout (gear and potion belt) |
 | Z / X | Drink a belt potion |
@@ -112,6 +111,9 @@ lines you want. Put it in `defaultconfigs/` next to `mods/` and every new world 
 settings, or replace the file in a world's `serverconfig/`. Options you leave out keep their defaults.
 
 ```toml
+# Spells take time to prepare, as before 1.4.0
+#instantCast = false
+
 # Classic mode: no mage levels, five elements from the start
 #mageLevels = false
 #formulaLengthByLevel = false
@@ -195,6 +197,7 @@ and NeoForge resets it.
 | `earthLifetimeTicks` / `iceLifetimeTicks` / `rootLifetimeTicks` / `arcaneLifetimeTicks` | 1200 / 600 / 900 / 400 | Lifetimes of fading blocks |
 | `maxConstructionBlocks` | 16 | Block budget of one construction |
 | `collapseWithRoot` | true | Constructions collapse when their base is gone |
+| `instantCast` | true | Spells fire at once; channeled spells last while the button is held |
 | `castTimeMultiplier` | 1.0 | Scales every cast time |
 | `channelMaxTicksPerElement` | 20 | Channel length per element |
 | `playerMagicDamageMultiplier` | 0.5 | Spell damage dealt to players |

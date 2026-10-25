@@ -82,8 +82,12 @@ public final class MageLevel {
         gain(player, recipe.ultimate() ? 10 : recipe.formula().size());
     }
 
-    public static void reject(ServerPlayer player, int elements) {
+    public static void fizzle(ServerPlayer player) {
         player.level().playSound(null, player.blockPosition(), SoundEvents.FIRE_EXTINGUISH, SoundSource.PLAYERS, .6f, 1.4f);
+    }
+
+    public static void reject(ServerPlayer player, int elements) {
+        fizzle(player);
         player.displayClientMessage(Component.translatable("mage.magicka.too_long", elements, levelFor(elements)).withStyle(ChatFormatting.RED), true);
     }
 
