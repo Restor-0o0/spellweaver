@@ -26,6 +26,7 @@ import java.util.function.Consumer;
 
 @EventBusSubscriber(modid = Magicka.ID)
 public final class MagicTestRegistry {
+    @SubscribeEvent public static void castTimes(net.neoforged.neoforge.event.server.ServerStartedEvent event) { MagicConfig.INSTANT_CAST.set(false); }
     private static final Class<?>[] SUITES = {AuditGameTests.class, DeathGameTests.class, ElementalGameTests.class, EnemyGameTests.class,
             EpicGameTests.class, GearGameTests.class, LegendGameTests.class, MagicGameTests.class, QuickCastGameTests.class,
             RecipeGameTests.class, SupportGameTests.class, PotionGameTests.class};

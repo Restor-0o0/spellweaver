@@ -57,7 +57,6 @@ public final class MagicClient {
     private static final KeyMapping DIRECTED = key("directed", InputConstants.Type.MOUSE, InputConstants.MOUSE_BUTTON_LEFT);
     private static final KeyMapping SELF = key("self", InputConstants.Type.MOUSE, InputConstants.MOUSE_BUTTON_RIGHT);
     private static final KeyMapping BOOK = key("spellbook", InputConstants.Type.KEYSYM, InputConstants.KEY_B);
-    private static final KeyMapping INSTANT = key("instant", InputConstants.Type.KEYSYM, InputConstants.KEY_H);
     private static final KeyMapping SHAPE = key("shape", InputConstants.Type.KEYSYM, InputConstants.KEY_K);
     private static final KeyMapping LOADOUT = key("loadout", InputConstants.Type.KEYSYM, InputConstants.KEY_J);
     private static final KeyMapping[] QUICK=java.util.stream.IntStream.range(0,4).mapToObj(i->new KeyMapping("key.magicka.quick_"+(i+1),KeyConflictContext.IN_GAME,
@@ -70,7 +69,6 @@ public final class MagicClient {
     public static Component elementKey(Element element) { return ELEMENTS[element.ordinal()].getTranslatedKeyMessage(); }
     public static Component bookKey() { return BOOK.getTranslatedKeyMessage(); }
     public static Component toggleKey() { return TOGGLE.getTranslatedKeyMessage(); }
-    public static Component instantKey() { return INSTANT.getTranslatedKeyMessage(); }
     public static boolean bookMatches(KeyEvent event) { return BOOK.matches(event); }
     public static boolean shapeMatches(KeyEvent event) { return SHAPE.matches(event); }
     public static Component loadoutKey() { return LOADOUT.getTranslatedKeyMessage(); }
@@ -131,12 +129,6 @@ public final class MagicClient {
                 send(7);
                 MagicNetwork.clientState = new MagicNetwork.State(!state.enabled(), state.formula(), 0, 0, 0, state.budget(), state.instant(), false);
             }
-            return true;
-        }
-        if (matches.test(INSTANT)) {
-            send(11);
-            MagicNetwork.clientState = new MagicNetwork.State(state.enabled(), state.formula(), state.remaining(), state.total(), state.intent(), state.budget(), !state.instant(), state.channeling());
-            Minecraft.getInstance().player.sendOverlayMessage(Component.translatable(state.instant() ? "hud.magicka.mode_normal" : "hud.magicka.mode_instant"));
             return true;
         }
         if (!state.enabled()) return false;
@@ -247,7 +239,7 @@ public final class MagicClient {
         @SubscribeEvent public static void keys(RegisterKeyMappingsEvent event) {
             for (KeyMapping key : ELEMENTS) event.register(key);
             for(KeyMapping key:QUICK)event.register(key);
-            for (KeyMapping key : new KeyMapping[]{TOGGLE, CLEAR, DIRECTED, SELF, INSTANT, BOOK, SHAPE, LOADOUT}) event.register(key);
+            for (KeyMapping key : new KeyMapping[]{TOGGLE, CLEAR, DIRECTED, SELF, BOOK, SHAPE, LOADOUT}) event.register(key);
             for (KeyMapping key : POTIONS) event.register(key);
         }
         @SubscribeEvent public static void setup(net.neoforged.fml.event.lifecycle.FMLClientSetupEvent event) {
