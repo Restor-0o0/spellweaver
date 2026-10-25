@@ -15,7 +15,7 @@ to grind: press up to five elements, then cast. Every combination does something
 
 - **8 elements, 1286 spells.** Fire, Water, Cold, Lightning, Earth, Life, Arcane and Death combine
   into every possible formula of one to five elements, each with its own effect.
-- **204 signature spells** in the Grimoire, searchable by name or tag (`#building`, `#damage`,
+- **206 signature spells** in the Grimoire, searchable by name or tag (`#building`, `#damage`,
   `#summon`, `#support`…), with four quick-cast slots.
 - **Tiers that matter.** One to three elements are support, hexes and jokes; four is the combat tier;
   five is the top shelf with ritual-ordered ultimates — storms, meteor showers, tornadoes and
