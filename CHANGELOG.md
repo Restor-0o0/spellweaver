@@ -21,8 +21,10 @@
 - Piercing Rays: every ray now lands (before, only two of five did), aims at the creature you look at and deals 2 ❤ per ray.
 - Brittle Cage and other growth spells grow in rings. Field of Flowers covers 12 blocks. Explosion is bigger.
 - Two new spells: Meadow (Water, Earth, Life ×2) grows grass and ferns, and Grove (Earth ×2, Life ×3) grows up to 6 trees of the local biome at once.
-- Rune circles: spells of three or more elements flash a rune circle at your hand, a held channel keeps one spinning in front of you (orange for fire), and ultimates light three stacked circles over the target.
-- Piercing Rays fire from five rune circles. Cast on yourself, it raises a defensive rune circle for 5 s that stops arrows and blocks every hit from the front.
+- Rune circles: every spell has its own rune, written from 24 element glyphs. Spells of three or more elements flash it at your hand, larger for longer formulas; a held channel keeps it steady in front of you; ultimates light three stacked circles over the target. Area spells mark their zone with it.
+- Meteors fall out of a rune circle in the sky and the storm hangs a circle under its cloud. Titans rise from a rune circle, elementals step out of one, and Spark Portal gates are rune circles.
+- Piercing Rays fire from five rune circles that follow you until the last ray. Cast on yourself, it raises a defensive rune circle for 5 s that stops arrows and blocks every hit from the front.
+- Deluge rolls across the aimed spot instead of starting at your feet.
 - Brittle Cage and other growth spells centre on the creature you aim at; the cage now has a roof.
 - Silver Stag gallops for 8 s without stopping, turning in smooth arcs from foe to foe and ramming them aside.
 - Spark Portal never drops you into a wall. Quicksilt now catches the caster too.
