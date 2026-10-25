@@ -74,6 +74,9 @@ public final class MagicClient {
     public static boolean bookMatches(KeyEvent event) { return BOOK.matches(event); }
     public static boolean shapeMatches(KeyEvent event) { return SHAPE.matches(event); }
     public static Component loadoutKey() { return LOADOUT.getTranslatedKeyMessage(); }
+    public static void openSettings(net.minecraft.client.gui.screens.Screen parent) {
+        net.neoforged.fml.ModList.get().getModContainerById(Magicka.ID).ifPresent(mod -> net.minecraft.client.Minecraft.getInstance().setScreen(new net.neoforged.neoforge.client.gui.ConfigurationScreen(mod, parent)));
+    }
     public static void openLoadout() { ClientPacketDistributor.sendToServer(new MagicNetwork.Input(14)); }
     public static Component castHint(String intent) {
         return Component.literal((intent.equals("self") ? "Self: " : "Primary: ")).append(intent.equals("self") ? SELF.getTranslatedKeyMessage() : DIRECTED.getTranslatedKeyMessage());
@@ -224,6 +227,9 @@ public final class MagicClient {
             for(KeyMapping key:QUICK)event.register(key);
             for (KeyMapping key : new KeyMapping[]{TOGGLE, CLEAR, DIRECTED, SELF, INSTANT, BOOK, SHAPE, LOADOUT}) event.register(key);
             for (KeyMapping key : POTIONS) event.register(key);
+        }
+        @SubscribeEvent public static void setup(net.neoforged.fml.event.lifecycle.FMLClientSetupEvent event) {
+            net.neoforged.fml.ModList.get().getModContainerById(Magicka.ID).ifPresent(mod -> mod.registerExtensionPoint(net.neoforged.neoforge.client.gui.IConfigScreenFactory.class, net.neoforged.neoforge.client.gui.ConfigurationScreen::new));
         }
         @SubscribeEvent public static void screens(net.neoforged.neoforge.client.event.RegisterMenuScreensEvent event) {
             event.register(com.restor.magicka.GearMenu.TYPE.get(), GearScreen::new);
