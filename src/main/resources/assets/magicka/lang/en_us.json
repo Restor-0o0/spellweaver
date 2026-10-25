@@ -4532,6 +4532,5 @@
   "magicka.configuration.castSpeedPerLevel": "Cast speed per level",
   "magicka.configuration.castSpeedPerLevel.tooltip": "Cast speed per mage level, in percent",
   "magicka.configuration.damagePerLevel": "Damage per level",
-  "magicka.configuration.damagePerLevel.tooltip": "Spell damage per mage level, in percent",
-  "book.magicka.settings": "Spellweaver settings: turn features on or off for this world"
+  "magicka.configuration.damagePerLevel.tooltip": "Spell damage per mage level, in percent"
 }

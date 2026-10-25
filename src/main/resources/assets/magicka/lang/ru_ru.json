@@ -4532,6 +4532,5 @@
   "magicka.configuration.castSpeedPerLevel": "Скорость каста за уровень",
   "magicka.configuration.castSpeedPerLevel.tooltip": "Прибавка к скорости каста за уровень мага, в процентах",
   "magicka.configuration.damagePerLevel": "Урон за уровень",
-  "magicka.configuration.damagePerLevel.tooltip": "Прибавка к урону заклинаний за уровень мага, в процентах",
-  "book.magicka.settings": "Настройки Spellweaver: включить или выключить функции для этого мира"
+  "magicka.configuration.damagePerLevel.tooltip": "Прибавка к урону заклинаний за уровень мага, в процентах"
 }

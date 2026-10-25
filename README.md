@@ -99,8 +99,8 @@ Element keys only take over while magic mode is on. All keys can be rebound.
 Every feature can be tuned or switched off. Don't like mage levels, scrolls from every mob or
 spells that break blocks? Turn them off. There are three ways.
 
-**In game.** Open the Grimoire (B) and press ⚙, or go to *Mods → Spellweaver → Config*. Each
-option has a description. In multiplayer only the server can change settings.
+**In game.** Press Esc and click the book icon next to *Options…* (it is also next to *Done* in the
+Options screen), or go to *Mods → Spellweaver → Config*. Each option has a description. In multiplayer only the server can change settings.
 
 **In the file.** Each world has its own settings in `saves/<world>/serverconfig/spellweaver-server.toml`
 (on a server: `world/serverconfig/`), created when the world is first loaded. Every option in it has
