@@ -29,6 +29,12 @@
         "status": "chilled",
         "duration_ticks": 80,
         "strength": 3
+      },
+      {
+        "type": "apply_status",
+        "status": "frozen",
+        "duration_ticks": 30,
+        "strength": 1
       }
     ]
   },
@@ -65,6 +71,6 @@
     ]
   },
   "balanced": true,
-  "primary": "A snowstorm covers an area 11 blocks across around the aimed spot, and water inside freezes.\nUltimate channel: just stand still for up to 12 s. Stepping aside breaks the channel; instant mode does not apply. Needs open sky: at least 10 blocks of air above the target, so it fails in caves and under roofs.\nOnce a second, everyone in the storm takes:\n• Damage 1.5 ❤ cold\n• Cold 50: slows, freezes at 100 accumulated cold\n• Chill for 3 s\nIcicles fall several times a second. Each one hits within 1.5 blocks for 3 ❤ cold and a strong chill.",
+  "primary": "A snowstorm covers an area 11 blocks across around the aimed spot. Chunks of ice and snow rain down from the sky and shatter on impact without leaving blocks.\nUltimate channel: just stand still for up to 12 s. Stepping aside breaks the channel; instant mode does not apply. Needs open sky: at least 10 blocks of air above the target, so it fails in caves and under roofs.\nOnce a second, everyone in the storm takes:\n• Damage 1.5 ❤ cold\n• Cold 50: slows, freezes solid at 100 accumulated cold\n• Chill for 3 s\nEach falling chunk hits within 1.5 blocks:\n• Damage 3 ❤ cold\n• Strong chill for 4 s\n• Freezes solid for 1.5 s",
   "self_description": "On you:\n• Stone skin (resistance III), 15 s\n• Cold 60"
 }

@@ -32,8 +32,8 @@
     },
     {
       "type": "destroy_blocks",
-      "budget": 60,
-      "radius": 4
+      "budget": 700,
+      "radius": 7
     }
   ],
   "self": {
@@ -55,12 +55,12 @@
       },
       {
         "type": "destroy_blocks",
-        "budget": 60,
-        "radius": 4
+        "budget": 700,
+        "radius": 7
       }
     ]
   },
   "balanced": true,
-  "primary": "Three spinning crimson magic circles stack above the aimed spot for 2 s, then a pillar of light strikes it. Everyone within 8 blocks:\n• Damage 12 ❤ fire\n• Heat 120\n• Thrown far away\nIt blasts a crater of up to 60 blocks and leaves a mushroom cloud.\nThe price: for 8 s you cannot cast any element, get Slowness IV and Weakness II.",
+  "primary": "Three spinning crimson magic circles stack above the aimed spot for 2 s, then a pillar of light strikes it. Everyone within 8 blocks:\n• Damage 12 ❤ fire\n• Heat 120\n• Thrown far away\nIt blasts a crater 7 blocks in radius (up to 700 blocks) and leaves a mushroom cloud.\nThe price: for 8 s you cannot cast any element, get Slowness IV and Weakness II.",
   "self_description": "The blast goes off at your feet and throws you high into the air with slow falling for 8 s; you take no damage from it. The price is the same."
 }

@@ -48,7 +48,7 @@ public final class DeathGameTests {
         UndeadMinions.summon(p,p.position(),"minecraft:zombie",3,200);
         var raised=minions(h,p);
         h.assertTrue(raised.size()>=2,"Servants rise around their master, got "+raised.size());
-        h.assertTrue(raised.stream().allMatch(m->m.distanceTo(p)<6),"Servants rise at the master, not at the aim point");
+        h.assertTrue(raised.stream().allMatch(m->m.position().subtract(p.position()).horizontalDistance()<6),"Servants rise at the master, not at the aim point");
         h.assertTrue(raised.stream().map(Mob::blockPosition).distinct().count()==raised.size(),"Every servant gets its own spot");
         var stray=raised.getFirst();
         stray.teleportTo(p.getX()+200,p.getY(),p.getZ());

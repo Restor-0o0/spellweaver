@@ -185,4 +185,48 @@ public final class AuditGameTests {
             h.succeed();
         });
     }
+    @MagicTest(timeoutTicks=80)
+    public static void groundSpellsGripTheirTargets(GameTestHelper h){
+        DeathGameTests.floor(h);for(int z=0;z<8;z++)for(int x=0;x<5;x++)h.setBlock(new BlockPos(x,1,z),net.minecraft.world.level.block.Blocks.STONE);
+        var p=RecipeGameTests.caster(h);
+        var gripped=h.spawnWithNoFreeWill(net.minecraft.world.entity.EntityType.ZOMBIE,new BlockPos(1,2,5));
+        SpellRuntime.cast(p,RecipeGameTests.spell("Grasping Dead"),false);
+        h.runAfterDelay(25,()->{
+            h.assertTrue(MagicStatuses.has(gripped,MagicStatuses.Status.ROOTED),"Grasping Dead roots the aimed zombie");
+            h.assertTrue(gripped.getHealth()<gripped.getMaxHealth(),"Grasping Dead hurts the aimed zombie");
+            gripped.discard();
+            var muddy=h.spawnWithNoFreeWill(net.minecraft.world.entity.EntityType.ZOMBIE,new BlockPos(1,2,5));
+            SpellRuntime.cast(p,RecipeGameTests.spell("Mud"),false);
+            h.runAfterDelay(30,()->{
+                h.assertTrue(MagicStatuses.has(muddy,MagicStatuses.Status.ROOTED) && MagicStatuses.has(muddy,MagicStatuses.Status.WET),"Mud soaks and roots the zombie it hits");
+                h.succeed();
+            });
+        });
+    }
+    @MagicTest(timeoutTicks=80)
+    public static void portalNeverDropsIntoAWall(GameTestHelper h){
+        DeathGameTests.floor(h);for(int x=0;x<5;x++)for(int y=2;y<6;y++)h.setBlock(new BlockPos(x,y,4),net.minecraft.world.level.block.Blocks.STONE);
+        var p=RecipeGameTests.caster(h);p.setPos(h.absoluteVec(new Vec3(1.5,2,.5)));
+        SpellRuntime.cast(p,RecipeGameTests.spell("Spark Portal"),false);
+        var walker=h.spawnWithNoFreeWill(net.minecraft.world.entity.EntityType.ZOMBIE,new BlockPos(1,2,2));
+        h.runAfterDelay(15,()->{
+            h.assertTrue(walker.position().distanceToSqr(h.absoluteVec(new Vec3(1.5,2,2.5)))>.5,"The zombie in the gate is carried through");
+            h.assertTrue(h.getLevel().noCollision(walker,walker.getBoundingBox()),"The portal never leaves anyone inside blocks");
+            h.succeed();
+        });
+    }
+    @MagicTest(timeoutTicks=60)
+    public static void raysAllLandAndVentCracksTheGround(GameTestHelper h){
+        for(int z=0;z<9;z++)for(int x=0;x<5;x++)h.setBlock(new BlockPos(x,1,z),net.minecraft.world.level.block.Blocks.STONE);
+        var p=RecipeGameTests.caster(h);
+        var target=h.spawnWithNoFreeWill(net.minecraft.world.entity.EntityType.ZOMBIE,new BlockPos(1,2,5));
+        SpellRuntime.cast(p,RecipeGameTests.spell("Piercing Rays"),false);
+        Fissure.open(p,RecipeGameTests.spell("Volcanic Vent"),h.absoluteVec(new Vec3(3.5,2,2.5)));
+        h.runAfterDelay(30,()->{
+            h.assertTrue(!target.isAlive(),"Five rays of 2 hearts each kill a zombie, health left "+target.getHealth());
+            h.assertTrue(h.getBlockState(new BlockPos(3,1,2)).isAir() && h.getBlockState(new BlockPos(3,1,0)).isAir(),"The vent cracks a line of ground open");
+            h.assertTrue(h.getBlockState(new BlockPos(2,1,2)).is(net.minecraft.world.level.block.Blocks.STONE),"The fissure is one block wide");
+            h.succeed();
+        });
+    }
 }

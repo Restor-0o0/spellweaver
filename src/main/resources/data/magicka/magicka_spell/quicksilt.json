@@ -18,7 +18,8 @@
     "duration_ticks": 200,
     "interval_ticks": 20,
     "gravity": 0.025,
-    "burst_radius": 3.4
+    "burst_radius": 3.4,
+    "hits_caster": true
   },
   "construction": {
     "material": "ice",
@@ -113,7 +114,7 @@
       }
     ]
   },
-  "primary": "An icy quagmire that roots and freezes.\nA zone at the aim point with a 3-block radius for 10 s. Every second, on everyone inside except you:\n• Damage 1.25 ❤ earth + 1.25 ❤ arcane (earth ×2 on frozen)\n• Soaked for 8 s\n• Light push\n• Cold 40: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Arcane instability: −0.25 ❤ every 2 s for 4.5 s\n• Rooted in place for 2 s\n• Rooted in place for 3 s",
+  "primary": "An icy quagmire that roots and freezes.\nA zone at the aim point with a 3-block radius for 10 s. Every second, on everyone inside:\n• Damage 1.25 ❤ earth + 1.25 ❤ arcane (earth ×2 on frozen)\n• Soaked for 8 s\n• Light push\n• Cold 40: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Arcane instability: −0.25 ❤ every 2 s for 4.5 s\n• Rooted in place for 2 s\n• Rooted in place for 3 s\nThe quagmire grips and chills you too, but does not hurt you.",
   "self_description": "On you:\n• Soaked for 8 s and leaves a puddle\n• Light push\n• Cold 40: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Stone skin (Resistance I) for 7 s\n• Slowness I for 5.5 s\n• Arcane instability: −0.25 ❤ every 2 s for 4.5 s",
   "balanced": true
 }

@@ -17,7 +17,7 @@
   "effects": [
     {
       "type": "deal_damage",
-      "amount": 3,
+      "amount": 4,
       "element": "arcane"
     }
   ],
@@ -33,6 +33,6 @@
     ]
   },
   "balanced": true,
-  "primary": "Five thin white rays fire one after another from a ring around you toward your aim, up to 40 blocks. Each ray pierces every creature on its path:\n• Damage 1.5 ❤ arcane per ray, up to 7.5 ❤ in total",
+  "primary": "Five thin white rays fire one after another from a ring around you toward your aim, up to 64 blocks. Each ray pierces every creature on its path:\n• Damage 2 ❤ arcane per ray, up to 10 ❤ in total",
   "self_description": "Defensive magic. On you:\n• Stone skin (resistance II), 10 s"
 }

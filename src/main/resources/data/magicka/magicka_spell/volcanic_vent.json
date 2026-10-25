@@ -19,7 +19,9 @@
     "interval_ticks": 20,
     "gravity": 0.025,
     "burst_radius": 4.0,
-    "shards": 2
+    "shards": 2,
+    "fissure": true,
+    "fissure_depth": 2
   },
   "construction": {
     "material": "earth",
@@ -107,7 +109,7 @@
       }
     ]
   },
-  "primary": "The ground erupts with heat and launches enemies.\nA zone at the aim point with a 3-block radius for 6 s. Every second, on everyone inside except you:\n• Damage 2.5 ❤ fire + 1.25 ❤ earth + 1.25 ❤ arcane (fire ×0.5 on wet, earth ×2 on frozen)\n• Heat: sets on fire for 12 s (wet targets just dry off), thaws; melts ice and burns roots\n• Light push\n• Arcane instability: −0.25 ❤ every 2 s for 4.5 s\n• Launches upward",
+  "primary": "The ground splits open at the aim point, any distance away: a fissure 1 block wide and 7 long cracks along your gaze, its bottom glowing with magma, and fire bursts from it.\nA fiery zone with a 3-block radius for 6 s. Every second, on everyone inside except you:\n• Damage 2.5 ❤ fire + 1.25 ❤ earth + 1.25 ❤ arcane (fire ×0.5 on wet, earth ×2 on frozen)\n• Heat: sets on fire for 12 s (wet targets just dry off), thaws; melts ice and burns roots\n• Light push\n• Arcane instability: −0.25 ❤ every 2 s for 4.5 s\n• Launches upward",
   "self_description": "A zone around you with a 3-block radius for 6 s. Every second, on everyone inside, including you:\n• Damage 2.5 ❤ fire + 1.25 ❤ earth + 1.25 ❤ arcane (fire ×0.5 on wet, earth ×2 on frozen)\n• Heat: sets on fire for 12 s (wet targets just dry off), thaws; melts ice and burns roots\n• Light push\n• Arcane instability: −0.25 ❤ every 2 s for 4.5 s\n• Launches upward",
   "balanced": true
 }
