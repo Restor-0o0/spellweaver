@@ -12,6 +12,7 @@
 - Every feature can be tuned or switched off in game: click the book icon next to Options in the pause menu or open the mod settings from the Mods list. Every option in `spellweaver-server.toml` now has a description, and the README has ready-made switches to uncomment.
 - Instant cast is now on by default and lives in the mod settings (`instantCast`) instead of the H key.
 - The formula panel shows only as many cells as your mage level allows; pressing an extra element just fizzles.
+- `/spellweaver config` lists and changes any setting on a running server, without a restart; changes reach every player at once.
 - Lower minimum NeoForge version.
 
 ## 1.3.1 — scrolls from enemies
