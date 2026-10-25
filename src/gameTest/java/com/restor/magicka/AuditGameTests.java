@@ -7,6 +7,19 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.phys.Vec3;
 public final class AuditGameTests {
     @MagicTest
+    public static void configCommandChangesSettings(GameTestHelper h){
+        var server=h.getLevel().getServer();var source=server.createCommandSourceStack().withSuppressedOutput();
+        server.getCommands().performPrefixedCommand(source,"spellweaver config bossUltimateWeight 5");
+        int changed=MagicConfig.BOSS_ULTIMATE_WEIGHT.get();
+        server.getCommands().performPrefixedCommand(source,"spellweaver config bossUltimateWeight 999");
+        int rejected=MagicConfig.BOSS_ULTIMATE_WEIGHT.get();
+        server.getCommands().performPrefixedCommand(source,"spellweaver config bossUltimateWeight default");
+        h.assertTrue(changed==5,"The command sets a value");
+        h.assertTrue(rejected==5,"An out-of-range value is refused");
+        h.assertTrue(MagicConfig.BOSS_ULTIMATE_WEIGHT.get()==MagicConfig.BOSS_ULTIMATE_WEIGHT.getDefault(),"default restores the default");
+        h.succeed();
+    }
+    @MagicTest
     public static void fireIgnitesWood(GameTestHelper h){
         DeathGameTests.floor(h);var p=RecipeGameTests.caster(h);
         h.setBlock(new BlockPos(3,2,3),net.minecraft.world.level.block.Blocks.OAK_PLANKS);
