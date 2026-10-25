@@ -1,0 +1,42 @@
+{
+  "id": "magicka:meadow",
+  "formula": {
+    "water": 1,
+    "earth": 1,
+    "life": 2
+  },
+  "name": "Meadow",
+  "tier": "Signature",
+  "scroll": false,
+  "tags": "BUFF/UTIL",
+  "shape": "targeted_zone",
+  "origin": "aim_ground",
+  "cast_mode": "instant",
+  "delivery": {
+    "legend": "meadow",
+    "radius": 12,
+    "duration_ticks": 200
+  },
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "regenerating",
+      "duration_ticks": 60,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "legend",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 60,
+        "strength": 1
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "Lush grass and ferns sprout around the aimed spot within 12 blocks, and bare dirt turns to turf. Everything stays for good. Every second you and your allies on the meadow:\n• Regeneration for 3 s",
+  "self_description": "The meadow grows around you."
+}

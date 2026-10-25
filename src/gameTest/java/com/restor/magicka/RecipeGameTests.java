@@ -25,7 +25,7 @@ public final class RecipeGameTests {
         for(var d:RecipeRegistry.recipes()){counts[d.formula().size()]++;keys.add(d.formula());}
         h.assertTrue(Arrays.equals(counts,new int[]{0,8,36,120,330,792}) && keys.size()==1286,"Complete canonical catalog");
         long signatures=RecipeRegistry.recipes().stream().filter(d->d.tier().equals("Signature")).count();
-        h.assertTrue(signatures==204,"All signatures imported, got "+signatures);
+        h.assertTrue(signatures==206,"All signatures imported, got "+signatures);
         var base=spell("Ember");var json=base.source().deepCopy();json.addProperty("cast_ticks",33);json.addProperty("shape","beam");
         var changed=SpellDefinition.parse(Identifier.parse("test:custom_ember"),json);
         h.assertTrue(changed.shape()==SpellShape.BEAM && changed.castTicks()==33 && changed.formula().equals(base.formula()),"New delivery is defined by data alone");

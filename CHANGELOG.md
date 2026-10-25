@@ -19,7 +19,9 @@
 - Volcanic Vent splits the ground into a magma fissure along your gaze. Grasping Dead shows hands clawing out of the earth and hits twice as hard.
 - Undead servants rise out of the ground instead of appearing in place.
 - Piercing Rays: every ray now lands (before, only two of five did), aims at the creature you look at and deals 2 ❤ per ray.
-- Brittle Cage and other growth spells grow in rings. Field of Flowers covers 12 blocks and grows trees. Explosion is bigger.
+- Brittle Cage and other growth spells grow in rings. Field of Flowers covers 12 blocks. Explosion is bigger.
+- Two new spells: Meadow (Water, Earth, Life ×2) grows grass and ferns, and Grove (Earth ×2, Life ×3) grows up to 6 trees at once.
+- Silver Stag gallops for 8 s without stopping, turning in smooth arcs from foe to foe and ramming them aside.
 - Spark Portal never drops you into a wall. Quicksilt now catches the caster too.
 - Renamed: Root Spire, Floating Crystal, Rune Bastion.
 
