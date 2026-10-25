@@ -96,8 +96,55 @@ Element keys only take over while magic mode is on. All keys can be rebound.
 
 ## Configuration
 
-Every feature can be tuned or switched off in `serverconfig/spellweaver-server.toml`. The file is
-synced to clients.
+Every feature can be tuned or switched off. Don't like mage levels, scrolls from every mob or
+spells that break blocks? Turn them off. There are three ways.
+
+**In game.** Open the Grimoire (B) and press ⚙, or go to *Mods → Spellweaver → Config*. Each
+option has a description. In multiplayer only the server can change settings.
+
+**In the file.** Each world has its own settings in `saves/<world>/serverconfig/spellweaver-server.toml`
+(on a server: `world/serverconfig/`), created when the world is first loaded. Every option in it has
+a comment. Change `true` to `false` or edit a number, then restart the game
+or the server. The file is synced to clients, so players don't need to change anything.
+
+**Quick switches.** Copy this block into a new `spellweaver-server.toml` and remove `#` from the
+lines you want. Put it in `defaultconfigs/` next to `mods/` and every new world starts with these
+settings, or replace the file in a world's `serverconfig/`. Options you leave out keep their defaults.
+
+```toml
+# Classic mode: no mage levels, five elements from the start
+#mageLevels = false
+#formulaLengthByLevel = false
+
+# All spells open, no scrolls needed
+#unlockAllSpells = true
+
+# Ordinary mobs drop no scrolls, only specialists and bosses
+#scrollDropsFromAllMobs = false
+
+# No scrolls in chests
+#chestScrollMultiplier = 0.0
+
+# Same scrolls in every dimension
+#dimensionScrollBias = false
+
+# Mobs take normal damage from every element
+#mobElementResistances = false
+
+# Keep the world intact: no broken blocks, no placed blocks
+#allowTerrainDamage = false
+#constructiveMagic = false
+
+# Peaceful multiplayer
+#friendlyFire = false
+#playerMagicDamageMultiplier = 0.0
+
+# No Spellweaver enemies spawning in the world
+#specialEnemyNaturalSpawns = false
+```
+
+Don't paste the block into a file that already has these options: a duplicate key breaks the file
+and NeoForge resets it.
 
 **Progression**
 
