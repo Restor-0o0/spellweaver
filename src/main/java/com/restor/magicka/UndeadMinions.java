@@ -29,6 +29,8 @@ public final class UndeadMinions {
     public static final String TAG = "magicka_minion";
     private record Minion(Mob mob, ServerPlayer owner, long until) {}
     private static final Map<UUID, Minion> MINIONS = new LinkedHashMap<>();
+    private static final int RISE_TICKS = 16;
+    private static final Map<Mob, Vec3> RISING = new LinkedHashMap<>();
 
     public static int summon(ServerPlayer owner, Vec3 point, String id, int count, int ticks) { return summon(owner, point, id, count, ticks, 1); }
 
@@ -51,7 +53,7 @@ public final class UndeadMinions {
         }
         Vec3 at = place(level, mob, point, index);
         if (at == null || !WorldPlacement.allowed(owner, BlockPos.containing(at))) { mob.discard(); return false; }
-        mob.moveTo(at.x, at.y, at.z, owner.getYRot() + index * 45, 0);
+        mob.moveTo(at.x, at.y - mob.getBbHeight(), at.z, owner.getYRot() + index * 45, 0);
         mob.finalizeSpawn(level, level.getCurrentDifficultyAt(mob.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
         if (mob.getVehicle() != null) { Entity vehicle = mob.getVehicle(); mob.stopRiding(); vehicle.discard(); }
         if (mob instanceof Zombie zombie) zombie.setBaby(false);
@@ -65,11 +67,14 @@ public final class UndeadMinions {
         mob.setCustomName(net.minecraft.network.chat.Component.translatable("entity.magicka.minion", owner.getDisplayName()));
         long until = level.getGameTime() + Math.clamp(ticks, 20, 72000);
         MINIONS.put(mob.getUUID(), new Minion(mob, owner, until));
+        mob.noPhysics = true;
+        mob.setNoAi(true);
         if (!level.addFreshEntity(mob)) { MINIONS.remove(mob.getUUID()); return false; }
+        RISING.put(mob, at);
         trim(owner);
-        level.sendParticles(ParticleTypes.SOUL, at.x, at.y + .5, at.z, 16, .35, .6, .35, .02);
         level.sendParticles(ParticleTypes.LARGE_SMOKE, at.x, at.y + .1, at.z, 8, .4, .1, .4, .01);
         level.playSound(null, at.x, at.y, at.z, SoundEvents.ZOMBIE_VILLAGER_CURE, SoundSource.HOSTILE, .5f, .6f);
+        level.playSound(null, at.x, at.y, at.z, SoundEvents.ROOTED_DIRT_BREAK, SoundSource.HOSTILE, 1f, .7f);
         return true;
     }
 
@@ -90,7 +95,7 @@ public final class UndeadMinions {
     }
 
     private static boolean taken(BlockPos feet) {
-        return MINIONS.values().stream().anyMatch(m -> m.mob.isAlive() && m.mob.blockPosition().equals(feet));
+        return MINIONS.values().stream().anyMatch(m -> m.mob.isAlive() && (RISING.containsKey(m.mob) ? BlockPos.containing(RISING.get(m.mob)) : m.mob.blockPosition()).equals(feet));
     }
 
     private static void trim(ServerPlayer owner) {
@@ -98,7 +103,22 @@ public final class UndeadMinions {
         for (int i = 0; i < owned.size() - MagicStats.minionCap(owner); i++) vanish(owned.get(i).mob);
     }
 
+    private static void rise(Mob mob, Vec3 at) {
+        ServerLevel level = (ServerLevel) mob.level();
+        if (mob.position().subtract(at).horizontalDistanceSqr() > 1) at = new Vec3(mob.getX(), mob.getY() + mob.getBbHeight(), mob.getZ());
+        double y = Math.min(at.y, mob.getY() + mob.getBbHeight() / RISE_TICKS);
+        mob.setPos(at.x, y, at.z);
+        var ground = level.getBlockState(BlockPos.containing(at).below());
+        if (!ground.isAir()) level.sendParticles(new net.minecraft.core.particles.BlockParticleOption(ParticleTypes.BLOCK, ground), at.x, at.y + .1, at.z, 6, .3, .05, .3, .1);
+        if (y < at.y) return;
+        RISING.remove(mob);
+        mob.noPhysics = false;
+        mob.setNoAi(false);
+        level.sendParticles(ParticleTypes.SOUL, at.x, at.y + .5, at.z, 16, .35, .6, .35, .02);
+    }
+
     private static void vanish(Mob mob) {
+        RISING.remove(mob);
         MINIONS.remove(mob.getUUID());
         if (mob.level() instanceof ServerLevel level && mob.isAlive())
             level.sendParticles(ParticleTypes.SOUL, mob.getX(), mob.getY() + .8, mob.getZ(), 12, .3, .5, .3, .03);
@@ -137,12 +157,15 @@ public final class UndeadMinions {
     }
 
     @SubscribeEvent public void tick(ServerTickEvent.Post event) {
+        RISING.keySet().removeIf(Entity::isRemoved);
+        new LinkedHashMap<>(RISING).forEach(UndeadMinions::rise);
         if (event.getServer().getTickCount() % 10 != 0 || MINIONS.isEmpty()) return;
         for (Minion minion : List.copyOf(MINIONS.values())) {
             Mob mob = minion.mob;
             ServerPlayer owner = minion.owner;
             if (!mob.isAlive() || mob.isRemoved()) { MINIONS.remove(mob.getUUID()); continue; }
             if (owner.isRemoved() || (!owner.isAlive() && !MagicGear.has(owner, MagicGear.Trait.GRAVE_BELL)) || owner.level() != mob.level() || mob.level().getGameTime() >= minion.until) { vanish(mob); continue; }
+            if (RISING.containsKey(mob)) { if (mob.distanceToSqr(owner) > 32 * 32) vanish(mob); continue; }
             if (mob.getTarget() != null && !allowed(minion, mob.getTarget())) mob.setTarget(null);
             if (mob.getTarget() == null) {
                 LivingEntity next = owner.getLastHurtByMob();
@@ -162,5 +185,5 @@ public final class UndeadMinions {
         for (Minion minion : List.copyOf(MINIONS.values())) if (minion.owner.getUUID().equals(event.getEntity().getUUID())) vanish(minion.mob);
     }
 
-    @SubscribeEvent public void stop(ServerStoppedEvent event) { MINIONS.clear(); }
+    @SubscribeEvent public void stop(ServerStoppedEvent event) { MINIONS.clear(); RISING.clear(); }
 }

@@ -26,7 +26,8 @@
     "width": 1,
     "height": 3,
     "floating": false,
-    "integrity": 12
+    "integrity": 12,
+    "batch": 8
   },
   "effects": [
     {

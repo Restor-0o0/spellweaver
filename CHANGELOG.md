@@ -14,6 +14,14 @@
 - The formula panel shows only as many cells as your mage level allows; pressing an extra element just fizzles.
 - `/spellweaver config` lists and changes any setting on a running server, without a restart; changes reach every player at once.
 - Lower minimum NeoForge version.
+- Spells reach as far as you can aim: only the flamethrower spray keeps a short range. Epic spells reach 160 blocks, Piercing Rays, Black Flame, Beckon and Spirit Wave 64.
+- Blizzard drops chunks of ice and snow that shatter before landing. Deluge sends a real wave of water across the ground.
+- Volcanic Vent splits the ground into a magma fissure along your gaze. Grasping Dead shows hands clawing out of the earth and hits twice as hard.
+- Undead servants rise out of the ground instead of appearing in place.
+- Piercing Rays: every ray now lands (before, only two of five did), aims at the creature you look at and deals 2 ❤ per ray.
+- Brittle Cage and other growth spells grow in rings. Field of Flowers covers 12 blocks and grows trees. Explosion is bigger.
+- Spark Portal never drops you into a wall. Quicksilt now catches the caster too.
+- Renamed: Root Spire, Floating Crystal, Rune Bastion.
 
 ## 1.3.1 — scrolls from enemies
 

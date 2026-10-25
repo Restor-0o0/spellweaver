@@ -28,7 +28,8 @@
     "height": 3,
     "floating": false,
     "integrity": 12,
-    "regenerates": true
+    "regenerates": true,
+    "batch": 8
   },
   "effects": [
     {

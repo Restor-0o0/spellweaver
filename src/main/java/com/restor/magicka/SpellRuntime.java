@@ -53,9 +53,8 @@ public final class SpellRuntime {
         return true;
     }
     static double reach(ServerPlayer p, SpellDefinition s) {
-        if (!leads(s,Element.FIRE) || s.delivery().has("meteor") || s.delivery().has("lobbed")) return UNLIMITED;
-        boolean thrown = s.shape()==SpellShape.PROJECTILE || s.shape()==SpellShape.BURST_PROJECTILE;
-        return Math.clamp((3+3*s.formula().fire())*(thrown?2:1)*MagicStats.power(p,MagicStats.Stat.FIRE),4,64);
+        if (s.shape()!=SpellShape.SPRAY || !leads(s,Element.FIRE)) return UNLIMITED;
+        return Math.clamp((3+3*s.formula().fire())*MagicStats.power(p,MagicStats.Stat.FIRE),4,64);
     }
     private static double speed(SpellDefinition s) { return Math.clamp(s.number("speed",.8)*(leads(s,Element.EARTH)?2:1),.1,4); }
     private static double gravity(SpellDefinition s) { return s.number("gravity",0)*(leads(s,Element.EARTH)?.25:1); }
@@ -107,13 +106,14 @@ public final class SpellRuntime {
         if (point.distanceToSqr(p.getEyePosition()) > reach*reach) point = p.getEyePosition().add(p.getLookAngle().scale(reach));
         if (s.shape().construction()) { MagicConstructionManager.start(p,s,false,point); return; }
         if (s.delivery().has("meteor")) { meteor(p,s,point,false); return; }
+        if (Deluge.handles(s)) { Deluge.cast(p,s); return; }
         switch(s.shape()) {
             case PROJECTILE, BURST_PROJECTILE -> fan(p,s);
             case BEAM -> beam(p,s,false);
             case SPRAY -> beam(p,s,true);
             case CHAIN -> lightning(p,s);
             case TARGETED_EXPLOSION -> impact(p,s,point,s.number("radius",3),false,true);
-            case TARGETED_ZONE -> zone(p,s,point,(int)s.number("duration_ticks",160),s.number("radius",3),false,false);
+            case TARGETED_ZONE -> { if(Fissure.handles(s))Fissure.open(p,s,point); zone(p,s,point,(int)s.number("duration_ticks",160),s.number("radius",3),false,false); }
             case NOVA -> impact(p,s,p.position(),s.number("radius",3),false,true);
             case DIRECT_TARGET -> { LivingEntity victim=target(p); if(victim != null && victim.distanceToSqr(p.getEyePosition())<=reach*reach) { point=victim.position(); EffectGraph.entity(p,victim,s,s.effects(),p.position(),false); } EffectGraph.world(p,s,s.effects(),point,false,true); }
             case DASH -> dash(p,s);
@@ -284,14 +284,27 @@ public final class SpellRuntime {
             SpellVfx.cue(p,s,mine?SpellVfx.MINE:SpellVfx.ZONE,point,point,radius,Math.min(12,remaining+1));
             if(s!=null)particles(p,s,point,6,radius*.5);else p.serverLevel().sendParticles(ParticleTypes.SPLASH,point.x,point.y+.05,point.z,8,radius*.5,.02,radius*.5,0);
             var victims=near(p,point,radius);
+            if(s!=null && s.delivery().has("grasp"))hands(p,point,radius,victims);
             if(mine){if(age>20 && victims.stream().anyMatch(e->e!=p && EffectGraph.canHarm(p,e))){impact(p,s,point,radius,self,true);return true;}return false;}
             if(wet){for(var e:victims)MagicStatuses.apply(e,MagicStatuses.Status.WET,60,1);return false;}
             int interval=Math.max(10,(int)s.number("interval_ticks",20));if((age-1)%interval!=0)return false;
             boolean weakest=s.delivery().has("heal_weakest");
             if(weakest)victims=victims.stream().filter(e->EffectGraph.ally(p,e)).sorted(Comparator.comparingDouble(e->e.getHealth()/e.getMaxHealth())).limit(1).toList();
             for(var e:victims)if(e!=p || self || s.formula().life()>0)EffectGraph.entity(p,e,s,self?s.selfEffects():s.effects(),point,self);
+            else if(s.delivery().has("hits_caster"))EffectGraph.entity(p,p,s,s.effects().stream().filter(n->!SpellDefinition.string(n,"type","").equals("deal_damage")).toList(),point,false);
             EffectGraph.world(p,s,self?s.selfEffects():s.effects(),point,self,false);return false;
         }
+    }
+    private static void hands(ServerPlayer p,Vec3 point,double radius,List<LivingEntity> victims){
+        var level=p.serverLevel();var random=level.getRandom();
+        BlockPos below=BlockPos.containing(point).below();var ground=level.getBlockState(below).isAir()?net.minecraft.world.level.block.Blocks.DIRT.defaultBlockState():level.getBlockState(below);
+        for(int i=0;i<6;i++){double a=random.nextDouble()*Math.PI*2,r=Math.sqrt(random.nextDouble())*radius;Vec3 at=point.add(Math.cos(a)*r,.05,Math.sin(a)*r);
+            level.sendParticles(new net.minecraft.core.particles.BlockParticleOption(ParticleTypes.BLOCK,ground),at.x,at.y,at.z,4,.15,.05,.15,.1);
+            level.sendParticles(ParticleTypes.SOUL,at.x,at.y+.2,at.z,1,.05,.2,.05,.02);}
+        for(var e:victims){if(e==p || !EffectGraph.canHarm(p,e))continue;Vec3 feet=e.position();
+            level.sendParticles(ParticleTypes.SCULK_SOUL,feet.x,feet.y+.3,feet.z,3,e.getBbWidth()*.4,.3,e.getBbWidth()*.4,.02);
+            level.sendParticles(new net.minecraft.core.particles.BlockParticleOption(ParticleTypes.BLOCK,ground),feet.x,feet.y+.1,feet.z,10,e.getBbWidth()*.5,.1,e.getBbWidth()*.5,.15);}
+        if(random.nextInt(3)==0)level.playSound(null,BlockPos.containing(point),net.minecraft.sounds.SoundEvents.ROOTED_DIRT_BREAK,net.minecraft.sounds.SoundSource.PLAYERS,.8f,.6f);
     }
     public static void zone(ServerPlayer p,SpellDefinition s,Vec3 point,int ticks,double radius,boolean self,boolean mine){
         if(s.delivery().has("ice_surface"))freezeSurface(p,point,radius);
