@@ -66,6 +66,8 @@ public final class Elementals {
         while (owned.size() > LIMIT) owned.pollFirst().vanish();
         int slot = 0;
         for (Elemental m : owned) m.slot = slot++;
+        SpellVfx.sigil(p, s.formula(), new Vec3(at.x, Math.floor(at.y) + .08, at.z), new Vec3(0,1,0), 1.6, 40);
+        SpellVfx.sigil(p, s.formula(), at.add(0, 1, 0), new Vec3(0,1,0), 1.1, 24);
         burst(level, e, at.add(0,.8,0), 30, .5);
         level.playSound(null, at.x, at.y, at.z, SoundEvents.EVOKER_CAST_SPELL, SoundSource.PLAYERS, .8f, 1.4f);
         level.playSound(null, at.x, at.y, at.z, shot(e), SoundSource.PLAYERS, 1f, .7f);

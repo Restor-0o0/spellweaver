@@ -156,17 +156,20 @@ public final class LegendMagic {
             EpicMagic.fx(level,ParticleTypes.HAPPY_VILLAGER,soil.getX()+.5,soil.getY()+1.3,soil.getZ()+.5,3,.25,.2,.25,0);
     }
 
-    private static final SpellFormula RAY_SIGIL = new SpellFormula(0,0,0,1,0,0,0), WARD_SIGIL = new SpellFormula(0,0,0,0,0,0,1);
-    private static Vec3 rayOrigin(ServerPlayer p, int ray, int rays) {
-        Vec3 look = p.getLookAngle(), side = side(look), up = side.cross(look).normalize();
+    private static final SpellFormula WARD_SIGIL = new SpellFormula(0,0,0,0,0,0,1);
+    private static Vec3 rayOffset(int ray, int rays) {
         double a = ray*Math.PI*2/rays+.4;
-        return p.getEyePosition().add(look.scale(1.1)).add(side.scale(Math.cos(a)*1.1)).add(up.scale(Math.sin(a)*1.1));
+        return new Vec3(1.1,Math.sin(a)*1.1,Math.cos(a)*1.1);
+    }
+    private static Vec3 rayOrigin(ServerPlayer p, int ray, int rays) {
+        Vec3 look = p.getLookAngle(), side = side(look), up = side.cross(look).normalize(), o = rayOffset(ray,rays);
+        return p.getEyePosition().add(look.scale(o.x)).add(up.scale(o.y)).add(side.scale(o.z));
     }
     private static void zoltraak(ServerPlayer p, SpellDefinition s) {
         ServerLevel level = p.serverLevel();
         int rays = 5, charge = 6; double range = 64;
         announce(p,24,"magicka.legend.zoltraak");
-        for (int i = 0; i < rays; i++) SpellVfx.sigil(p,RAY_SIGIL,rayOrigin(p,i,rays),p.getLookAngle(),.45,charge+i*3+6);
+        for (int i = 0; i < rays; i++) SpellVfx.attached(p,s.formula(),rayOffset(i,rays),new Vec3(1,0,0),.45,charge+rays*3+4);
         sound(level,p.getEyePosition(),SoundEvents.BEACON_POWER_SELECT,.8f,1.8f);
         SpellRuntime.repeat(p,charge+rays*3,age -> {
             if (age < charge || (age-charge) % 3 != 0) return;
@@ -190,7 +193,7 @@ public final class LegendMagic {
         sound(level,p.getEyePosition(),SoundEvents.BEACON_ACTIVATE,1f,1.8f);
         SpellRuntime.repeat(p,duration,age -> {
             Vec3 eye = p.getEyePosition(), look = p.getLookAngle(), center = eye.add(look.scale(1.4));
-            if (age % 2 == 0) SpellVfx.sigil(p,WARD_SIGIL,center,look,1.4,2);
+            if (age % 2 == 0) SpellVfx.attached(p,WARD_SIGIL,new Vec3(1.4,0,0),new Vec3(1,0,0),1.4,Math.min(6,duration-age));
             for (Projectile shot : level.getEntitiesOfClass(Projectile.class,new AABB(center,center).inflate(2.5),e -> e.isAlive() && e.getOwner() != p)) {
                 Vec3 rel = shot.position().subtract(eye);
                 if (rel.dot(look) < .3 || rel.lengthSqr() > 12) continue;
