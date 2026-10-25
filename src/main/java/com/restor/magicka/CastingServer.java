@@ -194,7 +194,7 @@ public final class CastingServer {
         if (s.anchor != null && moved(player, s)) { breakEpic(player, s); return; }
         if (s.channeling) {
             if (s.remaining <= 0) { finishChannel(player, s); return; }
-            if (s.epic == null && !s.recipe.shape().construction() && s.elapsed % 2 == 0) SpellVfx.hand(player, s.recipe.formula(), .5 + .1 * s.recipe.formula().size(), 2);
+            if (s.epic == null && !s.recipe.shape().construction() && s.elapsed % 2 == 0) SpellVfx.hand(player, s.recipe.formula(), 8);
             if (s.epic == null && !s.recipe.shape().construction() && s.elapsed % pulseTicks(s.recipe) == 0) SpellRuntime.pulse(player, s.recipe);
             sync(player, s); return;
         }

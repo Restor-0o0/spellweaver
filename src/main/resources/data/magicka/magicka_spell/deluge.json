@@ -60,7 +60,7 @@
     ]
   },
   "balanced": true,
-  "primary": "A wall of water rolls out from you, sweeps everyone in front away and puts out any fire.\nThe wave travels 9 blocks forward and widens to 9 blocks. Where it passes, real water floods the ground and drains after 3 s.\nEveryone the wave catches takes:\n• Damage 4 ❤ water\n• Soaked for 20 s\n• Swept away and lifted\n• Puts out fire within 12 blocks: burning blocks and every creature, you included",
+  "primary": "A wall of water rolls across the aimed spot, sweeps everyone there away and puts out any fire.\nThe wave travels 9 blocks through that spot, away from you, and widens to 9 blocks. Where it passes, real water floods the ground and drains after 3 s.\nEveryone the wave catches takes:\n• Damage 4 ❤ water\n• Soaked for 20 s\n• Swept away and lifted\n• Puts out fire within 12 blocks: burning blocks and every creature there",
   "self_description": "On you:\n• Soaked for 15 s and leaves a puddle\n• Puts out fire within 12 blocks: burning blocks and every creature, you included\n• Slow falling for 15 s",
   "cast_mode": "instant"
 }
