@@ -110,6 +110,7 @@ public final class SpellbookScreen extends Screen {
         addRenderableWidget(new BookButton(x+bookWidth-48,y+10,16,16,Component.literal("?"),b->{guide=true;scroll=0;},false));
         addRenderableWidget(new BookButton(x+bookWidth-150,y+10,98,16,Component.translatable("book.magicka.stats"),b->showStats(true),false));
         addRenderableWidget(new BookButton(x+bookWidth-250,y+10,96,16,Component.translatable("book.magicka.shape"),b->minecraft.gui.setScreen(new ShapeEditorScreen()),false));
+        addRenderableWidget(new BookButton(x+bookWidth-270,y+10,16,16,Component.literal("⚙"),b->MagicClient.openSettings(this),false)).setTooltip(net.minecraft.client.gui.components.Tooltip.create(Component.translatable("book.magicka.settings")));
         var list=entries();page=Math.clamp(page,0,Math.max(0,(list.size()-1)/rows));selected=Math.clamp(selected,0,Math.max(0,list.size()-1));
         for(int i=0;i<rows && page*rows+i<list.size();i++){int index=page*rows+i;
             addRenderableWidget(new BookButton(x+12,y+LIST_TOP+i*23,divider-x-23,21,list.get(index).displayName(),
@@ -126,7 +127,7 @@ public final class SpellbookScreen extends Screen {
         MagicUi.text(g,title,x+14,y+14,MagicUi.INK);
         if(stats){renderStats(g,mouseX,mouseY,partialTick);return;}
         MagicUi.small(g,Component.literal(" / "+uniqueSpells().size()),x+14+font.width(title),y+16,0xFF786047);
-        MagicUi.small(g,mageLine(),x+14+font.width(title)+font.width(" / "+uniqueSpells().size())+12,y+16,0xFF6B3F8A);
+        MagicUi.small(g,mageLine(),x+14,y+22,0xFF6B3F8A);
         g.fill(x+13,y+29,x+bookWidth-13,y+30,0xFFAA8C59);
         var list=entries();
         g.centeredText(font,Component.literal((page+1)+" / "+Math.max(1,(list.size()+rows-1)/rows)),(x+divider)/2,y+bookHeight-60,0xFF786047);
