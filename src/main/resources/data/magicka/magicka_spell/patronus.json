@@ -13,7 +13,8 @@
   "cast_mode": "instant",
   "delivery": {
     "legend": "patronus",
-    "duration_ticks": 60
+    "radius": 20,
+    "duration_ticks": 160
   },
   "effects": [
     {
@@ -33,6 +34,6 @@
     ]
   },
   "balanced": true,
-  "primary": "A silvery stag gallops out of your wand and runs 40 blocks forward along the ground for 3 s. Foes it tramples, at most once every 0.5 s:\n• Damage 2 ❤ arcane, 4 ❤ to the undead\n• Thrown aside\nAllies it passes lose withering and blindness.",
-  "self_description": "The stag circles around you at 3 blocks for 3 s and guards you the same way."
+  "primary": "A silvery stag bursts out of your wand and gallops for 8 s without stopping. It hunts foes within 20 blocks, turning in smooth arcs from one to the next and ramming through them. Each foe it rams, at most once a second:\n• Damage 2 ❤ arcane, 4 ❤ to the undead\n• Thrown far aside\nWith no foes around it keeps running on. Allies it passes lose withering and blindness.",
+  "self_description": "For 8 s the stag circles around you and charges any foe that comes within 12 blocks of you, then returns."
 }

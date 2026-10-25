@@ -229,4 +229,47 @@ public final class AuditGameTests {
             h.succeed();
         });
     }
+    @MagicTest(timeoutTicks=60)
+    public static void plantSpellsGrowOnlyTheirOwnPlants(GameTestHelper h){
+        for(int x=0;x<5;x++)for(int z=0;z<5;z++)h.setBlock(new BlockPos(x,1,z),net.minecraft.world.level.block.Blocks.GRASS_BLOCK);
+        var p=RecipeGameTests.caster(h);
+        SpellRuntime.cast(p,RecipeGameTests.spell("Field of Flowers"),true);
+        h.runAfterDelay(25,()->{
+            int flowers=0,other=0;
+            for(int x=0;x<5;x++)for(int z=0;z<5;z++){var s=h.getBlockState(new BlockPos(x,2,z));if(s.is(net.minecraft.tags.BlockTags.SMALL_FLOWERS))flowers++;else if(!s.isAir())other++;}
+            h.assertTrue(flowers>0 && other==0,"Field of Flowers grows only flowers, got "+flowers+" flowers and "+other+" other");
+            for(int x=0;x<5;x++)for(int z=0;z<5;z++)h.setBlock(new BlockPos(x,2,z),net.minecraft.world.level.block.Blocks.AIR);
+            SpellRuntime.cast(p,RecipeGameTests.spell("Meadow"),true);
+            h.runAfterDelay(25,()->{
+                int grass=0,rest=0;
+                for(int x=0;x<5;x++)for(int z=0;z<5;z++){var s=h.getBlockState(new BlockPos(x,2,z));if(s.is(net.minecraft.world.level.block.Blocks.SHORT_GRASS)||s.is(net.minecraft.world.level.block.Blocks.FERN))grass++;else if(!s.isAir())rest++;}
+                h.assertTrue(grass>0 && rest==0,"Meadow grows only grass and ferns, got "+grass+" and "+rest+" other");
+                h.succeed();
+            });
+        });
+    }
+    @MagicTest(timeoutTicks=60)
+    public static void groveGrowsTrees(GameTestHelper h){
+        for(int x=0;x<5;x++)for(int z=0;z<5;z++)h.setBlock(new BlockPos(x,1,z),net.minecraft.world.level.block.Blocks.GRASS_BLOCK);
+        var p=RecipeGameTests.caster(h);
+        SpellRuntime.cast(p,RecipeGameTests.spell("Grove"),true);
+        h.runAfterDelay(25,()->{
+            boolean log=false;
+            for(int x=0;x<5;x++)for(int z=0;z<5;z++)for(int y=2;y<6;y++)log|=h.getBlockState(new BlockPos(x,y,z)).is(net.minecraft.tags.BlockTags.LOGS)||h.getBlockState(new BlockPos(x,y,z)).getBlock() instanceof net.minecraft.world.level.block.SaplingBlock;
+            h.assertTrue(log,"Grove plants a tree on grass");
+            h.succeed();
+        });
+    }
+    @MagicTest(timeoutTicks=60)
+    public static void stagTurnsToRamFoesAside(GameTestHelper h){
+        DeathGameTests.floor(h);
+        var p=RecipeGameTests.caster(h);
+        var side=h.spawnWithNoFreeWill(net.minecraft.world.entity.EntityType.ZOMBIE,new BlockPos(4,2,4));
+        var start=side.position();
+        SpellRuntime.cast(p,RecipeGameTests.spell("Silver Stag"),false);
+        h.runAfterDelay(30,()->{
+            h.assertTrue(side.getHealth()<side.getMaxHealth() || side.position().distanceTo(start)>1.5,"The stag turns aside to ram a foe off its path");
+            h.succeed();
+        });
+    }
 }
