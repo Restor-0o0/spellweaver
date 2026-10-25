@@ -46,14 +46,14 @@ public final class LegendMagic {
             Blocks.AZURE_BLUET.defaultBlockState(), Blocks.ALLIUM.defaultBlockState(), Blocks.LILY_OF_THE_VALLEY.defaultBlockState(), Blocks.PINK_TULIP.defaultBlockState(),
             Blocks.WHITE_TULIP.defaultBlockState(), Blocks.BLUE_ORCHID.defaultBlockState()};
     private static final BlockState[] GRASSES = {Blocks.SHORT_GRASS.defaultBlockState(), Blocks.SHORT_GRASS.defaultBlockState(), Blocks.FERN.defaultBlockState()};
-    private static final BlockState[] SAPLINGS = {Blocks.OAK_SAPLING.defaultBlockState(), Blocks.BIRCH_SAPLING.defaultBlockState(), Blocks.CHERRY_SAPLING.defaultBlockState()};
+    private static final BlockState[] SAPLINGS = {Blocks.OAK_SAPLING.defaultBlockState(), Blocks.BIRCH_SAPLING.defaultBlockState(), Blocks.SPRUCE_SAPLING.defaultBlockState(), Blocks.CHERRY_SAPLING.defaultBlockState()};
 
     static boolean handles(SpellDefinition s, boolean self) {
         return s.delivery().has("legend") && (!self || s.selfMode().equals("legend"));
     }
     static void cast(ServerPlayer p, SpellDefinition s, boolean self) {
         switch (SpellDefinition.string(s.delivery(),"legend","")) {
-            case "flowers" -> flowers(p,s,self);
+            case "flowers", "meadow", "grove" -> flowers(p,s,self);
             case "zoltraak" -> zoltraak(p,s);
             case "kamehameha" -> kamehameha(p,s,self);
             case "rasengan" -> rasengan(p,s);
@@ -105,37 +105,40 @@ public final class LegendMagic {
         }
         ground.sort(Comparator.comparingDouble(b -> b.distSqr(base)));
         RandomSource random = level.getRandom();
+        String kind = SpellDefinition.string(s.delivery(),"legend","flowers");
         List<BlockPos> trees = new ArrayList<>();
-        int maxTrees = (int)Math.clamp(s.number("trees",4),0,12);
+        int maxTrees = (int)Math.clamp(s.number("trees",6),0,16);
         sound(level,center,SoundEvents.AMETHYST_BLOCK_RESONATE,1.2f,1.4f);
         SpellRuntime.repeat(p,Math.max(24,(int)s.number("duration_ticks",200)),age -> {
             if (age < 20) {
-                for (int i = ground.size()*age/20; i < ground.size()*(age+1)/20; i++) bloom(p,ground.get(i),random,base,trees,maxTrees);
+                for (int i = ground.size()*age/20; i < ground.size()*(age+1)/20; i++) bloom(p,ground.get(i),random,kind,trees,maxTrees);
                 if (age % 4 == 0) sound(level,center,SoundEvents.AMETHYST_BLOCK_CHIME,.8f,1.2f+age*.04f);
             }
-            if (age % 3 == 0) EpicMagic.fx(level,ParticleTypes.CHERRY_LEAVES,center.x,center.y+2.5,center.z,10,radius*.6,1,radius*.6,0);
+            if (age % 3 == 0) EpicMagic.fx(level,kind.equals("flowers") ? ParticleTypes.CHERRY_LEAVES : ParticleTypes.SPORE_BLOSSOM_AIR,center.x,center.y+2.5,center.z,10,radius*.6,1,radius*.6,0);
             if (age % 20 == 0) for (LivingEntity e : withCaster(p,near(p,center,radius),center,radius))
                 if (EffectGraph.ally(p,e)) { EffectGraph.entity(p,e,s,s.effects(),center,false); EpicMagic.fx(level,ParticleTypes.HEART,e.getX(),e.getY()+e.getBbHeight()+.3,e.getZ(),2,.3,.2,.3,0); }
         });
     }
-    private static void bloom(ServerPlayer p, BlockPos soil, RandomSource random, BlockPos center, List<BlockPos> trees, int maxTrees) {
+    private static void bloom(ServerPlayer p, BlockPos soil, RandomSource random, String kind, List<BlockPos> trees, int maxTrees) {
         ServerLevel level = p.level();
-        float roll = random.nextFloat();
-        if (roll > .85f) return;
+        boolean grove = kind.equals("grove");
+        if (random.nextFloat() > (grove ? .3f : .85f)) return;
+        if (grove && (trees.size() >= maxTrees || trees.stream().anyMatch(t -> t.distSqr(soil) <= 16))) return;
         if (level.getBlockState(soil).is(Blocks.DIRT)) WorldMagic.replace(p,soil,Blocks.GRASS_BLOCK.defaultBlockState());
         BlockPos at = soil.above();
-        if (roll < .08f && trees.size() < maxTrees && soil.distSqr(center) > 9 && trees.stream().allMatch(t -> t.distSqr(at) > 25)) {
+        if (grove) {
             BlockState sapling = SAPLINGS[random.nextInt(SAPLINGS.length)];
             if (sapling.canSurvive(level,at) && WorldMagic.replace(p,at,sapling) && level.getBlockState(at).getBlock() instanceof net.minecraft.world.level.block.SaplingBlock tree) {
                 tree.advanceTree(level,at,level.getBlockState(at),random);
-                if (level.getBlockState(at).getBlock() == tree) tree.advanceTree(level,at,level.getBlockState(at),random);
-                trees.add(at);
+                for (int i = 0; i < 6 && level.getBlockState(at).getBlock() == tree; i++) tree.advanceTree(level,at,level.getBlockState(at),random);
+                trees.add(soil);
                 sound(level,Vec3.atCenterOf(at),SoundEvents.AZALEA_LEAVES_PLACE,1f,.8f);
                 EpicMagic.fx(level,ParticleTypes.HAPPY_VILLAGER,at.getX()+.5,at.getY()+2,at.getZ()+.5,20,1.2,1.5,1.2,0);
-                return;
             }
+            return;
         }
-        BlockState plant = roll < .45f ? FLOWERS[random.nextInt(FLOWERS.length)] : GRASSES[random.nextInt(GRASSES.length)];
+        BlockState[] pool = kind.equals("meadow") ? GRASSES : FLOWERS;
+        BlockState plant = pool[random.nextInt(pool.length)];
         if (plant.canSurvive(level,at) && WorldMagic.replace(p,at,plant))
             EpicMagic.fx(level,ParticleTypes.HAPPY_VILLAGER,soil.getX()+.5,soil.getY()+1.3,soil.getZ()+.5,3,.25,.2,.25,0);
     }
@@ -296,33 +299,37 @@ public final class LegendMagic {
 
     private static void patronus(ServerPlayer p, SpellDefinition s, boolean self) {
         ServerLevel level = p.level();
-        Vec3 heading = flat(p.getLookAngle());
-        Vec3 start = p.position().add(heading.scale(1.5));
-        double[] y = {start.y};
+        Vec3[] pos = {p.position().add(flat(p.getLookAngle()).scale(1.5))}, dir = {flat(p.getLookAngle())};
         Map<UUID,Integer> cooldown = new HashMap<>();
+        double hunt = Math.clamp(s.number("radius",20),6,48), turn = .2, speed = .65;
         announce(p,32,"magicka.legend.patronus");
-        sound(level,start,SoundEvents.BEACON_ACTIVATE,1.2f,1.5f);
-        SpellRuntime.repeat(p,Math.max(20,(int)s.number("duration_ticks",60)),age -> {
-            Vec3 pos, forward;
-            if (self) {
-                double a = age*.14;
-                pos = p.position().add(Math.cos(a)*3,0,Math.sin(a)*3); forward = new Vec3(-Math.sin(a),0,Math.cos(a));
-            } else {
-                Vec3 flatPos = start.add(heading.scale(age*.7));
-                Vec3 ground = EpicMagic.drop(level,new Vec3(flatPos.x,y[0]+2.5,flatPos.z),6,p);
-                if (ground != null) y[0] = ground.y;
-                pos = new Vec3(flatPos.x,y[0],flatPos.z); forward = heading;
-            }
-            if (age % 2 == 0) stag(level,pos,forward,age);
-            if (age % 8 == 0) sound(level,pos,SoundEvents.AMETHYST_BLOCK_CHIME,1f,1.6f);
-            for (LivingEntity e : near(p,pos.add(0,1,0),2.4)) {
+        sound(level,pos[0],SoundEvents.BEACON_ACTIVATE,1.2f,1.5f);
+        SpellRuntime.repeat(p,Math.max(20,(int)s.number("duration_ticks",160)),age -> {
+            Vec3 here = pos[0];
+            LivingEntity prey = near(p,here,hunt).stream()
+                    .filter(e -> foe(p,e) && cooldown.getOrDefault(e.getUUID(),-99) <= age && (!self || e.distanceToSqr(p) < 144))
+                    .min(Comparator.comparingDouble(e -> e.distanceToSqr(here))).orElse(null);
+            Vec3 goal = prey != null ? prey.position() : self ? p.position().add(Math.cos(age*.12)*4,0,Math.sin(age*.12)*4) : null;
+            Vec3 want = goal != null ? flat(goal.subtract(here)) : flat(dir[0].add(new Vec3(-dir[0].z,0,dir[0].x).scale(Math.sin(age*.15)*.15)));
+            dir[0] = flat(dir[0].scale(1-turn).add(want.scale(turn)));
+            Vec3 step = here.add(dir[0].scale(speed));
+            Vec3 ground = EpicMagic.drop(level,new Vec3(step.x,here.y+2.5,step.z),6,p);
+            if (ground == null || ground.y > here.y+1.6) { dir[0] = new Vec3(-dir[0].z,0,dir[0].x).scale(ground == null ? -1 : 1); return; }
+            pos[0] = new Vec3(step.x,ground.y,step.z);
+            Vec3 at = pos[0];
+            if (age % 2 == 0) stag(level,at,dir[0],age);
+            if (age % 6 == 0) sound(level,at,SoundEvents.HORSE_GALLOP,.8f,1.4f);
+            if (age % 10 == 0) sound(level,at,SoundEvents.AMETHYST_BLOCK_CHIME,1f,1.6f);
+            for (LivingEntity e : near(p,at.add(0,1,0),2.2)) {
                 if (EffectGraph.ally(p,e)) { MagicStatuses.remove(e,MagicStatuses.Status.WITHERING); MagicStatuses.remove(e,MagicStatuses.Status.OBSCURED); continue; }
                 if (!foe(p,e) || cooldown.getOrDefault(e.getUUID(),-99) > age) continue;
-                cooldown.put(e.getUUID(),age+10);
-                EffectGraph.entity(p,e,s,s.effects(),pos,false);
-                if (e.getType().builtInRegistryHolder().is(EntityTypeTags.UNDEAD)) EffectGraph.entity(p,e,s,s.effects(),pos,false);
-                Vec3 away = flat(e.position().subtract(pos));
-                e.push(away.x*1.2,.35,away.z*1.2); e.syncVelocity = true;
+                cooldown.put(e.getUUID(),age+20);
+                EffectGraph.entity(p,e,s,s.effects(),at,false);
+                if (e.getType().builtInRegistryHolder().is(EntityTypeTags.UNDEAD)) EffectGraph.entity(p,e,s,s.effects(),at,false);
+                Vec3 away = flat(e.position().subtract(at).add(dir[0].scale(1.5)));
+                e.push(away.x*1.4,.45,away.z*1.4); e.syncVelocity = true;
+                sound(level,at,SoundEvents.PLAYER_ATTACK_KNOCKBACK,1f,.9f);
+                EpicMagic.fx(level,ParticleTypes.END_ROD,e.getX(),e.getY()+e.getBbHeight()*.6,e.getZ(),8,.3,.3,.3,.12);
             }
         });
     }
