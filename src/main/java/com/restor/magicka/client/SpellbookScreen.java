@@ -110,7 +110,6 @@ public final class SpellbookScreen extends Screen {
         addRenderableWidget(new BookButton(x+bookWidth-48,y+10,16,16,Component.literal("?"),b->{guide=true;scroll=0;},false));
         addRenderableWidget(new BookButton(x+bookWidth-150,y+10,98,16,Component.translatable("book.magicka.stats"),b->showStats(true),false));
         addRenderableWidget(new BookButton(x+bookWidth-250,y+10,96,16,Component.translatable("book.magicka.shape"),b->minecraft.setScreen(new ShapeEditorScreen()),false));
-        addRenderableWidget(new BookButton(x+bookWidth-270,y+10,16,16,Component.literal("⚙"),b->MagicClient.openSettings(this),false)).setTooltip(net.minecraft.client.gui.components.Tooltip.create(Component.translatable("book.magicka.settings")));
         var list=entries();page=Math.clamp(page,0,Math.max(0,(list.size()-1)/rows));selected=Math.clamp(selected,0,Math.max(0,list.size()-1));
         for(int i=0;i<rows && page*rows+i<list.size();i++){int index=page*rows+i;
             addRenderableWidget(new BookButton(x+12,y+LIST_TOP+i*23,divider-x-23,21,list.get(index).displayName(),

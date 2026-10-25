@@ -9,7 +9,7 @@
 - Dungeon mod support: bosses of L_Ender's Cataclysm, Mowzie's Mobs and Aquamirae count as bosses and have their own resistances; chests of When Dungeons Arise, YUNG's Better Dungeons and other structure mods can hold scrolls.
 - "Mage Path" advancements, from the first cast to the archmage rank.
 - The Grimoire shows your mage level, experience and scrolls read.
-- Every feature can be tuned or switched off in game: press ⚙ in the Grimoire or open the mod settings from the Mods list. Every option in `spellweaver-server.toml` now has a description, and the README has ready-made switches to uncomment.
+- Every feature can be tuned or switched off in game: click the book icon next to Options in the pause menu or open the mod settings from the Mods list. Every option in `spellweaver-server.toml` now has a description, and the README has ready-made switches to uncomment.
 - Lower minimum NeoForge version.
 
 ## 1.3.1 — scrolls from enemies
