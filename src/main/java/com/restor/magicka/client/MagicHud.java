@@ -70,7 +70,8 @@ public final class MagicHud {
         Formula display=queuing?Formula.unpack(MagicNetwork.clientQueue.formula()):prepared;
         Component label=display.empty()?Component.translatable("hud.magicka.prepared"):MagicClient.spell(display.key()).displayName();
         MagicUi.small(g,Component.literal(fit(label.getString(),130)),panelX+4,y+3,queuing?0xFFFFDC84:casting?0xFFE0B3FF:MagicUi.GOLD);
-        for(int i=0;i<Formula.MAX;i++){
+        int cells=Math.max(com.restor.magicka.MageLevel.clientMaxElements(Minecraft.getInstance().player),display.size());
+        for(int i=0;i<cells;i++){
             socket(g,i<display.size()?display.elements().get(i):null,panelX+4+i*21,y+12,true);
             if(queuing && i>=prepared.size() && i<display.size())g.fill(panelX+5+i*21,y+13,panelX+20+i*21,y+28,0xAF0E1119);
         }

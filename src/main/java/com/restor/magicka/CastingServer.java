@@ -31,7 +31,9 @@ public final class CastingServer {
         long lastCast=-1000;
         int queueTicks, queueIndex, tongue;
         long lastQueue=-100, channelStart;
-        boolean instant, channeling, secret;
+        boolean channeling, secret;
+        Boolean instantOverride;
+        boolean instant() { return instantOverride != null ? instantOverride : MagicConfig.INSTANT_CAST.get(); }
         final StringBuilder typed = new StringBuilder();
         UUID construction;
         BlockPos root;
@@ -52,14 +54,14 @@ public final class CastingServer {
         if (s.committed()) return;
         if(s.queued!=null){s.queued=null;PacketDistributor.sendToPlayer(player,new MagicNetwork.QueueState(0,0));}
         if (action == 7) s.enabled = !s.enabled;
-        else if (action == 11) s.instant = !s.instant;
+        else if (action == 11) s.instantOverride = !s.instant();
         else if (s.enabled) {
             if (action < 7 || action == 13) {
                 int element = action == 13 ? Element.DEATH.ordinal() : action;
                 if (ElementLocks.locked(player, Element.values()[element])) { ElementLocks.reject(player, Element.values()[element]); sync(player, s); return; }
                 if (s.formula.empty()) s.typed.setLength(0);
                 int cap = MageLevel.maxElements(player);
-                if (s.formula.size() >= cap && cap < Formula.MAX) { MageLevel.reject(player, s.formula.size() + 1); sync(player, s); return; }
+                if (s.formula.size() >= cap && cap < Formula.MAX) { MageLevel.fizzle(player); sync(player, s); return; }
                 int before = s.formula.size();
                 s.formula.add(Element.values()[element]);
                 if (s.formula.size() > before) {
@@ -87,7 +89,7 @@ public final class CastingServer {
                 if (s.secret) s.total = s.windup;
                 boolean epic = !s.secret && s.intent == Intent.PRIMARY && s.recipe.epic();
                 s.anchor = epic ? player.position() : null;
-                if (s.secret && s.instant) {
+                if (s.secret && s.instant()) {
                     SecretSpell.INSTANCE.cast(player);
                     s.formula.clear(); s.recipe = null; s.total = 0;
                 } else if (epic && EpicMagic.cramped(player)) {
@@ -95,12 +97,12 @@ public final class CastingServer {
                     s.formula.clear(); s.recipe = null; s.total = 0; s.anchor = null;
                 } else if (epic) {
                     s.total = s.windup;
-                } else if (s.instant && s.intent == Intent.PRIMARY && s.recipe.channeled()) {
+                } else if (s.instant() && s.intent == Intent.PRIMARY && s.recipe.channeled()) {
                     s.windup = 0; s.channeling = true; s.channelStart = now;
                     s.total = construction ? s.recipe.budget()*s.recipe.interval() : MagicConfig.CHANNEL_TICKS.get()*(1+s.recipe.formula().size());
                     SpellRuntime.cast(player, s.recipe, false);
                     MageLevel.cast(player, s.recipe, false);
-                } else if (s.instant) {
+                } else if (s.instant()) {
                     SpellRuntime.cast(player, s.recipe, s.intent == Intent.SELF, true);
                     MageLevel.cast(player, s.recipe, s.intent == Intent.SELF);
                     s.formula.clear(); s.recipe = null; s.total = 0;
@@ -213,7 +215,7 @@ public final class CastingServer {
     }
     private static MagicNetwork.State snapshot(ServerPlayer player, Session s) {
         int budget = s.formula.construction() ? Math.max(0, (s.recipe != null ? s.recipe : MagicStats.resolve(player, s.formula.key())).budget() - s.attempts) : 0;
-        return new MagicNetwork.State(s.enabled, s.formula.packed(), s.remaining, s.total, s.intent.ordinal(), budget, s.instant, s.channeling);
+        return new MagicNetwork.State(s.enabled, s.formula.packed(), s.remaining, s.total, s.intent.ordinal(), budget, s.instant(), s.channeling);
     }
     /** The formula an observer can read: what is being prepared now, else the last cast for a few seconds. */
     public static Formula prepared(ServerPlayer player) {
@@ -239,8 +241,9 @@ public final class CastingServer {
         Session old = SESSIONS.remove(player.getUUID());
         if (old != null && old.epic != null) old.epic.live = false;
         ElementLocks.clear(player);
-        boolean instant = old != null && old.instant;
-        if (instant) { Session fresh = new Session(); fresh.instant = true; SESSIONS.put(player.getUUID(), fresh); }
+        Boolean override = old == null ? null : old.instantOverride;
+        if (override != null) { Session fresh = new Session(); fresh.instantOverride = override; SESSIONS.put(player.getUUID(), fresh); }
+        boolean instant = override != null ? override : MagicConfig.INSTANT_CAST.get();
         PacketDistributor.sendToPlayer(player, new MagicNetwork.State(false, 0, 0, 0, 0, 0, instant, false));
         PacketDistributor.sendToPlayer(player,new MagicNetwork.QueueState(0,0));
     }
