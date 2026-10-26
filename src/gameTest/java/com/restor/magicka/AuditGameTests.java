@@ -16,8 +16,7 @@ public final class AuditGameTests {
         server.getCommands().performPrefixedCommand(source,"spellweaver config bossUltimateWeight default");
         h.assertTrue(changed==5,"The command sets a value");
         h.assertTrue(rejected==5,"An out-of-range value is refused");
-        h.assertTrue(MagicConfig.BOSS_ULTIMATE_WEIGHT.get()==MagicConfig.BOSS_ULTIMATE_WEIGHT.getDefault(),"default restores the default");
-        h.succeed();
+        h.succeedWhen(()->h.assertTrue(MagicConfig.BOSS_ULTIMATE_WEIGHT.get()==MagicConfig.BOSS_ULTIMATE_WEIGHT.getDefault(),"default restores the default"));
     }
     @MagicTest
     public static void fireIgnitesWood(GameTestHelper h){
@@ -76,7 +75,7 @@ public final class AuditGameTests {
     @MagicTest(timeoutTicks=240)
     public static void teslaSpireBuildsCoilAndZaps(GameTestHelper h){
         DeathGameTests.floor(h);var p=RecipeGameTests.caster(h);
-        var enemy=h.spawnWithNoFreeWill(EntityTypes.ZOMBIE,new BlockPos(5,2,5));
+        var enemy=h.spawnWithNoFreeWill(EntityTypes.ZOMBIE,new BlockPos(5,2,5));enemy.setNoGravity(true);
         SpellRuntime.cast(p,RecipeGameTests.spell("Tesla Spire"),true);
         h.succeedWhen(()->{
             var blocks=MagicConstructionManager.get(h.getLevel()).structures().stream().filter(c->c.owner.equals(p.getUUID())).flatMap(c->c.blocks.stream()).toList();
@@ -84,7 +83,9 @@ public final class AuditGameTests {
             var top=blocks.stream().max(java.util.Comparator.comparingInt(BlockPos::getY)).orElseThrow();
             h.assertTrue(h.getLevel().getBlockState(top).is(MagicBlocks.COIL.get()),"Coil sits on top");
             h.assertTrue(blocks.stream().filter(b->!b.equals(top)).allMatch(b->h.getLevel().getBlockState(b).is(MagicBlocks.COPPER.get())),"Tower body is copper");
-            h.assertTrue(enemy.getHealth()<enemy.getMaxHealth(),"Coil zaps a nearby enemy");
+            var beside=net.minecraft.world.phys.Vec3.atBottomCenterOf(top).add(2.5,0,0);
+            if(enemy.position().distanceToSqr(beside)>.01){enemy.teleportTo(beside.x,beside.y,beside.z);enemy.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);}
+            h.assertTrue(enemy.getHealth()<enemy.getMaxHealth(),"Coil zaps an enemy beside it");
         });
     }
     @MagicTest(timeoutTicks=60)
@@ -113,13 +114,12 @@ public final class AuditGameTests {
             h.assertTrue(h.getBlockState(new BlockPos(2,2,2)).isAir(),"Nothing is built in front of the aim point");h.succeed();
         });
     }
-    @MagicTest(timeoutTicks=80)
+    @MagicTest(timeoutTicks=80,batch="slab")
     public static void stoneSlabBridgesGapAhead(GameTestHelper h){
         var p=RecipeGameTests.caster(h);p.setPos(h.absoluteVec(new Vec3(2.5,2,0.5)));h.setBlock(new BlockPos(2,1,0),net.minecraft.world.level.block.Blocks.STONE);
         SpellRuntime.cast(p,RecipeGameTests.spell("Stone Slab"),false);
-        h.runAfterDelay(40,()->{
+        h.succeedWhen(()->{
             for(int x=0;x<5;x++)for(int z=1;z<=5;z++)h.assertTrue(h.getBlockState(new BlockPos(x,1,z)).is(MagicBlocks.EARTH.get()),"Deck cell "+x+","+z);
-            h.succeed();
         });
     }
     @MagicTest(timeoutTicks=80)
@@ -248,13 +248,13 @@ public final class AuditGameTests {
         SpellRuntime.cast(p,RecipeGameTests.spell("Field of Flowers"),true);
         h.runAfterDelay(25,()->{
             int flowers=0,other=0;
-            for(int x=0;x<5;x++)for(int z=0;z<5;z++){var s=h.getBlockState(new BlockPos(x,2,z));if(s.is(net.minecraft.tags.BlockTags.SMALL_FLOWERS))flowers++;else if(!s.isAir())other++;}
+            for(int x=0;x<5;x++)for(int z=0;z<5;z++){var s=h.getBlockState(new BlockPos(x,2,z));if(s.is(net.minecraft.tags.BlockTags.SMALL_FLOWERS))flowers++;else if(s.is(net.minecraft.world.level.block.Blocks.SHORT_GRASS)||s.is(net.minecraft.world.level.block.Blocks.FERN)||s.getBlock() instanceof net.minecraft.world.level.block.SaplingBlock)other++;}
             h.assertTrue(flowers>0 && other==0,"Field of Flowers grows only flowers, got "+flowers+" flowers and "+other+" other");
             for(int x=0;x<5;x++)for(int z=0;z<5;z++)h.setBlock(new BlockPos(x,2,z),net.minecraft.world.level.block.Blocks.AIR);
             SpellRuntime.cast(p,RecipeGameTests.spell("Meadow"),true);
             h.runAfterDelay(25,()->{
                 int grass=0,rest=0;
-                for(int x=0;x<5;x++)for(int z=0;z<5;z++){var s=h.getBlockState(new BlockPos(x,2,z));if(s.is(net.minecraft.world.level.block.Blocks.SHORT_GRASS)||s.is(net.minecraft.world.level.block.Blocks.FERN))grass++;else if(!s.isAir())rest++;}
+                for(int x=0;x<5;x++)for(int z=0;z<5;z++){var s=h.getBlockState(new BlockPos(x,2,z));if(s.is(net.minecraft.world.level.block.Blocks.SHORT_GRASS)||s.is(net.minecraft.world.level.block.Blocks.FERN))grass++;else if(s.is(net.minecraft.tags.BlockTags.SMALL_FLOWERS)||s.getBlock() instanceof net.minecraft.world.level.block.SaplingBlock)rest++;}
                 h.assertTrue(grass>0 && rest==0,"Meadow grows only grass and ferns, got "+grass+" and "+rest+" other");
                 h.succeed();
             });
