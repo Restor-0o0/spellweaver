@@ -57,7 +57,7 @@ public final class SecretBuild implements SecretSpell {
     }
 
     @Override public void cast(ServerPlayer player) {
-        var level = player.serverLevel();
+        var level = player.getLevel();
         Direction facing = player.getDirection();
         final BlockPos origin = base(player);
         var layers = new ArrayList<List<Map.Entry<BlockPos, Block>>>();
@@ -75,10 +75,10 @@ public final class SecretBuild implements SecretSpell {
     }
 
     private static void place(ServerPlayer player, BlockPos pos, BlockState state) {
-        var level = player.serverLevel();
+        var level = player.getLevel();
         if (!WorldPlacement.allowed(player, pos)) return;
         var old = level.getBlockState(pos);
-        if (!old.isAir() && !old.canBeReplaced() && !WorldMagic.breakBlock(player, pos)) return;
+        if (!old.isAir() && !old.getMaterial().isReplaceable() && !WorldMagic.breakBlock(player, pos)) return;
         for (LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, new AABB(pos), LivingEntity::isAlive)) {
             entity.teleportTo(entity.getX(), pos.getY() + 1.01, entity.getZ());
             entity.setDeltaMovement(entity.getDeltaMovement().add(0, .6, 0));

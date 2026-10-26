@@ -11,7 +11,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -53,7 +52,7 @@ public class StoneCrawler extends SpecialEnemy {
         getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(.27);
         playSound(SoundEvents.ANVIL_LAND, 1f, .6f);
         playSound(SoundEvents.STONE_BREAK, 1.4f, .7f);
-        if (level() instanceof ServerLevel level)
+        if (level instanceof ServerLevel level)
             level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.COBBLESTONE.defaultBlockState()), getX(), getY() + 1, getZ(), 60, .7, .6, .7, .2);
     }
     private void regrow() {
@@ -71,7 +70,7 @@ public class StoneCrawler extends SpecialEnemy {
         return amount * (1.2f + .5f * (spell.formula().count(Element.FIRE) + spell.formula().count(Element.ARCANE)) / size);
     }
     @Override protected float physicalDamage(DamageSource source, float amount) {
-        return armored() && !source.is(DamageTypes.GENERIC_KILL) && !source.is(DamageTypes.FELL_OUT_OF_WORLD) ? amount * ARMORED : amount;
+        return armored() && !source.getMsgId().equals("genericKill") && !source.getMsgId().equals("outOfWorld") ? amount * ARMORED : amount;
     }
     @Override protected void customServerAiStep() {
         super.customServerAiStep();
@@ -80,10 +79,10 @@ public class StoneCrawler extends SpecialEnemy {
         if (target != null && cooldown == 0 && !casting() && !disabled() && distanceTo(target) < 3.5) {
             startCast(SLAM, 18, () -> {
                 playSound(SoundEvents.GENERIC_EXPLODE, .8f, 1.4f);
-                if (level() instanceof ServerLevel level)
+                if (level instanceof ServerLevel level)
                     level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.STONE.defaultBlockState()), getX(), getY() + .1, getZ(), 50, 1.8, .1, 1.8, .15);
-                for (LivingEntity hit : level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(3, 1, 3), e -> e != this && !ally(e) && e.distanceToSqr(this) < 16)) {
-                    hit.hurt(damageSources().mobAttack(this), 8);
+                for (LivingEntity hit : level.getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(3, 1, 3), e -> e != this && !ally(e) && e.distanceToSqr(this) < 16)) {
+                    hit.hurt(net.minecraft.world.damagesource.DamageSource.mobAttack(this), 8);
                     hit.push(0, .5, 0); hit.hurtMarked = true;
                 }
                 cooldown = 70;

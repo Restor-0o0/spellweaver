@@ -1,6 +1,6 @@
 package com.restor.magicka;
 
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.Registry;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
@@ -20,8 +20,8 @@ import net.minecraftforge.registries.DeferredRegister;
 import java.util.*;
 
 public final class MagicPotions {
-    public static final DeferredRegister<MobEffect> EFFECTS = DeferredRegister.create(Registries.MOB_EFFECT, Magicka.ID);
-    public static final DeferredRegister<Potion> POTIONS = DeferredRegister.create(Registries.POTION, Magicka.ID);
+    public static final DeferredRegister<MobEffect> EFFECTS = DeferredRegister.create(Registry.MOB_EFFECT_REGISTRY, Magicka.ID);
+    public static final DeferredRegister<Potion> POTIONS = DeferredRegister.create(Registry.POTION_REGISTRY, Magicka.ID);
     public static final int DURATION = 3600, LONG_DURATION = 9600, CAST_SPEED_BONUS = 25, DAMAGE_BONUS = 20;
     public static final float WARD = .6f;
 

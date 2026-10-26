@@ -5,7 +5,7 @@ import com.restor.magicka.Magicka;
 import com.restor.magicka.MagicNetwork;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -50,9 +50,9 @@ public final class PolymorphVisuals {
         if (SHAPES.size() > MagicNetwork.clientShapes.size())
             SHAPES.keySet().removeIf(key -> !MagicNetwork.clientShapes.containsKey(key));
         Shape shape = SHAPES.get(player.getId());
-        if (shape != null && shape.id.equals(id) && shape.dummy.level() == player.level()) return shape.dummy;
-        var type = BuiltInRegistries.ENTITY_TYPE.getOptional(ResourceLocation.tryParse(id)).orElse(null);
-        if (type == null || !(type.create(player.level()) instanceof LivingEntity created)) return null;
+        if (shape != null && shape.id.equals(id) && shape.dummy.level == player.level) return shape.dummy;
+        var type = Registry.ENTITY_TYPE.getOptional(ResourceLocation.tryParse(id)).orElse(null);
+        if (type == null || !(type.create(player.level) instanceof LivingEntity created)) return null;
         SHAPES.put(player.getId(), new Shape(id, created));
         return created;
     }
@@ -66,7 +66,7 @@ public final class PolymorphVisuals {
         dummy.yBodyRot = player.yBodyRot; dummy.yBodyRotO = player.yBodyRotO;
         dummy.yHeadRot = player.yHeadRot; dummy.yHeadRotO = player.yHeadRotO;
         dummy.setDeltaMovement(player.getDeltaMovement());
-        dummy.setOnGround(player.onGround());
+        dummy.setOnGround(player.isOnGround());
         dummy.setInvisible(player.isInvisible());
         dummy.setSprinting(player.isSprinting());
         dummy.setShiftKeyDown(player.isShiftKeyDown());
@@ -76,7 +76,9 @@ public final class PolymorphVisuals {
         // The walk cycle advances once per client tick, not once per frame.
         if (dummy.tickCount != player.tickCount) {
             dummy.tickCount = player.tickCount;
-            dummy.walkAnimation.update(player.walkAnimation.speed(), 1);
+            dummy.animationSpeedOld = dummy.animationSpeed;
+            dummy.animationSpeed = player.animationSpeed;
+            dummy.animationPosition += dummy.animationSpeed;
         }
     }
 

@@ -47,7 +47,7 @@ public final class CastingServer {
         if (action != 7 && action != 11 && action != 12 && PolymorphManager.polymorphed(player)) return;
         if (action == 14) { MagicGear.open(player); return; }
         Session s = SESSIONS.computeIfAbsent(player.getUUID(), id -> new Session());
-        long now = player.serverLevel().getGameTime();
+        long now = player.getLevel().getGameTime();
         if (s.inputTick != now) { s.inputTick = now; s.inputsThisTick = 0; }
         if (++s.inputsThisTick > 12) return;
         if (action == 12) { if (s.channeling && s.epic == null && !s.recipe.shape().construction()) finishChannel(player, s); return; }
@@ -77,7 +77,7 @@ public final class CastingServer {
             else if (!s.formula.empty()) {
                 s.intent = Intent.values()[action - 9];
                 s.last = Formula.unpack(s.formula.packed()); s.lastCast = now;
-                s.level = player.serverLevel();
+                s.level = player.getLevel();
                 s.elapsed = 0; s.attempts = 0; s.placed = 0;
                 s.root = null; s.construction = UUID.randomUUID();
                 s.recipe = MagicStats.resolve(player, s.formula.key());
@@ -117,7 +117,7 @@ public final class CastingServer {
         var elements = s.formula.elements();
         for (int i = 0; i < elements.size() - 1; i++) lesser.add(elements.get(i));
         SpellDefinition weaker = MagicStats.resolve(player, lesser.key());
-        player.serverLevel().playSound(null,player.blockPosition(),net.minecraft.sounds.SoundEvents.FIRE_EXTINGUISH,net.minecraft.sounds.SoundSource.PLAYERS,.8f,.7f);
+        player.getLevel().playSound(null,player.blockPosition(),net.minecraft.sounds.SoundEvents.FIRE_EXTINGUISH,net.minecraft.sounds.SoundSource.PLAYERS,.8f,.7f);
         player.displayClientMessage(net.minecraft.network.chat.Component.translatable("hud.magicka.incantation_broken",weaker.displayName()),true);
         return weaker;
     }
@@ -141,25 +141,25 @@ public final class CastingServer {
         return dx*dx + dz*dz > EPIC_DRIFT*EPIC_DRIFT;
     }
     private static void breakEpic(ServerPlayer player, Session s) {
-        player.serverLevel().playSound(null,player.blockPosition(),net.minecraft.sounds.SoundEvents.FIRE_EXTINGUISH,net.minecraft.sounds.SoundSource.PLAYERS,1f,.5f);
+        player.getLevel().playSound(null,player.blockPosition(),net.minecraft.sounds.SoundEvents.FIRE_EXTINGUISH,net.minecraft.sounds.SoundSource.PLAYERS,1f,.5f);
         player.displayClientMessage(net.minecraft.network.chat.Component.translatable("hud.magicka.channel_broken"),true);
         finishChannel(player, s);
     }
     private static void deny(ServerPlayer player) {
-        player.serverLevel().playSound(null,player.blockPosition(),net.minecraft.sounds.SoundEvents.FIRE_EXTINGUISH,net.minecraft.sounds.SoundSource.PLAYERS,1f,.5f);
+        player.getLevel().playSound(null,player.blockPosition(),net.minecraft.sounds.SoundEvents.FIRE_EXTINGUISH,net.minecraft.sounds.SoundSource.PLAYERS,1f,.5f);
         player.displayClientMessage(net.minecraft.network.chat.Component.translatable("hud.magicka.epic_cramped"),true);
     }
     private static void startEpic(ServerPlayer player, Session s) {
         if (EpicMagic.cramped(player)) { deny(player); s.anchor = null; s.remaining = s.total = 0; s.formula.clear(); s.recipe = null; return; }
-        s.channeling = true; s.channelStart = player.serverLevel().getGameTime(); s.elapsed = 0;
+        s.channeling = true; s.channelStart = player.getLevel().getGameTime(); s.elapsed = 0;
         s.total = s.remaining = Mth.clamp((int)s.recipe.number("duration_ticks",240),20,1200);
         s.epic = EpicMagic.start(player, s.recipe);
         MageLevel.cast(player, s.recipe, false);
     }    public static void quickFill(ServerPlayer player,int packed){
         if(!player.isAlive() || player.isSpectator() || !GrimoireState.valid(packed))return;
-        Session s=SESSIONS.computeIfAbsent(player.getUUID(),id->new Session());long now=player.serverLevel().getGameTime();
+        Session s=SESSIONS.computeIfAbsent(player.getUUID(),id->new Session());long now=player.getLevel().getGameTime();
         if(s.committed() || now-s.lastQueue<5)return;
-        s.lastQueue=now;s.queued=spoken(Formula.unpack(packed));s.queueTicks=0;s.queueIndex=0;s.level=player.serverLevel();s.formula.clear();s.typed.setLength(0);s.enabled=true;
+        s.lastQueue=now;s.queued=spoken(Formula.unpack(packed));s.queueTicks=0;s.queueIndex=0;s.level=player.getLevel();s.formula.clear();s.typed.setLength(0);s.enabled=true;
         sync(player,s);MagicNetwork.sendToPlayer(player,new MagicNetwork.QueueState(s.queued.packed(),0));
     }
     @SubscribeEvent public void tick(TickEvent.PlayerTickEvent event) {
@@ -167,7 +167,7 @@ public final class CastingServer {
         Session s = SESSIONS.get(player.getUUID());
         if (s == null) return;
         if(s.queued!=null){
-            if(!player.isAlive() || player.isSpectator() || player.serverLevel()!=s.level){reset(player);return;}
+            if(!player.isAlive() || player.isSpectator() || player.getLevel()!=s.level){reset(player);return;}
             s.queueTicks++;
             int target=s.queueTicks/QUEUE_TICKS_PER_ELEMENT;
             while(s.queueIndex<target && s.queueIndex<s.queued.size()){
@@ -177,7 +177,7 @@ public final class CastingServer {
                 if(tooLong)MageLevel.reject(player,s.queued.size());
                 if(tooLong || ElementLocks.locked(player,element)){if(!tooLong)ElementLocks.reject(player,element);s.queued=null;s.formula.clear();s.typed.setLength(0);sync(player,s);MagicNetwork.sendToPlayer(player,new MagicNetwork.QueueState(0,0));return;}
                 s.formula.add(element);s.typed.append(element.ordinal()+1);
-                player.serverLevel().playSound(null,player.blockPosition(),net.minecraft.sounds.SoundEvents.AMETHYST_BLOCK_CHIME,net.minecraft.sounds.SoundSource.PLAYERS,.35f,.85f+s.queueIndex*.15f);
+                player.getLevel().playSound(null,player.blockPosition(),net.minecraft.sounds.SoundEvents.AMETHYST_BLOCK_CHIME,net.minecraft.sounds.SoundSource.PLAYERS,.35f,.85f+s.queueIndex*.15f);
             }
             int queued=s.queued.packed();if(s.queueIndex>=s.queued.size())s.queued=null;
             sync(player,s);MagicNetwork.sendToPlayer(player,new MagicNetwork.QueueState(s.queued==null?0:queued,s.queueTicks));return;
@@ -187,7 +187,7 @@ public final class CastingServer {
             return;
         }
         // Death/disconnect/dimension transfer end the session; controls cannot cancel a live cast.
-        if (!player.isAlive() || player.isSpectator() || player.serverLevel() != s.level) {
+        if (!player.isAlive() || player.isSpectator() || player.getLevel() != s.level) {
             reset(player); return;
         }
         s.elapsed++; s.remaining--;
@@ -223,7 +223,7 @@ public final class CastingServer {
         Session s = SESSIONS.get(player.getUUID());
         if (s == null) return new Formula();
         if (!s.formula.empty()) return Formula.unpack(s.formula.packed());
-        return s.last != null && player.serverLevel().getGameTime() - s.lastCast < 100 ? Formula.unpack(s.last.packed()) : new Formula();
+        return s.last != null && player.getLevel().getGameTime() - s.lastCast < 100 ? Formula.unpack(s.last.packed()) : new Formula();
     }
     static void dissolveLocked(ServerPlayer player) {
         Session s = SESSIONS.get(player.getUUID());

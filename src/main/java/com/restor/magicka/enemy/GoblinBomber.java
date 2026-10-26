@@ -30,7 +30,7 @@ public class GoblinBomber extends Goblin {
     private void toss(LivingEntity target) {
         GoblinBomb bomb = GoblinBomb.create(this, getEyePosition().add(0, .1, 0), 50);
         double dx = target.getX() + target.getDeltaMovement().x * 10 - getX(), dz = target.getZ() + target.getDeltaMovement().z * 10 - getZ();
-        bomb.shoot(dx, target.getY() - bomb.getY() + Math.sqrt(dx * dx + dz * dz) * .35, dz, .8f, 6 - level().getDifficulty().getId() * 1.5f);
+        bomb.shoot(dx, target.getY() - bomb.getY() + Math.sqrt(dx * dx + dz * dz) * .35, dz, .8f, 6 - level.getDifficulty().getId() * 1.5f);
         playSound(SoundEvents.WITCH_THROW, 1f, 1.3f);
     }
     private void drop() { GoblinBomb.create(this, position().add(0, .3, 0), 25); }
@@ -39,7 +39,7 @@ public class GoblinBomber extends Goblin {
         super.interrupt();
     }
     @Override public void die(DamageSource source) {
-        if (!level().isClientSide && casting() && action() == THROW) drop();
+        if (!level.isClientSide && casting() && action() == THROW) drop();
         super.die(source);
     }
     @Override protected void castTell(int remaining) {

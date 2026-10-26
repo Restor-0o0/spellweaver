@@ -3,7 +3,7 @@ package com.restor.magicka;
 import net.minecraft.util.Mth;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -22,14 +22,14 @@ import java.util.UUID;
 public final class SupportMagic {
     public static void effect(ServerPlayer caster, LivingEntity target, String id, int ticks, int strength) {
         var key = ResourceLocation.tryParse(id);
-        var effect = key == null ? null : BuiltInRegistries.MOB_EFFECT.get(key);
+        var effect = key == null ? null : Registry.MOB_EFFECT.get(key);
         if (effect == null || !effect.isBeneficial() && !EffectGraph.canHarm(caster, target)) return;
         target.addEffect(new MobEffectInstance(effect, Mth.clamp(ticks, 1, 72000), Mth.clamp(strength - 1, 0, 4)), caster);
     }
 
     private static BlockPos open(ServerPlayer caster, Vec3 point) {
         Vec3 back = caster.getEyePosition().subtract(point);
-        return BlockPos.containing(back.lengthSqr() < .01 ? point : point.add(back.normalize().scale(.45)));
+        return new BlockPos(back.lengthSqr() < .01 ? point : point.add(back.normalize().scale(.45)));
     }
 
     private static boolean place(ServerPlayer caster, BlockPos pos, BlockState state) {
@@ -37,12 +37,12 @@ public final class SupportMagic {
         while (dy < 4 && !WorldPlacement.placeBlock(caster, pos.above(dy), state, UUID.randomUUID(), pos.above(dy), true, false, null)) dy++;
         if (dy == 4) return false;
         pos = pos.above(dy);
-        caster.serverLevel().playSound(null, pos, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, .8f, 1.4f);
+        caster.getLevel().playSound(null, pos, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, .8f, 1.4f);
         return true;
     }
 
     private static BlockPos at(ServerPlayer caster, Vec3 point, double offsetY) {
-        return offsetY != 0 ? BlockPos.containing(point.add(0, offsetY, 0)) : open(caster, point);
+        return offsetY != 0 ? new BlockPos(point.add(0, offsetY, 0)) : open(caster, point);
     }
 
     public static boolean light(ServerPlayer caster, Vec3 point, double offsetY) {
@@ -58,20 +58,20 @@ public final class SupportMagic {
         int placed = 0, limit = Mth.clamp(count, 1, 16);
         for (double d = Math.min(length, spacing * .5); placed < limit; d = Math.min(length, d + spacing)) {
             boolean last = d >= length - .5;
-            if (place(caster, last ? open(caster, point) : BlockPos.containing(from.add(direction.scale(d))), MagicBlocks.LIGHT.get().defaultBlockState())) placed++;
+            if (place(caster, last ? open(caster, point) : new BlockPos(from.add(direction.scale(d))), MagicBlocks.LIGHT.get().defaultBlockState())) placed++;
             if (last) break;
         }
         return placed;
     }
 
     public static int ring(ServerPlayer caster, Vec3 point, double radius, int count) {
-        var level = caster.serverLevel();
+        var level = caster.getLevel();
         int placed = 0;
         count = Mth.clamp(count, 1, 16);
         radius = Mth.clamp(radius, 1, 32);
         for (int i = 0; i < count; i++) {
             double angle = 2 * Math.PI * i / count;
-            BlockPos column = BlockPos.containing(point.x + Math.cos(angle) * radius, point.y + 2, point.z + Math.sin(angle) * radius);
+            BlockPos column = new BlockPos(point.x + Math.cos(angle) * radius, point.y + 2, point.z + Math.sin(angle) * radius);
             for (int dy = 0; dy < 5; dy++) {
                 BlockPos pos = column.below(dy);
                 if (!level.getBlockState(pos).isAir() || level.getBlockState(pos.below()).isAir()) continue;
@@ -88,18 +88,18 @@ public final class SupportMagic {
 
     public static int reveal(ServerPlayer caster, Vec3 point, double radius, int ticks) {
         double r = Mth.clamp(radius, 1, 128);
-        var found = caster.serverLevel().getEntitiesOfClass(LivingEntity.class, new AABB(point, point).inflate(r),
+        var found = caster.getLevel().getEntitiesOfClass(LivingEntity.class, new AABB(point, point).inflate(r),
                 e -> e != caster && e.isAlive() && !e.isSpectator() && e.distanceToSqr(point) <= r * r && EffectGraph.canHarm(caster, e));
         for (var entity : found) entity.addEffect(new MobEffectInstance(MobEffects.GLOWING, Mth.clamp(ticks, 20, 6000), 0, false, false), caster);
-        caster.serverLevel().sendParticles(ParticleTypes.FLASH, point.x, point.y + 1, point.z, 1, 0, 0, 0, 0);
-        caster.serverLevel().playSound(null, BlockPos.containing(point), SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, .6f, 1.8f);
+        caster.getLevel().sendParticles(ParticleTypes.FLASH, point.x, point.y + 1, point.z, 1, 0, 0, 0, 0);
+        caster.getLevel().playSound(null, new BlockPos(point), SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, .6f, 1.8f);
         return found.size();
     }
 
     public static int extinguish(ServerPlayer caster, Vec3 point, double radius) {
-        var level = caster.serverLevel();
+        var level = caster.getLevel();
         int r = Mth.clamp((int) Math.ceil(radius), 1, 32), doused = 0;
-        BlockPos center = BlockPos.containing(point);
+        BlockPos center = new BlockPos(point);
         for (BlockPos p : BlockPos.betweenClosed(center.offset(-r, -r, -r), center.offset(r, r, r))) {
             if (p.distToCenterSqr(point) > radius * radius || !level.hasChunkAt(p)) continue;
             BlockPos pos = p.immutable();

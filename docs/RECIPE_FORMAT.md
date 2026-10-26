@@ -1,6 +1,6 @@
 # Формат рецепта
 
-Minecraft 1.20.1 datapack:
+Minecraft 1.19.2 datapack:
 
 ```text
 my_spells/

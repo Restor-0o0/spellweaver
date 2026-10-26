@@ -9,7 +9,7 @@ import com.restor.magicka.Magicka;
 import com.restor.magicka.MagicNetwork;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import com.restor.magicka.client.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
@@ -205,7 +205,7 @@ public final class MagicClient {
             event.enqueueWork(() -> net.minecraft.client.gui.screens.MenuScreens.register(com.restor.magicka.GearMenu.TYPE.get(), GearScreen::new));
         }
         @SubscribeEvent public static void layers(RegisterGuiOverlaysEvent event) {
-            event.registerAboveAll("casting", (gui, graphics, partial, width, height) -> MagicHud.render(graphics, Math.max(gui.leftHeight, gui.rightHeight)));
+            event.registerAboveAll("casting", (gui, graphics, partial, width, height) -> MagicHud.render(new GuiGraphics(graphics), Math.max(gui.leftHeight, gui.rightHeight)));
         }
     }
     private MagicClient() {}

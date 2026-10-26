@@ -4,7 +4,7 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -36,7 +36,7 @@ public final class UndeadMinions {
     public static int summon(ServerPlayer owner, Vec3 point, String id, int count, int ticks) { return summon(owner, point, id, count, ticks, 1); }
 
     public static int summon(ServerPlayer owner, Vec3 point, String id, int count, int ticks, double health) {
-        var type = BuiltInRegistries.ENTITY_TYPE.getOptional(ResourceLocation.tryParse(id)).orElse(EntityType.ZOMBIE);
+        var type = Registry.ENTITY_TYPE.getOptional(ResourceLocation.tryParse(id)).orElse(EntityType.ZOMBIE);
         int spawned = 0;
         for (int i = 0; i < Mth.clamp(count, 1, 128); i++) if (spawn(owner, type, point, i, ticks, health)) spawned++;
         return spawned;
@@ -45,7 +45,7 @@ public final class UndeadMinions {
     public static boolean spawn(ServerPlayer owner, EntityType<?> type, Vec3 point, int index, int ticks) { return spawn(owner, type, point, index, ticks, 1); }
 
     public static boolean spawn(ServerPlayer owner, EntityType<?> type, Vec3 point, int index, int ticks, double health) {
-        ServerLevel level = owner.serverLevel();
+        ServerLevel level = owner.getLevel();
         Entity created = type.create(level);
         if (!(created instanceof Mob mob) || !(created instanceof Enemy) || type == EntityType.WITHER || type == EntityType.ENDER_DRAGON || type == EntityType.WARDEN) {
             if (created != null) created.discard();
@@ -53,7 +53,7 @@ public final class UndeadMinions {
             return spawn(owner, EntityType.ZOMBIE, point, index, ticks, health);
         }
         Vec3 at = place(level, mob, point, index);
-        if (at == null || !WorldPlacement.allowed(owner, BlockPos.containing(at))) { mob.discard(); return false; }
+        if (at == null || !WorldPlacement.allowed(owner, new BlockPos(at))) { mob.discard(); return false; }
         mob.moveTo(at.x, at.y - mob.getBbHeight(), at.z, owner.getYRot() + index * 45, 0);
         mob.finalizeSpawn(level, level.getCurrentDifficultyAt(mob.blockPosition()), MobSpawnType.MOB_SUMMONED, null, null);
         if (mob.getVehicle() != null) { Entity vehicle = mob.getVehicle(); mob.stopRiding(); vehicle.discard(); }
@@ -83,7 +83,7 @@ public final class UndeadMinions {
         for (int attempt = 0; attempt < 16; attempt++) {
             double angle = index * 2.39996 + attempt * 1.13 + level.random.nextDouble() * .7;
             double distance = 1.3 + (index % 6) * .45 + level.random.nextDouble() * .9;
-            BlockPos column = BlockPos.containing(point.x + Math.cos(angle) * distance, point.y + 1, point.z + Math.sin(angle) * distance);
+            BlockPos column = new BlockPos(point.x + Math.cos(angle) * distance, point.y + 1, point.z + Math.sin(angle) * distance);
             for (int dy = 0; dy < 5; dy++) {
                 BlockPos feet = column.below(dy);
                 if (!level.hasChunkAt(feet) || level.getBlockState(feet.below()).getCollisionShape(level, feet.below()).isEmpty()) continue;
@@ -96,7 +96,7 @@ public final class UndeadMinions {
     }
 
     private static boolean taken(BlockPos feet) {
-        return MINIONS.values().stream().anyMatch(m -> m.mob.isAlive() && (RISING.containsKey(m.mob) ? BlockPos.containing(RISING.get(m.mob)) : m.mob.blockPosition()).equals(feet));
+        return MINIONS.values().stream().anyMatch(m -> m.mob.isAlive() && (RISING.containsKey(m.mob) ? new BlockPos(RISING.get(m.mob)) : m.mob.blockPosition()).equals(feet));
     }
 
     private static void trim(ServerPlayer owner) {
@@ -105,11 +105,11 @@ public final class UndeadMinions {
     }
 
     private static void rise(Mob mob, Vec3 at) {
-        ServerLevel level = (ServerLevel) mob.level();
+        ServerLevel level = (ServerLevel) mob.level;
         if (mob.position().subtract(at).horizontalDistanceSqr() > 1) at = new Vec3(mob.getX(), mob.getY() + mob.getBbHeight(), mob.getZ());
         double y = Math.min(at.y, mob.getY() + mob.getBbHeight() / RISE_TICKS);
         mob.setPos(at.x, y, at.z);
-        var ground = level.getBlockState(BlockPos.containing(at).below());
+        var ground = level.getBlockState(new BlockPos(at).below());
         if (!ground.isAir()) level.sendParticles(new net.minecraft.core.particles.BlockParticleOption(ParticleTypes.BLOCK, ground), at.x, at.y + .1, at.z, 6, .3, .05, .3, .1);
         if (y < at.y) return;
         RISING.remove(mob);
@@ -121,7 +121,7 @@ public final class UndeadMinions {
     private static void vanish(Mob mob) {
         RISING.remove(mob);
         MINIONS.remove(mob.getUUID());
-        if (mob.level() instanceof ServerLevel level && mob.isAlive())
+        if (mob.level instanceof ServerLevel level && mob.isAlive())
             level.sendParticles(ParticleTypes.SOUL, mob.getX(), mob.getY() + .8, mob.getZ(), 12, .3, .5, .3, .03);
         mob.discard();
     }
@@ -166,14 +166,14 @@ public final class UndeadMinions {
             Mob mob = minion.mob;
             ServerPlayer owner = minion.owner;
             if (!mob.isAlive() || mob.isRemoved()) { MINIONS.remove(mob.getUUID()); continue; }
-            if (owner.isRemoved() || (!owner.isAlive() && !MagicGear.has(owner, MagicGear.Trait.GRAVE_BELL)) || owner.level() != mob.level() || mob.level().getGameTime() >= minion.until) { vanish(mob); continue; }
+            if (owner.isRemoved() || (!owner.isAlive() && !MagicGear.has(owner, MagicGear.Trait.GRAVE_BELL)) || owner.level != mob.level || mob.level.getGameTime() >= minion.until) { vanish(mob); continue; }
             if (RISING.containsKey(mob)) { if (mob.distanceToSqr(owner) > 32 * 32) vanish(mob); continue; }
             if (mob.getTarget() != null && !allowed(minion, mob.getTarget())) mob.setTarget(null);
             if (mob.getTarget() == null) {
                 LivingEntity next = owner.getLastHurtByMob();
                 if (next == null || !allowed(minion, next) || next.distanceToSqr(mob) > 32 * 32) next = owner.getLastHurtMob();
                 if (next == null || !allowed(minion, next) || next.distanceToSqr(mob) > 32 * 32)
-                    next = mob.level().getEntitiesOfClass(LivingEntity.class, new AABB(mob.blockPosition()).inflate(14), e -> e instanceof Enemy && allowed(minion, e) && mob.hasLineOfSight(e))
+                    next = mob.level.getEntitiesOfClass(LivingEntity.class, new AABB(mob.blockPosition()).inflate(14), e -> e instanceof Enemy && allowed(minion, e) && mob.hasLineOfSight(e))
                             .stream().min(Comparator.comparingDouble(e -> e.distanceToSqr(mob))).orElse(null);
                 if (next != null) mob.setTarget(next);
             }

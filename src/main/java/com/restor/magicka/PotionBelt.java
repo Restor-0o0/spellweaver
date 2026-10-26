@@ -46,13 +46,13 @@ public final class PotionBelt {
         }
         CastingServer.clearFormula(player);
         DRINKING.put(player.getUUID(), new Drink(slot, DRINK_TICKS));
-        player.level().playSound(null, player.blockPosition(), SoundEvents.GENERIC_DRINK, SoundSource.PLAYERS, .6f, 1.1f);
+        player.level.playSound(null, player.blockPosition(), SoundEvents.GENERIC_DRINK, SoundSource.PLAYERS, .6f, 1.1f);
     }
 
     private static void finish(ServerPlayer player, int slot) {
         ItemStack stack = MagicGear.belt(player, slot);
         if (!accepts(stack)) return;
-        ItemStack rest = stack.copyWithCount(1).finishUsingItem(player.level(), player);
+        ItemStack rest = net.minecraftforge.items.ItemHandlerHelper.copyStackWithSize(stack, 1).finishUsingItem(player.level, player);
         if (player.getAbilities().instabuild) return;
         stack.shrink(1);
         MagicGear.setBelt(player, slot, stack);

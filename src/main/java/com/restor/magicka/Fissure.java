@@ -16,14 +16,14 @@ final class Fissure {
     static boolean handles(SpellDefinition s) { return s.delivery().has("fissure"); }
 
     static void open(ServerPlayer p, SpellDefinition s, Vec3 point) {
-        ServerLevel level = p.serverLevel();
+        ServerLevel level = p.getLevel();
         Vec3 dir = new Vec3(p.getLookAngle().x, 0, p.getLookAngle().z);
         dir = dir.lengthSqr() < 1e-4 ? Vec3.directionFromRotation(0, p.getYRot()) : dir.normalize();
-        BlockPos center = surface(level, BlockPos.containing(point));
+        BlockPos center = surface(level, new BlockPos(point));
         int half = (int) Mth.clamp(s.number("radius", 3), 1, 8), depth = (int) Mth.clamp(s.number("fissure_depth", 2), 1, 4);
         List<BlockPos> line = new ArrayList<>();
         for (int i = 0; i <= half; i++) for (int sign : i == 0 ? new int[]{1} : new int[]{1, -1}) {
-            BlockPos column = BlockPos.containing(center.getX() + .5 + dir.x * i * sign, center.getY(), center.getZ() + .5 + dir.z * i * sign);
+            BlockPos column = new BlockPos(center.getX() + .5 + dir.x * i * sign, center.getY(), center.getZ() + .5 + dir.z * i * sign);
             if (!line.contains(column)) line.add(surface(level, column));
         }
         level.playSound(null, center, SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 1f, .6f);
@@ -44,7 +44,7 @@ final class Fissure {
     }
 
     private static void crack(ServerPlayer p, BlockPos top, int depth) {
-        ServerLevel level = p.serverLevel();
+        ServerLevel level = p.getLevel();
         BlockPos bottom = top;
         for (int d = 1; d <= depth; d++) {
             BlockPos at = top.below(d);

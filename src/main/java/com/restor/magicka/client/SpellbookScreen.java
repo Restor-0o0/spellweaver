@@ -1,9 +1,9 @@
 package com.restor.magicka.client;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.restor.magicka.MagicNetwork;
 import net.minecraft.util.Mth;
 import com.restor.magicka.*;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
@@ -61,7 +61,7 @@ public final class SpellbookScreen extends Screen {
     }
     @Override public void tick(){
         if(catalogRevision!=RecipeRegistry.clientRevision()){catalogRevision=RecipeRegistry.clientRevision();rebuild(search!=null && search.isFocused());}
-        if(stats && shownStats!=MagicNetwork.clientStats && !(getFocused() instanceof EditBox && getFocused().isFocused()) && !(getFocused() instanceof StatSlider && isDragging()))rebuild(false);
+        if(stats && shownStats!=MagicNetwork.clientStats && !(getFocused() instanceof EditBox e && e.isFocused()) && !(getFocused() instanceof StatSlider && isDragging()))rebuild(false);
     }
     public void showStats(boolean show){stats=show;guide=false;rebuild(false);}
     private static void sendStat(int index,int value){
@@ -85,7 +85,7 @@ public final class SpellbookScreen extends Screen {
             box.setMaxLength(5);box.setFilter(t->t.matches("\\d*"));box.setValue(Integer.toString(MagicNetwork.clientStats[stat.ordinal()]));
             box.setResponder(t->{if(t.isEmpty())return;int value=stat.clamp(Integer.parseInt(t));slider.show(value);sendStat(stat.ordinal(),value);});
             addRenderableWidget(slider);addRenderableWidget(box);
-            addRenderableWidget(new BookButton(rx+columnWidth-resetWidth-4,ry,resetWidth,15,Component.translatable("book.magicka.stats.reset"),b->{sendStat(stat.ordinal(),MagicStats.DEFAULT);rebuild(false);},false)).setTooltip(net.minecraft.client.gui.components.Tooltip.create(Component.translatable("book.magicka.stats.reset.tip")));
+            addRenderableWidget(new BookButton(rx+columnWidth-resetWidth-4,ry,resetWidth,15,Component.translatable("book.magicka.stats.reset"),b->{sendStat(stat.ordinal(),MagicStats.DEFAULT);rebuild(false);},false)).setTooltip((Component.translatable("book.magicka.stats.reset.tip")));
         }
     }
     private void rebuild(boolean focus){
@@ -102,10 +102,10 @@ public final class SpellbookScreen extends Screen {
             addRenderableWidget(new BookButton(x+12+i*(filterWidth/6),y+72,filterWidth/6-2,16,
                     i==0?Component.translatable("book.magicka.filter.any"):Component.literal(Integer.toString(i)),
                     b->{size=value;page=selected=scroll=0;rebuild(false);},size==value))
-                    .setTooltip(net.minecraft.client.gui.components.Tooltip.create(i==0?Component.translatable("book.magicka.filter.any.tip"):Component.translatable("book.magicka.filter.points",i)));}
+                    .setTooltip((i==0?Component.translatable("book.magicka.filter.any.tip"):Component.translatable("book.magicka.filter.points",i)));}
         search=new EditBox(font,x+13,y+92,divider-x-25,16,Component.translatable("book.magicka.search"));
-        search.setMaxLength(100);search.setValue(query);search.setHint(Component.translatable("book.magicka.search"));
-        search.setResponder(value->{query=value;page=selected=scroll=0;rebuild(true);});addRenderableWidget(search);if(focus)setFocused(search);
+        search.setMaxLength(100);search.setValue(query);search.setSuggestion(query.isEmpty()?Component.translatable("book.magicka.search").getString():null);
+        search.setResponder(value->{query=value;search.setSuggestion(value.isEmpty()?Component.translatable("book.magicka.search").getString():null);page=selected=scroll=0;rebuild(true);});addRenderableWidget(search);if(focus)setFocused(search);
         addRenderableWidget(new BookButton(x+bookWidth-28,y+10,16,16,Component.literal("×"),b->onClose(),false));
         addRenderableWidget(new BookButton(x+bookWidth-48,y+10,16,16,Component.literal("?"),b->{guide=true;scroll=0;},false));
         addRenderableWidget(new BookButton(x+bookWidth-150,y+10,98,16,Component.translatable("book.magicka.stats"),b->showStats(true),false));
@@ -118,7 +118,7 @@ public final class SpellbookScreen extends Screen {
         var next=addRenderableWidget(new BookButton(divider-34,y+bookHeight-65,23,16,Component.literal(">"),b->{page++;selected=page*rows;scroll=0;rebuild(false);},false));
         prev.active=page>0;next.active=(page+1)*rows<list.size();
     }
-    @Override public void render(GuiGraphics g,int mouseX,int mouseY,float partialTick){
+    @Override public void render(PoseStack pose,int mouseX,int mouseY,float partialTick){var g=new GuiGraphics(pose);
         g.fill(0,0,width,height,0xB810101B);MagicUi.panel(g,x-3,y-3,bookWidth+6,bookHeight+6);
         g.fill(x+4,y+4,x+bookWidth-4,y+bookHeight-4,0xFFDDCBA7);
         g.fill(x+7,y+7,divider-3,y+bookHeight-7,0xFFEADBB8);g.fill(divider+4,y+7,x+bookWidth-7,y+bookHeight-7,0xFFF1E4C8);
@@ -160,7 +160,7 @@ public final class SpellbookScreen extends Screen {
             String label=packed==0?Component.translatable("book.magicka.assign").getString():MagicClient.spell(Formula.unpack(packed).key()).displayName().getString();
             MagicUi.small(g,Component.literal(font.plainSubstrByWidth(label,(int)((sw-8)/.75))),sx+4,sy+17,0xFFF1E4C8);
         }
-        super.render(g,mouseX,mouseY,partialTick);
+        super.render(g.pose(),mouseX,mouseY,partialTick);BookButton.renderTips(this,g,mouseX,mouseY);
         if(dragging && dragFormula!=0){g.pose().pushPose();g.pose().translate(0,0,400);var f=Formula.unpack(dragFormula);for(int i=0;i<f.size();i++)MagicUi.socket(g,f.elements().get(i),mouseX+5+i*26,mouseY-12,true);g.pose().popPose();}
         else for(int i=0;i<4;i++)if(mouseX>=slotX(i) && mouseX<slotX(i)+slotWidth() && mouseY>=y+bookHeight-40 && mouseY<y+bookHeight-11)
             g.renderTooltip(font,Component.translatable("book.magicka.quick_help"),mouseX,mouseY);
@@ -176,7 +176,7 @@ public final class SpellbookScreen extends Screen {
             if(font.width(label)<=row.labelWidth-4)g.drawString(font,label,row.x,row.y+4,color,false);
             else MagicUi.small(g,Component.literal(font.plainSubstrByWidth(label.getString(),(int)((row.labelWidth-4)/.75))),row.x,row.y+5,color);
         }
-        super.render(g,mouseX,mouseY,partialTick);
+        super.render(g.pose(),mouseX,mouseY,partialTick);BookButton.renderTips(this,g,mouseX,mouseY);
         for(var row:statRows)if(mouseX>=row.x && mouseX<row.x+row.labelWidth && mouseY>=row.y && mouseY<row.y+18){
             g.renderTooltip(font,font.split(Component.translatable("book.magicka.stat."+row.stat.key()+".desc",row.stat.min,row.stat.max),220),mouseX,mouseY);
         }
@@ -226,37 +226,44 @@ public final class SpellbookScreen extends Screen {
         @Override protected void updateMessage(){setMessage(Component.literal(current()+"%"));}
         @Override protected void applyValue(){if(box!=null){box.setResponder(t->{});box.setValue(Integer.toString(current()));box.setResponder(t->{if(t.isEmpty())return;int v=stat.clamp(Integer.parseInt(t));show(v);sendStat(stat.ordinal(),v);});}}
         @Override public void onRelease(double mouseX,double mouseY){super.onRelease(mouseX,mouseY);sendStat(stat.ordinal(),current());}
-        @Override public void renderWidget(GuiGraphics g,int mouseX,int mouseY,float partialTick){
-            g.fill(getX(),getY()+6,getX()+width,getY()+10,0xFFA58B64);
-            g.fill(getX()+width/2,getY()+3,getX()+width/2+1,getY()+13,0xFF6C533C);
-            int knob=getX()+(int)(value*(width-8));
-            g.fill(getX(),getY()+6,knob+4,getY()+10,0xFF7A4E8C);
-            g.fill(knob,getY()+1,knob+8,getY()+15,isHoveredOrFocused()?0xFFE1C995:0xFFCDB68D);g.renderOutline(knob,getY()+1,8,14,0xFF4C3D50);
-            if(isHovered())g.drawCenteredString(net.minecraft.client.Minecraft.getInstance().font,getMessage(),getX()+width/2,getY()-8,MagicUi.GOLD);
+        @Override public void renderButton(PoseStack pose,int mouseX,int mouseY,float partialTick){var g=new GuiGraphics(pose);
+            g.fill(x,y+6,x+width,y+10,0xFFA58B64);
+            g.fill(x+width/2,y+3,x+width/2+1,y+13,0xFF6C533C);
+            int knob=x+(int)(value*(width-8));
+            g.fill(x,y+6,knob+4,y+10,0xFF7A4E8C);
+            g.fill(knob,y+1,knob+8,y+15,isHoveredOrFocused()?0xFFE1C995:0xFFCDB68D);g.renderOutline(knob,y+1,8,14,0xFF4C3D50);
+            if(isHovered)g.drawCenteredString(net.minecraft.client.Minecraft.getInstance().font,getMessage(),x+width/2,y-8,MagicUi.GOLD);
         }
     }
     private static final class ElementButton extends Button {
-        private final Element element;private final boolean on;
+        private final Element element;private final boolean on;private final Component tip;
         ElementButton(int x,int y,int width,int height,Element element,boolean on,OnPress press){
-            super(x,y,width,height,Component.translatable(element.key()),press,DEFAULT_NARRATION);
-            this.element=element;this.on=on;setTooltip(net.minecraft.client.gui.components.Tooltip.create(Component.translatable(element.key())));
+            super(x,y,width,height,Component.translatable(element.key()),press);
+            this.element=element;this.on=on;this.tip=Component.translatable(element.key());
         }
-        @Override protected void renderWidget(GuiGraphics g,int mouseX,int mouseY,float partialTick){
-            g.fill(getX(),getY(),getX()+width,getY()+height,on?0xFF4C3D50:isHoveredOrFocused()?0xFFE1C995:0xFFCDB68D);
-            g.renderOutline(getX(),getY(),width,height,on?0xFFFFEAC1:0xFFA58B64);
-            int inset=on?3:4;g.fill(getX()+inset,getY()+inset,getX()+width-inset,getY()+height-inset,element.color);
+        @Override public void renderButton(PoseStack pose,int mouseX,int mouseY,float partialTick){var g=new GuiGraphics(pose);
+            g.fill(x,y,x+width,y+height,on?0xFF4C3D50:isHoveredOrFocused()?0xFFE1C995:0xFFCDB68D);
+            g.renderOutline(x,y,width,height,on?0xFFFFEAC1:0xFFA58B64);
+            int inset=on?3:4;g.fill(x+inset,y+inset,x+width-inset,y+height-inset,element.color);
         }
     }
     static final class BookButton extends Button {
-        private final boolean selected;
-        BookButton(int x,int y,int width,int height,Component label,OnPress press,boolean selected){super(x,y,width,height,label,press,DEFAULT_NARRATION);this.selected=selected;}
-        @Override protected void renderWidget(GuiGraphics g,int mouseX,int mouseY,float partialTick){
+        private final boolean selected;private Component tip;
+        BookButton setTooltip(Component tip){this.tip=tip;return this;}
+        static void renderTips(net.minecraft.client.gui.screens.Screen screen,GuiGraphics g,int mouseX,int mouseY){
+            for(var child:screen.children()){
+                Component tip=child instanceof BookButton b && b.isMouseOver(mouseX,mouseY)?b.tip:child instanceof ElementButton e && e.isMouseOver(mouseX,mouseY)?e.tip:null;
+                if(tip!=null){g.renderTooltip(net.minecraft.client.Minecraft.getInstance().font,tip,mouseX,mouseY);return;}
+            }
+        }
+        BookButton(int x,int y,int width,int height,Component label,OnPress press,boolean selected){super(x,y,width,height,label,press);this.selected=selected;}
+        @Override public void renderButton(PoseStack pose,int mouseX,int mouseY,float partialTick){var g=new GuiGraphics(pose);
             int bg=selected?0xFF4C3D50:isHoveredOrFocused() && active?0xFFE1C995:0xFFCDB68D;
-            g.fill(getX(),getY(),getX()+width,getY()+height,bg);g.renderOutline(getX(),getY(),width,height,selected?0xFFAB8957:0xFFA58B64);
+            g.fill(x,y,x+width,y+height,bg);g.renderOutline(x,y,width,height,selected?0xFFAB8957:0xFFA58B64);
             var font=net.minecraft.client.Minecraft.getInstance().font;Component label=getMessage();
-            if(font.width(label)>width-8 && font.width(label)*.75<=width-8){MagicUi.small(g,label,getX()+4,getY()+(height-6)/2,!active?0xFF9B896F:selected?0xFFFFEAC1:MagicUi.INK);return;}
+            if(font.width(label)>width-8 && font.width(label)*.75<=width-8){MagicUi.small(g,label,x+4,y+(height-6)/2,!active?0xFF9B896F:selected?0xFFFFEAC1:MagicUi.INK);return;}
             if(font.width(label)>width-8)label=Component.literal(font.plainSubstrByWidth(label.getString(),width-15)+"…");
-            g.drawString(font,label,getX()+4,getY()+(height-8)/2,!active?0xFF9B896F:selected?0xFFFFEAC1:MagicUi.INK,false);
+            g.drawString(font,label,x+4,y+(height-8)/2,!active?0xFF9B896F:selected?0xFFFFEAC1:MagicUi.INK,false);
         }
     }
 }

@@ -1,6 +1,6 @@
 package com.restor.magicka;
 
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.Registry;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -14,7 +14,7 @@ import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 
 public final class GearMenu extends AbstractContainerMenu {
-    public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(Registries.MENU, Magicka.ID);
+    public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(Registry.MENU_REGISTRY, Magicka.ID);
     public static final RegistryObject<MenuType<GearMenu>> TYPE = MENUS.register("loadout",
             () -> net.minecraftforge.common.extensions.IForgeMenuType.create((id, inventory, buffer) -> new GearMenu(id, inventory, new SimpleContainer(MagicGear.MENU_SIZE))));
 

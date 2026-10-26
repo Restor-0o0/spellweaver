@@ -1,6 +1,6 @@
 package com.restor.magicka;
 
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.tags.TagKey;
@@ -16,7 +16,7 @@ public final class MobResistances {
 
     private static Map<Element, TagKey<EntityType<?>>> tags(String kind) {
         var map = new EnumMap<Element, TagKey<EntityType<?>>>(Element.class);
-        for (Element e : Element.values()) map.put(e, TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(Magicka.ID, kind + "/" + e.name().toLowerCase(Locale.ROOT))));
+        for (Element e : Element.values()) map.put(e, TagKey.create(Registry.ENTITY_TYPE_REGISTRY, new ResourceLocation(Magicka.ID, kind + "/" + e.name().toLowerCase(Locale.ROOT))));
         return map;
     }
 

@@ -2,18 +2,16 @@ package com.restor.magicka;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.UnaryOperator;
@@ -23,7 +21,7 @@ import static com.restor.magicka.GearItem.Kind.*;
 import static com.restor.magicka.MagicStats.Stat.*;
 
 public final class MagicItems {
-    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(Registries.ITEM, Magicka.ID);
+    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(Registry.ITEM_REGISTRY, Magicka.ID);
     public static final RegistryObject<Item> SPELLBOOK = ITEMS.register("spellbook", () -> new Item(new Item.Properties().stacksTo(1)));
     public static final RegistryObject<SpellScrollItem> SPELL_SCROLL = ITEMS.register("spell_scroll",
             () -> new SpellScrollItem(new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.RARE)));
@@ -211,7 +209,7 @@ public final class MagicItems {
     public static final RegistryObject<GearItem> CAMP_KIT = gear("camp_kit", TOOL, COMMON, b -> b
             .action(600, player -> {
                 SupportMagic.ring(player, player.position(), 3, 6);
-                player.level().getEntitiesOfClass(net.minecraft.world.entity.LivingEntity.class, player.getBoundingBox().inflate(6))
+                player.level.getEntitiesOfClass(net.minecraft.world.entity.LivingEntity.class, player.getBoundingBox().inflate(6))
                         .forEach(target -> MagicStatuses.apply(target, MagicStatuses.Status.REGENERATING, 400, 1));
             }));
     public static final RegistryObject<GearItem> REINFORCEMENT_TOOL = gear("reinforcement_tool", TOOL, UNCOMMON, b -> b
@@ -219,26 +217,20 @@ public final class MagicItems {
     public static final RegistryObject<GearItem> INGREDIENT_CASE = gear("ingredient_case", TOOL, COMMON, b -> b
             .stat(DURATION, 20).stat(CAST_SPEED, 5));
 
-    public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Magicka.ID);
-    public static final RegistryObject<CreativeModeTab> TAB = TABS.register("magicka", () -> CreativeModeTab.builder()
-            .title(Component.translatable("itemGroup.magicka"))
-            .icon(() -> new ItemStack(SPELLBOOK.get()))
-            .displayItems((parameters, output) -> {
-                output.accept(SPELLBOOK.get());
-                for (GearItem.Kind kind : GearItem.Kind.values())
-                    GEAR.stream().map(RegistryObject::get).filter(item -> item.kind == kind).forEach(output::accept);
-                CHARMS.forEach(charm -> output.accept(charm.get()));
-                MagicPotions.ALL.values().forEach(potion -> output.accept(MagicPotions.stack(net.minecraft.world.item.Items.POTION, potion.get())));
-                RecipeRegistry.baseRecipes().stream().filter(SpellScrolls::locked).sorted(java.util.Comparator.comparing(spell -> spell.id().toString()))
-                        .forEach(spell -> output.accept(SpellScrollItem.of(spell)));
-                com.restor.magicka.enemy.MagicEnemies.EGGS.forEach(egg -> output.accept(egg.get()));
-            })
-            .build());
+    public static final CreativeModeTab TAB = new CreativeModeTab(Magicka.ID) {
+        @Override public ItemStack makeIcon() { return new ItemStack(SPELLBOOK.get()); }
+        @Override public void fillItemList(net.minecraft.core.NonNullList<ItemStack> items) {
+            items.add(new ItemStack(SPELLBOOK.get()));
+            for (GearItem.Kind kind : GearItem.Kind.values())
+                GEAR.stream().map(RegistryObject::get).filter(item -> item.kind == kind).forEach(item -> items.add(new ItemStack(item)));
+            CHARMS.forEach(charm -> items.add(new ItemStack(charm.get())));
+            MagicPotions.ALL.values().forEach(potion -> items.add(MagicPotions.stack(net.minecraft.world.item.Items.POTION, potion.get())));
+            RecipeRegistry.baseRecipes().stream().filter(SpellScrolls::locked).sorted(java.util.Comparator.comparing(spell -> spell.id().toString()))
+                    .forEach(spell -> items.add(SpellScrollItem.of(spell)));
+            com.restor.magicka.enemy.MagicEnemies.EGGS.forEach(egg -> items.add(new ItemStack(egg.get())));
+        }
+    };
 
-    public static void creative(BuildCreativeModeTabContentsEvent event) {
-        if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) event.accept(SPELLBOOK);
-        if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS) com.restor.magicka.enemy.MagicEnemies.EGGS.forEach(event::accept);
-    }
     public static List<RegistryObject<GearItem>> gear() { return List.copyOf(GEAR); }
     public static List<RegistryObject<CharmItem>> charms() { return List.copyOf(CHARMS); }
     private MagicItems() {}

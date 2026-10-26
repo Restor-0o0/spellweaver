@@ -5,7 +5,7 @@ import net.minecraftforge.event.TickEvent;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.core.Holder;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -194,7 +194,7 @@ public final class MagicGear {
     }
     public static Element adapted(Player player) {
         Adaptation adaptation = ADAPTED.get(player.getUUID());
-        return adaptation != null && adaptation.until > player.level().getGameTime() ? adaptation.element : null;
+        return adaptation != null && adaptation.until > player.level.getGameTime() ? adaptation.element : null;
     }
     public static boolean has(Player player, Trait trait) { return profile(player).traits.contains(trait); }
     public static double castBias(Player player, int size) {
@@ -272,7 +272,7 @@ public final class MagicGear {
             return;
         }
         if (!profile.traits.contains(Trait.MIRROR_PRISM)) return;
-        long now = player.serverLevel().getGameTime();
+        long now = player.getLevel().getGameTime();
         if (now - ECHOES.getOrDefault(player.getUUID(), -1000L) < 100) return;
         ECHOES.put(player.getUUID(), now);
         echo(player, recipe, self);
@@ -286,7 +286,7 @@ public final class MagicGear {
     public static int share(ServerPlayer player, SpellDefinition recipe) {
         if (recipe.selfEffects().isEmpty()) return 0;
         int shared = 0;
-        for (LivingEntity ally : player.level().getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(3),
+        for (LivingEntity ally : player.level.getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(3),
                 e -> e != player && e.isAlive() && EffectGraph.ally(player, e))) {
             EffectGraph.entity(player, ally, recipe, recipe.selfEffects(), player.position(), true);
             shared++;
@@ -306,7 +306,7 @@ public final class MagicGear {
         if (profile.traits.contains(Trait.DESPERATE_MENDING) && caster.getHealth() < caster.getMaxHealth() * .4f) amount *= 2;
         if (target == caster) return profile.traits.contains(Trait.GLASS_HEART) ? amount * 1.5f : amount;
         if (!profile.traits.contains(Trait.BLOOD_FOCUS)) return amount;
-        caster.hurt(caster.damageSources().magic(), amount * .3f);
+        caster.hurt(net.minecraft.world.damagesource.DamageSource.MAGIC, amount * .3f);
         return amount * 1.6f;
     }
 
@@ -343,7 +343,7 @@ public final class MagicGear {
     }
 
     private static ResourceLocation modifier(Attribute holder, AttributeModifier.Operation operation) {
-        ResourceLocation key = BuiltInRegistries.ATTRIBUTE.getKey(holder);
+        ResourceLocation key = Registry.ATTRIBUTE.getKey(holder);
         return new ResourceLocation(Magicka.ID,
                 "gear/" + (key == null ? "unknown" : key.getPath()) + "/" + operation.name().toLowerCase(Locale.ROOT));
     }
@@ -351,7 +351,7 @@ public final class MagicGear {
     @SubscribeEvent public void tick(TickEvent.PlayerTickEvent event) {
         if (event.phase != TickEvent.Phase.END || !(event.player instanceof ServerPlayer player) || player.tickCount % 60 != 0) return;
         Adaptation adaptation = ADAPTED.get(player.getUUID());
-        if (adaptation != null && adaptation.until <= player.level().getGameTime()) {
+        if (adaptation != null && adaptation.until <= player.level.getGameTime()) {
             ADAPTED.remove(player.getUUID());
             MagicStats.invalidate(player);
         }
@@ -362,7 +362,7 @@ public final class MagicGear {
     @SubscribeEvent public void hurt(LivingHurtEvent event) {
         event.setAmount(MagicPotions.ward(event.getEntity(), element(event.getSource()), event.getAmount()));
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
-        if (event.getSource().is(net.minecraft.tags.DamageTypeTags.IS_FIRE) && has(player, Trait.FIRE_FRAIL))
+        if (event.getSource().isFire() && has(player, Trait.FIRE_FRAIL))
             event.setAmount(event.getAmount() * 1.5f);
         event.setAmount(adapt(player, element(event.getSource()), event.getAmount()));
     }
@@ -370,7 +370,7 @@ public final class MagicGear {
     public static float adapt(ServerPlayer player, Element element, float amount) {
         if (element == null || !has(player, Trait.ADAPTATION)) return amount;
         Element previous = adapted(player);
-        ADAPTED.put(player.getUUID(), new Adaptation(element, player.level().getGameTime() + ADAPT_TICKS));
+        ADAPTED.put(player.getUUID(), new Adaptation(element, player.level.getGameTime() + ADAPT_TICKS));
         if (previous != element) MagicStats.invalidate(player);
         return previous == element ? amount * .7f : amount;
     }
@@ -383,12 +383,12 @@ public final class MagicGear {
                 if (lead == null || spell.formula().count(element) > spell.formula().count(lead)) lead = element;
             return lead;
         }
-        if (source.is(net.minecraft.tags.DamageTypeTags.IS_FIRE)) return Element.FIRE;
-        if (source.is(net.minecraft.tags.DamageTypeTags.IS_FREEZING)) return Element.COLD;
-        if (source.is(net.minecraft.tags.DamageTypeTags.IS_LIGHTNING)) return Element.LIGHTNING;
-        if (source.is(net.minecraft.tags.DamageTypeTags.IS_DROWNING)) return Element.WATER;
-        if (source.is(net.minecraft.world.damagesource.DamageTypes.WITHER)) return Element.DEATH;
-        if (source.is(net.minecraft.world.damagesource.DamageTypes.MAGIC) || source.is(net.minecraft.world.damagesource.DamageTypes.INDIRECT_MAGIC)) return Element.ARCANE;
+        if (source.isFire()) return Element.FIRE;
+        if ((source==net.minecraft.world.damagesource.DamageSource.FREEZE)) return Element.COLD;
+        if ((source==net.minecraft.world.damagesource.DamageSource.LIGHTNING_BOLT)) return Element.LIGHTNING;
+        if ((source==net.minecraft.world.damagesource.DamageSource.DROWN)) return Element.WATER;
+        if (source.getMsgId().equals("wither")) return Element.DEATH;
+        if (source.getMsgId().equals("magic") || source.getMsgId().equals("indirectMagic")) return Element.ARCANE;
         return null;
     }
 
@@ -420,7 +420,7 @@ public final class MagicGear {
         event.setMaterialCost(1);
     }
 
-    @SubscribeEvent public void grindstone(GrindstoneEvent.OnPlaceItem event) {
+    @SubscribeEvent public void grindstone(GrindstoneEvent.OnplaceItem event) {
         ItemStack top = event.getTopItem(), bottom = event.getBottomItem();
         if (!top.isEmpty() && !bottom.isEmpty()) return;
         ItemStack result = CharmItem.strip(top.isEmpty() ? bottom : top);

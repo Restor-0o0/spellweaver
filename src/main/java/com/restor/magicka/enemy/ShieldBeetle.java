@@ -8,7 +8,6 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -77,7 +76,7 @@ public class ShieldBeetle extends SpecialEnemy {
     }
     @Override protected float physicalDamage(DamageSource source, float amount) {
         Vec3 from = source.getSourcePosition();
-        if (from == null || source.is(DamageTypes.FALL) || source.is(DamageTypes.GENERIC_KILL)) return amount;
+        if (from == null || source.getMsgId().equals("fall") || source.getMsgId().equals("genericKill")) return amount;
         if (rear(from)) return amount * REAR;
         if (!guarding() || !front(from)) return amount;
         return source.getDirectEntity() instanceof Projectile ? block(amount) : amount * .5f;
@@ -88,8 +87,8 @@ public class ShieldBeetle extends SpecialEnemy {
         if (charging > 0) {
             Vec3 forward = Vec3.directionFromRotation(0, getYRot());
             setDeltaMovement(forward.x * .55, getDeltaMovement().y, forward.z * .55);
-            for (LivingEntity hit : level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(.3), e -> e != this && !ally(e))) {
-                hit.hurt(damageSources().mobAttack(this), 6);
+            for (LivingEntity hit : level.getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(.3), e -> e != this && !ally(e))) {
+                hit.hurt(net.minecraft.world.damagesource.DamageSource.mobAttack(this), 6);
                 hit.push(forward.x * 1.2, .3, forward.z * 1.2); hit.hurtMarked = true;
                 charging = 1;
             }

@@ -3,7 +3,7 @@ package com.restor.magicka.client;
 import net.minecraft.util.Mth;
 import com.restor.magicka.*;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import com.restor.magicka.client.GuiGraphics;
 import net.minecraft.network.chat.Component;
 
 /** Compact corner HUD; the crosshair, vanilla health and hotbar retain their own space. */

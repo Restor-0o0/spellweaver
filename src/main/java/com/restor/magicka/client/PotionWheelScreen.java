@@ -1,10 +1,10 @@
 package com.restor.magicka.client;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.restor.magicka.MagicGear;
 import com.restor.magicka.MagicNetwork;
 import com.restor.magicka.PotionBelt;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
@@ -33,7 +33,7 @@ public final class PotionWheelScreen extends Screen {
         onClose();
     }
 
-    @Override public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+    @Override public void render(PoseStack pose, int mouseX, int mouseY, float partialTick){var g=new GuiGraphics(pose);
         hovered = slotAt(mouseX, mouseY);
         var belt = PotionBelt.client();
         int color = GearScreen.BUTTON_COLORS[button];
@@ -58,7 +58,7 @@ public final class PotionWheelScreen extends Screen {
     }
 
     @Override public boolean isPauseScreen() { return false; }
-    @Override public void renderBackground(GuiGraphics g) {}
+    @Override public void renderBackground(PoseStack pose) {}
 
     static void open(int button) { Minecraft.getInstance().setScreen(new PotionWheelScreen(button)); }
 }

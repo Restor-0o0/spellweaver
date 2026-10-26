@@ -2,7 +2,7 @@
 
 # Spellweaver (Magicka-like spellcasting)
 
-Magicka-style elemental spellcasting for **Minecraft 1.20.1 · Forge**. No wands, no mana bars
+Magicka-style elemental spellcasting for **Minecraft 1.19.2 · Forge**. No wands, no mana bars
 to grind: press up to five elements, then cast. Every combination does something.
 
 *Русское руководство: [docs/GUIDE_RU.md](docs/GUIDE_RU.md)*
@@ -220,7 +220,7 @@ and Forge resets it.
 
 ## Installation
 
-Requires **Forge 47.4+** for Minecraft **1.20.1** and Java 17. Install the same version on
+Requires **Forge 43.4+** for Minecraft **1.19.2** and Java 17. Install the same version on
 the client and the server. No other dependencies.
 
 ## Building

@@ -24,7 +24,7 @@ public class SparkImp extends HoverEnemy {
     @Override protected int chargeTicks() { return 12; }
     @Override protected void customServerAiStep() {
         if (tickCount % 20 == 0 && !casting())
-            level().getEntitiesOfClass(ServerPlayer.class, getBoundingBox().inflate(18), SpecialEnemy::player).stream()
+            level.getEntitiesOfClass(ServerPlayer.class, getBoundingBox().inflate(18), SpecialEnemy::player).stream()
                     .min(Comparator.comparingDouble(p -> distanceToSqr(p) * (MagicStatuses.has(p, MagicStatuses.Status.WET) ? .25 : 1))).ifPresent(this::setTarget);
         super.customServerAiStep();
     }

@@ -26,6 +26,7 @@ import java.util.List;
 
 /** A waist-deep elemental giant that stands in place while its ultimate is channelled and sinks back when the channel breaks. */
 public class ElementalTitan extends Entity implements ElementalBody {
+    @Override public net.minecraft.network.protocol.Packet<?> getAddEntityPacket() { return net.minecraftforge.network.NetworkHooks.getEntitySpawningPacket(this); }
     private static final EntityDataAccessor<Integer> ELEMENT = SynchedEntityData.defineId(ElementalTitan.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> ACTION = SynchedEntityData.defineId(ElementalTitan.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> SINKING = SynchedEntityData.defineId(ElementalTitan.class, EntityDataSerializers.BOOLEAN);
@@ -42,7 +43,7 @@ public class ElementalTitan extends Entity implements ElementalBody {
     public ElementalTitan(EntityType<? extends ElementalTitan> type, Level level) { super(type, level); noPhysics = true; setNoGravity(true); }
 
     static void rise(ServerPlayer p, SpellDefinition s, EpicMagic.Channel c) {
-        ServerLevel level = p.serverLevel();
+        ServerLevel level = p.getLevel();
         ElementalTitan titan = Elementals.TITAN.get().create(level);
         if (titan == null) return;
         titan.owner = p; titan.spell = s; titan.channel = c;
@@ -98,9 +99,9 @@ public class ElementalTitan extends Entity implements ElementalBody {
 
     @Override public void tick() {
         super.tick();
-        if (level().isClientSide) { ambient(); return; }
-        ServerLevel level = (ServerLevel) level();
-        if (!sinking() && (owner == null || channel == null || !channel.live || !owner.isAlive() || owner.isRemoved() || owner.level() != level)) sink(level);
+        if (level.isClientSide) { ambient(); return; }
+        ServerLevel level = (ServerLevel) this.level;
+        if (!sinking() && (owner == null || channel == null || !channel.live || !owner.isAlive() || owner.isRemoved() || owner.level != level)) sink(level);
         if (sinking()) {
             if (++sinkAge > SINK) discard();
             else if (sinkAge % 3 == 0) rubble(level, 2.5, 8);
@@ -112,7 +113,7 @@ public class ElementalTitan extends Entity implements ElementalBody {
             return;
         }
         if (tickCount == RISE) { Elementals.ring(level, element(), position(), 4); Elementals.burst(level, element(), local(0, 34, -6), 40, 1.2); }
-        if (target != null && !(target.isAlive() && target.level() == level && target.distanceToSqr(this) < REACH * REACH * 1.3 && Elementals.foe(owner, target))) target = null;
+        if (target != null && !(target.isAlive() && target.level == level && target.distanceToSqr(this) < REACH * REACH * 1.3 && Elementals.foe(owner, target))) target = null;
         if (windup == 0 && (target == null || tickCount % 10 == 0)) {
             LivingEntity pick = Elementals.pick(owner, position(), REACH, 10);
             if (pick != null) target = pick;
@@ -144,7 +145,7 @@ public class ElementalTitan extends Entity implements ElementalBody {
         Elementals.burst(level, element(), local(0, 30, -4), 30, 1.5);
     }
     private void rubble(ServerLevel level, double radius, int count) {
-        BlockPos under = BlockPos.containing(position().add(0, -.2, 0));
+        BlockPos under = new BlockPos(position().add(0, -.2, 0));
         var state = level.getBlockState(under);
         var dust = new BlockParticleOption(ParticleTypes.BLOCK, state.isAir() ? net.minecraft.world.level.block.Blocks.DIRT.defaultBlockState() : state);
         for (int i = 0; i < count; i++) {
@@ -162,7 +163,7 @@ public class ElementalTitan extends Entity implements ElementalBody {
     private List<LivingEntity> foes(Vec3 around, double radius, int max) {
         var list = new ArrayList<LivingEntity>();
         if (target != null && target.isAlive()) list.add(target);
-        for (var e : level().getEntitiesOfClass(LivingEntity.class, new AABB(around, around).inflate(radius), e -> e != target && Elementals.foe(owner, e) && e.distanceToSqr(around) < radius * radius)) {
+        for (var e : level.getEntitiesOfClass(LivingEntity.class, new AABB(around, around).inflate(radius), e -> e != target && Elementals.foe(owner, e) && e.distanceToSqr(around) < radius * radius)) {
             if (list.size() >= max) break;
             list.add(e);
         }
@@ -196,7 +197,7 @@ public class ElementalTitan extends Entity implements ElementalBody {
         level.playSound(null, at.x, at.y, at.z, Elementals.hit(e), SoundSource.PLAYERS, 2f, .6f);
         rubble(level, SLAM_RADIUS, 16);
         switch (e) {
-            case FIRE -> { for (int i = 0; i < 6; i++) EpicMagic.ignite(owner, BlockPos.containing(at.add(random.nextGaussian() * 2, -.5, random.nextGaussian() * 2))); }
+            case FIRE -> { for (int i = 0; i < 6; i++) EpicMagic.ignite(owner, new BlockPos(at.add(random.nextGaussian() * 2, -.5, random.nextGaussian() * 2))); }
             case WATER -> { SpellRuntime.wetZone(owner, at, SLAM_RADIUS, 120); EpicMagic.fx(level, ParticleTypes.SPLASH, at.x, at.y + 1, at.z, 80, 1.5, 1.5, 1.5, .3); }
             case COLD -> SpellRuntime.freezeSurface(owner, at, 3);
             case LIGHTNING -> EpicMagic.strike(owner, spell, at, at.y + 9, 1.5);
@@ -224,8 +225,8 @@ public class ElementalTitan extends Entity implements ElementalBody {
         double height = 6 * up - 6 * (1 - up);
         for (int i = 0; i < 3; i++) {
             double a = random.nextDouble() * Math.PI * 2, r = 1 + random.nextDouble() * 1.4;
-            level().addParticle(Elementals.trail(e), getX() + Math.cos(a) * r, getY() + random.nextDouble() * Math.max(.5, height), getZ() + Math.sin(a) * r, 0, e == Element.FIRE || e == Element.DEATH ? .05 : .01, 0);
+            level.addParticle(Elementals.trail(e), getX() + Math.cos(a) * r, getY() + random.nextDouble() * Math.max(.5, height), getZ() + Math.sin(a) * r, 0, e == Element.FIRE || e == Element.DEATH ? .05 : .01, 0);
         }
-        if (tickCount % 4 == 0) level().addParticle(Elementals.spark(e), getX() + random.nextGaussian(), getY() + .3, getZ() + random.nextGaussian(), 0, .05, 0);
+        if (tickCount % 4 == 0) level.addParticle(Elementals.spark(e), getX() + random.nextGaussian(), getY() + .3, getZ() + random.nextGaussian(), 0, .05, 0);
     }
 }

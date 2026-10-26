@@ -44,7 +44,7 @@ public class StoneEater extends SpecialEnemy {
     }
     public static boolean edible(BlockState state) { return state.getBlock() instanceof MagicBlocks.TemporaryBlock && !state.is(MagicBlocks.PUDDLE.get()) && !state.is(MagicBlocks.LIGHT.get()); }
     public BlockPos findMeal() {
-        if (!(level() instanceof ServerLevel level)) return null;
+        if (!(level instanceof ServerLevel level)) return null;
         return MagicConstructionManager.get(level).structures().stream().flatMap(c -> c.blocks.stream())
                 .filter(p -> p.distSqr(blockPosition()) < 256 && edible(level.getBlockState(p)))
                 .min(Comparator.comparingDouble(p -> p.distSqr(blockPosition()))).orElse(null);
@@ -52,10 +52,10 @@ public class StoneEater extends SpecialEnemy {
     @Override protected void customServerAiStep() {
         super.customServerAiStep();
         if (disabled()) return;
-        if (meal != null && !edible(level().getBlockState(meal))) meal = null;
+        if (meal != null && !edible(level.getBlockState(meal))) meal = null;
         if (meal == null && tickCount % 10 == 0) meal = findMeal();
         if (meal == null) { if (action() == EAT) setAction(0); return; }
-        double reach = distanceToSqr(meal.getCenter());
+        double reach = distanceToSqr(net.minecraft.world.phys.Vec3.atCenterOf(meal));
         getLookControl().setLookAt(meal.getX() + .5, meal.getY() + .5, meal.getZ() + .5);
         if (reach > 6.5) { getNavigation().moveTo(meal.getX() + .5, meal.getY(), meal.getZ() + .5, 1.15); chew = 0; return; }
         getNavigation().stop();
@@ -63,9 +63,9 @@ public class StoneEater extends SpecialEnemy {
         if (++chew % 5 == 0) playSound(SoundEvents.GENERIC_EAT, .8f, .5f);
         if (chew >= 15) {
             chew = 0;
-            if (level() instanceof ServerLevel level)
+            if (level instanceof ServerLevel level)
                 level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, level.getBlockState(meal)), meal.getX() + .5, meal.getY() + .5, meal.getZ() + .5, 20, .3, .3, .3, .1);
-            level().removeBlock(meal, false);
+            level.removeBlock(meal, false);
             playSound(SoundEvents.STONE_BREAK, 1f, .6f);
             heal(2);
             MagicStatuses.apply(this, MagicStatuses.Status.STONE_SHELL, 100, 1);

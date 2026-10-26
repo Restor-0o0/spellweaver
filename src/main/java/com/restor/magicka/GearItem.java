@@ -76,7 +76,6 @@ public class GearItem extends Item {
         return named ? name.copy().withStyle(ChatFormatting.GOLD) : name;
     }
 
-    @Override public boolean canGrindstoneRepair(ItemStack stack) { return !GearBonus.of(stack).charms().isEmpty(); }
 
     @Override public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable net.minecraft.world.level.Level level, List<Component> lines, TooltipFlag flag) {
         lines.add(Component.translatable("gear.magicka.kind." + kind.name().toLowerCase(Locale.ROOT))

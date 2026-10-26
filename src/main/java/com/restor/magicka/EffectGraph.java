@@ -29,7 +29,7 @@ public final class EffectGraph {
     }
     public static String text(JsonObject n, String key, String fallback) { return n.has(key) ? n.get(key).getAsString() : fallback; }
     public static double number(JsonObject n, String key, double fallback) { return n.has(key) ? n.get(key).getAsDouble() : fallback; }
-    public static List<JsonObject> children(JsonObject node) { return node.has("effects") ? node.getAsJsonArray("effects").asList().stream().map(JsonElement::getAsJsonObject).toList() : List.of(); }
+    public static List<JsonObject> children(JsonObject node) { return node.has("effects") ? java.util.stream.StreamSupport.stream(node.getAsJsonArray("effects").spliterator(),false).map(JsonElement::getAsJsonObject).toList() : List.of(); }
     public static boolean canHarm(ServerPlayer caster, LivingEntity target) {
         if (caster == target) return true;
         if (target instanceof Player other && !caster.canHarmPlayer(other)) return false;
@@ -44,7 +44,7 @@ public final class EffectGraph {
         float damage = executeEntity(caster,target,spell,graph,origin,self,frozen);
         if (damage > 0 && canHarm(caster,target)) {
             if (target instanceof Player && target != caster) damage *= MagicConfig.PLAYER_DAMAGE.get().floatValue();
-            com.restor.magicka.enemy.MagicEnemies.hurt(target,target == caster ? caster.damageSources().magic() : caster.damageSources().indirectMagic(caster,caster),damage,caster,spell,frozen);
+            com.restor.magicka.enemy.MagicEnemies.hurt(target,target == caster ? net.minecraft.world.damagesource.DamageSource.MAGIC : net.minecraft.world.damagesource.DamageSource.indirectMagic(caster,caster),damage,caster,spell,frozen);
         }
     }
     private static float executeEntity(ServerPlayer caster, LivingEntity target, SpellDefinition spell, List<JsonObject> graph, Vec3 origin, boolean self, boolean frozen) {
@@ -86,7 +86,7 @@ public final class EffectGraph {
                     if (passes) damage += executeEntity(caster,target,spell,children(node),origin,self,frozen);
                 }
                 case "delay" -> SpellRuntime.delay(caster,Mth.clamp((int)number(node,"ticks",20),1,1200), () -> {
-                    if (target.isAlive() && target.level() == caster.level()) entity(caster,target,spell,children(node),origin,self);
+                    if (target.isAlive() && target.level == caster.level) entity(caster,target,spell,children(node),origin,self);
                 });
                 default -> {} // World-only effects are dispatched once per impact, not once per victim.
             }

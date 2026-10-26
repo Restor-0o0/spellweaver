@@ -1,7 +1,7 @@
 package com.restor.magicka.client.enemy;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
+import com.mojang.math.Vector3f;
 import com.restor.magicka.Element;
 import com.restor.magicka.ElementalTitan;
 import com.restor.magicka.Elementals;
@@ -38,7 +38,7 @@ public class TitanRenderer extends EntityRenderer<ElementalTitan> {
         var model = models.get(titan.element());
         pose.pushPose();
         pose.translate(0, -(1 - up) * DEPTH, 0);
-        pose.mulPose(Axis.YP.rotationDegrees(180 - Mth.rotLerp(partial, titan.yRotO, titan.getYRot())));
+        pose.mulPose(Vector3f.YP.rotationDegrees(180 - Mth.rotLerp(partial, titan.yRotO, titan.getYRot())));
         pose.scale(-ElementalTitan.SCALE, -ElementalTitan.SCALE, ElementalTitan.SCALE);
         pose.translate(0, -1.501, 0);
         model.setupAnim(titan, 0, 0, titan.tickCount + partial, 0, 0);

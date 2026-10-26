@@ -1,11 +1,10 @@
 package com.restor.magicka.client;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.util.Mth;
 import com.restor.magicka.MagicNetwork;
 import com.restor.magicka.ShapePattern;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
@@ -26,9 +25,9 @@ public final class ShapeEditorScreen extends Screen {
         for(int i=0;i<SIZE;i++){
             int layer=i, lx=gridX+i*(layerWidth+gap);
             addRenderableWidget(new SpellbookScreen.BookButton(lx,layerRow,half-1,14,Component.literal("■"),b->layer(layer,true),false))
-                    .setTooltip(Tooltip.create(Component.translatable("shape.magicka.layer_fill")));
+                    .setTooltip((Component.translatable("shape.magicka.layer_fill")));
             addRenderableWidget(new SpellbookScreen.BookButton(lx+half+1,layerRow,layerWidth-half-1,14,Component.literal("□"),b->layer(layer,false),false))
-                    .setTooltip(Tooltip.create(Component.translatable("shape.magicka.layer_clear")));
+                    .setTooltip((Component.translatable("shape.magicka.layer_clear")));
         }
         int wide=(span-16)/3, bottom=layerRow+20;
         addRenderableWidget(new SpellbookScreen.BookButton(gridX,bottom,wide,18,Component.translatable("shape.magicka.clear"),b->all(false),false));
@@ -72,7 +71,7 @@ public final class ShapeEditorScreen extends Screen {
         return super.mouseDragged(mx,my,button,dx,dy);
     }
     @Override public boolean mouseReleased(double mx,double my,int button){painting=false;return super.mouseReleased(mx,my,button);}
-    @Override public void render(GuiGraphics g,int mouseX,int mouseY,float partialTick){
+    @Override public void render(PoseStack pose,int mouseX,int mouseY,float partialTick){var g=new GuiGraphics(pose);
         g.fill(0,0,width,height,0xB810101B);
         MagicUi.panel(g,panelX,panelY,panelW,panelH);
         MagicUi.text(g,title,panelX+12,panelY+10,MagicUi.GOLD);
@@ -96,7 +95,7 @@ public final class ShapeEditorScreen extends Screen {
                 g.renderOutline(cx,cy,cell,cell,hover?MagicUi.GOLD:filled?0xFFC9A96E:0xFF343040);
             }
         }
-        super.render(g,mouseX,mouseY,partialTick);
+        super.render(g.pose(),mouseX,mouseY,partialTick);SpellbookScreen.BookButton.renderTips(this,g,mouseX,mouseY);
     }
     @Override public boolean keyPressed(int key,int scan,int modifiers){
         if(MagicClient.shapeMatches(key,scan)){onClose();return true;}

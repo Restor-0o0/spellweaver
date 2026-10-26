@@ -72,15 +72,15 @@ public class Elemental extends PathfinderMob implements ElementalBody {
     }
     @Override public boolean hurt(DamageSource source, float amount) {
         if (owner != null && source.getEntity() != null && isAlliedTo(source.getEntity())) return false;
-        if (element() == Element.FIRE && source.is(net.minecraft.tags.DamageTypeTags.IS_FIRE) || source.is(net.minecraft.world.damagesource.DamageTypes.DROWN)) return false;
+        if (element() == Element.FIRE && source.isFire() || source.getMsgId().equals("drown")) return false;
         return super.hurt(source, amount);
     }
     @Override public void remove(RemovalReason reason) {
-        if (!level().isClientSide) Elementals.forget(this);
+        if (!level.isClientSide) Elementals.forget(this);
         super.remove(reason);
     }
     void vanish() {
-        if (level() instanceof ServerLevel level && isAlive()) {
+        if (level instanceof ServerLevel level && isAlive()) {
             Elementals.burst(level, element(), position().add(0, getBbHeight() * .5, 0), 24, .4);
             level.playSound(null, getX(), getY(), getZ(), net.minecraft.sounds.SoundEvents.ILLUSIONER_MIRROR_MOVE, SoundSource.PLAYERS, .6f, 1.4f);
         }
@@ -89,15 +89,15 @@ public class Elemental extends PathfinderMob implements ElementalBody {
 
     @Override public void tick() {
         super.tick();
-        if (level().isClientSide && tickCount % 2 == 0) {
+        if (level.isClientSide && tickCount % 2 == 0) {
             var r = random;
-            level().addParticle(Elementals.trail(element()), getX() + r.nextGaussian() * .2, getY() + getBbHeight() * (.3 + r.nextFloat() * .6), getZ() + r.nextGaussian() * .2, 0, flyer() ? -.02 : .02, 0);
+            level.addParticle(Elementals.trail(element()), getX() + r.nextGaussian() * .2, getY() + getBbHeight() * (.3 + r.nextFloat() * .6), getZ() + r.nextGaussian() * .2, 0, flyer() ? -.02 : .02, 0);
         }
     }
 
     @Override protected void customServerAiStep() {
-        if (!(level() instanceof ServerLevel level)) return;
-        if (owner == null || spell == null || !owner.isAlive() || owner.isRemoved() || owner.level() != level || level.getGameTime() > until) { vanish(); return; }
+        if (!(level instanceof ServerLevel level)) return;
+        if (owner == null || spell == null || !owner.isAlive() || owner.isRemoved() || owner.level != level || level.getGameTime() > until) { vanish(); return; }
         if (distanceToSqr(owner) > 24 * 24) { home(level); return; }
         if (target != null && !valid(target)) target = null;
         if (tickCount % 10 == 0 && windup == 0) {
@@ -116,7 +116,7 @@ public class Elemental extends PathfinderMob implements ElementalBody {
         }
     }
     private boolean valid(LivingEntity e) {
-        return e.isAlive() && e.level() == level() && e.distanceToSqr(this) < 18 * 18 && Elementals.foe(owner, e);
+        return e.isAlive() && e.level == level && e.distanceToSqr(this) < 18 * 18 && Elementals.foe(owner, e);
     }
     private void home(ServerLevel level) {
         Vec3 side = owner.position().add(owner.getLookAngle().multiply(-1.5, 0, -1.5));

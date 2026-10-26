@@ -19,19 +19,19 @@ public final class MagicGameTests {
     @GameTest(template = "empty")
     public static void formulas(GameTestHelper helper) {
         Formula f = new Formula();
-        for (int i = 0; i < Formula.MAX; i++) helper.assertTrue(f.add(Element.EARTH), "Element accepted within capacity");
-        helper.assertFalse(f.add(Element.FIRE), "Sixth element must be rejected");
-        helper.assertTrue(f.budget() == 28 && f.count(Element.EARTH) == 5, "Earth x5 budget");
+        for (int i = 0; i < Formula.MAX; i++) Check.assertTrue(helper,f.add(Element.EARTH), "Element accepted within capacity");
+        Check.assertFalse(helper,f.add(Element.FIRE), "Sixth element must be rejected");
+        Check.assertTrue(helper,f.budget() == 28 && f.count(Element.EARTH) == 5, "Earth x5 budget");
         // All 37,448 possible non-empty input sequences survive the network encoding.
         for (int length = 1; length <= Formula.MAX; length++) {
             int count = (int) Math.pow(8, length);
             for (int sequence = 0; sequence < count; sequence++) {
                 Formula input = new Formula(); int value = sequence;
                 for (int slot = 0; slot < length; slot++) { input.add(Element.values()[value % 8]); value /= 8; }
-                helper.assertTrue(input.elements().equals(Formula.unpack(input.packed()).elements()), "Formula round trip");
+                Check.assertTrue(helper,input.elements().equals(Formula.unpack(input.packed()).elements()), "Formula round trip");
                 Formula reverse = new Formula(); var reversed=new java.util.ArrayList<>(input.elements());java.util.Collections.reverse(reversed);reversed.forEach(reverse::add);
-                helper.assertTrue(input.key().equals(reverse.key()) && input.key().hashCode()==reverse.key().hashCode(), "Order independent keys");
-                helper.assertTrue(RecipeRegistry.resolve(input.key())==RecipeRegistry.resolve(reverse.key()), "Order independent recipe resolution");
+                Check.assertTrue(helper,input.key().equals(reverse.key()) && input.key().hashCode()==reverse.key().hashCode(), "Order independent keys");
+                Check.assertTrue(helper,RecipeRegistry.resolve(input.key())==RecipeRegistry.resolve(reverse.key()), "Order independent recipe resolution");
             }
         }
         helper.succeed();
@@ -50,7 +50,7 @@ public final class MagicGameTests {
         var tag = data.saveWithFullMetadata();
         var restored = new MagicBlocks.MagicBlockEntity(helper.absolutePos(p), data.getBlockState());
         restored.load(tag);
-        helper.assertTrue(restored.owner.equals(owner) && restored.construction.equals(construction)
+        Check.assertTrue(helper,restored.owner.equals(owner) && restored.construction.equals(construction)
                 && restored.expires == expire && restored.root.equals(data.root), "Persistent ownership, root and lifetime");
         helper.runAfterDelay(12, () -> { helper.assertBlockPresent(Blocks.AIR, p); helper.assertBlockPresent(MagicBlocks.EARTH.get(), p.east()); helper.succeed(); });
     }
@@ -72,11 +72,11 @@ public final class MagicGameTests {
         Consumer<BlockEvent.EntityPlaceEvent> deny = event -> { if (event.getPos().equals(pos)) event.setCanceled(true); };
         MinecraftForge.EVENT_BUS.addListener(deny);
         try {
-            helper.assertFalse(WorldPlacement.placeBlock(player, pos, MagicBlocks.EARTH.get().defaultBlockState(),
+            Check.assertFalse(helper,WorldPlacement.placeBlock(player, pos, MagicBlocks.EARTH.get().defaultBlockState(),
                     UUID.randomUUID(), pos, false, false, null), "Canceled event must reject placement");
             helper.assertBlockPresent(Blocks.AIR, local);
         } finally { MinecraftForge.EVENT_BUS.unregister(deny); }
-        helper.assertTrue(WorldPlacement.placeBlock(player, pos, MagicBlocks.EARTH.get().defaultBlockState(),
+        Check.assertTrue(helper,WorldPlacement.placeBlock(player, pos, MagicBlocks.EARTH.get().defaultBlockState(),
                 UUID.randomUUID(), pos, false, false, null), "Placement allowed after listener removed");
         helper.succeed();
     }
@@ -86,9 +86,9 @@ public final class MagicGameTests {
         helper.setBlock(local.below(), Blocks.STONE);
         var player = FakePlayerFactory.getMinecraft(helper.getLevel());
         var pig = helper.spawnWithNoFreeWill(net.minecraft.world.entity.EntityType.PIG, local);
-        helper.assertFalse(WorldPlacement.placeBlock(player, pos, MagicBlocks.EARTH.get().defaultBlockState(), UUID.randomUUID(), pos, false, false, null), "No suffocation placement");
+        Check.assertFalse(helper,WorldPlacement.placeBlock(player, pos, MagicBlocks.EARTH.get().defaultBlockState(), UUID.randomUUID(), pos, false, false, null), "No suffocation placement");
         pig.discard(); helper.setBlock(local, Blocks.CHEST);
-        helper.assertFalse(WorldPlacement.placeBlock(player, pos, MagicBlocks.EARTH.get().defaultBlockState(), UUID.randomUUID(), pos, false, false, null), "Do not replace terrain or containers");
+        Check.assertFalse(helper,WorldPlacement.placeBlock(player, pos, MagicBlocks.EARTH.get().defaultBlockState(), UUID.randomUUID(), pos, false, false, null), "Do not replace terrain or containers");
         helper.assertBlockPresent(Blocks.CHEST, local);
         helper.succeed();
     }
@@ -96,26 +96,26 @@ public final class MagicGameTests {
     public static void literalSelfAndElementReactions(GameTestHelper helper) {
         // A real ServerPlayer is needed: NeoForge FakePlayer rejects every damage source.
         var player = new net.minecraft.server.level.ServerPlayer(helper.getLevel().getServer(), helper.getLevel(),
-                new com.mojang.authlib.GameProfile(UUID.randomUUID(), "SpellTester"));
+                new com.mojang.authlib.GameProfile(UUID.randomUUID(), "SpellTester"), null);
         player.connection = FakePlayerFactory.getMinecraft(helper.getLevel()).connection;
         player.setPos(helper.absoluteVec(new net.minecraft.world.phys.Vec3(2, 2, 2)));
         for (int i = 0; i < 61; i++) player.tick(); // Let vanilla spawn invulnerability expire.
         player.setHealth(20); player.invulnerableTime = 0; player.getAbilities().invulnerable = false;
         Formula water = new Formula(); water.add(Element.WATER);
         SpellRuntime.cast(player, RecipeRegistry.resolve(water.key()), true);
-        helper.assertTrue(MagicStatuses.has(player,MagicStatuses.Status.WET), "Self water wets caster");
+        Check.assertTrue(helper,MagicStatuses.has(player,MagicStatuses.Status.WET), "Self water wets caster");
         Formula cold = new Formula(); cold.add(Element.COLD);
         SpellRuntime.cast(player, RecipeRegistry.resolve(cold.key()), true);
-        helper.assertTrue(player.getTicksFrozen() > 0, "Wet + cold freezes caster");
-        helper.assertTrue(MagicStatuses.has(player,MagicStatuses.Status.BRITTLE), "Frozen targets become brittle");
+        Check.assertTrue(helper,player.getTicksFrozen() > 0, "Wet + cold freezes caster");
+        Check.assertTrue(helper,MagicStatuses.has(player,MagicStatuses.Status.BRITTLE), "Frozen targets become brittle");
         player.invulnerableTime = 0;
         Formula earth = new Formula(); earth.add(Element.EARTH);
         float before = player.getHealth();
         SpellRuntime.cast(player, RecipeRegistry.resolve(earth.key()), true);
-        helper.assertTrue(player.getHealth() == before && MagicStatuses.has(player,MagicStatuses.Status.STONE_SHELL), "Self earth gives stone shell and mass per new spec");
+        Check.assertTrue(helper,player.getHealth() == before && MagicStatuses.has(player,MagicStatuses.Status.STONE_SHELL), "Self earth gives stone shell and mass per new spec");
         var fire=new Formula();fire.add(Element.FIRE);
         SpellRuntime.cast(player,RecipeRegistry.resolve(fire.key()),true);
-        helper.assertTrue(player.getHealth()<before,"Bad Self still harms caster");
+        Check.assertTrue(helper,player.getHealth()<before,"Bad Self still harms caster");
         helper.succeed();
     }
     @GameTest(template = "empty")
@@ -123,12 +123,12 @@ public final class MagicGameTests {
         var player = FakePlayerFactory.get(helper.getLevel(), new com.mojang.authlib.GameProfile(UUID.randomUUID(), "CommitTester"));
         CastingServer.input(player, 7); CastingServer.input(player, 0); CastingServer.input(player, 10);
         var before = CastingServer.snapshot(player);
-        helper.assertTrue(before.remaining() > 0 && before.intent() == 1, "Self cast starts");
+        Check.assertTrue(helper,before.remaining() > 0 && before.intent() == 1, "Self cast starts");
         for (int action : new int[]{8, 4, 9, 11, 7, -1, 1000}) CastingServer.input(player, action);
-        helper.assertTrue(before.equals(CastingServer.snapshot(player)), "Commit must reject edits, mode changes and other intents");
+        Check.assertTrue(helper,before.equals(CastingServer.snapshot(player)), "Commit must reject edits, mode changes and other intents");
         var server = new CastingServer();
         for (int i = 0; i < before.total(); i++) server.tick(new TickEvent.PlayerTickEvent(TickEvent.Phase.END,player));
-        helper.assertTrue(CastingServer.snapshot(player).remaining() == 0 && CastingServer.snapshot(player).formula() == 0, "Committed cast completes and consumes formula");
+        Check.assertTrue(helper,CastingServer.snapshot(player).remaining() == 0 && CastingServer.snapshot(player).formula() == 0, "Committed cast completes and consumes formula");
         helper.succeed();
     }
 }

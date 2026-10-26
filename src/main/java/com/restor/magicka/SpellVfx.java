@@ -28,18 +28,18 @@ public final class SpellVfx {
         int packed=formula.prepared().packed();
         var packet=new MagicNetwork.Visual(kind,packed,from,to,(float)Mth.clamp(radius,.05,16),Mth.clamp(ticks,1,100),anchor);
         Vec3 near=anchor>=0?p.position():from;
-        for(var viewer:p.serverLevel().players())if(viewer==p || viewer.distanceToSqr(near)<256*256 || anchor<0 && viewer.distanceToSqr(to)<256*256)MagicNetwork.sendToPlayer(viewer,packet);
+        for(var viewer:p.getLevel().players())if(viewer==p || viewer.distanceToSqr(near)<256*256 || anchor<0 && viewer.distanceToSqr(to)<256*256)MagicNetwork.sendToPlayer(viewer,packet);
     }
     public static void particles(ServerPlayer p,SpellDefinition s,Vec3 point,int count,double spread){
         var elements=s.formula().elements().stream().distinct().toList();int per=Math.max(1,Math.min(24,count)/elements.size());
         for(Element e:elements){
             ParticleOptions type=switch(e){case FIRE->ParticleTypes.FLAME;case WATER->ParticleTypes.SPLASH;case COLD->ParticleTypes.SNOWFLAKE;case LIGHTNING->ParticleTypes.ELECTRIC_SPARK;case EARTH->new BlockParticleOption(ParticleTypes.BLOCK,net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());case LIFE->ParticleTypes.HAPPY_VILLAGER;case ARCANE->ParticleTypes.END_ROD;case DEATH->ParticleTypes.SOUL;};
-            p.serverLevel().sendParticles(type,point.x,point.y,point.z,per,spread,spread,spread,.025);
+            p.getLevel().sendParticles(type,point.x,point.y,point.z,per,spread,spread,spread,.025);
         }
     }
     public static void sound(ServerPlayer p,SpellDefinition s,Vec3 point,boolean impact){
         SoundEvent sound=s.formula().lightning()>0?SoundEvents.TRIDENT_THUNDER:s.formula().fire()>0?SoundEvents.FIRECHARGE_USE:s.formula().cold()>0?SoundEvents.GLASS_BREAK:s.formula().water()>0?SoundEvents.GENERIC_SPLASH:s.formula().earth()>0?SoundEvents.STONE_BREAK:s.formula().death()>0?SoundEvents.WITHER_SKELETON_AMBIENT:s.formula().life()>0?SoundEvents.AMETHYST_BLOCK_CHIME:SoundEvents.BEACON_POWER_SELECT;
-        p.serverLevel().playSound(null,point.x,point.y,point.z,sound,SoundSource.PLAYERS,impact?.65f:.4f,impact?1.3f:1.0f);
+        p.getLevel().playSound(null,point.x,point.y,point.z,sound,SoundSource.PLAYERS,impact?.65f:.4f,impact?1.3f:1.0f);
     }
     private SpellVfx(){}
 }

@@ -16,7 +16,7 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Vector3f;
+import com.mojang.math.Vector3f;
 import java.util.List;
 
 public abstract class SpecialEnemy extends Monster {
@@ -57,7 +57,7 @@ public abstract class SpecialEnemy extends Monster {
         if (!casting()) return;
         castTicks = 0; release = null; setAction(0);
         cooldown = Math.max(cooldown, 40);
-        if (level() instanceof ServerLevel level) level.sendParticles(ParticleTypes.SMOKE, getX(), getY() + getBbHeight() * .8, getZ(), 12, .3, .3, .3, .02);
+        if (level instanceof ServerLevel level) level.sendParticles(ParticleTypes.SMOKE, getX(), getY() + getBbHeight() * .8, getZ(), 12, .3, .3, .3, .02);
         playSound(SoundEvents.FIRE_EXTINGUISH, 1f, 1.3f);
     }
     protected SoundEvent castSound() { return SoundEvents.EVOKER_PREPARE_ATTACK; }
@@ -84,7 +84,7 @@ public abstract class SpecialEnemy extends Monster {
     protected float spellDamage(ServerPlayer caster, SpellDefinition spell, float amount, boolean brittle) { return amount; }
 
     @Override public boolean hurt(DamageSource source, float amount) {
-        if (!level().isClientSide && !MagicEnemies.bySpell) amount = physicalDamage(source, amount);
+        if (!level.isClientSide && !MagicEnemies.bySpell) amount = physicalDamage(source, amount);
         if (amount <= 0) return false;
         boolean hurt = super.hurt(source, amount);
         if (hurt && casting() && amount >= interruptDamage()) interrupt();
@@ -95,11 +95,11 @@ public abstract class SpecialEnemy extends Monster {
         return other instanceof Enemy && !other.getTags().contains(UndeadMinions.TAG) && other.isAlive();
     }
     protected List<LivingEntity> allies(double radius) {
-        return level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(radius), e -> e != this && ally(e));
+        return level.getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(radius), e -> e != this && ally(e));
     }
     protected static Vec3 flat(Vec3 v) { return new Vec3(v.x, 0, v.z); }
     protected void dust(Vec3 at, int color, int count, double spread) {
-        if (level() instanceof ServerLevel level)
+        if (level instanceof ServerLevel level)
             level.sendParticles(new DustParticleOptions(new Vector3f((color >> 16 & 255) / 255f, (color >> 8 & 255) / 255f, (color & 255) / 255f), 1.2f), at.x, at.y, at.z, count, spread, spread, spread, 0);
     }
     protected void beam(Vec3 from, Vec3 to, int color) {

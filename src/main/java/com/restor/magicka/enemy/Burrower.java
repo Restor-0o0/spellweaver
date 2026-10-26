@@ -8,7 +8,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -45,14 +44,14 @@ public class Burrower extends SpecialEnemy {
     }
     public boolean surfaced() { return state() == SURFACE; }
     public boolean burrowed() { return state() != SURFACE; }
-    public BlockState ground() { return level().getBlockState(blockPosition().below()); }
+    public BlockState ground() { return level.getBlockState(blockPosition().below()); }
     private boolean diggable() {
         BlockState ground = ground();
         return !isInWater() && (ground.is(BlockTags.MINEABLE_WITH_SHOVEL) || ground.is(BlockTags.BASE_STONE_OVERWORLD)) && !pinned();
     }
     /** Water, cold and roots pin it to the surface. */
     public boolean pinned() {
-        BlockState feet = level().getBlockState(blockPosition()), ground = ground();
+        BlockState feet = level.getBlockState(blockPosition()), ground = ground();
         return MagicStatuses.has(this, MagicStatuses.Status.WET) || MagicStatuses.has(this, MagicStatuses.Status.CHILLED) || MagicStatuses.has(this, MagicStatuses.Status.FROZEN)
                 || MagicStatuses.has(this, MagicStatuses.Status.ROOTED) || feet.is(MagicBlocks.PUDDLE.get()) || ground.is(MagicBlocks.ICE.get()) || ground.is(MagicBlocks.ROOT.get()) || ground.is(BlockTags.ICE);
     }
@@ -72,15 +71,15 @@ public class Burrower extends SpecialEnemy {
         } else {
             cooldown = 100;
             playSound(SoundEvents.RAVAGER_ATTACK, 1f, 1.4f);
-            for (LivingEntity hit : level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(1.2, .5, 1.2), e -> e != this && !ally(e))) {
-                hit.hurt(damageSources().mobAttack(this), 6);
+            for (LivingEntity hit : level.getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(1.2, .5, 1.2), e -> e != this && !ally(e))) {
+                hit.hurt(net.minecraft.world.damagesource.DamageSource.mobAttack(this), 6);
                 hit.push(0, .55, 0); hit.hurtMarked = true;
             }
         }
     }
     public void forceOut() { if (burrowed()) surface(true); }
     private void debris(int count) {
-        if (level() instanceof ServerLevel level) level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, ground()), getX(), getY() + .1, getZ(), count, .4, .1, .4, .1);
+        if (level instanceof ServerLevel level) level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, ground()), getX(), getY() + .1, getZ(), count, .4, .1, .4, .1);
     }
     @Override public EntityDimensions getDimensions(Pose pose) { return burrowed() ? super.getDimensions(pose).scale(1, .25f) : super.getDimensions(pose); }
     @Override public boolean isPickable() { return surfaced() && super.isPickable(); }
@@ -92,8 +91,8 @@ public class Burrower extends SpecialEnemy {
         return amount * .5f;
     }
     @Override protected float physicalDamage(DamageSource source, float amount) {
-        if (surfaced() || source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) return amount;
-        if (source.is(DamageTypeTags.IS_EXPLOSION)) { forceOut(); return amount * .5f; }
+        if (surfaced() || source.isBypassInvul()) return amount;
+        if (source.isExplosion()) { forceOut(); return amount * .5f; }
         return 0;
     }
     @Override protected void customServerAiStep() {

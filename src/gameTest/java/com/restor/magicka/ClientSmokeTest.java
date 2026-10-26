@@ -16,7 +16,7 @@ public final class ClientSmokeTest {
         if (event.phase != net.minecraftforge.event.TickEvent.Phase.END) return;
         if (!Boolean.getBoolean("magicka.clientSmokeTest")) return;
         var mc = Minecraft.getInstance();
-        if (mc.screen instanceof net.minecraft.client.gui.screens.AccessibilityOnboardingScreen && mc.getOverlay() == null) {
+        if (false) {
             mc.setScreen(new TitleScreen());
         }
         if (stage == 0 && mc.screen instanceof TitleScreen && mc.getOverlay() == null && ++ticks == 30) {
@@ -30,7 +30,7 @@ public final class ClientSmokeTest {
             }
             org.slf4j.LoggerFactory.getLogger("MagickaSmokeTest").info("MAGICKA_CLIENT_SMOKE_OK: resources loaded; {} key mappings registered", keys);
             mc.options.languageCode = "ru_ru";
-            mc.getLanguageManager().setSelected("ru_ru");
+            mc.getLanguageManager().setSelected(mc.getLanguageManager().getLanguage("ru_ru"));
             mc.reloadResourcePacks();
             var preferences=com.restor.magicka.client.BookPreferences.get();preferences.query="";preferences.tag="all";preferences.size=0;preferences.elements=0;preferences.selectedId="magicka:stone_stair";
             String[] presets={"Firebomb","Stone Stair","Healing Pool","Arcane Meteor"};
@@ -50,7 +50,7 @@ public final class ClientSmokeTest {
             ((com.restor.magicka.client.SpellbookScreen)mc.screen).showStats(false);
             ticks = 0; stage = 2;
             mc.setScreen(new net.minecraft.client.gui.screens.Screen(net.minecraft.network.chat.Component.literal("HUD preview")) {
-                @Override public void render(net.minecraft.client.gui.GuiGraphics g, int mx, int my, float partial) {
+                @Override public void render(com.mojang.blaze3d.vertex.PoseStack pose, int mx, int my, float partial) {var g=new com.restor.magicka.client.GuiGraphics(pose);
                     g.fill(0, 0, width, height, 0xFF28333D);
                     int cx = width / 2;
                     g.fill(cx - 91, height - 22, cx + 91, height, 0xFF56555A);
@@ -94,7 +94,7 @@ public final class ClientSmokeTest {
         search=(net.minecraft.client.gui.components.EditBox)mc.screen.children().stream().filter(w->w instanceof net.minecraft.client.gui.components.EditBox).findFirst().orElseThrow();var ultimate=RecipeRegistry.clientRecipes().stream().filter(d->d.name().equals("Absolute Zero")).findFirst().orElseThrow();var ultimateName=ultimate.displayName().getString();search.setValue(ultimateName);
         var button=(net.minecraft.client.gui.components.Button)mc.screen.children().stream().filter(w->w instanceof net.minecraft.client.gui.components.Button b && b.getMessage().getString().equals(ultimateName)).findFirst().orElseThrow();
         int bookHeight=Math.min(330,mc.screen.height-16);
-        double sx=button.getX()+10,sy=button.getY()+8,dropY=(mc.screen.height-bookHeight)/2.0+bookHeight-25;
+        double sx=button.x+10,sy=button.y+8,dropY=(mc.screen.height-bookHeight)/2.0+bookHeight-25;
         mc.screen.mouseClicked(sx,sy,0);mc.screen.mouseDragged(sx,dropY,0,0,dropY-sy);mc.screen.mouseReleased(sx,dropY,0);
         if(saved.slot(0)!=ultimate.spokenPacked())throw new IllegalStateException("Dragging spell into preset failed");
         if(saved.slot(0)==ultimate.formula().prepared().packed())throw new IllegalStateException("Preset must keep the incantation order, not the sorted elements");

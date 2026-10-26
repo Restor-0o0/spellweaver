@@ -65,7 +65,7 @@ public final class MageLevel {
     }
 
     private static void levelUp(ServerPlayer player, int before, int after) {
-        player.level().playSound(null, player.blockPosition(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, .8f, 1.3f);
+        player.level.playSound(null, player.blockPosition(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, .8f, 1.3f);
         player.sendSystemMessage(Component.translatable("mage.magicka.level_up", after).withStyle(ChatFormatting.LIGHT_PURPLE));
         int elements = maxElements(player, after);
         if (elements > maxElements(player, before)) player.sendSystemMessage(Component.translatable("mage.magicka.more_elements", elements).withStyle(ChatFormatting.GOLD));
@@ -82,7 +82,7 @@ public final class MageLevel {
     }
 
     public static void fizzle(ServerPlayer player) {
-        player.level().playSound(null, player.blockPosition(), SoundEvents.FIRE_EXTINGUISH, SoundSource.PLAYERS, .6f, 1.4f);
+        player.level.playSound(null, player.blockPosition(), SoundEvents.FIRE_EXTINGUISH, SoundSource.PLAYERS, .6f, 1.4f);
     }
 
     public static void reject(ServerPlayer player, int elements) {

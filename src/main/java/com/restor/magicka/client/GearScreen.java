@@ -1,11 +1,11 @@
 package com.restor.magicka.client;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.restor.magicka.GearItem;
 import com.restor.magicka.GearMenu;
 import com.restor.magicka.MagicGear;
 import com.restor.magicka.MagicStats;
 import com.restor.magicka.PotionBelt;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
@@ -28,7 +28,7 @@ public final class GearScreen extends AbstractContainerScreen<GearMenu> {
         inventoryLabelY = GearMenu.INVENTORY_Y - 10;
     }
 
-    @Override protected void renderBg(GuiGraphics g, float partial, int mouseX, int mouseY) {
+    @Override protected void renderBg(PoseStack pose, float partial, int mouseX, int mouseY){var g=new GuiGraphics(pose);
         MagicUi.panel(g, leftPos, topPos, imageWidth, imageHeight);
         MagicUi.panel(g, leftPos + 18, topPos + 16, 104, 102);
         MagicUi.panel(g, leftPos + 126, topPos + 16, 80, 102);
@@ -111,22 +111,22 @@ public final class GearScreen extends AbstractContainerScreen<GearMenu> {
         return roles;
     }
 
-    @Override protected void renderTooltip(GuiGraphics g, int x, int y) {
+    @Override protected void renderTooltip(PoseStack pose, int x, int y){var g=new GuiGraphics(pose);
         Slot slot = hoveredSlot;
         if (slot instanceof GearMenu.GearSlot gear && !slot.hasItem())
             g.renderTooltip(font, Component.translatable("screen.magicka.slot." + gear.gear.key()), x, y);
                 else if (slot instanceof GearMenu.BeltSlot && !slot.hasItem())
             g.renderTooltip(font, Component.translatable("screen.magicka.slot.belt"), x, y);
-        else super.renderTooltip(g, x, y);
+        else super.renderTooltip(g.pose(), x, y);
     }
 
-    @Override public void render(GuiGraphics g, int mouseX, int mouseY, float partial) {
-        renderBackground(g);
-        super.render(g, mouseX, mouseY, partial);
-        renderTooltip(g, mouseX, mouseY);
+    @Override public void render(PoseStack pose, int mouseX, int mouseY, float partial){var g=new GuiGraphics(pose);
+        renderBackground(g.pose());
+        super.render(g.pose(), mouseX, mouseY, partial);
+        renderTooltip(g.pose(), mouseX, mouseY);
     }
 
-    @Override protected void renderLabels(GuiGraphics g, int mouseX, int mouseY) {
+    @Override protected void renderLabels(PoseStack pose, int mouseX, int mouseY){var g=new GuiGraphics(pose);
         MagicUi.text(g, title, titleLabelX, titleLabelY, MagicUi.GOLD);
         MagicUi.text(g, playerInventoryTitle, inventoryLabelX, inventoryLabelY, MagicUi.MUTED);
     }

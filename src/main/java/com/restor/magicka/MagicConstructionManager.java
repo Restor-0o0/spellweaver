@@ -37,12 +37,12 @@ public final class MagicConstructionManager extends SavedData {
     public Collection<Construction> structures() { return Collections.unmodifiableCollection(structures.values()); }
     public static void start(ServerPlayer player, SpellDefinition spell, boolean self, Vec3 point) {
         if (!MagicConfig.CONSTRUCTION.get()) return;
-        var manager = get(player.serverLevel());
+        var manager = get(player.getLevel());
         if (manager.builds.stream().filter(b -> b.owner.equals(player.getUUID())).count() >= 2) return;
-        manager.builds.add(new Build(UUID.randomUUID(),player.getUUID(),spell,new Plan(player,spell,self,point),player.serverLevel().getGameTime(),self,instantBuilds,new int[]{0},new HashSet<>()));
+        manager.builds.add(new Build(UUID.randomUUID(),player.getUUID(),spell,new Plan(player,spell,self,point),player.getLevel().getGameTime(),self,instantBuilds,new int[]{0},new HashSet<>()));
     }
     static void stop(ServerPlayer player, long since) {
-        get(player.serverLevel()).builds.removeIf(b -> b.owner.equals(player.getUUID()) && !b.instant && b.started >= since);
+        get(player.getLevel()).builds.removeIf(b -> b.owner.equals(player.getUUID()) && !b.instant && b.started >= since);
     }
     /** Immutable recipe determines shape; only bounded yaw/pitch steering changes the path. */
     public static final class Plan {
@@ -66,10 +66,10 @@ public final class MagicConstructionManager extends SavedData {
             }
             else if (shape==SpellShape.SPIKE && spell.origin()==OriginMode.CASTER_FEET) start=spikeStart(player,direction);
             else if (spell.origin()==OriginMode.CASTER_FEET) start=player.blockPosition().relative(direction); // Reachable first step, one block up from the floor.
-            else if (shape==SpellShape.GROWTH) start=floor(player.level(),BlockPos.containing(self ? player.position() : grip(player,origin)));
-            else if (self || spell.origin()==OriginMode.UNDER_TARGET) start=BlockPos.containing(self ? player.position() : origin);
+            else if (shape==SpellShape.GROWTH) start=floor(player.level,new BlockPos(self ? player.position() : grip(player,origin)));
+            else if (self || spell.origin()==OriginMode.UNDER_TARGET) start=new BlockPos(self ? player.position() : origin);
             else if (hit.getType()==HitResult.Type.BLOCK && spell.origin()!=OriginMode.AIM_POINT) start=hit.getBlockPos().relative(hit.getDirection());
-            else start=BlockPos.containing(origin);
+            else start=new BlockPos(origin);
             cursor=start;
             var look=player.getLookAngle();
             var flat=new Vec3(look.x,0,look.z);
@@ -89,7 +89,7 @@ public final class MagicConstructionManager extends SavedData {
         public Vec3 heading(){return heading;}
         private static BlockPos spikeStart(Player player, Direction direction) {
             BlockPos front=player.blockPosition().relative(direction);
-            for(int up=0;up<3;up++) if(WorldPlacement.replaceable(player.level().getBlockState(front.above(up)),true)) return front.above(up);
+            for(int up=0;up<3;up++) if(WorldPlacement.replaceable(player.level.getBlockState(front.above(up)),true)) return front.above(up);
             return player.blockPosition().above(2);
         }
         private static BlockPos ground(net.minecraft.world.level.Level level,BlockPos pos){
@@ -103,8 +103,8 @@ public final class MagicConstructionManager extends SavedData {
             int reach=switch(kind){case "wall" -> 2;case "slope", "redoubt" -> 3;default -> 0;};
             if(reach==0 || kind.equals("wall") && player.getXRot()<-45)return template(player,kind,feet,forward);
             var hit=SpellAim.hit(player);
-            BlockPos anchor=!self && hit.getType()==HitResult.Type.BLOCK ? hit.getBlockPos().relative(hit.getDirection()) : BlockPos.containing(feet.add(forward.scale(reach)));
-            return template(player,kind,Vec3.atCenterOf(ground(player.level(),anchor)).subtract(forward.scale(reach)),forward);
+            BlockPos anchor=!self && hit.getType()==HitResult.Type.BLOCK ? hit.getBlockPos().relative(hit.getDirection()) : new BlockPos(feet.add(forward.scale(reach)));
+            return template(player,kind,Vec3.atCenterOf(ground(player.level,anchor)).subtract(forward.scale(reach)),forward);
         }
         /** The caster's own stencil: local x runs to their right, z away from them, y up from the anchor. */
         private static List<BlockPos> sculpture(Player player,boolean self){
@@ -113,7 +113,7 @@ public final class MagicConstructionManager extends SavedData {
             Vec3 forward=Vec3.directionFromRotation(0,player.getYRot()),feet=Vec3.atCenterOf(player.blockPosition());
             var hit=SpellAim.hit(player);
             boolean aimed=!self && hit.getType()==HitResult.Type.BLOCK && hit.getLocation().distanceToSqr(player.getEyePosition())<=144;
-            BlockPos anchor=aimed ? hit.getBlockPos().relative(hit.getDirection()) : ground(player.level(),BlockPos.containing(feet.add(forward.scale(4))));
+            BlockPos anchor=aimed ? hit.getBlockPos().relative(hit.getDirection()) : ground(player.level,new BlockPos(feet.add(forward.scale(4))));
             int half=ShapePattern.SIZE/2;
             var out=new ArrayList<BlockPos>();
             for(int y=0;y<ShapePattern.SIZE;y++)for(int z=0;z<ShapePattern.SIZE;z++)for(int x=0;x<ShapePattern.SIZE;x++)
@@ -123,12 +123,12 @@ public final class MagicConstructionManager extends SavedData {
         }
         /** Cells whose centres fall in a digital plane as thick as |nx|+|ny|+|nz|, so slanted surfaces stay face-connected. */
         public static List<BlockPos> template(Player player,String kind,Vec3 origin,Vec3 forward){
-            var level=player.level();var out=new ArrayList<BlockPos>();
+            var level=player.level;var out=new ArrayList<BlockPos>();
             if(kind.equals("wall") && player.getXRot()<-45)kind="tent";
             Vec3 right=new Vec3(-forward.z,0,forward.x);
             double across=Math.abs(forward.x)+Math.abs(forward.z),pitch=player.getXRot();
             boolean columns=kind.equals("wall") || kind.equals("redoubt");
-            BlockPos center=BlockPos.containing(origin);
+            BlockPos center=new BlockPos(origin);
             for(int dy=columns ? 0 : -1;dy<=(columns ? 0 : 5);dy++)for(int dx=-7;dx<=7;dx++)for(int dz=-7;dz<=7;dz++){
                 BlockPos cell=center.offset(dx,dy,dz);Vec3 v=Vec3.atCenterOf(cell).subtract(origin);
                 double f=v.x*forward.x+v.z*forward.z,r=v.x*right.x+v.z*right.z,u=v.y;
@@ -174,7 +174,7 @@ public final class MagicConstructionManager extends SavedData {
             }
         }
         private List<BlockPos> spike(Player player,boolean self,Vec3 look){
-            var random=player.getRandom();var level=player.level();var hit=SpellAim.hit(player);
+            var random=player.getRandom();var level=player.level;var hit=SpellAim.hit(player);
             BlockPos from;
             if(!self && hit.getType()==HitResult.Type.BLOCK && WorldPlacement.replaceable(level.getBlockState(hit.getBlockPos().relative(hit.getDirection())),true)){
                 from=hit.getBlockPos().relative(hit.getDirection());heading=tilt(Vec3.atLowerCornerOf(hit.getDirection().getNormal()),random,0,.4);
@@ -235,9 +235,9 @@ public final class MagicConstructionManager extends SavedData {
     private static void impale(ServerPlayer player, Build build, BlockPos pos) {
         double damage=EffectGraph.number(build.spell.construction(),"impale_damage",0);
         Vec3 push=build.plan.heading().scale(build.instant ? 1.1 : .7).add(0,.25,0);
-        for (var entity:player.serverLevel().getEntitiesOfClass(LivingEntity.class,new AABB(pos),LivingEntity::isAlive)) {
+        for (var entity:player.getLevel().getEntitiesOfClass(LivingEntity.class,new AABB(pos),LivingEntity::isAlive)) {
             if (entity==player || !EffectGraph.canHarm(player,entity) || !build.impaled.add(entity.getUUID())) continue;
-            if (damage>0) com.restor.magicka.enemy.MagicEnemies.hurt(entity,player.damageSources().indirectMagic(player,player),(float)(build.instant ? damage*1.5 : damage),player,build.spell,MagicStatuses.has(entity,MagicStatuses.Status.FROZEN) || MagicStatuses.has(entity,MagicStatuses.Status.BRITTLE));
+            if (damage>0) com.restor.magicka.enemy.MagicEnemies.hurt(entity,net.minecraft.world.damagesource.DamageSource.indirectMagic(player,player),(float)(build.instant ? damage*1.5 : damage),player,build.spell,MagicStatuses.has(entity,MagicStatuses.Status.FROZEN) || MagicStatuses.has(entity,MagicStatuses.Status.BRITTLE));
             MagicStatuses.apply(entity,MagicStatuses.Status.CHILLED,60,1);
             entity.push(push.x,push.y,push.z);entity.hurtMarked=true;
         }
@@ -252,7 +252,7 @@ public final class MagicConstructionManager extends SavedData {
             ServerPlayer player=level.getServer().getPlayerList().getPlayer(build.owner);
             // Fake players used by GameTests are resolved by the runtime owner cache.
             if (player==null) player=SpellRuntime.owner(level,build.owner);
-            if (player==null || !player.isAlive() || player.level()!=level) { iterator.remove();continue; }
+            if (player==null || !player.isAlive() || player.level!=level) { iterator.remove();continue; }
             if (!build.instant && (level.getGameTime()-build.started)%build.spell.interval()!=0) continue;
             int limit=build.plan.limit();
             int steps=build.instant ? limit : SpellDefinition.integer(build.spell.construction(),"batch",1,1,64);
@@ -285,7 +285,7 @@ public final class MagicConstructionManager extends SavedData {
                     existing.blocks.add(pos.immutable());existing.expires=Math.max(existing.expires,data.expires);setDirty();
                     if (existing.blocks.size()==1 && tesla) SpellRuntime.tesla(player,build.spell,build.id);
                     if(build.plan.shape==SpellShape.GROWTH)for(var entity:level.getEntitiesOfClass(LivingEntity.class,new AABB(build.plan.start).inflate(1.8)))
-                        EffectGraph.entity(player,entity,build.spell,build.self?build.spell.selfEffects():build.spell.effects(),build.plan.start.getCenter(),build.self);
+                        EffectGraph.entity(player,entity,build.spell,build.self?build.spell.selfEffects():build.spell.effects(),net.minecraft.world.phys.Vec3.atCenterOf(build.plan.start),build.self);
                     MagicNetwork.construction(player,build.id,existing.blocks.size(),limit-build.attempts[0]);
                 }
             }

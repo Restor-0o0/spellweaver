@@ -8,8 +8,8 @@ import java.util.Set;
 
 public final class MagePath {
     public static void award(ServerPlayer player, String name) {
-        if (player instanceof FakePlayer || player.level().getServer() == null) return;
-        var holder = player.level().getServer().getAdvancements().getAdvancement(new ResourceLocation(Magicka.ID, "mage/" + name));
+        if (player instanceof FakePlayer || player.level.getServer() == null) return;
+        var holder = player.level.getServer().getAdvancements().getAdvancement(new ResourceLocation(Magicka.ID, "mage/" + name));
         if (holder != null) player.getAdvancements().award(holder, "done");
     }
 

@@ -10,7 +10,7 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.*;
-import org.joml.Vector3f;
+import com.mojang.math.Vector3f;
 
 public class EnemyBolt extends AbstractHurtingProjectile {
     private static final EntityDataAccessor<Integer> ELEMENT = SynchedEntityData.defineId(EnemyBolt.class, EntityDataSerializers.INT);
@@ -19,7 +19,7 @@ public class EnemyBolt extends AbstractHurtingProjectile {
     public EnemyBolt(EntityType<? extends EnemyBolt> type, Level level) { super(type, level); }
 
     public static EnemyBolt shoot(Mob shooter, LivingEntity target, Element element, float damage, double speed) {
-        EnemyBolt bolt = new EnemyBolt(MagicEnemies.BOLT.get(), shooter.level());
+        EnemyBolt bolt = new EnemyBolt(MagicEnemies.BOLT.get(), shooter.level);
         Vec3 from = shooter.getEyePosition().add(shooter.getLookAngle().scale(.4));
         Vec3 aim = target.position().add(0, target.getBbHeight() * .55, 0).subtract(from).normalize();
         bolt.setOwner(shooter);
@@ -27,7 +27,7 @@ public class EnemyBolt extends AbstractHurtingProjectile {
         bolt.setDeltaMovement(aim.scale(speed));
         bolt.entityData.set(ELEMENT, element.ordinal());
         bolt.damage = damage;
-        shooter.level().addFreshEntity(bolt);
+        shooter.level.addFreshEntity(bolt);
         return bolt;
     }
     public Element element() { return Element.values()[Mth.clamp(entityData.get(ELEMENT), 0, Element.values().length - 1)]; }
@@ -42,17 +42,17 @@ public class EnemyBolt extends AbstractHurtingProjectile {
     }
     @Override public void tick() {
         super.tick();
-        if (!level().isClientSide && tickCount > 80) discard();
+        if (!level.isClientSide && tickCount > 80) discard();
     }
     @Override protected boolean canHitEntity(Entity entity) {
         return super.canHitEntity(entity) && !(entity instanceof LivingEntity living && SpecialEnemy.ally(living));
     }
     @Override protected void onHitEntity(EntityHitResult hit) {
         super.onHitEntity(hit);
-        if (level().isClientSide || !(hit.getEntity() instanceof LivingEntity target)) return;
+        if (level.isClientSide || !(hit.getEntity() instanceof LivingEntity target)) return;
         Entity owner = getOwner();
         boolean conducts = element() == Element.LIGHTNING && MagicStatuses.has(target, MagicStatuses.Status.WET);
-        target.hurt(damageSources().indirectMagic(this, owner instanceof LivingEntity o ? o : null), conducts ? damage * 2 : damage);
+        target.hurt(net.minecraft.world.damagesource.DamageSource.indirectMagic(this, owner instanceof LivingEntity o ? o : null), conducts ? damage * 2 : damage);
         switch (element()) {
             case WATER -> {
                 MagicStatuses.apply(target, MagicStatuses.Status.WET, 160, 1);
@@ -67,6 +67,6 @@ public class EnemyBolt extends AbstractHurtingProjectile {
     }
     @Override protected void onHit(HitResult hit) {
         super.onHit(hit);
-        if (!level().isClientSide) discard();
+        if (!level.isClientSide) discard();
     }
 }

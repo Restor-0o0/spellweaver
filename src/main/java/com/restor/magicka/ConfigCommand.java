@@ -38,8 +38,8 @@ public final class ConfigCommand {
 
     private static int list(CommandContext<CommandSourceStack> c) {
         var source = c.getSource();
-        source.sendSuccess(() -> Component.translatable("command.magicka.config.header").withStyle(ChatFormatting.GOLD), false);
-        values().forEach((key, value) -> source.sendSuccess(() -> line(key, value), false));
+        source.sendSuccess(Component.translatable("command.magicka.config.header").withStyle(ChatFormatting.GOLD), false);
+        values().forEach((key, value) -> source.sendSuccess(line(key, value), false));
         return values().size();
     }
 
@@ -53,9 +53,9 @@ public final class ConfigCommand {
     private static int show(CommandSourceStack source, String key) {
         var value = values().get(key);
         if (value == null) { source.sendFailure(Component.translatable("command.magicka.config.unknown", key)); return 0; }
-        source.sendSuccess(() -> line(key, value), false);
-        source.sendSuccess(() -> Component.translatableWithFallback("magicka.configuration." + key + ".tooltip", spec(value).getComment()).withStyle(ChatFormatting.GRAY), false);
-        source.sendSuccess(() -> Component.translatable("command.magicka.config.default", String.valueOf(value.getDefault()), allowed(value)).withStyle(ChatFormatting.DARK_GRAY), false);
+        source.sendSuccess(line(key, value), false);
+        source.sendSuccess(Component.translatable("magicka.configuration." + key + ".tooltip", spec(value).getComment()).withStyle(ChatFormatting.GRAY), false);
+        source.sendSuccess(Component.translatable("command.magicka.config.default", String.valueOf(value.getDefault()), allowed(value)).withStyle(ChatFormatting.DARK_GRAY), false);
         return 1;
     }
 
@@ -79,7 +79,7 @@ public final class ConfigCommand {
         value.set(parsed);
         value.save();
         MagicNetwork.sendConfig(source.getServer(), "spellweaver-server.toml");
-        source.sendSuccess(() -> Component.translatable("command.magicka.config.set", key, String.valueOf(parsed)), true);
+        source.sendSuccess(Component.translatable("command.magicka.config.set", key, String.valueOf(parsed)), true);
         return 1;
     }
 

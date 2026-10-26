@@ -15,9 +15,9 @@ public final class MagicSummon extends ArmorStand {
         super(level,point.x,point.y,point.z);addTag("magicka_object");setNoGravity(true);setHealth(Mth.clamp(health,1,20));
     }
     @Override public boolean hurt(DamageSource source,float amount){
-        if(level().isClientSide || !isAlive() || amount<=0)return false;
+        if(level.isClientSide || !isAlive() || amount<=0)return false;
         if(source.getEntity() instanceof ServerPlayer p && !EffectGraph.canHarm(p,this))return false;
-        setHealth(Math.max(0,getHealth()-amount));level().broadcastEntityEvent(this,(byte)32);
+        setHealth(Math.max(0,getHealth()-amount));level.broadcastEntityEvent(this,(byte)32);
         if(getHealth()<=0)discard();return true;
     }
     @Override public InteractionResult interactAt(Player player,Vec3 location,InteractionHand hand){return InteractionResult.FAIL;}

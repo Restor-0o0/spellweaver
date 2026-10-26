@@ -45,15 +45,15 @@ public class MushroomNurse extends SpecialEnemy {
                 target.heal(AMOUNT);
                 MagicStatuses.apply(target, MagicStatuses.Status.REGENERATING, 100, 1);
                 beam(getEyePosition(), target.position().add(0, target.getBbHeight() * .6, 0), 0xFFD66B);
-                if (level() instanceof ServerLevel level) level.sendParticles(ParticleTypes.HAPPY_VILLAGER, target.getX(), target.getY() + target.getBbHeight(), target.getZ(), 8, .4, .3, .4, 0);
-                playSound(SoundEvents.AMETHYST_BLOCK_RESONATE, 1f, 1.4f);
+                if (level instanceof ServerLevel level) level.sendParticles(ParticleTypes.HAPPY_VILLAGER, target.getX(), target.getY() + target.getBbHeight(), target.getZ(), 8, .4, .3, .4, 0);
+                playSound(SoundEvents.AMETHYST_BLOCK_CHIME, 1f, 1.4f);
                 cooldown = 60;
             });
             return;
         }
         if (tickCount % 20 == 0 && getNavigation().isDone()) {
             var group = allies(16);
-            Player threat = level().getNearestPlayer(this, 16);
+            Player threat = level.getNearestPlayer(this, 16);
             if (!group.isEmpty()) {
                 Vec3 center = group.stream().map(Entity::position).reduce(Vec3.ZERO, Vec3::add).scale(1.0 / group.size());
                 if (threat != null) center = center.add(flat(center.subtract(threat.position())).normalize().scale(3));

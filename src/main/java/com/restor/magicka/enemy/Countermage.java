@@ -94,7 +94,7 @@ public class Countermage extends SpecialEnemy {
         Element e = extra() > 0 ? Element.values()[extra() - 1] : Element.ARCANE;
         dust(position().add(0, getBbHeight() + .3, 0), e.color, 3, .3);
         if (remaining % 5 == 0) playSound(SoundEvents.BEACON_AMBIENT, 1f, 1.5f);
-        if (remaining % 3 == 0 && level() instanceof ServerLevel) ring(position(), AURA * castProgress(), e.color);
+        if (remaining % 3 == 0 && level instanceof ServerLevel) ring(position(), AURA * castProgress(), e.color);
     }
     @Override protected float interruptDamage() { return 5; }
     @Override protected SoundEvent castSound() { return SoundEvents.ILLUSIONER_PREPARE_MIRROR; }

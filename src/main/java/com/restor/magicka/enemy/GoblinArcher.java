@@ -30,12 +30,12 @@ public class GoblinArcher extends Goblin {
     }
     private void shoot(LivingEntity target) {
         if (!target.isAlive()) return;
-        Arrow arrow = new Arrow(level(), this);
+        Arrow arrow = new Arrow(level, this);
         arrow.pickup = AbstractArrow.Pickup.DISALLOWED;
         arrow.setBaseDamage(2.5);
         double dx = target.getX() - getX(), dy = target.getY(.33) - arrow.getY(), dz = target.getZ() - getZ();
-        arrow.shoot(dx, dy + Math.sqrt(dx * dx + dz * dz) * .2, dz, 1.6f, 10 - level().getDifficulty().getId() * 3);
-        level().addFreshEntity(arrow);
+        arrow.shoot(dx, dy + Math.sqrt(dx * dx + dz * dz) * .2, dz, 1.6f, 10 - level.getDifficulty().getId() * 3);
+        level.addFreshEntity(arrow);
         playSound(SoundEvents.SKELETON_SHOOT, 1f, 1.2f + random.nextFloat() * .2f);
     }
     @Override protected float interruptDamage() { return 3; }

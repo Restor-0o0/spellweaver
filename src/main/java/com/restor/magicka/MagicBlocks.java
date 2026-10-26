@@ -2,7 +2,7 @@ package com.restor.magicka;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
@@ -20,8 +20,8 @@ import net.minecraftforge.registries.DeferredRegister;
 import java.util.UUID;
 
 public final class MagicBlocks {
-    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(Registries.BLOCK, Magicka.ID);
-    public static final DeferredRegister<BlockEntityType<?>> ENTITIES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, Magicka.ID);
+    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(Registry.BLOCK_REGISTRY, Magicka.ID);
+    public static final DeferredRegister<BlockEntityType<?>> ENTITIES = DeferredRegister.create(Registry.BLOCK_ENTITY_TYPE_REGISTRY, Magicka.ID);
     public static final RegistryObject<Block> EARTH = BLOCKS.register("magic_earth", () -> new TemporaryBlock(
             properties().strength(1.5F).sound(SoundType.STONE)));
     public static final RegistryObject<Block> ICE = BLOCKS.register("magic_ice", () -> new TemporaryBlock(
@@ -43,8 +43,10 @@ public final class MagicBlocks {
     public static final RegistryObject<BlockEntityType<MagicBlockEntity>> DATA = ENTITIES.register(
             "construction", () -> BlockEntityType.Builder.of(MagicBlockEntity::new, EARTH.get(), ICE.get(), ROOT.get(), ARCANE.get(), PUDDLE.get(), LIGHT.get(), GLOW.get(), COPPER.get(), COIL.get()).build(null));
 
+    private static final net.minecraft.world.level.material.Material MAGIC = new net.minecraft.world.level.material.Material.Builder(net.minecraft.world.level.material.MaterialColor.NONE) {{ notPushable(); }}.build();
+
     private static BlockBehaviour.Properties properties() {
-        return BlockBehaviour.Properties.of().noLootTable().pushReaction(PushReaction.BLOCK);
+        return BlockBehaviour.Properties.of(MAGIC).noLootTable();
     }
 
     public static final class TemporaryBlock extends Block implements EntityBlock {
@@ -91,7 +93,7 @@ public final class MagicBlocks {
     }
     static boolean touchesRoot(net.minecraft.world.entity.player.Player player) {
         var box=player.getBoundingBox().inflate(.1,0,.1);
-        return BlockPos.betweenClosedStream(box).anyMatch(pos->player.level().getBlockState(pos).is(ROOT.get()));
+        return BlockPos.betweenClosedStream(box).anyMatch(pos->player.level.getBlockState(pos).is(ROOT.get()));
     }
 
     public static final class MagicBlockEntity extends BlockEntity {

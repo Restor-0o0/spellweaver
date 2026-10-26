@@ -20,7 +20,7 @@ public final class EnemyGameTests {
     }
     private static float hit(SpecialEnemy mob, ServerPlayer caster, SpellDefinition spell, float damage, boolean brittle) {
         float before = mob.getHealth();
-        MagicEnemies.hurt(mob, mob.damageSources().magic(), damage, caster, spell, brittle);
+        MagicEnemies.hurt(mob, net.minecraft.world.damagesource.DamageSource.MAGIC, damage, caster, spell, brittle);
         return before - mob.getHealth();
     }
 
@@ -30,14 +30,14 @@ public final class EnemyGameTests {
         ServerPlayer p = RecipeGameTests.caster(h);
         CastingServer.input(p, 7);
         ElementLocks.lock(p, 1 << Element.FIRE.ordinal(), 100);
-        h.assertTrue(ElementLocks.locked(p, Element.FIRE) && !ElementLocks.locked(p, Element.WATER), "Only the bound element is locked");
+        Check.assertTrue(h,ElementLocks.locked(p, Element.FIRE) && !ElementLocks.locked(p, Element.WATER), "Only the bound element is locked");
         CastingServer.input(p, Element.FIRE.ordinal());
-        h.assertTrue(CastingServer.prepared(p).count(Element.FIRE) == 0, "A locked element cannot be typed");
+        Check.assertTrue(h,CastingServer.prepared(p).count(Element.FIRE) == 0, "A locked element cannot be typed");
         CastingServer.input(p, Element.WATER.ordinal());
-        h.assertTrue(CastingServer.prepared(p).count(Element.WATER) == 1, "Other elements still work");
+        Check.assertTrue(h,CastingServer.prepared(p).count(Element.WATER) == 1, "Other elements still work");
         ElementLocks.clear(p);
         CastingServer.input(p, Element.FIRE.ordinal());
-        h.assertTrue(CastingServer.prepared(p).count(Element.FIRE) == 1, "Clearing the lock restores the element");
+        Check.assertTrue(h,CastingServer.prepared(p).count(Element.FIRE) == 1, "Clearing the lock restores the element");
         h.succeed();
     }
 
@@ -51,8 +51,8 @@ public final class EnemyGameTests {
         ShieldBeetle rear = mob(h, MagicEnemies.SHIELD_BEETLE.get(), 3.5, 3.5, 0);
         p.setPos(h.absoluteVec(new Vec3(3.5, 2, 1.5)));
         float exposed = hit(rear, p, bolt, 10, false);
-        h.assertTrue(blocked < 3, "Front shield absorbs projectiles, took " + blocked);
-        h.assertTrue(exposed > 12, "The rear takes bonus damage, took " + exposed);
+        Check.assertTrue(h,blocked < 3, "Front shield absorbs projectiles, took " + blocked);
+        Check.assertTrue(h,exposed > 12, "The rear takes bonus damage, took " + exposed);
         h.succeed();
     }
 
@@ -63,11 +63,11 @@ public final class EnemyGameTests {
         StoneCrawler crawler = mob(h, MagicEnemies.STONE_CRAWLER.get(), 2.5, 3.5, 0);
         SpellDefinition fire = find(d -> d.formula().count(Element.FIRE) > 0 && d.formula().count(Element.EARTH) == 0);
         SpellDefinition earth = find(d -> d.formula().count(Element.EARTH) > 0);
-        h.assertTrue(hit(crawler, p, fire, 10, false) <= 4.01f, "Armor soaks plain spells");
-        h.assertTrue(crawler.armored(), "Armor holds without a brittle Earth hit");
+        Check.assertTrue(h,hit(crawler, p, fire, 10, false) <= 4.01f, "Armor soaks plain spells");
+        Check.assertTrue(h,crawler.armored(), "Armor holds without a brittle Earth hit");
         crawler.invulnerableTime = 0;
         hit(crawler, p, earth, 4, true);
-        h.assertFalse(crawler.armored(), "Brittle Earth shatters the armor");
+        Check.assertFalse(h,crawler.armored(), "Brittle Earth shatters the armor");
         h.succeed();
     }
 
@@ -79,12 +79,12 @@ public final class EnemyGameTests {
         ShieldBeetle guard = mob(h, MagicEnemies.SHIELD_BEETLE.get(), 1.5, 3.5, 0);
         SpellDefinition fire = find(d -> d.formula().size() >= 2 && d.formula().count(Element.FIRE) == d.formula().size());
         SpellDefinition water = find(d -> d.formula().size() > 0 && d.formula().count(Element.WATER) == d.formula().size());
-        for (int i = 0; i < 6; i++) { guard.invulnerableTime = 0; MagicEnemies.hurt(guard, guard.damageSources().magic(), .1f, p, fire, false); }
-        h.assertTrue(mage.weight(Element.FIRE) >= Countermage.THRESHOLD, "Spells on allies are observed");
+        for (int i = 0; i < 6; i++) { guard.invulnerableTime = 0; MagicEnemies.hurt(guard, net.minecraft.world.damagesource.DamageSource.MAGIC, .1f, p, fire, false); }
+        Check.assertTrue(h,mage.weight(Element.FIRE) >= Countermage.THRESHOLD, "Spells on allies are observed");
         mage.raiseWard(Element.FIRE);
-        h.assertTrue(mage.warded() == Element.FIRE, "Ward takes the dominant element");
-        h.assertTrue(mage.shield(guard, fire) < .5f, "Allies in the aura resist the warded element");
-        h.assertTrue(mage.shield(guard, water) == 1, "Other elements pass through");
+        Check.assertTrue(h,mage.warded() == Element.FIRE, "Ward takes the dominant element");
+        Check.assertTrue(h,mage.shield(guard, fire) < .5f, "Allies in the aura resist the warded element");
+        Check.assertTrue(h,mage.shield(guard, water) == 1, "Other elements pass through");
         h.succeed();
     }
 
@@ -98,8 +98,8 @@ public final class EnemyGameTests {
         int floor = h.absolutePos(new net.minecraft.core.BlockPos(0, 2, 0)).getY();
         boolean grounded = mobs.stream().allMatch(m -> m.getBlockY() == floor);
         mobs.forEach(m -> m.discard());
-        h.assertTrue(mobs.size() == 3, "Encounter D spawns two crawlers and a burrower");
-        h.assertTrue(grounded, "Encounter mobs stand on the cave floor, not on the roof");
+        Check.assertTrue(h,mobs.size() == 3, "Encounter D spawns two crawlers and a burrower");
+        Check.assertTrue(h,grounded, "Encounter mobs stand on the cave floor, not on the roof");
         h.succeed();
     }
 
@@ -109,7 +109,7 @@ public final class EnemyGameTests {
         var mobs = MagicEnemies.encounter(h.getLevel(), h.absoluteVec(new Vec3(2.5, 2, 2.5)), "g");
         long goblins = mobs.stream().filter(m -> m instanceof Goblin || m instanceof Countermage).count();
         mobs.forEach(m -> m.discard());
-        h.assertTrue(mobs.size() == 7 && goblins == 7, "Encounter G spawns a goblin warband of seven, got " + mobs.size());
+        Check.assertTrue(h,mobs.size() == 7 && goblins == 7, "Encounter G spawns a goblin warband of seven, got " + mobs.size());
         h.succeed();
     }
 
@@ -123,8 +123,8 @@ public final class EnemyGameTests {
         GoblinBomb.create(bomber, h.absoluteVec(new Vec3(1.5, 2.1, 1)), 5);
         GoblinBomb doused = GoblinBomb.create(bomber, h.absoluteVec(new Vec3(4.5, 2.1, 1.5)), 5);
         h.runAfterDelay(10, () -> {
-            h.assertTrue(dry.getHealth() < dry.getMaxHealth(), "A lit bomb blasts everyone nearby, goblins included");
-            h.assertTrue(doused.isRemoved() && wet.getHealth() == wet.getMaxHealth(), "Water puts the fuse out");
+            Check.assertTrue(h,dry.getHealth() < dry.getMaxHealth(), "A lit bomb blasts everyone nearby, goblins included");
+            Check.assertTrue(h,doused.isRemoved() && wet.getHealth() == wet.getMaxHealth(), "Water puts the fuse out");
             h.succeed();
         });
     }
@@ -136,19 +136,19 @@ public final class EnemyGameTests {
         GoblinWarrior warrior = mob(h, MagicEnemies.GOBLIN_WARRIOR.get(), 3.5, 2.5, 0);
         ShieldBeetle beetle = mob(h, MagicEnemies.SHIELD_BEETLE.get(), 1.5, 4.5, 0);
         shaman.rally();
-        h.assertTrue(warrior.hasEffect(net.minecraft.world.effect.MobEffects.DAMAGE_BOOST), "Goblins get the war chant");
-        h.assertFalse(beetle.hasEffect(net.minecraft.world.effect.MobEffects.DAMAGE_BOOST), "Other monsters do not");
+        Check.assertTrue(h,warrior.hasEffect(net.minecraft.world.effect.MobEffects.DAMAGE_BOOST), "Goblins get the war chant");
+        Check.assertFalse(h,beetle.hasEffect(net.minecraft.world.effect.MobEffects.DAMAGE_BOOST), "Other monsters do not");
         var mobs = MagicEnemies.encounter(h.getLevel(), h.absoluteVec(new Vec3(2.5, 2, 2.5)), "h");
         boolean kin = mobs.stream().allMatch(Goblin::kin);
         mobs.forEach(m -> m.discard());
-        h.assertTrue(mobs.size() == 8 && kin, "Encounter H spawns eight goblins, got " + mobs.size());
+        Check.assertTrue(h,mobs.size() == 8 && kin, "Encounter H spawns eight goblins, got " + mobs.size());
         h.succeed();
     }
 
     @GameTest(template="empty")
     public static void stoneEaterOnlyEatsMagic(GameTestHelper h) {
-        h.assertFalse(StoneEater.edible(net.minecraft.world.level.block.Blocks.STONE.defaultBlockState()), "Natural stone is not food");
-        h.assertFalse(StoneEater.edible(MagicBlocks.PUDDLE.get().defaultBlockState()), "Puddles are not food");
+        Check.assertFalse(h,StoneEater.edible(net.minecraft.world.level.block.Blocks.STONE.defaultBlockState()), "Natural stone is not food");
+        Check.assertFalse(h,StoneEater.edible(MagicBlocks.PUDDLE.get().defaultBlockState()), "Puddles are not food");
         h.succeed();
     }
 }

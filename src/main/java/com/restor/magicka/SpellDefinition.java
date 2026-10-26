@@ -93,7 +93,7 @@ public record SpellDefinition(ResourceLocation id, SpellFormula formula, String 
     public net.minecraft.network.chat.MutableComponent primaryDescription() { return text(".desc", primaryText); }
     public net.minecraft.network.chat.MutableComponent selfDescription() { return text(".self", selfText); }
     private net.minecraft.network.chat.MutableComponent text(String suffix, String fallback) {
-        return net.minecraft.network.chat.Component.translatableWithFallback(langKey() + suffix, fallback.replace("%", "%%"));
+        return net.minecraft.network.chat.Component.translatable(langKey() + suffix, fallback.replace("%", "%%"));
     }
     public boolean channeled() {
         String mode = string(source,"cast_mode","default");

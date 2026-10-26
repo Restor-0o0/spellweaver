@@ -15,13 +15,13 @@ import net.minecraftforge.event.level.BlockEvent;
 
 public final class WorldPlacement {
     static boolean allowed(ServerPlayer player, BlockPos pos) {
-        var world = player.serverLevel();
+        var world = player.getLevel();
         return player.mayBuild() && world.hasChunkAt(pos) && !world.isOutsideBuildHeight(pos)
                 && world.getWorldBorder().isWithinBounds(pos) && world.mayInteract(player, pos);
     }
     static boolean placeBlock(ServerPlayer player, BlockPos pos, BlockState state, java.util.UUID construction,
                               BlockPos root, boolean floating, boolean push, Object ignored) {
-        var world = player.serverLevel();
+        var world = player.getLevel();
         if (!allowed(player, pos)) return false;
         BlockState old = world.getBlockState(pos);
         if (!replaceable(old, !state.is(MagicBlocks.PUDDLE.get()))) return false;
@@ -55,7 +55,7 @@ public final class WorldPlacement {
         if (solid) for (LivingEntity entity : occupants) {
             entity.teleportTo(entity.getX(), pos.getY() + 1.01, entity.getZ());
             entity.push(0, 0.2, 0); entity.hurtMarked = true;
-            if (entity != player && EffectGraph.canHarm(player, entity)) entity.hurt(player.damageSources().indirectMagic(player, player), 1F);
+            if (entity != player && EffectGraph.canHarm(player, entity)) entity.hurt(net.minecraft.world.damagesource.DamageSource.indirectMagic(player, player), 1F);
         }
         if (world.getBlockEntity(pos) instanceof MagicBlocks.MagicBlockEntity data) {
             int lifetime = state.is(MagicBlocks.ICE.get()) ? MagicConfig.ICE_LIFE.get()
@@ -70,12 +70,12 @@ public final class WorldPlacement {
         return true;
     }
     static boolean replaceable(BlockState old, boolean solid) {
-        return old.isAir() || old.is(MagicBlocks.PUDDLE.get()) || solid && old.canBeReplaced() && !(old.getBlock() instanceof MagicBlocks.TemporaryBlock)
+        return old.isAir() || old.is(MagicBlocks.PUDDLE.get()) || solid && old.getMaterial().isReplaceable() && !(old.getBlock() instanceof MagicBlocks.TemporaryBlock)
                 && !old.getFluidState().is(net.minecraft.tags.FluidTags.LAVA);
     }
     static boolean destroy(ServerPlayer player, BlockPos pos) {
         if (!MagicConfig.TERRAIN_DAMAGE.get() || !allowed(player, pos)) return false;
-        var world = player.serverLevel();
+        var world = player.getLevel();
         if (!(world.getBlockState(pos).getBlock() instanceof MagicBlocks.TemporaryBlock)) return false;
         if (MinecraftForge.EVENT_BUS.post(new BlockEvent.BreakEvent(world, pos, world.getBlockState(pos), player))) return false;
         return world.removeBlock(pos, false);

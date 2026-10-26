@@ -4,7 +4,7 @@ import net.minecraftforge.event.TickEvent;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.restor.magicka.*;
 import net.minecraft.commands.Commands;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.core.BlockPos;
@@ -31,7 +31,7 @@ import java.util.*;
 import java.util.function.Supplier;
 
 public final class MagicEnemies {
-    public static final DeferredRegister<EntityType<?>> TYPES = DeferredRegister.create(Registries.ENTITY_TYPE, Magicka.ID);
+    public static final DeferredRegister<EntityType<?>> TYPES = DeferredRegister.create(Registry.ENTITY_TYPE_REGISTRY, Magicka.ID);
     public static final List<RegistryObject<Item>> EGGS = new ArrayList<>();
     private static final Map<RegistryObject<? extends EntityType<? extends SpecialEnemy>>, Supplier<AttributeSupplier.Builder>> ATTRIBUTES = new LinkedHashMap<>();
 
@@ -84,7 +84,7 @@ public final class MagicEnemies {
             if (target instanceof SpecialEnemy special) damage = special.spellDamage(caster, spell, damage, brittle);
             if (!(target instanceof ServerPlayer)) {
                 float shield = 1;
-                for (Countermage mage : target.level().getEntitiesOfClass(Countermage.class, target.getBoundingBox().inflate(Countermage.WATCH), LivingEntity::isAlive)) {
+                for (Countermage mage : target.level.getEntitiesOfClass(Countermage.class, target.getBoundingBox().inflate(Countermage.WATCH), LivingEntity::isAlive)) {
                     shield = Math.min(shield, mage.shield(target, spell));
                     if (mage == target || SpecialEnemy.ally(target)) mage.observe(spell);
                 }
@@ -100,8 +100,8 @@ public final class MagicEnemies {
     private record Flood(ResourceKey<Level> level, Vec3 center, double radius, long until) {}
     private static final List<Flood> FLOODS = new ArrayList<>();
     public static void flood(LivingEntity caster, Vec3 center, double radius, int ticks) {
-        FLOODS.add(new Flood(caster.level().dimension(), center, radius, caster.level().getGameTime() + ticks));
-        if (caster.level() instanceof ServerLevel level) level.sendParticles(net.minecraft.core.particles.ParticleTypes.SPLASH, center.x, center.y + .2, center.z, 80, radius * .5, .2, radius * .5, .3);
+        FLOODS.add(new Flood(caster.level.dimension(), center, radius, caster.level.getGameTime() + ticks));
+        if (caster.level instanceof ServerLevel level) level.sendParticles(net.minecraft.core.particles.ParticleTypes.SPLASH, center.x, center.y + .2, center.z, 80, radius * .5, .2, radius * .5, .3);
     }
     public static boolean flooded(Level level, Vec3 point) {
         return FLOODS.stream().anyMatch(f -> f.level == level.dimension() && f.center.distanceToSqr(point) < f.radius * f.radius);
@@ -125,7 +125,7 @@ public final class MagicEnemies {
 
     private static boolean open(ServerLevel level, BlockPos pos) { return level.getBlockState(pos).getCollisionShape(level, pos).isEmpty(); }
     private static Vec3 floor(ServerLevel level, Vec3 at, Vec3 fallback) {
-        BlockPos pos = BlockPos.containing(at);
+        BlockPos pos = new BlockPos(at);
         for (int up = 0; up <= 2 && !open(level, pos); up++) pos = pos.above();
         if (!open(level, pos) || !open(level, pos.above())) return fallback;
         for (int down = 0; down < 6 && open(level, pos.below()); down++) pos = pos.below();
@@ -175,7 +175,7 @@ public final class MagicEnemies {
                             var source = c.getSource();
                             Vec3 look = source.getRotation() == null ? Vec3.ZERO : Vec3.directionFromRotation(0, source.getRotation().y);
                             int n = encounter(source.getLevel(), source.getPosition().add(look.scale(12)), id).size();
-                            source.sendSuccess(() -> Component.translatable("command.magicka.encounter.spawned", id.toUpperCase(Locale.ROOT), n), true);
+                            source.sendSuccess(Component.translatable("command.magicka.encounter.spawned", id.toUpperCase(Locale.ROOT), n), true);
                             return n;
                         }))));
     }

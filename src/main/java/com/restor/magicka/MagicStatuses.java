@@ -18,14 +18,14 @@ public final class MagicStatuses {
     public static boolean has(LivingEntity entity, Status status) {
         if (status == Status.WET && entity.isInWaterOrRain()) return true;
         if (status == Status.BURNING && entity.isOnFire()) return true;
-        return data(entity).getLong(status.name()) > entity.level().getGameTime();
+        return data(entity).getLong(status.name()) > entity.level.getGameTime();
     }
     public static void apply(LivingEntity entity, String name, int duration, int strength) {
         apply(entity,Status.valueOf(name.toUpperCase(Locale.ROOT)),duration,strength);
     }
     public static void apply(LivingEntity entity, Status status, int duration, int strength) {
         CompoundTag tag = data(entity);
-        tag.putLong(status.name(), Math.max(tag.getLong(status.name()), entity.level().getGameTime()+Mth.clamp(duration,1,72000)));
+        tag.putLong(status.name(), Math.max(tag.getLong(status.name()), entity.level.getGameTime()+Mth.clamp(duration,1,72000)));
         tag.putInt(status.name()+"_strength",Math.max(tag.getInt(status.name()+"_strength"),Mth.clamp(strength,1,5)));
         switch(status) {
             case WET -> entity.clearFire();
@@ -66,9 +66,9 @@ public final class MagicStatuses {
     }
     @SubscribeEvent public void tick(net.minecraftforge.event.entity.living.LivingEvent.LivingTickEvent event) {
         LivingEntity entity = event.getEntity();
-        if (!entity.isAlive() || entity.level().isClientSide) return;
+        if (!entity.isAlive() || entity.level.isClientSide) return;
         if (!entity.getPersistentData().contains("magicka:statuses")) return;
-        var tag = data(entity); long now = entity.level().getGameTime();
+        var tag = data(entity); long now = entity.level.getGameTime();
         for (Status status : Status.values()) {
             if (tag.contains(status.name()) && tag.getLong(status.name()) <= now) { tag.remove(status.name()); tag.remove(status.name()+"_strength"); }
         }
@@ -98,11 +98,11 @@ public final class MagicStatuses {
         }
         if (now % 40 == 0) {
             if (has(entity,Status.REGENERATING)) entity.heal(Math.max(1,tag.getInt("REGENERATING_strength")));
-            if (has(entity,Status.ARCANE_UNSTABLE)) entity.hurt(entity.damageSources().magic(),.5F*tag.getInt("ARCANE_UNSTABLE_strength"));
+            if (has(entity,Status.ARCANE_UNSTABLE)) entity.hurt(net.minecraft.world.damagesource.DamageSource.MAGIC,.5F*tag.getInt("ARCANE_UNSTABLE_strength"));
         }
         if (now % 20 == 0 && has(entity,Status.WITHERING) && !entity.isInvertedHealAndHarm()) {
-            entity.hurt(entity.damageSources().wither(),.5F+.5F*tag.getInt("WITHERING_strength"));
-            if (entity.level() instanceof net.minecraft.server.level.ServerLevel level) level.sendParticles(net.minecraft.core.particles.ParticleTypes.SMOKE,entity.getX(),entity.getY()+entity.getBbHeight()*.6,entity.getZ(),4,.25,.3,.25,.01);
+            entity.hurt(net.minecraft.world.damagesource.DamageSource.WITHER,.5F+.5F*tag.getInt("WITHERING_strength"));
+            if (entity.level instanceof net.minecraft.server.level.ServerLevel level) level.sendParticles(net.minecraft.core.particles.ParticleTypes.SMOKE,entity.getX(),entity.getY()+entity.getBbHeight()*.6,entity.getZ(),4,.25,.3,.25,.01);
         }
     }
 }

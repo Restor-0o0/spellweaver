@@ -1,10 +1,10 @@
 package com.restor.magicka;
 
 import com.mojang.blaze3d.platform.Lighting;
-import com.mojang.math.Axis;
+import com.mojang.math.Vector3f;
 import com.restor.magicka.client.enemy.EnemyLayers;
 import com.restor.magicka.client.enemy.EnemyRenderer;
-import net.minecraft.client.gui.GuiGraphics;
+import com.restor.magicka.client.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderType;
@@ -21,7 +21,7 @@ public final class EnemyPreviewScreen extends Screen {
     private boolean shows(String id) {
         return switch (kind) { case ELEMENTALS -> id.endsWith("_elemental"); case TITANS -> id.endsWith("_titan"); default -> !id.endsWith("_elemental") && !id.endsWith("_titan"); };
     }
-    @Override public void render(GuiGraphics g, int mx, int my, float partial) {
+    @Override public void render(com.mojang.blaze3d.vertex.PoseStack ps,int mx,int my,float partial){var g=new GuiGraphics(ps);
         g.fill(0, 0, width, height, 0xFF2A3038);
         var ids = EnemyLayers.ALL.keySet().stream().filter(this::shows).sorted().toList();
         int cols = 4, rows = (ids.size() + cols - 1) / cols, cellW = width / cols, cellH = (height - 20) / rows;
@@ -31,12 +31,12 @@ public final class EnemyPreviewScreen extends Screen {
             String id = ids.get(i);
             int cx = cellW * (i % cols) + cellW / 2, cy = 14 + cellH * (i / cols) + cellH - 16;
             var root = minecraft.getEntityModels().bakeLayer(EnemyRenderer.layer(id));
-            g.flush();
+            net.minecraft.client.Minecraft.getInstance().renderBuffers().bufferSource().endBatch();
             var pose = g.pose(); pose.pushPose();
             pose.translate(cx, cy, 200);
             float scale = cellH / (kind == Kind.TITANS ? 3.3f : 2.6f);
             pose.scale(scale, scale, -scale);
-            pose.mulPose(Axis.XP.rotationDegrees(15)); pose.mulPose(Axis.YP.rotationDegrees(yaw));
+            pose.mulPose(Vector3f.XP.rotationDegrees(15)); pose.mulPose(Vector3f.YP.rotationDegrees(yaw));
             pose.translate(0, -1.5, 0);
             var tex = new ResourceLocation(Magicka.ID, "textures/entity/" + id + ".png");
             root.render(pose, buffers.getBuffer(RenderType.entityCutoutNoCull(tex)), LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);

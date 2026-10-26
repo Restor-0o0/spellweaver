@@ -31,7 +31,7 @@ public class ElementBinder extends SpecialEnemy {
     }
     /** Heavier prepared formulas draw the binder's attention first. */
     public ServerPlayer pickTarget() {
-        return level().getEntitiesOfClass(ServerPlayer.class, getBoundingBox().inflate(20), SpecialEnemy::player).stream()
+        return level.getEntitiesOfClass(ServerPlayer.class, getBoundingBox().inflate(20), SpecialEnemy::player).stream()
                 .max(Comparator.<ServerPlayer>comparingInt(p -> CastingServer.prepared(p).size()).thenComparingDouble(p -> -distanceToSqr(p))).orElse(null);
     }
     public void bind(ServerPlayer player, Formula seen) {

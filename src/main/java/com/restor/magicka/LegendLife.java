@@ -33,7 +33,7 @@ final class LegendLife {
     static final String PHOENIX_TAG = "magicka:phoenix";
 
     static void defibrillator(ServerPlayer p, SpellDefinition s, boolean self) {
-        ServerLevel level = p.serverLevel();
+        ServerLevel level = p.getLevel();
         LivingEntity target = self ? p : aimed(p,24);
         if (target == null || !EffectGraph.ally(p,target))
             target = near(p,p.position(),8).stream().filter(e -> e != p && EffectGraph.ally(p,e)).min(Comparator.comparingDouble(e -> e.distanceToSqr(p))).orElse(p);
@@ -52,7 +52,7 @@ final class LegendLife {
     }
 
     static void lifeDrain(ServerPlayer p, SpellDefinition s, boolean self) {
-        ServerLevel level = p.serverLevel();
+        ServerLevel level = p.getLevel();
         sound(level,p.position(),SoundEvents.WARDEN_HEARTBEAT,1.5f,.8f);
         SpellRuntime.repeat(p,60,age -> {
             if (self) {
@@ -83,7 +83,7 @@ final class LegendLife {
     }
 
     static void purifyingFlame(ServerPlayer p, SpellDefinition s, boolean self) {
-        ServerLevel level = p.serverLevel();
+        ServerLevel level = p.getLevel();
         Vec3 center = self ? p.position() : EpicMagic.focus(p);
         double radius = Mth.clamp(s.number("radius",5),2,12);
         List<com.google.gson.JsonObject> support = graph(s,"support");
@@ -111,7 +111,7 @@ final class LegendLife {
     }
 
     static void cryosleep(ServerPlayer p, SpellDefinition s, boolean self) {
-        ServerLevel level = p.serverLevel();
+        ServerLevel level = p.getLevel();
         LivingEntity aimed = self ? p : aimed(p,24);
         LivingEntity target = aimed == null ? p : aimed;
         int ticks = Mth.clamp((int)s.number("duration_ticks",60),20,200);
@@ -146,7 +146,7 @@ final class LegendLife {
     }
 
     static void phoenix(ServerPlayer p, SpellDefinition s, boolean self) {
-        ServerLevel level = p.serverLevel();
+        ServerLevel level = p.getLevel();
         LivingEntity aimed = self ? p : aimed(p,24);
         LivingEntity target = aimed != null && EffectGraph.ally(p,aimed) ? aimed : p;
         int ticks = Mth.clamp((int)s.number("duration_ticks",1200),20,12000);
@@ -166,7 +166,7 @@ final class LegendLife {
     }
     static void death(LivingDeathEvent event) {
         LivingEntity v = event.getEntity();
-        if (!(v.level() instanceof ServerLevel level) || v.getPersistentData().getLong(PHOENIX_TAG) <= level.getGameTime()) return;
+        if (!(v.level instanceof ServerLevel level) || v.getPersistentData().getLong(PHOENIX_TAG) <= level.getGameTime()) return;
         v.getPersistentData().remove(PHOENIX_TAG);
         event.setCanceled(true);
         v.setHealth(v.getMaxHealth()*.5f);
@@ -187,7 +187,7 @@ final class LegendLife {
     }
 
     static void kaioken(ServerPlayer p, SpellDefinition s) {
-        ServerLevel level = p.serverLevel();
+        ServerLevel level = p.getLevel();
         int ticks = Mth.clamp((int)s.number("duration_ticks",400),20,2400);
         EffectGraph.entity(p,p,s,s.effects(),p.position(),true);
         p.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST,ticks,1));
@@ -206,7 +206,7 @@ final class LegendLife {
     }
 
     static void protego(ServerPlayer p, SpellDefinition s, boolean self) {
-        ServerLevel level = p.serverLevel();
+        ServerLevel level = p.getLevel();
         double radius = self ? 3.5 : Mth.clamp(s.number("radius",6),3,12);
         Vec3 fixed = p.position();
         Map<UUID,Integer> cooldown = new HashMap<>();
@@ -242,7 +242,7 @@ final class LegendLife {
     }
 
     static void zombieCure(ServerPlayer p, SpellDefinition s, boolean self) {
-        ServerLevel level = p.serverLevel();
+        ServerLevel level = p.getLevel();
         Vec3 center = self ? p.position() : EpicMagic.focus(p);
         double radius = Mth.clamp(s.number("radius",4),2,10);
         sound(level,center,SoundEvents.ZOMBIE_VILLAGER_CURE,1.2f,1.2f);
@@ -272,7 +272,7 @@ final class LegendLife {
     }
 
     static void wellspring(ServerPlayer p, SpellDefinition s, boolean self) {
-        ServerLevel level = p.serverLevel();
+        ServerLevel level = p.getLevel();
         Vec3 center = self ? p.position() : EpicMagic.focus(p);
         double radius = Mth.clamp(s.number("radius",4),2,10);
         sound(level,center,SoundEvents.BUCKET_EMPTY,1.2f,.8f);

@@ -17,22 +17,22 @@ public final class ElementLocks {
     }
     public static void lock(ServerPlayer player, int mask, int ticks) {
         if (mask == 0) return;
-        long now = player.serverLevel().getGameTime();
+        long now = player.getLevel().getGameTime();
         LOCKS.put(player.getUUID(), new Lock(mask | active(player), now + ticks));
         MagicNetwork.sendToPlayer(player, new MagicNetwork.Locks(active(player), ticks));
-        player.serverLevel().playSound(null, player.blockPosition(), SoundEvents.CHAIN_PLACE, SoundSource.HOSTILE, 1f, .6f);
+        player.getLevel().playSound(null, player.blockPosition(), SoundEvents.CHAIN_PLACE, SoundSource.HOSTILE, 1f, .6f);
         player.displayClientMessage(Component.translatable("hud.magicka.elements_locked", names(mask), ticks / 20), true);
         CastingServer.dissolveLocked(player);
     }
     public static int active(ServerPlayer player) {
         Lock lock = LOCKS.get(player.getUUID());
         if (lock == null) return 0;
-        if (lock.until <= player.serverLevel().getGameTime()) { LOCKS.remove(player.getUUID()); return 0; }
+        if (lock.until <= player.getLevel().getGameTime()) { LOCKS.remove(player.getUUID()); return 0; }
         return lock.mask;
     }
     public static boolean locked(ServerPlayer player, Element element) { return (active(player) & 1 << element.ordinal()) != 0; }
     public static void reject(ServerPlayer player, Element element) {
-        player.serverLevel().playSound(null, player.blockPosition(), SoundEvents.CHAIN_HIT, SoundSource.PLAYERS, .7f, 1.4f);
+        player.getLevel().playSound(null, player.blockPosition(), SoundEvents.CHAIN_HIT, SoundSource.PLAYERS, .7f, 1.4f);
         player.displayClientMessage(Component.translatable("hud.magicka.element_locked", Component.translatable(element.key())), true);
     }
     public static void clear(ServerPlayer player) {

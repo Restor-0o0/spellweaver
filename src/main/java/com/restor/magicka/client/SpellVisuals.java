@@ -2,7 +2,7 @@ package com.restor.magicka.client;
 
 import net.minecraft.util.Mth;
 import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Axis;
+import com.mojang.math.Vector3f;
 import com.restor.magicka.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;
@@ -88,9 +88,9 @@ public final class SpellVisuals {
                     if(!flames){ring(pose,consumer,camera,center,orb,0,color,alpha,.05);ring(pose,consumer,camera,center,orb,1,color,alpha,.05);ring(pose,consumer,camera,center,orb,2,0xFFFFFF,alpha*.8f,.025);
                     stroke(pose,consumer,camera,p.from(),center,.09,color,alpha*.45f);}
                     if(formula.earth()>0){
-                        pose.pushPose();pose.translate(center.x,center.y,center.z);float scale=(float)(orb*1.7);pose.scale(scale,scale,scale);pose.mulPose(Axis.YP.rotationDegrees(((mc.level==null?cue.age:mc.level.getGameTime())+partial)*18));pose.mulPose(Axis.XP.rotationDegrees(25));
+                        pose.pushPose();pose.translate(center.x,center.y,center.z);float scale=(float)(orb*1.7);pose.scale(scale,scale,scale);pose.mulPose(Vector3f.YP.rotationDegrees(((mc.level==null?cue.age:mc.level.getGameTime())+partial)*18));pose.mulPose(Vector3f.XP.rotationDegrees(25));
                         var item=formula.fire()>0?Items.MAGMA_BLOCK:formula.cold()>0?Items.PACKED_ICE:Items.COBBLESTONE;
-                        mc.getItemRenderer().renderStatic(new ItemStack(item),ItemDisplayContext.FIXED,LightTexture.FULL_BRIGHT,OverlayTexture.NO_OVERLAY,pose,buffers,mc.level,0);pose.popPose();
+                        mc.getItemRenderer().renderStatic(new ItemStack(item),net.minecraft.client.renderer.block.model.ItemTransforms.TransformType.FIXED,LightTexture.FULL_BRIGHT,OverlayTexture.NO_OVERLAY,pose,buffers,0);pose.popPose();
                         consumer=buffers.getBuffer(RenderType.lightning());
                     }
                 }

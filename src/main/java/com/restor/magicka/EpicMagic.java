@@ -26,7 +26,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Vector3f;
+import com.mojang.math.Vector3f;
 import java.util.List;
 
 /** Channelled area ultimates: they live only while the caster keeps the channel open. */
@@ -43,7 +43,7 @@ public final class EpicMagic {
             case "titan" -> ElementalTitan.rise(p,s,c);
             default -> storm(p,s,c);
         }
-        ServerLevel level = p.serverLevel();
+        ServerLevel level = p.getLevel();
         level.playSound(null,p.blockPosition(),SoundEvents.ENDER_DRAGON_GROWL,SoundSource.PLAYERS,.7f,1.3f);
         level.playSound(null,c.focus.x,c.focus.y,c.focus.z,SoundEvents.LIGHTNING_BOLT_THUNDER,SoundSource.PLAYERS,2f,.6f);
         p.swing(net.minecraft.world.InteractionHand.MAIN_HAND,true);
@@ -52,22 +52,22 @@ public final class EpicMagic {
     static Vec3 focus(ServerPlayer p) {
         Vec3 eye = p.getEyePosition(), at = SpellAim.hit(p).getLocation();
         if (at.distanceToSqr(eye) > RANGE*RANGE) at = eye.add(p.getLookAngle().scale(RANGE));
-        Vec3 ground = drop(p.serverLevel(),at.add(0,.5,0),32,p);
+        Vec3 ground = drop(p.getLevel(),at.add(0,.5,0),32,p);
         return ground == null ? at : ground;
     }
     static final int SKY = 10;
     static boolean cramped(ServerPlayer p) {
         Vec3 f = focus(p); int open = 0;
-        for (int i = 0; i < 5; i++) if (clearance(p.serverLevel(),f.add(i == 1 ? 4 : i == 2 ? -4 : 0,0,i == 3 ? 4 : i == 4 ? -4 : 0),SKY) >= SKY) open++;
+        for (int i = 0; i < 5; i++) if (clearance(p.getLevel(),f.add(i == 1 ? 4 : i == 2 ? -4 : 0,0,i == 3 ? 4 : i == 4 ? -4 : 0),SKY) >= SKY) open++;
         return open < 3;
     }
     static Vec3 drop(ServerLevel level, Vec3 from, double depth, Entity source) {
-        if (!level.hasChunkAt(BlockPos.containing(from))) return null;
+        if (!level.hasChunkAt(new BlockPos(from))) return null;
         var hit = level.clip(new ClipContext(from,from.add(0,-depth,0),ClipContext.Block.COLLIDER,ClipContext.Fluid.ANY,source));
         return hit.getType() == HitResult.Type.MISS ? null : hit.getLocation();
     }
     static int clearance(ServerLevel level, Vec3 at, int max) {
-        BlockPos base = BlockPos.containing(at);
+        BlockPos base = new BlockPos(at);
         for (int dy = 1; dy <= max; dy++) {
             var state = level.getBlockState(base.above(dy));
             if (!state.is(net.minecraft.world.level.block.Blocks.BARRIER) && !state.getCollisionShape(level,base.above(dy)).isEmpty()) return dy-1;
@@ -75,7 +75,7 @@ public final class EpicMagic {
         return max;
     }
     static List<LivingEntity> area(ServerPlayer p, Vec3 center, double radius, double below, double above) {
-        return p.serverLevel().getEntitiesOfClass(LivingEntity.class,new AABB(center.x-radius,center.y-below,center.z-radius,center.x+radius,center.y+above,center.z+radius),
+        return p.getLevel().getEntitiesOfClass(LivingEntity.class,new AABB(center.x-radius,center.y-below,center.z-radius,center.x+radius,center.y+above,center.z+radius),
                 e -> e != p && e.isAlive() && !e.isSpectator() && square(e.getX()-center.x)+square(e.getZ()-center.z) <= radius*radius);
     }
     private static double square(double v) { return v*v; }
@@ -99,14 +99,14 @@ public final class EpicMagic {
         level.playSound(null,at.x,at.y,at.z,sound,SoundSource.PLAYERS,volume,pitch);
     }
     static void ignite(ServerPlayer p, BlockPos ground) {
-        ServerLevel level = p.serverLevel();
+        ServerLevel level = p.getLevel();
         if (!MagicConfig.TERRAIN_DAMAGE.get()) return;
         BlockPos up = level.getBlockState(ground).isAir() ? ground : ground.above();
         if (level.isEmptyBlock(up) && BaseFireBlock.canBePlacedAt(level,up,Direction.UP)) WorldMagic.replace(p,up,BaseFireBlock.getState(level,up));
     }
 
     private static void storm(ServerPlayer p, SpellDefinition s, Channel c) {
-        ServerLevel level = p.serverLevel(); RandomSource r = level.random;
+        ServerLevel level = p.getLevel(); RandomSource r = level.random;
         double radius = Mth.clamp(s.number("radius",12),4,24), cloud = c.focus.y+Math.max(4,clearance(level,c.focus,16)), height = cloud-c.focus.y;
         var dark = new DustParticleOptions(new Vector3f(.22f,.23f,.27f),4f);
         int[] next = {12}, fade = {0};
@@ -129,7 +129,7 @@ public final class EpicMagic {
         });
     }
     static void strike(ServerPlayer p, SpellDefinition s, Vec3 focus, double cloud, double radius) {
-        ServerLevel level = p.serverLevel(); RandomSource r = level.random;
+        ServerLevel level = p.getLevel(); RandomSource r = level.random;
         LivingEntity target = r.nextFloat() < .65f ? prey(p,area(p,focus,radius,6,cloud-focus.y+2),r) : null;
         Vec3 at = target != null ? target.position() : drop(level,scatter(r,focus,radius,cloud-1),cloud-focus.y+12,p);
         if (at == null) return;
@@ -141,7 +141,7 @@ public final class EpicMagic {
             EffectGraph.entity(p,e,s,s.effects(),at,false);
             if (!MagicStatuses.has(e,MagicStatuses.Status.WET) && EffectGraph.canHarm(p,e) && r.nextFloat() < .5f) e.setSecondsOnFire(3);
         }
-        BlockPos ground = BlockPos.containing(at.x,at.y-.2,at.z);
+        BlockPos ground = new BlockPos(at.x,at.y-.2,at.z);
         if (r.nextFloat() < .35f) {
             WorldMagic.shatterWeak(p,ground,.8f);
             if (r.nextBoolean()) WorldMagic.shatterWeak(p,ground.relative(Direction.Plane.HORIZONTAL.getRandomDirection(r)),.8f);
@@ -150,7 +150,7 @@ public final class EpicMagic {
     }
 
     private static void meteors(ServerPlayer p, SpellDefinition s, Channel c) {
-        ServerLevel level = p.serverLevel(); RandomSource r = level.random;
+        ServerLevel level = p.getLevel(); RandomSource r = level.random;
         double radius = Mth.clamp(s.number("radius",10),3,24);
         Vec3 slant = flat(p.getLookAngle());
         var ember = new DustParticleOptions(new Vector3f(.9f,.35f,.1f),3f);
@@ -173,13 +173,13 @@ public final class EpicMagic {
         });
     }
     static void meteor(ServerPlayer p, SpellDefinition s, Vec3 start, Vec3 target) {
-        ServerLevel level = p.serverLevel();
+        ServerLevel level = p.getLevel();
         Vec3 velocity = target.subtract(start).normalize().scale(1.4);
         Vec3[] position = {start};
         sound(level,start,SoundEvents.FIRECHARGE_USE,1.5f,.6f);
         SpellRuntime.sustain(p,age -> {
             Vec3 from = position[0], to = from.add(velocity);
-            if (age > 80 || !level.hasChunkAt(BlockPos.containing(to))) return true;
+            if (age > 80 || !level.hasChunkAt(new BlockPos(to))) return true;
             var hit = level.clip(new ClipContext(from,to,ClipContext.Block.COLLIDER,ClipContext.Fluid.ANY,p));
             Vec3 end = hit.getLocation(); boolean struck = hit.getType() != HitResult.Type.MISS;
             if (!struck) for (var e : level.getEntitiesOfClass(LivingEntity.class,new AABB(from,to).inflate(.8),e -> e != p && e.isAlive() && !e.isSpectator()))
@@ -193,13 +193,13 @@ public final class EpicMagic {
             fx(level,ParticleTypes.EXPLOSION,end.x,end.y+.5,end.z,3,.8,.4,.8,0);
             fx(level,ParticleTypes.LAVA,end.x,end.y+.3,end.z,10,.6,.2,.6,0);
             sound(level,end,SoundEvents.GENERIC_EXPLODE,1.4f,.7f+level.random.nextFloat()*.3f);
-            if (level.random.nextFloat() < .3f) ignite(p,BlockPos.containing(end.x,end.y-.2,end.z));
+            if (level.random.nextFloat() < .3f) ignite(p,new BlockPos(end.x,end.y-.2,end.z));
             return true;
         });
     }
 
     private static void tornado(ServerPlayer p, SpellDefinition s, Channel c) {
-        ServerLevel level = p.serverLevel(); RandomSource r = level.random;
+        ServerLevel level = p.getLevel(); RandomSource r = level.random;
         double pull = Mth.clamp(s.number("radius",9),3,16);
         Vec3[] base = {c.focus}; int[] fade = {0};
         SpellRuntime.sustain(p,age -> {
@@ -222,7 +222,7 @@ public final class EpicMagic {
             }
             for (var item : level.getEntitiesOfClass(ItemEntity.class,new AABB(center,center).inflate(pull,6,pull))) whirl(item,center,pull);
             if (age%3 == 0) {
-                BlockPos column = BlockPos.containing(scatter(r,center,2.5,center.y+2));
+                BlockPos column = new BlockPos(scatter(r,center,2.5,center.y+2));
                 for (int dy = 0; dy < 5; dy++) {
                     BlockPos pos = column.below(dy);
                     if (level.getBlockState(pos).isAir()) continue;
@@ -250,7 +250,7 @@ public final class EpicMagic {
     }
     private static void funnel(ServerLevel level, Vec3 base, int age, double scale) {
         double height = 13*scale;
-        var floor = level.getBlockState(BlockPos.containing(base.x,base.y-.2,base.z));
+        var floor = level.getBlockState(new BlockPos(base.x,base.y-.2,base.z));
         var dust = new BlockParticleOption(ParticleTypes.BLOCK,floor.isAir() ? Blocks.DIRT.defaultBlockState() : floor);
         for (double y = 0; y < height; y += .8) {
             double radius = (.4+y*.3)*scale;
@@ -263,7 +263,7 @@ public final class EpicMagic {
     }
 
     private static void blizzard(ServerPlayer p, SpellDefinition s, Channel c) {
-        ServerLevel level = p.serverLevel(); RandomSource r = level.random;
+        ServerLevel level = p.getLevel(); RandomSource r = level.random;
         double radius = Mth.clamp(s.number("radius",11),3,24), top = c.focus.y+Math.max(4,clearance(level,c.focus,12)), height = top-c.focus.y;
         List<JsonObject> shard = SpellDefinition.graph(s.delivery(),"shard");
         Vec3 wind = flat(p.getLookAngle()).scale(.25);
@@ -280,11 +280,11 @@ public final class EpicMagic {
             if (age%3 == 0 && chunks.size() < 24) {
                 LivingEntity target = r.nextFloat() < .4f ? prey(p,area(p,c.focus,radius,4,height+2),r) : null;
                 Vec3 at = target != null ? target.position() : scatter(r,c.focus,radius,c.focus.y);
-                BlockPos sky = BlockPos.containing(at.x-wind.x*8,top-.5,at.z-wind.z*8);
+                BlockPos sky = new BlockPos(at.x-wind.x*8,top-.5,at.z-wind.z*8);
                 if (!level.getBlockState(sky).isAir()) return false;
                 var state = (r.nextInt(3) == 0 ? Blocks.SNOW_BLOCK : r.nextBoolean() ? Blocks.PACKED_ICE : Blocks.ICE).defaultBlockState();
                 var chunk = FallingBlockEntity.fall(level,sky,state);
-                chunk.disableDrop();
+                chunk.dropItem = false;
                 chunk.setDeltaMovement(wind.x*.6,-.2,wind.z*.6);
                 chunks.add(chunk);
             }
@@ -294,7 +294,7 @@ public final class EpicMagic {
     /** Falling ice must never land as a block, so it bursts a little above the ground. */
     private static boolean shatter(ServerPlayer p, SpellDefinition s, List<JsonObject> shard, FallingBlockEntity chunk) {
         if (chunk.isRemoved()) return true;
-        ServerLevel level = p.serverLevel();
+        ServerLevel level = p.getLevel();
         Vec3 at = chunk.position(), v = chunk.getDeltaMovement();
         double fall = Math.max(1.5,-v.y*2+1);
         var below = level.clip(new ClipContext(at,at.add(0,-fall,0),ClipContext.Block.COLLIDER,ClipContext.Fluid.ANY,chunk));

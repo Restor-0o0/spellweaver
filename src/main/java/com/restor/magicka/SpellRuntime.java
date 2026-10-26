@@ -29,12 +29,12 @@ public final class SpellRuntime {
     private static boolean add(Active value) {
         if (ACTIVE.size()+PENDING.size() >= 2048 || java.util.stream.Stream.concat(ACTIVE.stream(),PENDING.stream())
                 .filter(a -> a.caster().getUUID().equals(value.caster().getUUID())).count() >= MagicConfig.MAX_RUNTIME.get()) { value.dispose(); return false; }
-        OWNERS.put(value.caster().getUUID(), value.caster()); LEVELS.put(value,value.caster().serverLevel());PENDING.add(value); return true;
+        OWNERS.put(value.caster().getUUID(), value.caster()); LEVELS.put(value,value.caster().getLevel());PENDING.add(value); return true;
     }
     public static ServerPlayer owner(ServerLevel level, UUID id) {
         var player = level.getServer().getPlayerList().getPlayer(id);
         if (player == null) player = OWNERS.get(id);
-        return player != null && player.level() == level && !player.isRemoved() ? player : null;
+        return player != null && player.level == level && !player.isRemoved() ? player : null;
     }
     public static Vec3 origin(Player caster, OriginMode mode) {
         Vec3 eye = caster.getEyePosition(), look = caster.getLookAngle();
@@ -60,8 +60,8 @@ public final class SpellRuntime {
     private static double speed(SpellDefinition s) { return Mth.clamp(s.number("speed",.8)*(leads(s,Element.EARTH)?2:1),.1,4); }
     private static double gravity(SpellDefinition s) { return s.number("gravity",0)*(leads(s,Element.EARTH)?.25:1); }
     private static List<LivingEntity> near(ServerPlayer p, Vec3 point, double radius) {
-        return p.serverLevel().getEntitiesOfClass(LivingEntity.class,new AABB(point,point).inflate(radius),
-                e -> e.isAlive() && !e.isSpectator() && e.getBoundingBox().distanceToSqr(point) <= radius*radius);
+        return p.getLevel().getEntitiesOfClass(LivingEntity.class,new AABB(point,point).inflate(radius),
+                e -> e.isAlive() && !e.isSpectator() && SpellRuntime.boxDistanceSqr(e.getBoundingBox(),point) <= radius*radius);
     }
     static LivingEntity target(ServerPlayer p) {
         return SpellAim.entity(p,SpellAim.hit(p).getLocation());
@@ -80,10 +80,10 @@ public final class SpellRuntime {
     }
     public static void cast(ServerPlayer p, SpellDefinition s, boolean self) {
         OWNERS.put(p.getUUID(),p);
-        p.serverLevel().playSound(null,p.blockPosition(),net.minecraft.sounds.SoundEvents.EVOKER_CAST_SPELL,net.minecraft.sounds.SoundSource.PLAYERS,.6f,1.1f);
+        p.getLevel().playSound(null,p.blockPosition(),net.minecraft.sounds.SoundEvents.EVOKER_CAST_SPELL,net.minecraft.sounds.SoundSource.PLAYERS,.6f,1.1f);
         if (s.formula().size() >= 5) {
-            p.serverLevel().playSound(null,p.blockPosition(),net.minecraft.sounds.SoundEvents.ENDER_DRAGON_GROWL,net.minecraft.sounds.SoundSource.PLAYERS,.7f,1.3f);
-            p.serverLevel().playSound(null,p.blockPosition(),net.minecraft.sounds.SoundEvents.LIGHTNING_BOLT_THUNDER,net.minecraft.sounds.SoundSource.PLAYERS,.8f,.7f);
+            p.getLevel().playSound(null,p.blockPosition(),net.minecraft.sounds.SoundEvents.ENDER_DRAGON_GROWL,net.minecraft.sounds.SoundSource.PLAYERS,.7f,1.3f);
+            p.getLevel().playSound(null,p.blockPosition(),net.minecraft.sounds.SoundEvents.LIGHTNING_BOLT_THUNDER,net.minecraft.sounds.SoundSource.PLAYERS,.8f,.7f);
         }
         p.swing(net.minecraft.world.InteractionHand.MAIN_HAND,true);
         Vec3 point = origin(p,s.origin());
@@ -129,9 +129,9 @@ public final class SpellRuntime {
         }
     }
     static void particles(ServerPlayer p, SpellDefinition s, Vec3 point, int count, double spread) {
-        if (!p.serverLevel().hasChunkAt(BlockPos.containing(point))) return;
+        if (!p.getLevel().hasChunkAt(new BlockPos(point))) return;
         int color = s.formula().elements().get(0).color;
-        p.serverLevel().sendParticles(new DustParticleOptions(new org.joml.Vector3f(((color>>16)&255)/255f,((color>>8)&255)/255f,(color&255)/255f),1.1f),
+        p.getLevel().sendParticles(new DustParticleOptions(new com.mojang.math.Vector3f(((color>>16)&255)/255f,((color>>8)&255)/255f,(color&255)/255f),1.1f),
                 point.x,point.y,point.z,count,spread,spread,spread,.02);
         SpellVfx.particles(p,s,point,Math.max(3,count/2),spread);
     }
@@ -144,18 +144,18 @@ public final class SpellRuntime {
     }
     private static Vec3 beamEnd(ServerPlayer p,double reach) {
         Vec3 from=p.getEyePosition(); double range=Math.min(reach,from.distanceTo(SpellAim.hit(p).getLocation()));
-        return p.serverLevel().clip(new ClipContext(from,from.add(p.getLookAngle().scale(range)),ClipContext.Block.COLLIDER,ClipContext.Fluid.NONE,p)).getLocation();
+        return p.getLevel().clip(new ClipContext(from,from.add(p.getLookAngle().scale(range)),ClipContext.Block.COLLIDER,ClipContext.Fluid.NONE,p)).getLocation();
     }
     private static List<LivingEntity> along(ServerPlayer p,Vec3 from,Vec3 end,boolean spray) {
         Vec3 look=end.subtract(from).normalize(); double length=from.distanceTo(end);
         Set<LivingEntity> candidates=new HashSet<>();
-        for(double d=0;d<length+.5;d+=8)candidates.addAll(p.serverLevel().getEntitiesOfClass(LivingEntity.class,new AABB(from.add(look.scale(d)),from.add(look.scale(Math.min(length+.5,d+8)))).inflate(spray?4:1)));
+        for(double d=0;d<length+.5;d+=8)candidates.addAll(p.getLevel().getEntitiesOfClass(LivingEntity.class,new AABB(from.add(look.scale(d)),from.add(look.scale(Math.min(length+.5,d+8)))).inflate(spray?4:1)));
         List<LivingEntity> hits=new ArrayList<>();
         for(LivingEntity e:candidates) {
             if(e==p || !e.isAlive() || e.isSpectator())continue;
             Vec3 delta=e.getBoundingBox().getCenter().subtract(from); double at=delta.dot(look);
             if(at<0 || at>length+.4 || delta.subtract(look.scale(at)).length()> (spray?Math.min(3,.5+at*.3):.65+e.getBbWidth()*.5))continue;
-            if(p.serverLevel().clip(new ClipContext(from,e.getBoundingBox().getCenter(),ClipContext.Block.COLLIDER,ClipContext.Fluid.NONE,p)).getType()!=HitResult.Type.MISS)continue;
+            if(p.getLevel().clip(new ClipContext(from,e.getBoundingBox().getCenter(),ClipContext.Block.COLLIDER,ClipContext.Fluid.NONE,p)).getType()!=HitResult.Type.MISS)continue;
             hits.add(e);
         }
         hits.sort(Comparator.comparingDouble(e->e.distanceToSqr(from)));
@@ -167,10 +167,10 @@ public final class SpellRuntime {
         segment(p,s,spray,from,end,struck);
         double left=reach(p,s)-from.distanceTo(end);
         for(int bounce=Mth.clamp((int)s.number("ricochet",0),0,3);bounce>0 && left>1;bounce--){
-            var hit=p.level().clip(new ClipContext(end.subtract(look.scale(.05)),end.add(look.scale(.3)),ClipContext.Block.COLLIDER,ClipContext.Fluid.NONE,p));
+            var hit=p.level.clip(new ClipContext(end.subtract(look.scale(.05)),end.add(look.scale(.3)),ClipContext.Block.COLLIDER,ClipContext.Fluid.NONE,p));
             if(hit.getType()!=HitResult.Type.BLOCK)break;
             look=reflect(look,hit.getDirection());from=hit.getLocation().add(look.scale(.05));
-            end=p.level().clip(new ClipContext(from,from.add(look.scale(left)),ClipContext.Block.COLLIDER,ClipContext.Fluid.NONE,p)).getLocation();
+            end=p.level.clip(new ClipContext(from,from.add(look.scale(left)),ClipContext.Block.COLLIDER,ClipContext.Fluid.NONE,p)).getLocation();
             left-=from.distanceTo(end);
             segment(p,s,spray,from,end,struck);
         }
@@ -180,7 +180,7 @@ public final class SpellRuntime {
         SpellVfx.cue(p,s,spray?SpellVfx.SPRAY:SpellVfx.BEAM,from,end,spray?1.5:s.number("beam_width",.15),10);
         for(double d=.5;d<from.distanceTo(end);d+=Math.max(.8,from.distanceTo(end)/64)) particles(p,s,from.add(look.scale(d)),spray?3:1,spray?d*.12:.04);
         double burst=s.number("end_burst",0);
-        for(LivingEntity e:along(p,from,end,spray)) if(struck.add(e) && (burst<=0 || e.getBoundingBox().distanceToSqr(end)>burst*burst)) EffectGraph.entity(p,e,s,s.effects(),from,false);
+        for(LivingEntity e:along(p,from,end,spray)) if(struck.add(e) && (burst<=0 || SpellRuntime.boxDistanceSqr(e.getBoundingBox(),end)>burst*burst)) EffectGraph.entity(p,e,s,s.effects(),from,false);
         if(burst>0) impact(p,s,end,burst,false,true); else EffectGraph.world(p,s,s.effects(),end,false,true);
     }
     static Vec3 reflect(Vec3 v,net.minecraft.core.Direction face) {
@@ -193,6 +193,7 @@ public final class SpellRuntime {
                 .filter(e->e.getBoundingBox().getCenter().subtract(position).normalize().dot(heading)>.3)
                 .min(Comparator.comparingDouble(e->e.distanceToSqr(position))).orElse(null);
     }
+    public static double boxDistanceSqr(net.minecraft.world.phys.AABB b,Vec3 p){return p.distanceToSqr(Mth.clamp(p.x,b.minX,b.maxX),Mth.clamp(p.y,b.minY,b.maxY),Mth.clamp(p.z,b.minZ,b.maxZ));}
     private static Set<UUID> chainSkip=Set.of();
     private static void lightning(ServerPlayer p,SpellDefinition s) {
         Vec3 eye=p.getEyePosition(), hand=eye.add(p.getLookAngle().scale(.6)).add(0,-.3,0), end=beamEnd(p,reach(p,s));
@@ -203,12 +204,12 @@ public final class SpellRuntime {
         Vec3 tip=struck.isEmpty() || pierce ? end : struck.get(0).getBoundingBox().getCenter();
         double width=s.number("beam_width",.14), length=hand.distanceTo(tip);
         SpellVfx.cue(p,s,SpellVfx.ARC,hand,tip,width,10);SpellVfx.cue(p,s,SpellVfx.ARC,hand,tip,width*.6,6);
-        for(double d=.5;d<length;d+=1.2){Vec3 at=hand.add(tip.subtract(hand).scale(d/length));p.serverLevel().sendParticles(ParticleTypes.ELECTRIC_SPARK,at.x,at.y,at.z,2,.08,.08,.08,.02);}
+        for(double d=.5;d<length;d+=1.2){Vec3 at=hand.add(tip.subtract(hand).scale(d/length));p.getLevel().sendParticles(ParticleTypes.ELECTRIC_SPARK,at.x,at.y,at.z,2,.08,.08,.08,.02);}
         for(LivingEntity e:struck) EffectGraph.entity(p,e,s,s.effects(),hand,false);
         Vec3 chainFrom=struck.isEmpty() ? tip : struck.get(struck.size()-1).getBoundingBox().getCenter();
         chainSkip=struck.stream().map(LivingEntity::getUUID).collect(java.util.stream.Collectors.toSet());
         try { EffectGraph.world(p,s,s.effects(),chainFrom,false,true); } finally { chainSkip=Set.of(); }
-        p.serverLevel().playSound(null,tip.x,tip.y,tip.z,net.minecraft.sounds.SoundEvents.LIGHTNING_BOLT_IMPACT,net.minecraft.sounds.SoundSource.PLAYERS,.7f,1.5f);
+        p.getLevel().playSound(null,tip.x,tip.y,tip.z,net.minecraft.sounds.SoundEvents.LIGHTNING_BOLT_IMPACT,net.minecraft.sounds.SoundSource.PLAYERS,.7f,1.5f);
     }
     static void tesla(ServerPlayer p,SpellDefinition s,UUID construction) {
         add(new Active(){int age;
@@ -216,11 +217,11 @@ public final class SpellRuntime {
             public boolean tick(){
                 if(++age>Mth.clamp((int)s.number("duration_ticks",600),20,72000))return true;
                 if(age%Math.max(10,(int)s.number("interval_ticks",20))!=0)return false;
-                var level=p.serverLevel();var c=MagicConstructionManager.get(level).structure(construction);
+                var level=p.getLevel();var c=MagicConstructionManager.get(level).structure(construction);
                 if(c==null)return true;
                 var top=c.blocks.stream().filter(b->level.hasChunkAt(b) && level.getBlockEntity(b) instanceof MagicBlocks.MagicBlockEntity d && d.construction.equals(construction)).max(Comparator.comparingInt(BlockPos::getY));
                 if(top.isEmpty())return true;
-                Vec3 from=top.get().getCenter().add(0,.6,0);
+                Vec3 from=net.minecraft.world.phys.Vec3.atCenterOf(top.get()).add(0,.6,0);
                 var victims=near(p,from,s.number("radius",8)).stream().filter(e->e!=p && EffectGraph.canHarm(p,e))
                         .filter(e->level.clip(new ClipContext(from.add(e.getBoundingBox().getCenter().subtract(from).normalize().scale(1.2)),e.getBoundingBox().getCenter(),ClipContext.Block.COLLIDER,ClipContext.Fluid.NONE,p)).getType()==HitResult.Type.MISS)
                         .sorted(Comparator.comparingDouble(e->e.distanceToSqr(from))).limit(Mth.clamp((int)s.number("targets",3),1,64)).toList();
@@ -242,14 +243,14 @@ public final class SpellRuntime {
             public ServerPlayer caster(){return p;}
             public void charge(Vec3 point,double radius){if(s.delivery().has("volatile") && position.distanceToSqr(point)<radius*radius)charged=true;}
             public boolean tick(){
-                if(++age>12000 || !p.serverLevel().hasChunkAt(BlockPos.containing(position)) || p.serverLevel().isOutsideBuildHeight(BlockPos.containing(position)))return true;
+                if(++age>12000 || !p.getLevel().hasChunkAt(new BlockPos(position)) || p.getLevel().isOutsideBuildHeight(new BlockPos(position)))return true;
                 if(homing && age>3){LivingEntity prey=seek(p,position,velocity,12);
                     if(prey!=null){double speed=velocity.length();velocity=velocity.normalize().scale(.75).add(prey.getBoundingBox().getCenter().subtract(position).normalize().scale(.25)).normalize().scale(speed);}}
                 Vec3 next=position.add(velocity);
-                if(!p.serverLevel().hasChunkAt(BlockPos.containing(next)))return true;
-                var hit=p.serverLevel().clip(new ClipContext(position,next,ClipContext.Block.COLLIDER,ClipContext.Fluid.NONE,p));
+                if(!p.getLevel().hasChunkAt(new BlockPos(next)))return true;
+                var hit=p.getLevel().clip(new ClipContext(position,next,ClipContext.Block.COLLIDER,ClipContext.Fluid.NONE,p));
                 Vec3 end=hit.getLocation(); LivingEntity victim=null; double distance=position.distanceToSqr(end);
-                for(LivingEntity e:p.serverLevel().getEntitiesOfClass(LivingEntity.class,new AABB(position,end).inflate(.5),e->e!=p && e.isAlive() && !e.isSpectator())) {
+                for(LivingEntity e:p.getLevel().getEntitiesOfClass(LivingEntity.class,new AABB(position,end).inflate(.5),e->e!=p && e.isAlive() && !e.isSpectator())) {
                     var intercept=e.getBoundingBox().inflate(.3).clip(position,end);
                     if(intercept.isPresent() && position.distanceToSqr(intercept.get())<=distance){distance=position.distanceToSqr(intercept.get());end=intercept.get();victim=e;}
                 }
@@ -283,12 +284,12 @@ public final class SpellRuntime {
         Zone(ServerPlayer p,SpellDefinition s,Vec3 point,int ticks,double radius,boolean self,boolean mine,boolean wet){this.p=p;this.s=s;this.point=point;this.remaining=Mth.clamp(ticks,1,72000);this.radius=Mth.clamp(radius,.5,32);this.self=self;this.mine=mine;this.wet=wet;slow=s!=null && s.delivery().has("slow_projectiles");}
         public ServerPlayer caster(){return p;}
         public boolean tick(){
-            if(--remaining<0 || !p.serverLevel().hasChunkAt(BlockPos.containing(point)))return true;
+            if(--remaining<0 || !p.getLevel().hasChunkAt(new BlockPos(point)))return true;
             if(s!=null && !mine && s.delivery().has("follow") && point.distanceToSqr(p.position())>2.25)point=point.add(p.position().subtract(point).normalize().scale(.08));
-            if(slow)for(var projectile:p.serverLevel().getEntitiesOfClass(net.minecraft.world.entity.projectile.Projectile.class,new AABB(point,point).inflate(radius)))projectile.setDeltaMovement(projectile.getDeltaMovement().scale(.8));
+            if(slow)for(var projectile:p.getLevel().getEntitiesOfClass(net.minecraft.world.entity.projectile.Projectile.class,new AABB(point,point).inflate(radius)))projectile.setDeltaMovement(projectile.getDeltaMovement().scale(.8));
             if(age++%10!=0)return false;
             SpellVfx.cue(p,s,mine?SpellVfx.MINE:SpellVfx.ZONE,point,point,radius,Math.min(12,remaining+1));
-            if(s!=null)particles(p,s,point,6,radius*.5);else p.serverLevel().sendParticles(ParticleTypes.SPLASH,point.x,point.y+.05,point.z,8,radius*.5,.02,radius*.5,0);
+            if(s!=null)particles(p,s,point,6,radius*.5);else p.getLevel().sendParticles(ParticleTypes.SPLASH,point.x,point.y+.05,point.z,8,radius*.5,.02,radius*.5,0);
             var victims=near(p,point,radius);
             if(s!=null && s.delivery().has("grasp"))hands(p,point,radius,victims);
             if(mine){if(age>20 && victims.stream().anyMatch(e->e!=p && EffectGraph.canHarm(p,e))){impact(p,s,point,radius,self,true);return true;}return false;}
@@ -302,15 +303,15 @@ public final class SpellRuntime {
         }
     }
     private static void hands(ServerPlayer p,Vec3 point,double radius,List<LivingEntity> victims){
-        var level=p.serverLevel();var random=level.getRandom();
-        BlockPos below=BlockPos.containing(point).below();var ground=level.getBlockState(below).isAir()?net.minecraft.world.level.block.Blocks.DIRT.defaultBlockState():level.getBlockState(below);
+        var level=p.getLevel();var random=level.getRandom();
+        BlockPos below=new BlockPos(point).below();var ground=level.getBlockState(below).isAir()?net.minecraft.world.level.block.Blocks.DIRT.defaultBlockState():level.getBlockState(below);
         for(int i=0;i<6;i++){double a=random.nextDouble()*Math.PI*2,r=Math.sqrt(random.nextDouble())*radius;Vec3 at=point.add(Math.cos(a)*r,.05,Math.sin(a)*r);
             level.sendParticles(new net.minecraft.core.particles.BlockParticleOption(ParticleTypes.BLOCK,ground),at.x,at.y,at.z,4,.15,.05,.15,.1);
             level.sendParticles(ParticleTypes.SOUL,at.x,at.y+.2,at.z,1,.05,.2,.05,.02);}
         for(var e:victims){if(e==p || !EffectGraph.canHarm(p,e))continue;Vec3 feet=e.position();
             level.sendParticles(ParticleTypes.SCULK_SOUL,feet.x,feet.y+.3,feet.z,3,e.getBbWidth()*.4,.3,e.getBbWidth()*.4,.02);
             level.sendParticles(new net.minecraft.core.particles.BlockParticleOption(ParticleTypes.BLOCK,ground),feet.x,feet.y+.1,feet.z,10,e.getBbWidth()*.5,.1,e.getBbWidth()*.5,.15);}
-        if(random.nextInt(3)==0)level.playSound(null,BlockPos.containing(point),net.minecraft.sounds.SoundEvents.ROOTED_DIRT_BREAK,net.minecraft.sounds.SoundSource.PLAYERS,.8f,.6f);
+        if(random.nextInt(3)==0)level.playSound(null,new BlockPos(point),net.minecraft.sounds.SoundEvents.ROOTED_DIRT_BREAK,net.minecraft.sounds.SoundSource.PLAYERS,.8f,.6f);
     }
     public static void zone(ServerPlayer p,SpellDefinition s,Vec3 point,int ticks,double radius,boolean self,boolean mine){
         if(s.delivery().has("ice_surface"))freezeSurface(p,point,radius);
@@ -321,22 +322,22 @@ public final class SpellRuntime {
         add(new Zone(p,null,point,ticks,radius,false,false,true));
     }
     public static void freezeWetZones(ServerPlayer p,Vec3 point,double radius){
-        for(Active a:java.util.stream.Stream.concat(ACTIVE.stream(),PENDING.stream()).toList())if(a instanceof Zone z && z.wet && z.p.level()==p.level() && z.point.distanceToSqr(point)<Math.pow(radius+z.radius,2)){z.remaining=0;freezeSurface(p,z.point,z.radius);}
+        for(Active a:java.util.stream.Stream.concat(ACTIVE.stream(),PENDING.stream()).toList())if(a instanceof Zone z && z.wet && z.p.level==p.level && z.point.distanceToSqr(point)<Math.pow(radius+z.radius,2)){z.remaining=0;freezeSurface(p,z.point,z.radius);}
     }
     static void freezeSurface(ServerPlayer p,Vec3 point,double radius){
-        BlockPos center=BlockPos.containing(point); UUID id=UUID.randomUUID();int budget=0,r=(int)Math.ceil(radius),limit=Math.min(2048,(int)(Math.PI*radius*radius*1.5));
+        BlockPos center=new BlockPos(point); UUID id=UUID.randomUUID();int budget=0,r=(int)Math.ceil(radius),limit=Math.min(2048,(int)(Math.PI*radius*radius*1.5));
         for(BlockPos candidate:BlockPos.betweenClosed(center.offset(-r,-1,-r),center.offset(r,1,r)))if(candidate.distSqr(center)<=radius*radius && budget<limit){
-            BlockPos pos=candidate.immutable();var state=p.serverLevel().getBlockState(pos);
-            if(state.is(net.minecraft.world.level.block.Blocks.WATER) && WorldMagic.replace(p,pos,MagicBlocks.ICE.get().defaultBlockState())){if(p.serverLevel().getBlockEntity(pos) instanceof MagicBlocks.MagicBlockEntity data)data.initialize(p.getUUID(),id,pos,p.serverLevel().getGameTime()+MagicConfig.ICE_LIFE.get(),true);budget++;}
+            BlockPos pos=candidate.immutable();var state=p.getLevel().getBlockState(pos);
+            if(state.is(net.minecraft.world.level.block.Blocks.WATER) && WorldMagic.replace(p,pos,MagicBlocks.ICE.get().defaultBlockState())){if(p.getLevel().getBlockEntity(pos) instanceof MagicBlocks.MagicBlockEntity data)data.initialize(p.getUUID(),id,pos,p.getLevel().getGameTime()+MagicConfig.ICE_LIFE.get(),true);budget++;}
             else if(WorldPlacement.placeBlock(p,pos,MagicBlocks.ICE.get().defaultBlockState(),id,pos,false,false,null))budget++;
         }
     }
     public static void chain(ServerPlayer p,SpellDefinition s,Vec3 point,int count,double range,float amount){
-        java.util.stream.Stream.concat(ACTIVE.stream(),PENDING.stream()).filter(a->LEVELS.get(a)==p.serverLevel()).forEach(a->a.charge(point,range));
+        java.util.stream.Stream.concat(ACTIVE.stream(),PENDING.stream()).filter(a->LEVELS.get(a)==p.getLevel()).forEach(a->a.charge(point,range));
         Set<UUID> seen=new HashSet<>(chainSkip);seen.add(p.getUUID());Vec3 current=point;
         for(int i=0;i<Mth.clamp(count,0,128);i++){
             final Vec3 from=current;
-            boolean conductive=java.util.stream.Stream.concat(ACTIVE.stream(),PENDING.stream()).anyMatch(a->a instanceof Zone z && LEVELS.get(z)==p.serverLevel() && (z.wet || z.s!=null && z.s.delivery().has("conductive")) && z.point.distanceToSqr(from)<Math.pow(z.radius+1,2));
+            boolean conductive=java.util.stream.Stream.concat(ACTIVE.stream(),PENDING.stream()).anyMatch(a->a instanceof Zone z && LEVELS.get(z)==p.getLevel() && (z.wet || z.s!=null && z.s.delivery().has("conductive")) && z.point.distanceToSqr(from)<Math.pow(z.radius+1,2));
             double jumpRange=Mth.clamp(range*(conductive?1.5:1),1,48);
             var victim=near(p,from,Math.min(72,jumpRange*1.5)).stream().filter(e->!seen.contains(e.getUUID()) && EffectGraph.canHarm(p,e))
                     .filter(e->e.distanceToSqr(from)<=Math.pow(jumpRange*(MagicStatuses.has(e,MagicStatuses.Status.WET)?1.5:1),2))
@@ -346,7 +347,7 @@ public final class SpellRuntime {
             SpellVfx.cue(p,s,SpellVfx.ARC,from,current,.12,10);
             float damage=amount*(MagicStatuses.has(victim,MagicStatuses.Status.WET)?2:1);
             if(victim instanceof Player)damage*=MagicConfig.PLAYER_DAMAGE.get().floatValue();
-            com.restor.magicka.enemy.MagicEnemies.hurt(victim,p.damageSources().indirectMagic(p,p),damage,p,s,false);MagicStatuses.charge(victim,40);
+            com.restor.magicka.enemy.MagicEnemies.hurt(victim,net.minecraft.world.damagesource.DamageSource.indirectMagic(p,p),damage,p,s,false);MagicStatuses.charge(victim,40);
         }
     }
     static void sustain(ServerPlayer p,java.util.function.IntPredicate step){add(new Active(){int age;public ServerPlayer caster(){return p;}public boolean tick(){return step.test(age++);}});}
@@ -375,11 +376,11 @@ public final class SpellRuntime {
             if(s.delivery().has("area"))SpellVfx.cue(p,s,SpellVfx.ZONE,point,point,s.number("radius",3),12);
             return;
         }
-        if(!WorldPlacement.allowed(p,BlockPos.containing(point)))return;
-        MagicSummon stand=new MagicSummon(p.serverLevel(),point,(float)(s.number("object_health",12)*s.number("summon_health",1)));
+        if(!WorldPlacement.allowed(p,new BlockPos(point)))return;
+        MagicSummon stand=new MagicSummon(p.getLevel(),point,(float)(s.number("object_health",12)*s.number("summon_health",1)));
         stand.setItemSlot(EquipmentSlot.HEAD,new ItemStack(kind.equals("healer")?Items.SEA_LANTERN:Items.AMETHYST_BLOCK));
         stand.setCustomName(s.displayName());stand.setCustomNameVisible(true);
-        if(!p.serverLevel().addFreshEntity(stand))return;
+        if(!p.getLevel().addFreshEntity(stand))return;
         Zone field=new Zone(p,s,point,(int)s.number("duration_ticks",200),s.number("radius",3),self,false,false);
         add(new Active(){public ServerPlayer caster(){return p;}public boolean tick(){return !stand.isAlive() || field.tick();}public void dispose(){stand.discard();}});
     }
@@ -388,7 +389,7 @@ public final class SpellRuntime {
         if(!(event.level instanceof ServerLevel level))return;
         ACTIVE.addAll(PENDING);PENDING.clear();
         for(var it=ACTIVE.iterator();it.hasNext();){Active a=it.next();if(LEVELS.get(a)!=level)continue;
-            if(a.caster().level()!=level || !a.caster().isAlive() || a.caster().isRemoved() || a.tick()){a.dispose();it.remove();LEVELS.remove(a);}}
+            if(a.caster().level!=level || !a.caster().isAlive() || a.caster().isRemoved() || a.tick()){a.dispose();it.remove();LEVELS.remove(a);}}
         OWNERS.entrySet().removeIf(e->e.getValue().isRemoved());
     }
     @SubscribeEvent public void logout(net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedOutEvent event){

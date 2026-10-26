@@ -1,7 +1,7 @@
 package com.restor.magicka;
 
 import com.restor.magicka.enemy.*;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
@@ -17,9 +17,9 @@ import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import java.util.*;
 
 public final class ScrollDrops {
-    public static final TagKey<EntityType<?>> CASTERS = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(Magicka.ID, "spellcasters"));
-    public static final TagKey<EntityType<?>> BOSSES = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(Magicka.ID, "bosses"));
-    public static final TagKey<EntityType<?>> NO_DROPS = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(Magicka.ID, "no_scroll_drops"));
+    public static final TagKey<EntityType<?>> CASTERS = TagKey.create(Registry.ENTITY_TYPE_REGISTRY, new ResourceLocation(Magicka.ID, "spellcasters"));
+    public static final TagKey<EntityType<?>> BOSSES = TagKey.create(Registry.ENTITY_TYPE_REGISTRY, new ResourceLocation(Magicka.ID, "bosses"));
+    public static final TagKey<EntityType<?>> NO_DROPS = TagKey.create(Registry.ENTITY_TYPE_REGISTRY, new ResourceLocation(Magicka.ID, "no_scroll_drops"));
 
     private static boolean is(LivingEntity entity, TagKey<EntityType<?>> tag) { return entity.getType().builtInRegistryHolder().is(tag); }
 
@@ -73,14 +73,14 @@ public final class ScrollDrops {
     }
 
     public static SpellDefinition drop(LivingEntity entity, ServerPlayer killer) {
-        return pick(entity.getRandom(), SpellScrolls.known(killer), boss(entity) ? MagicConfig.BOSS_ULTIMATE_WEIGHT.get() : 0, 1, entity.level());
+        return pick(entity.getRandom(), SpellScrolls.known(killer), boss(entity) ? MagicConfig.BOSS_ULTIMATE_WEIGHT.get() : 0, 1, entity.level);
     }
 
     @SubscribeEvent public void drops(LivingDropsEvent event) {
         LivingEntity entity = event.getEntity();
         if (!(event.getSource().getEntity() instanceof ServerPlayer killer) || entity.getRandom().nextDouble() >= chance(entity)) return;
         SpellDefinition spell = drop(entity, killer);
-        if (spell != null) event.getDrops().add(new ItemEntity(entity.level(), entity.getX(), entity.getY() + .5, entity.getZ(), SpellScrollItem.of(spell)));
+        if (spell != null) event.getDrops().add(new ItemEntity(entity.level, entity.getX(), entity.getY() + .5, entity.getZ(), SpellScrollItem.of(spell)));
     }
 
     public ScrollDrops() {}

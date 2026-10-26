@@ -3,7 +3,7 @@ package com.restor.magicka;
 import net.minecraftforge.event.TickEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -42,9 +42,9 @@ public final class PolymorphManager {
     private static final Map<UUID, String> PLAYERS = new LinkedHashMap<>();
 
     public static boolean apply(ServerPlayer caster, LivingEntity target, String id, int ticks) {
-        if (!(target.level() instanceof ServerLevel level) || !EffectGraph.canHarm(caster, target)) return false;
+        if (!(target.level instanceof ServerLevel level) || !EffectGraph.canHarm(caster, target)) return false;
         ticks = Mth.clamp(ticks, 20, 24000);
-        EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.getOptional(ResourceLocation.tryParse(id)).orElse(EntityType.SHEEP);
+        EntityType<?> type = Registry.ENTITY_TYPE.getOptional(ResourceLocation.tryParse(id)).orElse(EntityType.SHEEP);
         if (target instanceof Player) return target instanceof ServerPlayer victim && living(type, level) && applyPlayer(victim, type, ticks);
         if (ACTIVE.containsKey(target.getUUID())) {
             target.getPersistentData().putLong(UNTIL, level.getGameTime() + ticks);
@@ -80,12 +80,12 @@ public final class PolymorphManager {
 
     private static boolean applyPlayer(ServerPlayer victim, EntityType<?> type, int ticks) {
         if (victim.isSpectator() || !victim.isAlive()) return false;
-        String id = BuiltInRegistries.ENTITY_TYPE.getKey(type).toString();
+        String id = Registry.ENTITY_TYPE.getKey(type).toString();
         victim.getPersistentData().putString(SHAPE, id);
-        victim.getPersistentData().putLong(UNTIL, victim.serverLevel().getGameTime() + ticks);
+        victim.getPersistentData().putLong(UNTIL, victim.getLevel().getGameTime() + ticks);
         if (!id.equals(PLAYERS.put(victim.getUUID(), id))) {
             sync(victim, id);
-            puff(victim.serverLevel(), victim.position());
+            puff(victim.getLevel(), victim.position());
         }
         return true;
     }
@@ -95,7 +95,7 @@ public final class PolymorphManager {
         victim.getPersistentData().remove(SHAPE);
         victim.getPersistentData().remove(UNTIL);
         sync(victim, "");
-        if (victim.level() instanceof ServerLevel level) puff(level, victim.position());
+        if (victim.level instanceof ServerLevel level) puff(level, victim.position());
     }
 
     private static void sync(ServerPlayer victim, String id) {
@@ -106,7 +106,7 @@ public final class PolymorphManager {
         if (!(player instanceof ServerPlayer victim)) return;
         String id = victim.getPersistentData().getString(SHAPE);
         if (id.isEmpty()) { PLAYERS.remove(victim.getUUID()); return; }
-        if (victim.serverLevel().getGameTime() >= victim.getPersistentData().getLong(UNTIL)) { revertPlayer(victim); return; }
+        if (victim.getLevel().getGameTime() >= victim.getPersistentData().getLong(UNTIL)) { revertPlayer(victim); return; }
         PLAYERS.put(victim.getUUID(), id);
         sync(victim, id);
     }
@@ -123,7 +123,7 @@ public final class PolymorphManager {
 
     private static LivingEntity revert(LivingEntity shape) {
         ACTIVE.remove(shape.getUUID());
-        if (!(shape.level() instanceof ServerLevel level)) return null;
+        if (!(shape.level instanceof ServerLevel level)) return null;
         CompoundTag original = shape.getPersistentData().getCompound(DATA);
         shape.getPersistentData().remove(DATA);
         Entity restored = original.isEmpty() ? null : EntityType.loadEntityRecursive(original, level, entity -> entity);
@@ -149,7 +149,7 @@ public final class PolymorphManager {
         if (ACTIVE.containsKey(entity.getUUID())) return true;
         if (!PLAYERS.containsKey(entity.getUUID())) return false;
         if (!(entity instanceof ServerPlayer victim)) return true;
-        if (victim.serverLevel().getGameTime() < victim.getPersistentData().getLong(UNTIL)) return true;
+        if (victim.getLevel().getGameTime() < victim.getPersistentData().getLong(UNTIL)) return true;
         revertPlayer(victim);
         return false;
     }
@@ -198,13 +198,13 @@ public final class PolymorphManager {
         for (UUID id : List.copyOf(PLAYERS.keySet())) {
             ServerPlayer victim = event.getServer().getPlayerList().getPlayer(id);
             if (victim == null) { PLAYERS.remove(id); continue; }
-            if (!victim.isAlive() || victim.serverLevel().getGameTime() >= victim.getPersistentData().getLong(UNTIL)) { revertPlayer(victim); continue; }
+            if (!victim.isAlive() || victim.getLevel().getGameTime() >= victim.getPersistentData().getLong(UNTIL)) { revertPlayer(victim); continue; }
             SoundEvent voice = voice(PLAYERS.get(id));
             if (voice != null && victim.getRandom().nextInt(8) == 0)
-                victim.serverLevel().playSound(null, victim.getX(), victim.getY(), victim.getZ(), voice, SoundSource.NEUTRAL, 1f, 1f);
+                victim.getLevel().playSound(null, victim.getX(), victim.getY(), victim.getZ(), voice, SoundSource.NEUTRAL, 1f, 1f);
         }
         for (LivingEntity shape : List.copyOf(ACTIVE.values()))
-            if (shape.isRemoved() || !shape.isAlive() || shape.level().getGameTime() >= shape.getPersistentData().getLong(UNTIL))
+            if (shape.isRemoved() || !shape.isAlive() || shape.level.getGameTime() >= shape.getPersistentData().getLong(UNTIL))
                 revert(shape);
     }
 

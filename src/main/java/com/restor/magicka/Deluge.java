@@ -18,7 +18,7 @@ final class Deluge {
     static boolean handles(SpellDefinition s) { return s.delivery().has("wave"); }
 
     static void cast(ServerPlayer p, SpellDefinition s) {
-        ServerLevel level = p.serverLevel();
+        ServerLevel level = p.getLevel();
         Vec3 dir = new Vec3(p.getLookAngle().x, 0, p.getLookAngle().z);
         dir = dir.lengthSqr() < 1e-4 ? Vec3.directionFromRotation(0, p.getYRot()) : dir.normalize();
         double range = Mth.clamp(s.number("radius", 9), 3, 16), width = Mth.clamp(s.number("burst_radius", 9), 3, 16);
@@ -34,8 +34,8 @@ final class Deluge {
         Set<UUID> struck = new HashSet<>();
         List<BlockPos> placed = new ArrayList<>();
         Vec3 direction = dir;
-        level.playSound(null, BlockPos.containing(start), SoundEvents.GENERIC_SPLASH, SoundSource.PLAYERS, 1.5f, .6f);
-        level.playSound(null, BlockPos.containing(start), SoundEvents.PLAYER_SPLASH_HIGH_SPEED, SoundSource.PLAYERS, 1.2f, .8f);
+        level.playSound(null, new BlockPos(start), SoundEvents.GENERIC_SPLASH, SoundSource.PLAYERS, 1.5f, .6f);
+        level.playSound(null, new BlockPos(start), SoundEvents.PLAYER_SPLASH_HIGH_SPEED, SoundSource.PLAYERS, 1.2f, .8f);
         SpellRuntime.timed(p, travel + linger, age -> {
             if (age >= travel) return;
             double t = (age + 1) / (double) travel, reach = range * t, half = 1.5 + (width / 2 - 1.5) * t;
@@ -46,9 +46,9 @@ final class Deluge {
                 EpicMagic.fx(level, ParticleTypes.SPLASH, q.x, y + .2, q.z, 3, .2, .4, .2, .1);
                 EpicMagic.fx(level, ParticleTypes.FALLING_WATER, q.x, y + 1.6, q.z, 1, .2, .5, .2, 0);
                 if (age % 2 == 0) EpicMagic.fx(level, ParticleTypes.BUBBLE_POP, q.x, y + 1, q.z, 1, .2, .4, .2, .05);
-                if (flood && age % 2 == 0 && placed.size() < 96) water(p, BlockPos.containing(q.x, y, q.z), placed);
+                if (flood && age % 2 == 0 && placed.size() < 96) water(p, new BlockPos(q.x, y, q.z), placed);
             }
-            if (age % 4 == 0) level.playSound(null, BlockPos.containing(front), SoundEvents.GENERIC_SPLASH, SoundSource.PLAYERS, 1f, .7f + (float) t * .3f);
+            if (age % 4 == 0) level.playSound(null, new BlockPos(front), SoundEvents.GENERIC_SPLASH, SoundSource.PLAYERS, 1f, .7f + (float) t * .3f);
             AABB box = new AABB(front, front).inflate(half + 1, 2.5, half + 1).expandTowards(direction.scale(-1.5));
             for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, box, e -> e != p && e.isAlive() && !struck.contains(e.getUUID()))) {
                 Vec3 rel = e.position().subtract(start);
@@ -64,7 +64,7 @@ final class Deluge {
     }
 
     private static double ground(ServerLevel level, Vec3 q) {
-        BlockPos pos = BlockPos.containing(q.x, q.y + 1, q.z);
+        BlockPos pos = new BlockPos(q.x, q.y + 1, q.z);
         for (int i = 0; i < 5; i++) {
             if (!level.getBlockState(pos.below()).getCollisionShape(level, pos.below()).isEmpty()) return pos.getY();
             pos = pos.below();
@@ -73,7 +73,7 @@ final class Deluge {
     }
 
     private static void water(ServerPlayer p, BlockPos pos, List<BlockPos> placed) {
-        ServerLevel level = p.serverLevel();
+        ServerLevel level = p.getLevel();
         if (!level.getBlockState(pos).isAir() || level.getBlockState(pos.below()).getCollisionShape(level, pos.below()).isEmpty()) return;
         if (WorldMagic.replace(p, pos, Blocks.WATER.defaultBlockState())) placed.add(pos.immutable());
     }

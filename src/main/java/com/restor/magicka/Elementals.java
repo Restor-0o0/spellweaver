@@ -7,7 +7,7 @@ import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.Registry;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -27,12 +27,12 @@ import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
-import org.joml.Vector3f;
+import com.mojang.math.Vector3f;
 import java.util.*;
 
 /** Summoned elementals: companions that follow their caster and titans that live only while an ultimate is channelled. */
 public final class Elementals {
-    public static final DeferredRegister<EntityType<?>> TYPES = DeferredRegister.create(Registries.ENTITY_TYPE, Magicka.ID);
+    public static final DeferredRegister<EntityType<?>> TYPES = DeferredRegister.create(Registry.ENTITY_TYPE_REGISTRY, Magicka.ID);
     public static final RegistryObject<EntityType<Elemental>> COMPANION = TYPES.register("elemental", () -> EntityType.Builder.of(Elemental::new, MobCategory.MISC)
             .sized(.8f, 1.6f).clientTrackingRange(10).build("elemental"));
     public static final RegistryObject<EntityType<ElementalTitan>> TITAN = TYPES.register("elemental_titan", () -> EntityType.Builder.<ElementalTitan>of(ElementalTitan::new, MobCategory.MISC)
@@ -50,7 +50,7 @@ public final class Elementals {
     public static String id(Element e, String kind) { return e.name().toLowerCase(Locale.ROOT) + "_" + kind; }
 
     static void companion(ServerPlayer p, SpellDefinition s, Vec3 point) {
-        ServerLevel level = p.serverLevel();
+        ServerLevel level = p.getLevel();
         Elemental mob = COMPANION.get().create(level);
         if (mob == null) return;
         Element e = element(s);
@@ -58,7 +58,7 @@ public final class Elementals {
         MagicGear.frail(mob, s.number("summon_health",1));
         Vec3 at = place(level, mob, point);
         if (at == null) at = place(level, mob, p.position().add(0,1,0));
-        if (at == null || !WorldPlacement.allowed(p, BlockPos.containing(at))) { mob.discard(); return; }
+        if (at == null || !WorldPlacement.allowed(p, new BlockPos(at))) { mob.discard(); return; }
         mob.moveTo(at.x, at.y + (mob.flyer() ? .8 : 0), at.z, p.getYRot(), 0);
         if (!level.addFreshEntity(mob)) return;
         Deque<Elemental> owned = OWNED.computeIfAbsent(p.getUUID(), k -> new ArrayDeque<>());
@@ -107,7 +107,7 @@ public final class Elementals {
         if (attacker != null && foe(owner, attacker) && attacker.distanceToSqr(from) < range * range) return attacker;
         LivingEntity victim = owner.getLastHurtMob();
         if (victim != null && foe(owner, victim) && victim.distanceToSqr(from) < range * range) return victim;
-        return owner.serverLevel().getEntitiesOfClass(LivingEntity.class, new AABB(from, from).inflate(range, height, range), e -> foe(owner, e))
+        return owner.getLevel().getEntitiesOfClass(LivingEntity.class, new AABB(from, from).inflate(range, height, range), e -> foe(owner, e))
                 .stream().min(Comparator.comparingDouble(e -> e.distanceToSqr(from))).orElse(null);
     }
 
@@ -182,18 +182,18 @@ public final class Elementals {
 
     /** A homing elemental shot; {@code splash} 0 hits only what it strikes. */
     static void bolt(ServerPlayer p, SpellDefinition s, Element e, Vec3 from, LivingEntity target, double speed, double size, double splash, List<JsonObject> graph) {
-        ServerLevel level = p.serverLevel();
+        ServerLevel level = p.getLevel();
         Vec3[] position = {from}, velocity = {aim(target).subtract(from).normalize().scale(speed)};
         level.playSound(null, from.x, from.y, from.z, shot(e), SoundSource.PLAYERS, .7f + (float)size * .5f, 1.3f - (float)size * .6f);
         SpellRuntime.sustain(p, age -> {
             if (age > 60) return true;
             Vec3 f = position[0];
-            if (target.isAlive() && target.level() == level) {
+            if (target.isAlive() && target.level == level) {
                 Vec3 want = aim(target).subtract(f).normalize().scale(speed);
                 velocity[0] = velocity[0].lerp(want, .25).normalize().scale(speed);
             }
             Vec3 to = f.add(velocity[0]);
-            if (!level.hasChunkAt(BlockPos.containing(to))) return true;
+            if (!level.hasChunkAt(new BlockPos(to))) return true;
             var clip = level.clip(new ClipContext(f, to, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, p));
             Vec3 end = clip.getLocation();
             boolean struck = clip.getType() != HitResult.Type.MISS;
@@ -208,7 +208,7 @@ public final class Elementals {
         });
     }
     static void strike(ServerPlayer p, SpellDefinition s, Element e, Vec3 at, LivingEntity victim, double splash, List<JsonObject> graph) {
-        ServerLevel level = p.serverLevel();
+        ServerLevel level = p.getLevel();
         burst(level, e, at, splash > 0 ? 40 : 14, splash > 0 ? splash * .4 : .3);
         level.playSound(null, at.x, at.y, at.z, hit(e), SoundSource.PLAYERS, splash > 0 ? 1.4f : .8f, .8f + level.random.nextFloat() * .3f);
         if (splash > 0) { blast(p, s, e, at, splash, graph, false); return; }
@@ -216,14 +216,14 @@ public final class Elementals {
         else for (var v : level.getEntitiesOfClass(LivingEntity.class, new AABB(at, at).inflate(.8), v -> hostile(p, v))) EffectGraph.entity(p, v, s, graph, at, false);
     }
     static void blast(ServerPlayer p, SpellDefinition s, Element e, Vec3 at, double radius, List<JsonObject> graph, boolean rings) {
-        ServerLevel level = p.serverLevel();
+        ServerLevel level = p.getLevel();
         if (rings) { ring(level, e, at, radius * .5); ring(level, e, at, radius); }
         for (var v : level.getEntitiesOfClass(LivingEntity.class, new AABB(at, at).inflate(radius, radius * .8, radius), v -> hostile(p, v) && v.distanceToSqr(at) <= radius * radius))
             EffectGraph.entity(p, v, s, graph, at, false);
         EffectGraph.world(p, s, graph, at, false, false);
     }
     static void beam(ServerPlayer p, SpellDefinition s, Element e, Vec3 from, LivingEntity target, List<JsonObject> graph) {
-        ServerLevel level = p.serverLevel();
+        ServerLevel level = p.getLevel();
         Vec3 to = aim(target);
         line(level, e, from, to, e == Element.LIGHTNING ? .18 : .04);
         if (e == Element.DEATH) line(level, e, to, from, .12);

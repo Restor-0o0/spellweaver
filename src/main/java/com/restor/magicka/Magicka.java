@@ -18,12 +18,10 @@ public final class Magicka {
         MagicBlocks.BLOCKS.register(bus);
         MagicBlocks.ENTITIES.register(bus);
         MagicItems.ITEMS.register(bus);
-        MagicItems.TABS.register(bus);
         GearMenu.MENUS.register(bus);
         SpellScrollLoot.MODIFIERS.register(bus);
         MagicPotions.EFFECTS.register(bus);
         MagicPotions.POTIONS.register(bus);
-        bus.addListener(MagicItems::creative);
         bus.addListener(MagicPotions::setup);
         bus.addListener(com.restor.magicka.enemy.MagicEnemies::attributes);
         bus.addListener(com.restor.magicka.enemy.MagicEnemies::placements);

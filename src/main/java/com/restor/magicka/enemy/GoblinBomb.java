@@ -23,11 +23,11 @@ public class GoblinBomb extends ThrowableItemProjectile {
 
     public GoblinBomb(EntityType<? extends GoblinBomb> type, Level level) { super(type, level); }
     public static GoblinBomb create(LivingEntity owner, Vec3 at, int fuse) {
-        GoblinBomb bomb = new GoblinBomb(MagicEnemies.GOBLIN_BOMB.get(), owner.level());
+        GoblinBomb bomb = new GoblinBomb(MagicEnemies.GOBLIN_BOMB.get(), owner.level);
         bomb.setOwner(owner);
         bomb.setPos(at);
         bomb.fuse = fuse;
-        owner.level().addFreshEntity(bomb);
+        owner.level.addFreshEntity(bomb);
         return bomb;
     }
     @Override protected Item getDefaultItem() { return Items.TNT; }
@@ -36,11 +36,11 @@ public class GoblinBomb extends ThrowableItemProjectile {
     @Override public void tick() {
         if (landed) {
             baseTick();
-            setDeltaMovement(onGround() ? Vec3.ZERO : new Vec3(0, getDeltaMovement().y - .04, 0));
+            setDeltaMovement(isOnGround() ? Vec3.ZERO : new Vec3(0, getDeltaMovement().y - .04, 0));
             move(MoverType.SELF, getDeltaMovement());
         } else super.tick();
-        if (level().isClientSide || isRemoved()) return;
-        ServerLevel level = (ServerLevel)level();
+        if (level.isClientSide || isRemoved()) return;
+        ServerLevel level = (ServerLevel)this.level;
         level.sendParticles(ParticleTypes.SMOKE, getX(), getY() + .35, getZ(), 1, .02, .02, .02, .01);
         if (tickCount % 3 == 0) level.sendParticles(ParticleTypes.FLAME, getX(), getY() + .35, getZ(), 1, .02, .02, .02, .005);
         if (landed && fuse % 4 == 0) ring(level);
@@ -68,7 +68,7 @@ public class GoblinBomb extends ThrowableItemProjectile {
             double d = e.position().distanceTo(position());
             if (d > RADIUS) continue;
             float k = (float)(1 - d / RADIUS);
-            e.hurt(damageSources().explosion(this, owner), 2 + 7 * k);
+            e.hurt(net.minecraft.world.damagesource.DamageSource.explosion(owner), 2 + 7 * k);
             Vec3 push = e.position().subtract(position()).multiply(1, 0, 1).normalize().scale(.4 + k * .8);
             e.push(push.x, .3 + k * .3, push.z); e.hurtMarked = true;
             if (!MagicStatuses.has(e, MagicStatuses.Status.WET)) e.setSecondsOnFire(2);
