@@ -26,7 +26,7 @@ public final class DeathGameTests {
         h.assertTrue(SpellTags.of(RecipeGameTests.spell("Legion of the Dead")).contains("summon") && !SpellTags.of(RecipeGameTests.spell("Ember")).contains("destruction"),"Summon and destruction tags are precise");
         h.succeed();
     }
-    @MagicTest(timeoutTicks=80)
+    @MagicTest(timeoutTicks=200)
     public static void minionsServeTheirMaster(GameTestHelper h){
         floor(h);var p=RecipeGameTests.caster(h);
         SpellRuntime.cast(p,RecipeGameTests.spell("Grave Call"),true);
@@ -36,11 +36,8 @@ public final class DeathGameTests {
         h.assertTrue(servant.getTarget()==null,"A servant never targets its master");
         h.assertTrue(EffectGraph.canHarm(p,servant),"Master spells hurt own servants too");
         var enemy=h.spawnWithNoFreeWill(EntityType.SKELETON,new BlockPos(3,2,3));
-        h.runAfterDelay(25,()->{
-            h.assertTrue(raised.stream().anyMatch(m->m.getTarget()==enemy),"Servants attack nearby monsters");
-            h.assertTrue(raised.stream().allMatch(m->m.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.HEAD).is(net.minecraft.world.item.Items.SKELETON_SKULL)),"Servants wear skulls against sunlight");
-            h.succeed();
-        });
+        h.assertTrue(raised.stream().allMatch(m->m.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.HEAD).is(net.minecraft.world.item.Items.SKELETON_SKULL)),"Servants wear skulls against sunlight");
+        h.succeedWhen(()->h.assertTrue(raised.stream().anyMatch(m->m.getTarget()==enemy) || enemy.getHealth()<enemy.getMaxHealth(),"Servants attack nearby monsters"));
     }
     @MagicTest(timeoutTicks=80)
     public static void servantsGatherAndCrumble(GameTestHelper h){

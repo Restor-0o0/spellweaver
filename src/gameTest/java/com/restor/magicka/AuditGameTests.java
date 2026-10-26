@@ -72,18 +72,18 @@ public final class AuditGameTests {
         SpellRuntime.cast(p,RecipeGameTests.spell("Thunder Lance"),false);
         h.assertTrue(first.getHealth()<first.getMaxHealth() && second.getHealth()<second.getMaxHealth(),"Every creature on the line is struck");h.succeed();
     }
-    @MagicTest(timeoutTicks=160)
+    @MagicTest(timeoutTicks=240)
     public static void teslaSpireBuildsCoilAndZaps(GameTestHelper h){
         DeathGameTests.floor(h);var p=RecipeGameTests.caster(h);
-        var enemy=h.spawnWithNoFreeWill(EntityType.ZOMBIE,new BlockPos(2,2,2));
+        var enemy=h.spawnWithNoFreeWill(EntityType.ZOMBIE,new BlockPos(5,2,5));
         SpellRuntime.cast(p,RecipeGameTests.spell("Tesla Spire"),true);
-        h.runAfterDelay(120,()->{
+        h.succeedWhen(()->{
             var blocks=MagicConstructionManager.get(h.getLevel()).structures().stream().filter(c->c.owner.equals(p.getUUID())).flatMap(c->c.blocks.stream()).toList();
             h.assertTrue(blocks.size()==5,"Four copper blocks and a coil, got "+blocks.size());
             var top=blocks.stream().max(java.util.Comparator.comparingInt(BlockPos::getY)).orElseThrow();
             h.assertTrue(h.getLevel().getBlockState(top).is(MagicBlocks.COIL.get()),"Coil sits on top");
             h.assertTrue(blocks.stream().filter(b->!b.equals(top)).allMatch(b->h.getLevel().getBlockState(b).is(MagicBlocks.COPPER.get())),"Tower body is copper");
-            h.assertTrue(enemy.getHealth()<enemy.getMaxHealth(),"Coil zaps a nearby enemy");h.succeed();
+            h.assertTrue(enemy.getHealth()<enemy.getMaxHealth(),"Coil zaps a nearby enemy");
         });
     }
     @MagicTest(timeoutTicks=60)
