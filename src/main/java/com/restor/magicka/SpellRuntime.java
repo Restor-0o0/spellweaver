@@ -221,7 +221,7 @@ public final class SpellRuntime {
                 if(top.isEmpty())return true;
                 Vec3 from=net.minecraft.world.phys.Vec3.atCenterOf(top.get()).add(0,.6,0);
                 var victims=near(p,from,s.number("radius",8)).stream().filter(e->e!=p && EffectGraph.canHarm(p,e))
-                        .filter(e->level.clip(new ClipContext(from,e.getBoundingBox().getCenter(),ClipContext.Block.COLLIDER,ClipContext.Fluid.NONE,p)).getType()==HitResult.Type.MISS)
+                        .filter(e->level.clip(new ClipContext(from.add(e.getBoundingBox().getCenter().subtract(from).normalize().scale(1.2)),e.getBoundingBox().getCenter(),ClipContext.Block.COLLIDER,ClipContext.Fluid.NONE,p)).getType()==HitResult.Type.MISS)
                         .sorted(Comparator.comparingDouble(e->e.distanceToSqr(from))).limit(Math.clamp((int)s.number("targets",3),1,64)).toList();
                 level.sendParticles(ParticleTypes.ELECTRIC_SPARK,from.x,from.y,from.z,6,.25,.25,.25,.05);
                 for(var e:victims){SpellVfx.cue(p,s,SpellVfx.ARC,from,e.getBoundingBox().getCenter(),.14,10);EffectGraph.entity(p,e,s,s.effects(),from,false);}

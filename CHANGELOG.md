@@ -27,6 +27,7 @@
 - Deluge rolls across the aimed spot instead of starting at your feet.
 - Spark Portal stays open for 30 s, reaches up to 192 blocks, and its far gate opens on the wall or ceiling you aim at instead of dropping to the floor.
 - Blasts dig a shallow bowl half as deep as before; its outer ring is only cracked, with some blocks knocked out, so the crater fades into the ground.
+- Tesla Spire no longer misses enemies standing below the coil at a steep angle.
 - Brittle Cage and other growth spells centre on the creature you aim at; the cage now has a roof.
 - Silver Stag gallops for 8 s without stopping, turning in smooth arcs from foe to foe and ramming them aside.
 - Spark Portal never drops you into a wall. Quicksilt now catches the caster too.
