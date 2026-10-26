@@ -1,8 +1,8 @@
 package com.restor.magicka;
 
-import net.minecraft.util.Mth;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.util.Mth;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -25,7 +25,9 @@ final class Deluge {
         Vec3 aim = SpellAim.hit(p).getLocation();
         if (aim.distanceToSqr(p.getEyePosition()) > 64 * 64) aim = p.getEyePosition().add(p.getLookAngle().scale(64));
         Vec3 back = aim.subtract(dir.scale(range * .5)), side = new Vec3(-dir.z, 0, dir.x);
-        Vec3 start = back.subtract(p.position()).dot(dir) < 1.2 ? p.position().add(dir.scale(1.2)) : back;
+        BlockPos center = surface(level, aim, aim.y);
+        double baseY = center != null ? center.getY() : aim.y;
+        Vec3 from = back.subtract(p.position()).dot(dir) < 1.2 ? p.position().add(dir.scale(1.2)) : back, start = new Vec3(from.x, baseY, from.z);
         int travel = Mth.clamp((int) s.number("travel_ticks", 16), 6, 40), linger = Mth.clamp((int) s.number("water_ticks", 60), 0, 200);
         boolean flood = MagicConfig.CONSTRUCTION.get() && linger > 0;
         var hitEffects = s.effects().stream().filter(n -> !SpellDefinition.string(n, "type", "").equals("extinguish")).toList();
@@ -42,11 +44,20 @@ final class Deluge {
             Vec3 front = start.add(direction.scale(reach));
             for (double o = -half; o <= half; o += .5) {
                 Vec3 q = front.add(side.scale(o));
-                double y = ground(level, q);
+                BlockPos cell = surface(level, q, baseY);
+                double y = cell != null ? cell.getY() : q.y;
                 EpicMagic.fx(level, ParticleTypes.SPLASH, q.x, y + .2, q.z, 3, .2, .4, .2, .1);
                 EpicMagic.fx(level, ParticleTypes.FALLING_WATER, q.x, y + 1.6, q.z, 1, .2, .5, .2, 0);
                 if (age % 2 == 0) EpicMagic.fx(level, ParticleTypes.BUBBLE_POP, q.x, y + 1, q.z, 1, .2, .4, .2, .05);
-                if (flood && age % 2 == 0 && placed.size() < 96) water(p, BlockPos.containing(q.x, y, q.z), placed);
+                if (flood && cell != null && placed.size() < 220) water(p, cell, placed);
+            }
+            if (flood && center != null && age == travel / 2) {
+                int r = (int) Math.min(4, width / 2);
+                for (int dx = -r; dx <= r; dx++) for (int dz = -r; dz <= r; dz++) {
+                    if (dx * dx + dz * dz > r * r + 1) continue;
+                    BlockPos cell = surface(level, Vec3.atBottomCenterOf(center.offset(dx, 0, dz)), center.getY());
+                    if (cell != null) water(p, cell, placed);
+                }
             }
             if (age % 4 == 0) level.playSound(null, BlockPos.containing(front), SoundEvents.GENERIC_SPLASH, SoundSource.PLAYERS, 1f, .7f + (float) t * .3f);
             AABB box = new AABB(front, front).inflate(half + 1, 2.5, half + 1).expandTowards(direction.scale(-1.5));
@@ -63,18 +74,21 @@ final class Deluge {
         });
     }
 
-    private static double ground(ServerLevel level, Vec3 q) {
-        BlockPos pos = BlockPos.containing(q.x, q.y + 1, q.z);
-        for (int i = 0; i < 5; i++) {
-            if (!level.getBlockState(pos.below()).getCollisionShape(level, pos.below()).isEmpty()) return pos.getY();
-            pos = pos.below();
-        }
-        return q.y;
+    private static BlockPos surface(ServerLevel level, Vec3 q, double near) {
+        BlockPos pos = BlockPos.containing(q.x, near + 3, q.z);
+        for (int i = 0; i < 10; i++, pos = pos.below())
+            if (open(level, pos) && !level.getBlockState(pos.below()).getCollisionShape(level, pos.below()).isEmpty()) return pos;
+        return null;
+    }
+
+    private static boolean open(ServerLevel level, BlockPos pos) {
+        var state = level.getBlockState(pos);
+        return state.isAir() || state.canBeReplaced() && state.getFluidState().isEmpty();
     }
 
     private static void water(ServerPlayer p, BlockPos pos, List<BlockPos> placed) {
         ServerLevel level = p.serverLevel();
-        if (!level.getBlockState(pos).isAir() || level.getBlockState(pos.below()).getCollisionShape(level, pos.below()).isEmpty()) return;
+        if (placed.contains(pos) || !open(level, pos)) return;
         if (WorldMagic.replace(p, pos, Blocks.WATER.defaultBlockState())) placed.add(pos.immutable());
     }
 

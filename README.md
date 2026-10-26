@@ -13,10 +13,15 @@ to grind: press up to five elements, then cast. Every combination does something
 
 ## Features
 
-- **8 elements, 1286 spells.** Fire, Water, Cold, Lightning, Earth, Life, Arcane and Death combine
-  into every possible formula of one to five elements, each with its own effect.
-- **206 signature spells** in the Grimoire, searchable by name or tag (`#building`, `#damage`,
-  `#summon`, `#support`…), with four quick-cast slots.
+- **8 elements, 1286 formulas.** Fire, Water, Cold, Lightning, Earth, Life, Arcane and Death combine
+  into every formula of one to five elements: 346 hand-made recipes, and every other set fuses by
+  clear rules — the lead element sets the form, each element adds its mechanic, pairs react.
+- **A living Grimoire.** A leather-bound book whose pages really turn. Its first chapters teach
+  casting and the fusion rules, then come **206 signature spells**: search them by name, page
+  number or tag (`#building`, `#damage`, `#summon`, `#support`…), filter by element, tag or formula
+  length, and drag any spell into one of four quick-cast slots.
+- **Rune circles.** Every spell has its own rune written from 24 element glyphs. It flashes at your
+  hand, marks the zone of area spells, and meteors fall out of a rune circle in the sky.
 - **Tiers that matter.** One to three elements are support, hexes and jokes; four is the combat tier;
   five is the top shelf with ritual-ordered ultimates — storms, meteor showers, tornadoes and
   elemental titans rising from the ground.
@@ -222,6 +227,9 @@ and Forge resets it.
 
 Requires **Forge 47.4+** for Minecraft **1.20.1** and Java 17. Install the same version on
 the client and the server. No other dependencies.
+
+Spellweaver is available for Minecraft 26.3, 26.2, 26.1 and 1.21.1 on NeoForge, and 1.20.1 and
+1.19.2 on Forge. All versions get the same spells and updates.
 
 ## Building
 

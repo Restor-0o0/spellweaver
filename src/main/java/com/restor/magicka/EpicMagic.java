@@ -156,7 +156,7 @@ public final class EpicMagic {
         var ember = new DustParticleOptions(new Vector3f(.9f,.35f,.1f),3f);
         int[] next = {0};
         double h = Math.max(8,clearance(level,c.focus,26)), disc = Math.min(16,radius*.8);
-        Vec3 gate = c.focus.add(slant.scale(-h*.45)).add(0,h,0), normal = c.focus.subtract(gate).normalize();
+        Vec3 gate = c.focus.add(slant.scale(-h*.45)).add(0,h,0), normal = new Vec3(0,-1,0);
         Vec3 u = (Math.abs(normal.y) > .95 ? new Vec3(1,0,0) : new Vec3(0,1,0)).cross(normal).normalize(), v = normal.cross(u);
         SpellRuntime.sustain(p,age -> {
             if (!c.live) return true;

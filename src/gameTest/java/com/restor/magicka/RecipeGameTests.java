@@ -27,7 +27,7 @@ public final class RecipeGameTests {
     public static void catalogAndDataOverride(GameTestHelper h){
         int[] counts=new int[6];Set<SpellFormula> keys=new HashSet<>();
         for(var d:RecipeRegistry.recipes()){counts[d.formula().size()]++;keys.add(d.formula());}
-        h.assertTrue(Arrays.equals(counts,new int[]{0,8,36,120,330,792}) && keys.size()==1286,"Complete canonical catalog");
+        h.assertTrue(Arrays.equals(counts,new int[]{0,8,36,91,189,22}) && keys.size()==RecipeRegistry.CATALOG_SIZE,"Complete canonical catalog");
         long signatures=RecipeRegistry.recipes().stream().filter(d->d.tier().equals("Signature")).count();
         h.assertTrue(signatures==206,"All signatures imported, got "+signatures);
         var base=spell("Ember");var json=base.source().deepCopy();json.addProperty("cast_ticks",33);json.addProperty("shape","beam");
@@ -128,7 +128,7 @@ public final class RecipeGameTests {
     }
     @GameTest(template="empty",batch="sky",timeoutTicks=40)
     public static void bridgeReallyCreatesAnchor(GameTestHelper h){
-        var p=caster(h);p.setPos(h.absoluteVec(new Vec3(1.5,150,1.5)));p.setXRot(0);p.setYRot(180);var bridge=spell("Skybridge");
+        var p=caster(h);p.setPos(h.absoluteVec(new Vec3(1.5,330,1.5)));p.setXRot(0);p.setYRot(180);var bridge=spell("Skybridge");
         h.assertTrue(SpellAim.hit(p).getType()==net.minecraft.world.phys.HitResult.Type.MISS,"Bridge test must aim into empty sky");
         var plan=new MagicConstructionManager.Plan(p,bridge,false,null);
         // Keep the test's remote aim chunk loaded without forcing chunks in production code.
@@ -159,7 +159,7 @@ public final class RecipeGameTests {
     public static void syncedCatalogAndGenericSelf(GameTestHelper h){
         var data=RecipeRegistry.recipes().stream().map(d->{var j=d.source().deepCopy();j.addProperty("id",d.id().toString());return RecipeRegistry.GSON.toJson(j);}).toList();
         RecipeRegistry.acceptClient(data);
-        h.assertTrue(RecipeRegistry.clientRecipes().size()==1286,"Complete catalog synchronization");
+        h.assertTrue(RecipeRegistry.clientRecipes().size()==RecipeRegistry.CATALOG_SIZE,"Complete catalog synchronization");
         var json=spell("Pebble").source().deepCopy();json.remove("self");
         var recipe=SpellDefinition.parse(new ResourceLocation("test:earth"),json);var p=caster(h);
         SpellRuntime.cast(p,recipe,true);h.assertTrue(MagicStatuses.has(p,MagicStatuses.Status.STONE_SHELL),"Omitting Self uses generic rules");
@@ -200,10 +200,10 @@ public final class RecipeGameTests {
         var wave=spell("Spirit Wave");
         h.assertTrue(SpellScrolls.locked(wave),"Spirit Wave needs a scroll");
         var weaker=MagicStats.resolve(p,wave.formula());
-        h.assertTrue(!weaker.id().equals(wave.id()) && weaker.formula().size()==wave.formula().size()-1 && SpellScrolls.open(p,weaker),"Sealed formula casts a shorter open spell, got "+weaker.id());
+        h.assertTrue(weaker.id().equals(RecipeRegistry.fusion(wave.formula()).id()),"Sealed formula casts the plain fusion, got "+weaker.id());
         for(var d:RecipeRegistry.recipes())if(SpellScrolls.locked(d)){
             var cast=SpellScrolls.resolve(p,d);
-            h.assertTrue(SpellScrolls.open(p,cast) && !cast.ultimate() && cast.formula().size()<d.formula().size(),"Every sealed spell falls back to an open one: "+d.id());
+            h.assertTrue(SpellScrolls.open(p,cast) && !cast.ordered() && cast.formula().equals(d.formula()),"Every sealed spell falls back to its fusion: "+d.id());
         }
         var elementals=RecipeRegistry.recipes().stream().filter(d->"elemental".equals(SpellDefinition.string(d.delivery(),"object_kind",""))).toList();
         h.assertTrue(elementals.stream().filter(d->!SpellScrolls.locked(d)).count()==1,"Exactly one elemental is open from the start");
