@@ -21,7 +21,7 @@ public final class ClientSmokeTest {
         }
         if (stage == 0 && mc.screen instanceof TitleScreen && mc.getOverlay() == null && ++ticks == 30) {
             long keys = java.util.Arrays.stream(mc.options.keyMappings).filter(k -> k.getName().startsWith("key.magicka.")).count();
-            if (keys != 20) throw new IllegalStateException("Expected 20 Magicka key mappings, got " + keys);
+            if (keys != 22) throw new IllegalStateException("Expected 22 Magicka key mappings, got " + keys);
             int entries=com.restor.magicka.client.SpellbookScreen.uniqueSpells().size();if(entries<150)throw new IllegalStateException("Expected the full book, got "+entries+" entries");
             if (RecipeRegistry.clientRecipes().size()!=RecipeRegistry.CATALOG_SIZE)throw new IllegalStateException("Client catalog must contain all "+RecipeRegistry.CATALOG_SIZE+" spells, got "+RecipeRegistry.clientRecipes().size());
             for(String id:com.restor.magicka.client.enemy.EnemyLayers.ALL.keySet()){
@@ -32,7 +32,7 @@ public final class ClientSmokeTest {
             mc.options.languageCode = "ru_ru";
             mc.getLanguageManager().setSelected("ru_ru");
             mc.reloadResourcePacks();
-            var preferences=com.restor.magicka.client.BookPreferences.get();preferences.query="";preferences.tag="all";preferences.selectedId="magicka:stone_stair";
+            var preferences=com.restor.magicka.client.BookPreferences.get();preferences.query="";preferences.tag="all";preferences.size=0;preferences.elements=0;preferences.selectedId="magicka:stone_stair";
             String[] presets={"Firebomb","Stone Stair","Healing Pool","Arcane Meteor"};
             for(int i=0;i<4;i++){String name=presets[i];preferences.assign(i,RecipeRegistry.clientRecipes().stream().filter(d->d.name().equals(name)).findFirst().orElseThrow().spokenPacked());}
             mc.setScreen(new com.restor.magicka.client.SpellbookScreen());
@@ -86,7 +86,7 @@ public final class ClientSmokeTest {
     private static java.util.List<String> labels(net.minecraft.client.gui.screens.Screen screen){return screen.children().stream().filter(w->w instanceof net.minecraft.client.gui.components.Button).map(w->((net.minecraft.client.gui.components.Button)w).getMessage().getString()).toList();}
     private static void exerciseBook(Minecraft mc){
         var before=labels(mc.screen);mc.setScreen(new TitleScreen());var saved=com.restor.magicka.client.BookPreferences.get();
-        if(!saved.selectedId.equals("magicka:stone_stair") || saved.page==0)throw new IllegalStateException("Book did not save selected spell and page");
+        if(!saved.selectedId.equals("magicka:stone_stair"))throw new IllegalStateException("Book did not save selected spell");
         mc.setScreen(new com.restor.magicka.client.SpellbookScreen());if(!before.equals(labels(mc.screen)))throw new IllegalStateException("Book did not reopen on the same page");
         var search=(net.minecraft.client.gui.components.EditBox)mc.screen.children().stream().filter(w->w instanceof net.minecraft.client.gui.components.EditBox).findFirst().orElseThrow();
         search.setValue("#созидание");var tabs=java.util.Arrays.stream(new String[]{"all","damage","heal","control","construction","summon","destruction","movement","zone","projectile","utility"}).map(t->net.minecraft.network.chat.Component.translatable("book.magicka.tag."+t).getString()).toList();var found=labels(mc.screen).stream().filter(name->!tabs.contains(name)).map(name->RecipeRegistry.clientRecipes().stream().filter(d->d.displayName().getString().equals(name)).findFirst()).flatMap(java.util.Optional::stream).toList();

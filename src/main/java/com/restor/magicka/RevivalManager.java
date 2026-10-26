@@ -34,12 +34,14 @@ public final class RevivalManager {
         for (Remains r : SOULS.values()) if (r.level.getGameTime()%20==0 && r.level.hasChunkAt(net.minecraft.core.BlockPos.containing(r.point)))
             r.level.sendParticles(ParticleTypes.SOUL,r.point.x,r.point.y+.8,r.point.z,2,.2,.3,.2,.01);
     }
-    public static int raise(ServerPlayer caster, Vec3 point, double radius, int count, int ticks) {
+    public static int raise(ServerPlayer caster, Vec3 point, double radius, int count, int ticks) { return raise(caster, point, radius, count, ticks, 1); }
+
+    public static int raise(ServerPlayer caster, Vec3 point, double radius, int count, int ticks, double health) {
         var level = caster.serverLevel();
         var found = SOULS.values().stream().filter(r -> !r.player && r.level==level && r.until>level.getGameTime() && r.point.distanceToSqr(point)<=radius*radius)
                 .sorted(Comparator.comparingDouble(r -> r.point.distanceToSqr(point))).limit(Mth.clamp(count,1,128)).toList();
         int raised = 0;
-        for (Remains r : found) if (level.getEntity(r.id) == null && UndeadMinions.spawn(caster,r.type,r.point,raised,ticks)) { SOULS.remove(r.id); raised++; }
+        for (Remains r : found) if (level.getEntity(r.id) == null && UndeadMinions.spawn(caster,r.type,r.point,raised,ticks,health)) { SOULS.remove(r.id); raised++; }
         return raised;
     }
     public static boolean revive(ServerPlayer caster, Vec3 point, double radius, float health) {

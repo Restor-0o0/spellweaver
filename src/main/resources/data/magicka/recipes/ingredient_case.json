@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "GTG",
+    " S ",
+    " S "
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:stick"
+    },
+    "G": {
+      "item": "minecraft:copper_ingot"
+    },
+    "T": {
+      "item": "minecraft:leather"
+    }
+  },
+  "result": {
+    "item": "magicka:ingredient_case",
+    "count": 1
+  }
+}

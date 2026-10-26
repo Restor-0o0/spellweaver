@@ -6,13 +6,14 @@
   },
   "name": "Field of Flowers",
   "tier": "Signature",
+  "scroll": true,
   "tags": "HEAL/BUFF/UTIL",
   "shape": "targeted_zone",
   "origin": "aim_ground",
   "cast_mode": "instant",
   "delivery": {
     "legend": "flowers",
-    "radius": 7,
+    "radius": 12,
     "duration_ticks": 200
   },
   "effects": [
@@ -43,6 +44,6 @@
     ]
   },
   "balanced": true,
-  "primary": "A wave of flowers blooms around the aimed spot within 7 blocks: poppies, cornflowers, tulips, daisies and more grow on grass and dirt and stay for good. Cherry petals drift over the field for 10 s. Every second you and your allies in the field:\n• Heal 1 ❤\n• Regeneration for 3 s",
+  "primary": "A wave of flowers blooms around the aimed spot within 12 blocks: poppies, cornflowers, tulips, daisies and more grow on grass and dirt and stay for good. Cherry petals drift over the field for 10 s. Every second you and your allies in the field:\n• Heal 1 ❤\n• Regeneration for 3 s",
   "self_description": "The field blooms around you."
 }

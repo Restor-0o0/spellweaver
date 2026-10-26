@@ -51,7 +51,7 @@ public final class QuickCastGameTests {
     public static void presetsSavedBeforeTheFixStillWork(GameTestHelper h){
         var errors=new java.util.ArrayList<String>();var server=new CastingServer();
         for(var ultimate:RecipeRegistry.recipes().stream().filter(d->!d.incantation().isEmpty()).toList()){
-            var p=RecipeGameTests.caster(h);
+            var p=RecipeGameTests.caster(h);p.setXRot(60);
             CastingServer.quickFill(p,ultimate.formula().prepared().packed());
             for(int i=0;i<ultimate.formula().size()*CastingServer.QUEUE_TICKS_PER_ELEMENT;i++)server.tick(new TickEvent.PlayerTickEvent(TickEvent.Phase.END,p));
             if(!Formula.unpack(CastingServer.snapshot(p).formula()).elements().equals(ultimate.spoken()))errors.add(ultimate.name()+" filled as "+Formula.unpack(CastingServer.snapshot(p).formula()).elements());
@@ -188,6 +188,7 @@ public final class QuickCastGameTests {
             level.getChunk(chunk.x,chunk.z);
         }
         for(int z=p.blockPosition().getZ()+1;z<target.getZ();z++)for(int y=target.getY();y<=target.getY()+1;y++)level.setBlock(new BlockPos(target.getX(),y,z),Blocks.AIR.defaultBlockState(),3);
+        for(var air:BlockPos.betweenClosed(target.offset(-2,1,-2),target.offset(2,14,2)))level.setBlock(air,Blocks.AIR.defaultBlockState(),3);
         level.setBlock(target,Blocks.STONE.defaultBlockState(),3);p.setYRot(0);p.setXRot(0);
         var hit=SpellAim.hit(p);h.assertTrue(hit.getBlockPos().equals(target) && p.distanceToSqr(hit.getLocation())>160*160,"Aim reaches a target over ten chunks away");
         SpellRuntime.cast(p,RecipeGameTests.spell("Arcane Meteor"),false);

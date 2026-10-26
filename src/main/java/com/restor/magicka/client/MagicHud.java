@@ -60,7 +60,7 @@ public final class MagicHud {
             int sx=panelX+21+i*23,packed=BookPreferences.get().slot(i);
             g.fill(sx,presetY,sx+21,presetY+25,0xB0141820);g.renderOutline(sx,presetY,21,25,MagicNetwork.clientQueue.formula()!=0 && MagicNetwork.clientQueue.formula()==packed?MagicUi.GOLD:0xFF494454);
             MagicUi.small(g,Component.literal(fit(MagicClient.quickKey(i).getString().replace(" ",""),25)),sx+2,presetY+2,MagicUi.GOLD);
-            if(packed!=0){var f=RecipeRegistry.clientResolve(Formula.unpack(packed).key()).spokenFormula();
+            if(packed!=0){var f=MagicClient.spell(Formula.unpack(packed).key()).spokenFormula();
                 g.pose().pushPose();g.pose().translate(sx+5,presetY+10,0);g.pose().scale(.75f,.75f,1);MagicUi.icon(g,f.elements().get(0),0,0);g.pose().popPose();
                 for(int j=0;j<f.size();j++)g.fill(sx+3+j*4,presetY+23,sx+6+j*4,presetY+24,f.elements().get(j).color);
             }
@@ -69,14 +69,15 @@ public final class MagicHud {
         if(!state.enabled() && prepared.empty() && !queuing)return;
         int y=Math.max(6,presetY-37);MagicUi.panel(g,panelX,y,111,32);
         Formula display=queuing?Formula.unpack(MagicNetwork.clientQueue.formula()):prepared;
-        Component label=display.empty()?Component.translatable("hud.magicka.prepared"):RecipeRegistry.clientResolve(display.key()).displayName();
+        Component label=display.empty()?Component.translatable("hud.magicka.prepared"):MagicClient.spell(display.key()).displayName();
         MagicUi.small(g,Component.literal(fit(label.getString(),130)),panelX+4,y+3,queuing?0xFFFFDC84:casting?0xFFE0B3FF:MagicUi.GOLD);
-        for(int i=0;i<Formula.MAX;i++){
+        int cells=Math.max(com.restor.magicka.MageLevel.clientMaxElements(Minecraft.getInstance().player),display.size());
+        for(int i=0;i<cells;i++){
             socket(g,i<display.size()?display.elements().get(i):null,panelX+4+i*21,y+12,true);
             if(queuing && i>=prepared.size() && i<display.size())g.fill(panelX+5+i*21,y+13,panelX+20+i*21,y+28,0xAF0E1119);
         }
         if(state.instant()){
-            boolean channel=!display.empty() && (RecipeRegistry.clientResolve(display.key()).channeled() || RecipeRegistry.clientResolve(display.key()).epic());
+            boolean channel=!display.empty() && (MagicClient.spell(display.key()).channeled() || MagicClient.spell(display.key()).epic());
             String text=state.channeling()?"≈≈":channel?"≈":"⚡";
             MagicUi.small(g,Component.literal(text),panelX+109-(int)Math.ceil(Minecraft.getInstance().font.width(text)*.75f),y+13,channel?0xFF7FD0FF:0xFFFFDC84);
         }

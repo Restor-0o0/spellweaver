@@ -1,0 +1,25 @@
+{
+  "parent": "magicka:mage/five_elements",
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "icon": {
+      "item": "magicka:ritual_focus"
+    },
+    "title": {
+      "translate": "advancements.magicka.mage.archmage.title"
+    },
+    "description": {
+      "translate": "advancements.magicka.mage.archmage.description"
+    },
+    "frame": "challenge"
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

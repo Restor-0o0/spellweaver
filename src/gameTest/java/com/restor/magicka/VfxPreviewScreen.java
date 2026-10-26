@@ -10,7 +10,7 @@ import net.minecraft.world.phys.Vec3;
 /** Renders the actual world VFX geometry through a fixed camera for automated visual inspection. */
 public final class VfxPreviewScreen extends Screen {
     public VfxPreviewScreen(){super(Component.literal("Spell VFX"));}
-    private void cue(int kind,SpellFormula f,Vec3 from,Vec3 to,float radius){SpellVisuals.receive(new MagicNetwork.Visual(kind,f.prepared().packed(),from,to,radius,20));}
+    private void cue(int kind,SpellFormula f,Vec3 from,Vec3 to,float radius){SpellVisuals.receive(new MagicNetwork.Visual(kind,f.prepared().packed(),from,to,radius,20,-1));}
     @Override public void render(GuiGraphics g,int mx,int my,float partial){
         g.fill(0,0,width,height,0xFF18222C);g.drawCenteredString(font,"MAGICKA · SPELL EFFECTS",width/2,12,0xFFFFDCA0);
         SpellVisuals.clear();

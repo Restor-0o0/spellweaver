@@ -1,0 +1,25 @@
+{
+  "parent": "magicka:mage/first_scroll",
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "icon": {
+      "item": "magicka:arcane_orb"
+    },
+    "title": {
+      "translate": "advancements.magicka.mage.ultimate.title"
+    },
+    "description": {
+      "translate": "advancements.magicka.mage.ultimate.description"
+    },
+    "frame": "goal"
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

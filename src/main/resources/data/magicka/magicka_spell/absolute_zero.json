@@ -8,6 +8,7 @@
   "incantation": "32338",
   "name": "Absolute Zero",
   "tier": "Signature",
+  "scroll": true,
   "tags": "CC/DMG/AOE",
   "shape": "burst_projectile",
   "origin": "aim_hit",

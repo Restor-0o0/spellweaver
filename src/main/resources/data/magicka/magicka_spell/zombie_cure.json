@@ -7,6 +7,7 @@
   },
   "name": "Zombie Cure",
   "tier": "Signature",
+  "scroll": true,
   "tags": "UTIL/DMG",
   "shape": "targeted_zone",
   "origin": "aim_ground",

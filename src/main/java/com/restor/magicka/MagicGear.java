@@ -1,5 +1,6 @@
 package com.restor.magicka;
 
+import net.minecraft.util.Mth;
 import net.minecraftforge.event.TickEvent;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -12,6 +13,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -20,14 +22,19 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.event.AnvilUpdateEvent;
+import net.minecraftforge.event.GrindstoneEvent;
+import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.TickEvent;
 import java.util.*;
 
 public final class MagicGear {
     public enum Trait {
         SHOCK_WARD, FROST_WARD, LIVING_REGEN, FIRE_FRAIL, STONEHEART, GLASS_HEART, BLOOD_FOCUS,
-        GRAVE_BELL, MIRROR_PRISM, SECOND_TONGUE, CHAOS_LENS, SELF_CONDUCTIVE
+        GRAVE_BELL, MIRROR_PRISM, SECOND_TONGUE, CHAOS_LENS, SELF_CONDUCTIVE, QUICKENING, DESPERATE_MENDING,
+        SHARED_BLESSING, RESONANCE, ADAPTATION
     }
 
     public enum Slot {
@@ -44,26 +51,34 @@ public final class MagicGear {
         }
     }
 
-    public static final int SLOTS = Slot.values().length;
+    public static final int SLOTS = Slot.values().length, BELT = 6, MENU_SIZE = SLOTS + BELT;
     private static final String TAG = "magicka_gear";
     private static final List<Attribute> MANAGED = List.of(Attributes.MAX_HEALTH, Attributes.ARMOR,
             Attributes.ARMOR_TOUGHNESS, Attributes.KNOCKBACK_RESISTANCE, Attributes.MOVEMENT_SPEED);
 
     private record Profile(int revision, List<GearItem> items, int[] deltas, Set<Trait> traits,
-                           Map<SpellFormula, JsonObject> patches, double[] bias) {}
+                           Map<SpellFormula, JsonObject> patches, List<GearRule> rules, double[] bias,
+                           Map<Element, Element> swaps, Set<Element> infusions) {}
+    private record Adaptation(Element element, long until) {}
+    public static final int ADAPT_TICKS = 160, ADAPT_BONUS = 30;
     private static final Map<UUID, Profile> PROFILES = new HashMap<>();
     private static final Map<UUID, Integer> REVISIONS = new HashMap<>();
     private static final Map<UUID, Long> ECHOES = new HashMap<>();
+    private static final Set<UUID> QUICKENED = new HashSet<>();
+    private static final Map<UUID, Integer> RESONANCE = new HashMap<>();
+    private static final Map<UUID, Adaptation> ADAPTED = new HashMap<>();
 
     public static final class Loadout extends SimpleContainer {
         private final Player owner;
         private boolean loading = true;
         public Loadout(Player owner) {
-            super(SLOTS);
+            super(MENU_SIZE);
             this.owner = owner;
             CompoundTag tag = owner.getPersistentData().getCompound(TAG);
             for (Slot slot : Slot.values()) if (tag.contains(slot.key()))
-                setItem(slot.ordinal(), ItemStack.of(tag.getCompound(slot.key())));
+                setItem(slot.ordinal(), parse(owner, tag.getCompound(slot.key())));
+            for (int i = 0; i < BELT; i++) if (tag.contains(beltKey(i)))
+                setItem(SLOTS + i, parse(owner, tag.getCompound(beltKey(i))));
             loading = false;
         }
         @Override public void setChanged() {
@@ -81,10 +96,39 @@ public final class MagicGear {
         CompoundTag tag = new CompoundTag();
         for (Slot slot : Slot.values()) {
             ItemStack stack = loadout.getItem(slot.ordinal());
-            if (!stack.isEmpty()) tag.put(slot.key(), stack.save(new CompoundTag()));
+            if (!stack.isEmpty()) tag.put(slot.key(), encode(player, stack));
+        }
+        for (int i = 0; i < BELT; i++) {
+            ItemStack stack = loadout.getItem(SLOTS + i);
+            if (!stack.isEmpty()) tag.put(beltKey(i), encode(player, stack));
         }
         player.getPersistentData().put(TAG, tag);
-        if (player instanceof ServerPlayer server) invalidate(server);
+        if (player instanceof ServerPlayer server) {
+            invalidate(server);
+            PotionBelt.sync(server);
+        }
+    }
+
+    private static String beltKey(int index) { return "belt_" + index; }
+
+    private static net.minecraft.nbt.Tag encode(Player player, ItemStack stack) {
+        return stack.save(new CompoundTag());
+    }
+
+    private static ItemStack parse(Player player, CompoundTag tag) {
+        return ItemStack.of(tag);
+    }
+
+    public static ItemStack belt(Player player, int index) {
+        CompoundTag tag = player.getPersistentData().getCompound(TAG);
+        return index >= 0 && index < BELT && tag.contains(beltKey(index)) ? parse(player, tag.getCompound(beltKey(index))) : ItemStack.EMPTY;
+    }
+
+    public static void setBelt(ServerPlayer player, int index, ItemStack stack) {
+        CompoundTag tag = player.getPersistentData().getCompound(TAG);
+        if (stack.isEmpty()) tag.remove(beltKey(index)); else tag.put(beltKey(index), encode(player, stack));
+        player.getPersistentData().put(TAG, tag);
+        PotionBelt.sync(player);
     }
 
     public static ItemStack item(Player player, Slot slot) {
@@ -108,40 +152,95 @@ public final class MagicGear {
         int revision = revision(player);
         if (cached != null && cached.revision == revision) return cached;
         List<GearItem> items = new ArrayList<>();
-        for (Slot slot : Slot.values()) if (item(player, slot).getItem() instanceof GearItem gear) items.add(gear);
         int[] deltas = new int[MagicStats.COUNT];
         Set<Trait> traits = EnumSet.noneOf(Trait.class);
+        List<GearRule> rules = new ArrayList<>();
+        for (Slot slot : Slot.values()) {
+            ItemStack stack = item(player, slot);
+            if (!(stack.getItem() instanceof GearItem gear)) continue;
+            items.add(gear);
+            rules.addAll(gear.rules());
+            GearBonus.of(stack).collect(deltas, traits, rules);
+        }
+        for (EquipmentSlot slot : EquipmentSlot.values()) {
+            ItemStack stack = player.getItemBySlot(slot);
+            if (!(stack.getItem() instanceof GearItem)) GearBonus.of(stack).collect(deltas, traits, rules);
+        }
         Map<SpellFormula, JsonObject> patches = new HashMap<>();
         double[] bias = {1, 1, 1, 1, 1};
+        Map<Element, Element> swaps = new EnumMap<>(Element.class);
+        Set<Element> infusions = EnumSet.noneOf(Element.class);
         for (GearItem gear : items) {
+            swaps.putAll(gear.swaps());
+            infusions.addAll(gear.infusions());
             gear.stats().forEach((stat, delta) -> deltas[stat.ordinal()] += delta);
             traits.addAll(gear.traits());
             gear.patches().forEach((formula, patch) -> merge(patches.computeIfAbsent(formula, key -> new JsonObject()), patch));
             for (int size = 1; size <= 5; size++) bias[size - 1] *= gear.castBias(size);
         }
-        Profile built = new Profile(revision, List.copyOf(items), deltas, traits, patches, bias);
+        Profile built = new Profile(revision, List.copyOf(items), deltas, traits, patches, List.copyOf(rules), bias, swaps, infusions);
         PROFILES.put(player.getUUID(), built);
         return built;
     }
 
     public static List<GearItem> equipped(Player player) { return profile(player).items; }
-    public static int[] deltas(Player player) { return profile(player).deltas.clone(); }
+    public static int[] deltas(Player player) {
+        int[] deltas = profile(player).deltas.clone();
+        Element adapted = adapted(player);
+        if (adapted != null) deltas[MagicStats.Stat.valueOf(adapted.name()).ordinal()] += ADAPT_BONUS;
+        MagicPotions.bonus(player, deltas);
+        MageLevel.bonus(player, deltas);
+        return deltas;
+    }
+    public static Element adapted(Player player) {
+        Adaptation adaptation = ADAPTED.get(player.getUUID());
+        return adaptation != null && adaptation.until > player.level().getGameTime() ? adaptation.element : null;
+    }
     public static boolean has(Player player, Trait trait) { return profile(player).traits.contains(trait); }
-    public static double castBias(Player player, int size) { return size < 1 || size > 5 ? 1 : profile(player).bias[size - 1]; }
+    public static double castBias(Player player, int size) {
+        double quick = QUICKENED.contains(player.getUUID()) ? .15 : 1;
+        return size < 1 || size > 5 ? quick : profile(player).bias[size - 1] * quick;
+    }
+    public static boolean quickened(Player player) { return QUICKENED.contains(player.getUUID()); }
 
     public static int[] total(Player player) {
-        int[] values = MagicStats.get(player), deltas = profile(player).deltas;
+        int[] values = MagicStats.get(player), deltas = deltas(player);
         for (MagicStats.Stat stat : MagicStats.Stat.values())
             values[stat.ordinal()] = stat.clamp(values[stat.ordinal()] + deltas[stat.ordinal()]);
         return values;
     }
 
+    public static SpellFormula transmute(Player player, SpellFormula formula) {
+        Profile profile = profile(player);
+        if (profile.swaps.isEmpty() && profile.infusions.isEmpty() || formula.size() == 0) return formula;
+        SpellDefinition base = RecipeRegistry.resolve(formula);
+        if (base == null || base.ultimate()) return formula;
+        int[] counts = new int[Element.values().length];
+        for (Element element : Element.values()) counts[profile.swaps.getOrDefault(element, element).ordinal()] += formula.count(element);
+        for (Element element : profile.infusions)
+            if (counts[element.ordinal()] == 0 && Arrays.stream(counts).sum() < 5) counts[element.ordinal()]++;
+        return new SpellFormula(counts[0], counts[1], counts[2], counts[3], counts[4], counts[5], counts[6], counts[7]);
+    }
+
+    public static void frail(LivingEntity mob, double health) {
+        if (health == 1) return;
+        AttributeInstance max = mob.getAttribute(Attributes.MAX_HEALTH);
+        if (max == null) return;
+        UUID id = UUID.nameUUIDFromBytes((Magicka.ID + ":gear/summon_health").getBytes());
+        max.removeModifier(id);
+        max.addPermanentModifier(new AttributeModifier(id, "gear/summon_health", Mth.clamp(health, .1, 10) - 1, AttributeModifier.Operation.MULTIPLY_TOTAL));
+        mob.setHealth(mob.getMaxHealth());
+    }
+
     public static SpellDefinition patch(Player player, SpellDefinition base) {
-        JsonObject patch = profile(player).patches.get(base.formula());
-        if (patch == null) return base;
+        Profile profile = profile(player);
+        JsonObject patch = profile.patches.get(base.formula());
+        List<GearRule> rules = profile.rules.stream().filter(rule -> rule.matches(base)).toList();
+        if (patch == null && rules.isEmpty()) return base;
         try {
             JsonObject json = base.source().deepCopy();
-            merge(json, patch);
+            if (patch != null) merge(json, patch);
+            for (GearRule rule : rules) rule.apply(json, base);
             return SpellDefinition.parse(base.id(), json);
         } catch (RuntimeException e) {
             return base;
@@ -160,17 +259,39 @@ public final class MagicGear {
 
     public static void cast(ServerPlayer player, SpellDefinition recipe, boolean self) {
         if (recipe == null) return;
+        if (QUICKENED.remove(player.getUUID())) MagicStats.invalidate(player);
         Profile profile = profile(player);
         if (profile.traits.contains(Trait.SELF_CONDUCTIVE) && recipe.formula().lightning() > 0)
             MagicStatuses.charge(player, .12 * recipe.formula().lightning());
         if (profile.traits.contains(Trait.CHAOS_LENS) && recipe.formula().size() >= 4 && player.getRandom().nextFloat() < .25f)
             MagicStatuses.apply(player, MagicStatuses.Status.ARCANE_UNSTABLE, 100, 1);
-        if (!profile.traits.contains(Trait.MIRROR_PRISM) || recipe.shape().construction()) return;
+        if (self && profile.traits.contains(Trait.SHARED_BLESSING)) share(player, recipe);
+        if (recipe.shape().construction() || recipe.ultimate()) return;
+        if (profile.traits.contains(Trait.RESONANCE) && RESONANCE.merge(player.getUUID(), 1, Integer::sum) % 5 == 0) {
+            echo(player, recipe, self);
+            return;
+        }
+        if (!profile.traits.contains(Trait.MIRROR_PRISM)) return;
         long now = player.serverLevel().getGameTime();
         if (now - ECHOES.getOrDefault(player.getUUID(), -1000L) < 100) return;
         ECHOES.put(player.getUUID(), now);
+        echo(player, recipe, self);
+    }
+
+    private static void echo(ServerPlayer player, SpellDefinition recipe, boolean self) {
         SpellDefinition echo = weaken(recipe);
         SpellRuntime.delay(player, 25, () -> { if (player.isAlive()) SpellRuntime.cast(player, echo, self); });
+    }
+
+    public static int share(ServerPlayer player, SpellDefinition recipe) {
+        if (recipe.selfEffects().isEmpty()) return 0;
+        int shared = 0;
+        for (LivingEntity ally : player.level().getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(3),
+                e -> e != player && e.isAlive() && EffectGraph.ally(player, e))) {
+            EffectGraph.entity(player, ally, recipe, recipe.selfEffects(), player.position(), true);
+            shared++;
+        }
+        return shared;
     }
 
     private static SpellDefinition weaken(SpellDefinition recipe) {
@@ -182,6 +303,7 @@ public final class MagicGear {
 
     public static float heal(ServerPlayer caster, LivingEntity target, float amount) {
         Profile profile = profile(caster);
+        if (profile.traits.contains(Trait.DESPERATE_MENDING) && caster.getHealth() < caster.getMaxHealth() * .4f) amount *= 2;
         if (target == caster) return profile.traits.contains(Trait.GLASS_HEART) ? amount * 1.5f : amount;
         if (!profile.traits.contains(Trait.BLOOD_FOCUS)) return amount;
         caster.hurt(caster.damageSources().magic(), amount * .3f);
@@ -228,14 +350,51 @@ public final class MagicGear {
 
     @SubscribeEvent public void tick(TickEvent.PlayerTickEvent event) {
         if (event.phase != TickEvent.Phase.END || !(event.player instanceof ServerPlayer player) || player.tickCount % 60 != 0) return;
+        Adaptation adaptation = ADAPTED.get(player.getUUID());
+        if (adaptation != null && adaptation.until <= player.level().getGameTime()) {
+            ADAPTED.remove(player.getUUID());
+            MagicStats.invalidate(player);
+        }
         if (player.isAlive() && has(player, Trait.LIVING_REGEN))
             MagicStatuses.apply(player, MagicStatuses.Status.REGENERATING, 80, 1);
     }
 
     @SubscribeEvent public void hurt(LivingHurtEvent event) {
+        event.setAmount(MagicPotions.ward(event.getEntity(), element(event.getSource()), event.getAmount()));
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
         if (event.getSource().is(net.minecraft.tags.DamageTypeTags.IS_FIRE) && has(player, Trait.FIRE_FRAIL))
             event.setAmount(event.getAmount() * 1.5f);
+        event.setAmount(adapt(player, element(event.getSource()), event.getAmount()));
+    }
+
+    public static float adapt(ServerPlayer player, Element element, float amount) {
+        if (element == null || !has(player, Trait.ADAPTATION)) return amount;
+        Element previous = adapted(player);
+        ADAPTED.put(player.getUUID(), new Adaptation(element, player.level().getGameTime() + ADAPT_TICKS));
+        if (previous != element) MagicStats.invalidate(player);
+        return previous == element ? amount * .7f : amount;
+    }
+
+    static Element element(net.minecraft.world.damagesource.DamageSource source) {
+        SpellDefinition spell = com.restor.magicka.enemy.MagicEnemies.hurting;
+        if (spell != null && spell.formula().size() > 0) {
+            Element lead = null;
+            for (Element element : Element.values())
+                if (lead == null || spell.formula().count(element) > spell.formula().count(lead)) lead = element;
+            return lead;
+        }
+        if (source.is(net.minecraft.tags.DamageTypeTags.IS_FIRE)) return Element.FIRE;
+        if (source.is(net.minecraft.tags.DamageTypeTags.IS_FREEZING)) return Element.COLD;
+        if (source.is(net.minecraft.tags.DamageTypeTags.IS_LIGHTNING)) return Element.LIGHTNING;
+        if (source.is(net.minecraft.tags.DamageTypeTags.IS_DROWNING)) return Element.WATER;
+        if (source.is(net.minecraft.world.damagesource.DamageTypes.WITHER)) return Element.DEATH;
+        if (source.is(net.minecraft.world.damagesource.DamageTypes.MAGIC) || source.is(net.minecraft.world.damagesource.DamageTypes.INDIRECT_MAGIC)) return Element.ARCANE;
+        return null;
+    }
+
+    @SubscribeEvent public void kill(net.minecraftforge.event.entity.living.LivingDeathEvent event) {
+        if (!(event.getSource().getEntity() instanceof ServerPlayer player) || event.getEntity() == player || !has(player, Trait.QUICKENING)) return;
+        if (QUICKENED.add(player.getUUID())) MagicStats.invalidate(player);
     }
 
     @SubscribeEvent public void login(PlayerEvent.PlayerLoggedInEvent event) { if (event.getEntity() instanceof ServerPlayer p) invalidate(p); }
@@ -243,6 +402,31 @@ public final class MagicGear {
     @SubscribeEvent public void logout(PlayerEvent.PlayerLoggedOutEvent event) {
         PROFILES.remove(event.getEntity().getUUID());
         ECHOES.remove(event.getEntity().getUUID());
+        QUICKENED.remove(event.getEntity().getUUID());
+        RESONANCE.remove(event.getEntity().getUUID());
+        ADAPTED.remove(event.getEntity().getUUID());
+    }
+
+    @SubscribeEvent public void equip(LivingEquipmentChangeEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player
+                && (!GearBonus.of(event.getFrom()).charms().isEmpty() || !GearBonus.of(event.getTo()).charms().isEmpty())) invalidate(player);
+    }
+
+    @SubscribeEvent public void anvil(AnvilUpdateEvent event) {
+        ItemStack result = CharmItem.socket(event.getLeft(), event.getRight());
+        if (result.isEmpty()) return;
+        event.setOutput(result);
+        event.setCost(3 + 2 * GearBonus.of(event.getLeft()).charms().size());
+        event.setMaterialCost(1);
+    }
+
+    @SubscribeEvent public void grindstone(GrindstoneEvent.OnPlaceItem event) {
+        ItemStack top = event.getTopItem(), bottom = event.getBottomItem();
+        if (!top.isEmpty() && !bottom.isEmpty()) return;
+        ItemStack result = CharmItem.strip(top.isEmpty() ? bottom : top);
+        if (result.isEmpty()) return;
+        event.setOutput(result);
+        event.setXp(0);
     }
     @SubscribeEvent public void clone(PlayerEvent.Clone event) {
         CompoundTag tag = event.getOriginal().getPersistentData().getCompound(TAG);

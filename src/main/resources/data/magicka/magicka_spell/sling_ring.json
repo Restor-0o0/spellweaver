@@ -7,13 +7,14 @@
   },
   "name": "Spark Portal",
   "tier": "Signature",
+  "scroll": true,
   "tags": "MOVE/UTIL",
   "shape": "summon_object",
   "origin": "caster_front",
   "cast_mode": "instant",
   "delivery": {
     "legend": "portal",
-    "duration_ticks": 240
+    "duration_ticks": 600
   },
   "effects": [
     {
@@ -35,6 +36,6 @@
     ]
   },
   "balanced": true,
-  "primary": "Two rings of orange sparks open for 12 s: one right in front of you, the other at the aimed spot. Anyone who steps into one comes out of the other, you included, and falls slowly for 2 s.",
+  "primary": "Two rings of orange sparks open for 30 s: one right in front of you, the other at the aimed spot, even on a wall or ceiling. Anyone who steps into one comes out of the other, you included, and falls slowly for 2 s.",
   "self_description": "The second ring opens at your respawn point (or world spawn) — a way home."
 }

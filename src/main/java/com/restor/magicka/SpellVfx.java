@@ -8,11 +8,27 @@ import net.minecraft.world.phys.Vec3;
 
 /** Compact visual cues are rendered locally, independently of the particle quality setting. */
 public final class SpellVfx {
-    public static final int ORB=0,BEAM=1,ARC=2,IMPACT=3,ZONE=4,MINE=5,TELEGRAPH=6,SPRAY=7;
+    public static final int ORB=0,BEAM=1,ARC=2,IMPACT=3,ZONE=4,MINE=5,TELEGRAPH=6,SPRAY=7,SIGIL=8;
     public static void cue(ServerPlayer p,SpellDefinition s,int kind,Vec3 from,Vec3 to,double radius,int ticks){
-        int packed=s==null?new SpellFormula(0,1,0,0,0,0,0).prepared().packed():s.formula().prepared().packed();
-        var packet=new MagicNetwork.Visual(kind,packed,from,to,(float)Mth.clamp(radius,.05,16),Mth.clamp(ticks,1,100));
-        for(var viewer:p.serverLevel().players())if(viewer==p || viewer.distanceToSqr(from)<256*256 || viewer.distanceToSqr(to)<256*256)MagicNetwork.sendToPlayer(viewer,packet);
+        send(p,s==null?new SpellFormula(0,1,0,0,0,0,0):s.formula(),kind,from,to,radius,ticks,-1);
+    }
+    public static void sigil(ServerPlayer p,SpellFormula formula,Vec3 center,Vec3 normal,double radius,int ticks){
+        send(p,formula,SIGIL,center,center.add(normal.normalize()),radius,ticks,-1);
+    }
+    /** Offset and normal are in the caster's view frame: x forward, y up, z right. */
+    public static void attached(ServerPlayer p,SpellFormula formula,Vec3 offset,Vec3 normal,double radius,int ticks){
+        send(p,formula,SIGIL,offset,normal.normalize(),radius,ticks,p.getId());
+    }
+    public static double handRadius(SpellFormula formula){return .3+.25*formula.size();}
+    public static void hand(ServerPlayer p,SpellFormula formula,int ticks){
+        int size=formula.size();
+        attached(p,formula,new Vec3(1.5+.15*size,-.3-.06*size,.35),new Vec3(1,0,0),handRadius(formula),ticks);
+    }
+    private static void send(ServerPlayer p,SpellFormula formula,int kind,Vec3 from,Vec3 to,double radius,int ticks,int anchor){
+        int packed=formula.prepared().packed();
+        var packet=new MagicNetwork.Visual(kind,packed,from,to,(float)Mth.clamp(radius,.05,16),Mth.clamp(ticks,1,100),anchor);
+        Vec3 near=anchor>=0?p.position():from;
+        for(var viewer:p.serverLevel().players())if(viewer==p || viewer.distanceToSqr(near)<256*256 || anchor<0 && viewer.distanceToSqr(to)<256*256)MagicNetwork.sendToPlayer(viewer,packet);
     }
     public static void particles(ServerPlayer p,SpellDefinition s,Vec3 point,int count,double spread){
         var elements=s.formula().elements().stream().distinct().toList();int per=Math.max(1,Math.min(24,count)/elements.size());

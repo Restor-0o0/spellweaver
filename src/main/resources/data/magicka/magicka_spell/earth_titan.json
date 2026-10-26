@@ -7,6 +7,7 @@
   "incantation": "55575",
   "name": "Stone Titan",
   "tier": "Signature",
+  "scroll": true,
   "tags": "SUMMON/DMG/AOE",
   "shape": "targeted_zone",
   "origin": "aim_hit",

@@ -20,7 +20,8 @@ public final class RecipeGameTests {
     static SpellDefinition spell(String name){return RecipeRegistry.recipes().stream().filter(d->d.name().equals(name)).findFirst().orElseThrow();}
     static net.minecraft.server.level.ServerPlayer caster(GameTestHelper h){
         var p=FakePlayerFactory.get(h.getLevel(),new com.mojang.authlib.GameProfile(UUID.randomUUID(),"RecipeTester"));
-        p.setPos(h.absoluteVec(new Vec3(1.5,2,1.5)));p.setYRot(0);p.setXRot(0);return p;
+        p.setPos(h.absoluteVec(new Vec3(1.5,2,1.5)));p.setYRot(0);p.setXRot(0);
+        RecipeRegistry.recipes().stream().filter(SpellScrolls::locked).forEach(d->SpellScrolls.learn(p,d.id()));return p;
     }
     @GameTest(template="empty")
     public static void catalogAndDataOverride(GameTestHelper h){
@@ -28,7 +29,7 @@ public final class RecipeGameTests {
         for(var d:RecipeRegistry.recipes()){counts[d.formula().size()]++;keys.add(d.formula());}
         h.assertTrue(Arrays.equals(counts,new int[]{0,8,36,120,330,792}) && keys.size()==1286,"Complete canonical catalog");
         long signatures=RecipeRegistry.recipes().stream().filter(d->d.tier().equals("Signature")).count();
-        h.assertTrue(signatures==204,"All signatures imported, got "+signatures);
+        h.assertTrue(signatures==206,"All signatures imported, got "+signatures);
         var base=spell("Ember");var json=base.source().deepCopy();json.addProperty("cast_ticks",33);json.addProperty("shape","beam");
         var changed=SpellDefinition.parse(new ResourceLocation("test:custom_ember"),json);
         h.assertTrue(changed.shape()==SpellShape.BEAM && changed.castTicks()==33 && changed.formula().equals(base.formula()),"New delivery is defined by data alone");
@@ -104,16 +105,16 @@ public final class RecipeGameTests {
     }
     @GameTest(template="empty",timeoutTicks=80)
     public static void mineAndHealingObject(GameTestHelper h){
-        var p=caster(h);var pig=h.spawnWithNoFreeWill(EntityType.PIG,new BlockPos(2,2,2));pig.setHealth(3);
+        DeathGameTests.floor(h);var p=caster(h);var pig=h.spawnWithNoFreeWill(EntityType.PIG,new BlockPos(2,2,2));pig.setHealth(3);
         SpellRuntime.cast(p,spell("Healing Spring"),true);
-        h.runAfterDelay(24,()->{
+        h.succeedWhen(()->{
             h.assertTrue(pig.getHealth()>3,"Healing summon pulses");
             var objects=h.getLevel().getEntitiesOfClass(MagicSummon.class,pig.getBoundingBox().inflate(4));
             h.assertTrue(!objects.isEmpty(),"Healer has a damageable object");var object=objects.get(0);
             float hp=object.getHealth();object.hurt(p.damageSources().magic(),3);
             h.assertTrue(object.getHealth()==hp-3,"Object loses actual HP");
             h.assertTrue(!object.shouldBeSaved() && object.interactAt(p,Vec3.ZERO,net.minecraft.world.InteractionHand.MAIN_HAND)==net.minecraft.world.InteractionResult.FAIL,"No persistent orphan or equipment farming");
-            object.hurt(p.damageSources().magic(),100);h.assertTrue(object.isRemoved(),"Object destroyed at zero HP");h.succeed();
+            object.hurt(p.damageSources().magic(),100);h.assertTrue(object.isRemoved(),"Object destroyed at zero HP");
         });
     }
     @GameTest(template="empty",timeoutTicks=80)
@@ -125,9 +126,9 @@ public final class RecipeGameTests {
         Vec3 corpse=a.position();a.hurt(p.damageSources().magic(),100);
         h.runAfterDelay(25,()->{h.assertTrue(RevivalManager.revive(p,corpse,2,.3f),"Soul marker revives a fallen mob");h.succeed();});
     }
-    @GameTest(template="empty",timeoutTicks=40)
+    @GameTest(template="empty",batch="sky",timeoutTicks=40)
     public static void bridgeReallyCreatesAnchor(GameTestHelper h){
-        var p=caster(h);p.setPos(h.absoluteVec(new Vec3(1.5,24,1.5)));p.setXRot(0);p.setYRot(180);var bridge=spell("Skybridge");
+        var p=caster(h);p.setPos(h.absoluteVec(new Vec3(1.5,150,1.5)));p.setXRot(0);p.setYRot(180);var bridge=spell("Skybridge");
         h.assertTrue(SpellAim.hit(p).getType()==net.minecraft.world.phys.HitResult.Type.MISS,"Bridge test must aim into empty sky");
         var plan=new MagicConstructionManager.Plan(p,bridge,false,null);
         // Keep the test's remote aim chunk loaded without forcing chunks in production code.
@@ -166,6 +167,18 @@ public final class RecipeGameTests {
         RecipeRegistry.resetClient();h.succeed();
     }
     @GameTest(template="empty")
+    public static void blastsLeaveAShallowBowlWithACrackedRim(GameTestHelper h){
+        for(int x=0;x<10;x++)for(int z=0;z<10;z++)for(int y=1;y<7;y++)h.setBlock(new BlockPos(x,y,z),Blocks.STONE);
+        var node=new com.google.gson.JsonObject();node.addProperty("type","destroy_blocks");node.addProperty("budget",300);node.addProperty("radius",4);
+        EffectGraph.world(caster(h),spell("Pebble"),List.of(node),h.absoluteVec(new Vec3(5,7,5)),false,false);
+        h.assertBlockPresent(Blocks.AIR,new BlockPos(4,6,4));
+        h.assertBlockPresent(Blocks.STONE,new BlockPos(4,3,4));
+        int rim=0,broken=0;
+        for(int x=0;x<10;x++)for(int z=0;z<10;z++){double d=Math.hypot(x+.5-5,z+.5-5);if(d<3.6 || d>4.6)continue;rim++;if(h.getBlockState(new BlockPos(x,6,z)).isAir())broken++;}
+        h.assertTrue(broken>0 && broken<rim,"The rim is cracked: some blocks knocked out, some left ("+broken+"/"+rim+")");
+        h.succeed();
+    }
+    @GameTest(template="empty")
     public static void ultimatesShatterSpawners(GameTestHelper h){
         var p=caster(h);BlockPos local=new BlockPos(2,2,2);Vec3 point=h.absoluteVec(new Vec3(2.5,2.5,2.5));
         SpellDefinition quake=spell("Earthquake"),pebble=spell("Pebble");
@@ -179,6 +192,100 @@ public final class RecipeGameTests {
         h.setBlock(local,Blocks.CHEST);
         EffectGraph.world(p,quake,List.of(node),point,false,false);
         h.assertBlockPresent(Blocks.CHEST,local);
+        h.succeed();
+    }
+    @GameTest(template="empty")
+    public static void scrollsSealStrongSpells(GameTestHelper h){
+        var p=caster(h);SpellScrolls.forget(p);
+        var wave=spell("Spirit Wave");
+        h.assertTrue(SpellScrolls.locked(wave),"Spirit Wave needs a scroll");
+        var weaker=MagicStats.resolve(p,wave.formula());
+        h.assertTrue(!weaker.id().equals(wave.id()) && weaker.formula().size()==wave.formula().size()-1 && SpellScrolls.open(p,weaker),"Sealed formula casts a shorter open spell, got "+weaker.id());
+        for(var d:RecipeRegistry.recipes())if(SpellScrolls.locked(d)){
+            var cast=SpellScrolls.resolve(p,d);
+            h.assertTrue(SpellScrolls.open(p,cast) && !cast.ultimate() && cast.formula().size()<d.formula().size(),"Every sealed spell falls back to an open one: "+d.id());
+        }
+        var elementals=RecipeRegistry.recipes().stream().filter(d->"elemental".equals(SpellDefinition.string(d.delivery(),"object_kind",""))).toList();
+        h.assertTrue(elementals.stream().filter(d->!SpellScrolls.locked(d)).count()==1,"Exactly one elemental is open from the start");
+        h.assertTrue(RecipeRegistry.recipes().stream().filter(d->d.ultimate() && !SpellScrolls.locked(d)).count()==1,"Exactly one ultimate is open from the start");
+        h.assertTrue(SpellScrolls.learn(p,wave.id()) && !SpellScrolls.learn(p,wave.id()),"A spell is learned once");
+        h.assertTrue(MagicStats.resolve(p,wave.formula()).id().equals(wave.id()),"Learned scroll restores the spell");
+        var other=caster(h);SpellScrolls.forget(other);
+        h.assertTrue(!MagicStats.resolve(other,wave.formula()).id().equals(wave.id()),"Knowledge is per player");
+        other.setGameMode(net.minecraft.world.level.GameType.CREATIVE);
+        h.assertTrue(MagicStats.resolve(other,wave.formula()).id().equals(wave.id()),"Creative knows every spell");
+        SpellScrolls.forget(p);
+        h.succeed();
+    }
+    @GameTest(template="empty")
+    public static void enemiesDropUnlearnedScrolls(GameTestHelper h){
+        var p=caster(h);SpellScrolls.forget(p);
+        var level=h.getLevel();var random=net.minecraft.util.RandomSource.create(7);
+        var locked=RecipeRegistry.recipes().stream().filter(SpellScrolls::locked).toList();
+        var rest=locked.stream().filter(d->!d.name().equals("Fire Titan")).map(d->d.id().toString()).collect(java.util.stream.Collectors.toSet());
+        for(int i=0;i<20;i++)h.assertTrue(ScrollDrops.pick(random,rest,1,1).name().equals("Fire Titan"),"Drops prefer unlearned spells");
+        var all=locked.stream().map(d->d.id().toString()).collect(java.util.stream.Collectors.toSet());
+        h.assertTrue(ScrollDrops.pick(random,all,1,1)!=null,"Known spells still drop once all are learned");
+        for(int i=0;i<50;i++)h.assertTrue(!ScrollDrops.pick(random,Set.of(),0,1).ultimate(),"Specialists never drop ultimates");
+        var mage=com.restor.magicka.enemy.MagicEnemies.COUNTERMAGE.get().create(level);
+        var imp=com.restor.magicka.enemy.MagicEnemies.SPARK_IMP.get().create(level);
+        var boss=net.minecraft.world.entity.EntityType.WITHER.create(level);
+        var zombie=net.minecraft.world.entity.EntityType.ZOMBIE.create(level);
+        var witch=net.minecraft.world.entity.EntityType.WITCH.create(level);
+        var cow=net.minecraft.world.entity.EntityType.COW.create(level);
+        h.assertTrue(ScrollDrops.chance(boss)==MagicConfig.BOSS_SCROLL_CHANCE.get() && ScrollDrops.chance(mage)==MagicConfig.SPECIALIST_CASTER_SCROLL_CHANCE.get() && ScrollDrops.chance(imp)==MagicConfig.SPECIALIST_SCROLL_CHANCE.get(),"Drop chances by enemy kind");
+        h.assertTrue(ScrollDrops.chance(zombie)==MagicConfig.MOB_SCROLL_CHANCE.get() && ScrollDrops.chance(witch)==MagicConfig.CASTER_SCROLL_CHANCE.get() && ScrollDrops.chance(cow)==0,"Any hostile mob can drop a scroll, casters more often");
+        var fire=locked.stream().filter(d->d.formula().fire()>0 && !d.ultimate()).count();
+        h.assertTrue(fire>0 && ScrollDrops.bias(level.getServer().getLevel(net.minecraft.world.level.Level.NETHER),locked.stream().filter(d->d.formula().fire()>0).findFirst().orElseThrow())==3,"The Nether favours fire scrolls");
+        h.succeed();
+    }
+    @GameTest(template="empty")
+    public static void scrollIsNotConsumed(GameTestHelper h){
+        var p=caster(h);SpellScrolls.forget(p);
+        var titan=spell("Fire Titan");var stack=SpellScrollItem.of(titan);
+        p.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND,stack);
+        stack.getItem().use(h.getLevel(),p,net.minecraft.world.InteractionHand.MAIN_HAND);
+        h.assertTrue(p.getMainHandItem().getCount()==1 && p.getMainHandItem().is(MagicItems.SPELL_SCROLL.get()),"Scroll stays in hand");
+        h.assertTrue(SpellScrolls.known(p).contains(titan.id().toString()) && SpellScrolls.open(p,titan),"Reading the scroll teaches the spell");
+        SpellScrolls.acceptClient(false,List.of());
+        h.assertTrue(!SpellScrolls.clientOpen(p,titan) && SpellScrolls.clientOpen(p,spell("Stone Elemental")),"Book hides sealed spells it was not told about");
+        SpellScrolls.acceptClient(false,List.of(titan.id().toString()));
+        h.assertTrue(SpellScrolls.clientOpen(p,titan),"Book shows a learned spell");
+        SpellScrolls.acceptClient(false,List.of());SpellScrolls.forget(p);
+        h.succeed();
+    }
+    @GameTest(template="empty")
+    public static void dungeonModChestsGetScrolls(GameTestHelper h){
+        for(String path:List.of("chests/simple_dungeon","chests/frosted_prison_treasure","skeleton_dungeon/chests/common","bastion_treasure_chest"))h.assertTrue(SpellScrollLoot.chest(path),"Chest table "+path);
+        for(String path:List.of("blocks/chest","entities/zombie","gameplay/fishing","archaeology/desert_pyramid"))h.assertTrue(!SpellScrollLoot.chest(path),"Not a chest "+path);
+        h.succeed();
+    }
+    @GameTest(template="empty")
+    public static void mobsResistTheirOwnElement(GameTestHelper h){
+        var level=h.getLevel();
+        var blaze=net.minecraft.world.entity.EntityType.BLAZE.create(level);var zombie=net.minecraft.world.entity.EntityType.ZOMBIE.create(level);var enderman=net.minecraft.world.entity.EntityType.ENDERMAN.create(level);var pig=net.minecraft.world.entity.EntityType.PIG.create(level);
+        h.assertTrue(MobResistances.multiplier(blaze,"fire")==MagicConfig.RESIST_MULTIPLIER.get() && MobResistances.multiplier(blaze,"water")==MagicConfig.WEAK_MULTIPLIER.get(),"Blazes resist fire and fear water");
+        h.assertTrue(MobResistances.multiplier(zombie,"death")<1 && MobResistances.multiplier(zombie,"life")>1,"Undead resist death and suffer life");
+        h.assertTrue(MobResistances.multiplier(enderman,"arcane")<1 && MobResistances.multiplier(enderman,"water")>1,"Endermen resist arcane and fear water");
+        h.assertTrue(MobResistances.multiplier(pig,"fire")==1 && MobResistances.multiplier(caster(h),"fire")==1,"Ordinary mobs and players are unaffected");
+        h.succeed();
+    }
+    @GameTest(template="empty")
+    public static void mageLevelGrowsAndGatesFormulas(GameTestHelper h){
+        var p=new net.minecraft.server.level.ServerPlayer(h.getLevel().getServer(),h.getLevel(),new com.mojang.authlib.GameProfile(UUID.randomUUID(),"MageTester"));
+        p.connection=FakePlayerFactory.getMinecraft(h.getLevel()).connection;p.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        h.assertTrue(MageLevel.level(0)==0 && MageLevel.level(24)==0 && MageLevel.level(25)==1 && MageLevel.level(99)==1 && MageLevel.level(100)==2,"Level curve");
+        h.assertTrue(MageLevel.level(Integer.MAX_VALUE)==MagicConfig.MAX_MAGE_LEVEL.get(),"Level is capped");
+        h.assertTrue(MageLevel.maxElements(p)==3,"Novices weave three elements");
+        int before=MagicGear.total(p)[MagicStats.Stat.DAMAGE.ordinal()];
+        MageLevel.gain(p,MageLevel.xpFor(MagicConfig.FIVE_ELEMENTS.get()));
+        h.assertTrue(MageLevel.level(p)==MagicConfig.FIVE_ELEMENTS.get() && MageLevel.maxElements(p)==5,"Experience unlocks longer formulas");
+        h.assertTrue(MagicGear.total(p)[MagicStats.Stat.DAMAGE.ordinal()]==before+MageLevel.level(p)*MagicConfig.LEVEL_DAMAGE.get(),"Levels add damage");
+        MageLevel.set(p,0);
+        p.setGameMode(net.minecraft.world.level.GameType.CREATIVE);
+        h.assertTrue(MageLevel.maxElements(p)==Formula.MAX,"Creative is not gated");
+        var fake=caster(h);MageLevel.gain(fake,100);
+        h.assertTrue(MageLevel.xp(fake)==0,"Fake players gain nothing");
         h.succeed();
     }
 }

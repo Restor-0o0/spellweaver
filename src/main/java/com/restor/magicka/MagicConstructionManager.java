@@ -66,7 +66,8 @@ public final class MagicConstructionManager extends SavedData {
             }
             else if (shape==SpellShape.SPIKE && spell.origin()==OriginMode.CASTER_FEET) start=spikeStart(player,direction);
             else if (spell.origin()==OriginMode.CASTER_FEET) start=player.blockPosition().relative(direction); // Reachable first step, one block up from the floor.
-            else if (self || spell.origin()==OriginMode.UNDER_TARGET || shape==SpellShape.GROWTH) start=BlockPos.containing(self ? player.position() : origin);
+            else if (shape==SpellShape.GROWTH) start=floor(player.level(),BlockPos.containing(self ? player.position() : grip(player,origin)));
+            else if (self || spell.origin()==OriginMode.UNDER_TARGET) start=BlockPos.containing(self ? player.position() : origin);
             else if (hit.getType()==HitResult.Type.BLOCK && spell.origin()!=OriginMode.AIM_POINT) start=hit.getBlockPos().relative(hit.getDirection());
             else start=BlockPos.containing(origin);
             cursor=start;
@@ -74,6 +75,15 @@ public final class MagicConstructionManager extends SavedData {
             var flat=new Vec3(look.x,0,look.z);
             heading=look.y>=0 ? look : flat.lengthSqr()>1e-4 ? flat.normalize() : Vec3.atLowerCornerOf(direction.getNormal());
             template=shape==SpellShape.SPIKE ? spike(player,self,heading) : spell.construction().has("template") ? structure(player,SpellDefinition.string(spell.construction(),"template","wall"),self) : null;
+        }
+        private static Vec3 grip(Player player, Vec3 origin) {
+            var target=SpellAim.entity(player,SpellAim.hit(player).getLocation());
+            return target!=null ? target.position() : origin;
+        }
+        private static BlockPos floor(net.minecraft.world.level.Level level, BlockPos pos) {
+            if (!level.getBlockState(pos).getCollisionShape(level,pos).isEmpty()) pos=pos.above();
+            for (int i=0; i<4 && level.getBlockState(pos.below()).getCollisionShape(level,pos.below()).isEmpty(); i++) pos=pos.below();
+            return pos;
         }
         public int limit(){return template==null ? spell.budget() : Math.min(spell.budget(),template.size());}
         public Vec3 heading(){return heading;}
@@ -200,8 +210,11 @@ public final class MagicConstructionManager extends SavedData {
                     yield start.relative(direction.getClockWise(),column).above(vertical);
                 }
                 case GROWTH -> {
-                    int side=(index/3)%4, layer=index%3;
-                    yield start.relative(Direction.from2DDataValue(side),1).above(layer);
+                    if (index==16) yield start.above(2);
+                    int cell=index>16 ? index-1 : index, ring=cell%8, layer=cell/8;
+                    if (layer>2) yield null;
+                    int[] dx={1,1,0,-1,-1,-1,0,1}, dz={0,1,1,1,0,-1,-1,-1};
+                    yield start.offset(dx[ring],layer,dz[ring]);
                 }
                 case STAIR, RAMP -> {
                     // Alternate horizontal and vertical segments; slope never exceeds one block per step.
@@ -262,7 +275,7 @@ public final class MagicConstructionManager extends SavedData {
                     var data=(MagicBlocks.MagicBlockEntity)level.getBlockEntity(pos);
                     int defaultLife=switch(build.spell.material()) {case "ice" -> MagicConfig.ICE_LIFE.get();case "root" -> MagicConfig.ROOT_LIFE.get();case "arcane" -> MagicConfig.ARCANE_LIFE.get();default -> MagicConfig.EARTH_LIFE.get();};
                     if (airAnchor) defaultLife=MagicConfig.ARCANE_LIFE.get();
-                    int life=SpellDefinition.integer(build.spell.construction(),"lifetime_ticks",defaultLife,20,72000);
+                    int life=(int)Mth.clamp(SpellDefinition.integer(build.spell.construction(),"lifetime_ticks",defaultLife,20,72000)*EffectGraph.number(build.spell.construction(),"lifetime_scale",1),20,72000);
                     data.expires=MagicConfig.LIFETIME.get() && !MagicConfig.permanent(airAnchor ? "arcane" : build.spell.material()) ? level.getGameTime()+life : Long.MAX_VALUE;
                     data.integrity=(float)EffectGraph.number(build.spell.construction(),"integrity",8);data.maxIntegrity=data.integrity;
                     data.regenerates=build.spell.construction().has("regenerates") && build.spell.construction().get("regenerates").getAsBoolean();

@@ -5,6 +5,7 @@
   },
   "name": "Legion of the Dead",
   "tier": "Signature",
+  "scroll": true,
   "tags": "SUMMON",
   "shape": "summon_object",
   "origin": "aim_hit",

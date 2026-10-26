@@ -2,7 +2,6 @@ package com.restor.magicka;
 
 import com.google.gson.JsonObject;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -20,10 +19,14 @@ public class GearItem extends Item {
     public final String id;
     public final Kind kind;
     public final Grade grade;
+    public final boolean named;
     private final Map<MagicStats.Stat, Integer> stats;
     private final Set<MagicGear.Trait> traits;
     private final Map<SpellFormula, JsonObject> patches;
+    private final List<GearRule> rules;
     private final List<Attr> attributes;
+    private final Map<Element, Element> swaps;
+    private final Set<Element> infusions;
     private final double[] castBias;
     private final Action action;
     private final int cooldown;
@@ -35,10 +38,14 @@ public class GearItem extends Item {
         this.id = builder.id;
         this.kind = builder.kind;
         this.grade = builder.grade;
+        this.named = builder.named;
         this.stats = Map.copyOf(builder.stats);
         this.traits = Set.copyOf(builder.traits);
         this.patches = Map.copyOf(builder.patches);
+        this.rules = List.copyOf(builder.rules);
         this.attributes = List.copyOf(builder.attributes);
+        this.swaps = Map.copyOf(builder.swaps);
+        this.infusions = Set.copyOf(builder.infusions);
         this.castBias = builder.castBias;
         this.action = builder.action;
         this.cooldown = builder.cooldown;
@@ -58,25 +65,43 @@ public class GearItem extends Item {
     public Map<MagicStats.Stat, Integer> stats() { return stats; }
     public Set<MagicGear.Trait> traits() { return traits; }
     public Map<SpellFormula, JsonObject> patches() { return patches; }
+    public List<GearRule> rules() { return rules; }
     public List<Attr> attributes() { return attributes; }
+    public Map<Element, Element> swaps() { return swaps; }
+    public Set<Element> infusions() { return infusions; }
     public double castBias(int size) { return castBias == null || size < 1 || size > 5 ? 1 : castBias[size - 1]; }
 
-    @Override public Component getName(ItemStack stack) { return Component.translatable("gear.magicka." + id); }
+    @Override public Component getName(ItemStack stack) {
+        Component name = Component.translatable("gear.magicka." + id);
+        return named ? name.copy().withStyle(ChatFormatting.GOLD) : name;
+    }
+
+    @Override public boolean canGrindstoneRepair(ItemStack stack) { return !GearBonus.of(stack).charms().isEmpty(); }
 
     @Override public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable net.minecraft.world.level.Level level, List<Component> lines, TooltipFlag flag) {
         lines.add(Component.translatable("gear.magicka.kind." + kind.name().toLowerCase(Locale.ROOT))
                 .append(" · ").append(Component.translatable("gear.magicka.grade." + grade.name().toLowerCase(Locale.ROOT)))
                 .withStyle(ChatFormatting.DARK_GRAY));
-        stats.entrySet().stream().sorted(Comparator.comparingInt(e -> e.getKey().ordinal())).forEach(e -> lines.add(
+        if (named) lines.add(Component.translatable("gear.magicka.named").withStyle(ChatFormatting.GOLD, ChatFormatting.ITALIC));
+        GearBonus bonus = GearBonus.of(stack);
+        Map<MagicStats.Stat, Integer> total = new EnumMap<>(MagicStats.Stat.class);
+        total.putAll(stats);
+        bonus.statMap().forEach((stat, delta) -> total.merge(stat, delta, Integer::sum));
+        total.entrySet().stream().filter(e -> e.getValue() != 0).sorted(Comparator.comparingInt(e -> e.getKey().ordinal())).forEach(e -> lines.add(
                 Component.literal(e.getValue() > 0 ? "+" + e.getValue() + "% " : e.getValue() + "% ")
                         .append(Component.translatable("book.magicka.stat." + e.getKey().key()))
                         .withStyle(e.getValue() > 0 ? ChatFormatting.GREEN : ChatFormatting.RED)));
         for (Attr attr : attributes) lines.add(Component.literal(format(attr) + " ")
                 .append(Component.translatable(attr.attribute().getDescriptionId()))
                 .withStyle(attr.amount() > 0 ? ChatFormatting.GREEN : ChatFormatting.RED));
-        traits.stream().sorted().forEach(trait -> lines.add(Component.translatable("gear.magicka.trait." + trait.name().toLowerCase(Locale.ROOT)).withStyle(ChatFormatting.AQUA)));
+        Set<MagicGear.Trait> allTraits = EnumSet.noneOf(MagicGear.Trait.class);
+        allTraits.addAll(traits);
+        allTraits.addAll(bonus.traitSet());
+        allTraits.stream().sorted().forEach(trait -> lines.add(Component.translatable("gear.magicka.trait." + trait.name().toLowerCase(Locale.ROOT)).withStyle(ChatFormatting.AQUA)));
         for (SpellFormula formula : patches.keySet().stream().sorted(Comparator.comparingInt(SpellFormula::size)).toList())
             lines.add(Component.translatable("gear.magicka.replaces", RecipeRegistry.clientResolve(formula).displayName()).withStyle(ChatFormatting.LIGHT_PURPLE));
+        if (!rules.isEmpty() || !swaps.isEmpty() || !infusions.isEmpty()) lines.add(Component.translatable("gear.magicka." + id + ".effect").withStyle(ChatFormatting.LIGHT_PURPLE));
+        if (!bonus.rules().isEmpty()) lines.add(Component.translatable("gear.magicka.extra_rules", bonus.rules().size()).withStyle(ChatFormatting.LIGHT_PURPLE));
         if (castBias != null) lines.add(Component.translatable("gear.magicka." + id + ".bias").withStyle(ChatFormatting.GRAY));
         if (action != null) lines.add(Component.translatable("gear.magicka.active", cooldown / 20).withStyle(ChatFormatting.YELLOW));
         lines.add(Component.translatable("gear.magicka." + id + ".desc").withStyle(ChatFormatting.DARK_GRAY));
@@ -96,14 +121,22 @@ public class GearItem extends Item {
         private final Set<MagicGear.Trait> traits = EnumSet.noneOf(MagicGear.Trait.class);
         private final Map<SpellFormula, JsonObject> patches = new HashMap<>();
         private final List<Attr> attributes = new ArrayList<>();
+        private final List<GearRule> rules = new ArrayList<>();
+        private final Map<Element, Element> swaps = new EnumMap<>(Element.class);
+        private final Set<Element> infusions = EnumSet.noneOf(Element.class);
         private double[] castBias;
         private Action action;
         private int cooldown = 40;
+        private boolean named;
         private Builder(String id, Kind kind, Grade grade) { this.id = id; this.kind = kind; this.grade = grade; }
         public Builder action(int cooldown, Action action) { this.cooldown = cooldown; this.action = action; return this; }
         public Builder stat(MagicStats.Stat stat, int delta) { stats.merge(stat, delta, Integer::sum); return this; }
         public Builder trait(MagicGear.Trait trait) { traits.add(trait); return this; }
         public Builder patch(SpellFormula formula, JsonObject patch) { patches.put(formula, patch); return this; }
+        public Builder rule(String json) { rules.add(GearRule.parse(json)); return this; }
+        public Builder named() { named = true; return this; }
+        public Builder swap(Element from, Element to) { swaps.put(from, to); return this; }
+        public Builder infuse(Element element) { infusions.add(element); return this; }
         public Builder attribute(Attribute attribute, AttributeModifier.Operation operation, double amount) { attributes.add(new Attr(attribute, operation, amount)); return this; }
         public Builder bias(double one, double two, double three, double four, double five) { castBias = new double[]{one, two, three, four, five}; return this; }
         public GearItem build() { return new GearItem(this); }

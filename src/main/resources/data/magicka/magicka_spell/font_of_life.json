@@ -8,6 +8,7 @@
   "incantation": "26766",
   "name": "Font of Life",
   "tier": "Signature",
+  "scroll": true,
   "tags": "HEAL/REVIVE/AOE",
   "shape": "targeted_zone",
   "origin": "aim_hit",

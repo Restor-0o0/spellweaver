@@ -57,12 +57,12 @@ public final class EffectGraph {
                     if (!canHarm(caster,target)) break;
                     String element = text(node,"element","arcane");
                     double multiplier = element.equals("lightning") && MagicStatuses.has(target,MagicStatuses.Status.WET) ? 2 : element.equals("earth") && frozen ? 2 : element.equals("fire") && MagicStatuses.has(target,MagicStatuses.Status.WET) ? .5 : 1;
-                    damage += (float)(amount*multiplier);
+                    damage += (float)(amount*multiplier*MobResistances.multiplier(target,element));
                 }
                 case "heal" -> target.heal(MagicGear.heal(caster,target,(float)amount));
                 case "drain_life" -> {
                     if (!canHarm(caster,target) || target == caster) break;
-                    damage += (float)amount;
+                    damage += (float)(amount*MobResistances.multiplier(target,"death"));
                     caster.heal((float)(amount*number(node,"fraction",.5)));
                 }
                 case "set_wet" -> MagicStatuses.apply(target,MagicStatuses.Status.WET,ticks,1);
@@ -104,8 +104,8 @@ public final class EffectGraph {
             case "heave_blocks" -> WorldMagic.heave(caster,point,(int)number(node,"budget",8),number(node,"radius",3),number(node,"lift",.6));
             case "brittle_terrain" -> WorldMagic.brittle(caster,point,number(node,"radius",2));
             case "grow_plants" -> WorldMagic.grow(caster,point,(int)number(node,"budget",1));
-            case "summon_undead" -> { if (allowSpawn) UndeadMinions.summon(caster,caster.position(),text(node,"entity","minecraft:zombie"),(int)number(node,"count",1),(int)number(node,"duration_ticks",600)); }
-            case "raise_dead" -> { if (allowSpawn) RevivalManager.raise(caster,caster.position(),number(node,"radius",spell.number("radius",6)),(int)number(node,"count",3),(int)number(node,"duration_ticks",900)); }
+            case "summon_undead" -> { if (allowSpawn) UndeadMinions.summon(caster,caster.position(),text(node,"entity","minecraft:zombie"),(int)number(node,"count",1)+(int)spell.number("summon_extra",0),(int)number(node,"duration_ticks",600),spell.number("summon_health",1)); }
+            case "raise_dead" -> { if (allowSpawn) RevivalManager.raise(caster,caster.position(),number(node,"radius",spell.number("radius",6)),(int)number(node,"count",3)+(int)spell.number("summon_extra",0),(int)number(node,"duration_ticks",900),spell.number("summon_health",1)); }
             case "place_light" -> SupportMagic.light(caster,point,number(node,"offset_y",0));
             case "light_path" -> SupportMagic.path(caster,point,number(node,"spacing",6),(int)number(node,"count",8));
             case "light_ring" -> SupportMagic.ring(caster,point,number(node,"radius",5),(int)number(node,"count",6));

@@ -6,6 +6,7 @@
   },
   "name": "Life Drain",
   "tier": "Signature",
+  "scroll": true,
   "tags": "DMG/HEAL",
   "shape": "beam",
   "origin": "caster_front",

@@ -1,0 +1,25 @@
+{
+  "parent": "magicka:mage/four_elements",
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "icon": {
+      "item": "magicka:staff"
+    },
+    "title": {
+      "translate": "advancements.magicka.mage.five_elements.title"
+    },
+    "description": {
+      "translate": "advancements.magicka.mage.five_elements.description"
+    },
+    "frame": "goal"
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

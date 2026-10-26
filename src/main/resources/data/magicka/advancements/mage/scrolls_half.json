@@ -1,0 +1,25 @@
+{
+  "parent": "magicka:mage/scrolls_10",
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "icon": {
+      "item": "magicka:ritual_tome"
+    },
+    "title": {
+      "translate": "advancements.magicka.mage.scrolls_half.title"
+    },
+    "description": {
+      "translate": "advancements.magicka.mage.scrolls_half.description"
+    },
+    "frame": "goal"
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

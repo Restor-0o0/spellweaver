@@ -1,0 +1,42 @@
+{
+  "id": "magicka:grove",
+  "formula": {
+    "earth": 2,
+    "life": 3
+  },
+  "name": "Grove",
+  "tier": "Signature",
+  "scroll": true,
+  "tags": "UTIL",
+  "shape": "targeted_zone",
+  "origin": "aim_ground",
+  "cast_mode": "instant",
+  "delivery": {
+    "legend": "grove",
+    "radius": 10,
+    "duration_ticks": 200,
+    "trees": 6
+  },
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "regenerating",
+      "duration_ticks": 60,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "legend",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "regenerating",
+        "duration_ticks": 60,
+        "strength": 1
+      }
+    ]
+  },
+  "balanced": true,
+  "primary": "Up to 6 trees of the local biome (oak, birch, spruce or cherry where it has none) shoot up from grass and dirt around the aimed spot within 10 blocks, at least 4 blocks apart. They stay for good. Every second you and your allies in the grove:\n• Regeneration for 3 s",
+  "self_description": "The grove grows around you."
+}

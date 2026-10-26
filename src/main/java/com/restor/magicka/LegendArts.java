@@ -54,7 +54,7 @@ final class LegendArts {
             });
             return;
         }
-        LivingEntity first = aimed(p,32);
+        LivingEntity first = aimed(p,64);
         if (first == null) {
             Vec3 at = SpellAim.hit(p).getLocation();
             EpicMagic.fx(level,dust(0x0A0A0A,1.6f),at.x,at.y+.3,at.z,20,.3,.3,.3,0);
@@ -118,7 +118,7 @@ final class LegendArts {
             }
             return;
         }
-        Vec3 from = p.getEyePosition(), look = p.getLookAngle(), to = reach(p,from,look,40);
+        Vec3 from = p.getEyePosition(), look = p.getLookAngle(), to = reach(p,from,look,64);
         Entity hit = level.getEntities(p,new AABB(from,to).inflate(1),e -> e.isAlive() && !e.isSpectator() && (e instanceof LivingEntity || loot.test(e) || e instanceof Projectile)
                         && e.getBoundingBox().inflate(.3).clip(from,to).isPresent())
                 .stream().min(Comparator.comparingDouble(e -> e.distanceToSqr(from))).orElse(null);
@@ -375,25 +375,31 @@ final class LegendArts {
         ServerLevel level = p.serverLevel();
         Vec3 fwd = flat(p.getLookAngle()), across = new Vec3(-fwd.z,0,fwd.x);
         Vec3 a = p.position().add(fwd.scale(2.5)).add(0,1.1,0);
-        Vec3 b = (self ? home(p) : destination(p)).add(0,1.1,0);
+        Vec3[] gate = self ? new Vec3[]{home(p).add(0,1.1,0),fwd} : destination(p,fwd);
+        Vec3 b = gate[0], face = gate[1], side = Math.abs(face.y) > .5 ? across : new Vec3(-face.z,0,face.x), rise = Math.abs(face.y) > .5 ? fwd : new Vec3(0,1,0);
         Map<UUID,Integer> cooldown = new HashMap<>();
         cooldown.put(p.getUUID(),10);
         sound(level,a,SoundEvents.BEACON_ACTIVATE,1.2f,1.6f);
         sound(level,a,SoundEvents.FIRECHARGE_USE,1f,1.2f);
-        SpellRuntime.repeat(p,Math.max(20,(int)s.number("duration_ticks",240)),age -> {
-            ring(level,a,fwd,across,age);
-            ring(level,b,fwd,across,age);
-            travel(p,s,a,b.add(fwd.scale(1.3)),cooldown,age);
+        SpellRuntime.repeat(p,Math.max(20,(int)s.number("duration_ticks",600)),age -> {
+            if (age % 5 == 0) { SpellVfx.sigil(p,s.formula(),a,fwd,1.4,12); SpellVfx.sigil(p,s.formula(),b,face,1.4,12); }
+            ring(level,a,fwd,across,new Vec3(0,1,0),age);
+            ring(level,b,face,side,rise,age);
+            travel(p,s,a,b.add(face.scale(1.3)),cooldown,age);
             travel(p,s,b,a.subtract(fwd.scale(1.3)),cooldown,age);
         });
     }
-    private static Vec3 destination(ServerPlayer p) {
-        var hit = SpellAim.hit(p);
+    private static Vec3[] destination(ServerPlayer p, Vec3 fwd) {
+        net.minecraft.world.phys.BlockHitResult hit = SpellAim.hit(p);
+        if (hit.getType() == HitResult.Type.MISS && hit.getLocation().distanceToSqr(p.getEyePosition()) < 192*192)
+            hit = p.level().clip(new net.minecraft.world.level.ClipContext(p.getEyePosition(),p.getEyePosition().add(p.getLookAngle().scale(192)),net.minecraft.world.level.ClipContext.Block.COLLIDER,net.minecraft.world.level.ClipContext.Fluid.NONE,p));
         Vec3 at = hit.getLocation();
-        if (hit.getType() != HitResult.Type.MISS && hit.getDirection() != Direction.UP)
-            at = at.add(Vec3.atLowerCornerOf(hit.getDirection().getNormal()).scale(1.2));
+        if (hit.getType() != HitResult.Type.MISS && hit.getDirection() != Direction.UP) {
+            Vec3 face = Vec3.atLowerCornerOf(hit.getDirection().getNormal());
+            return new Vec3[]{at.add(face.scale(.35)),face};
+        }
         Vec3 ground = EpicMagic.drop(p.serverLevel(),at.add(0,.5,0),hit.getType() == HitResult.Type.MISS ? 320 : 64,p);
-        return ground == null ? at : ground;
+        return new Vec3[]{(ground == null ? at : ground).add(0,1.1,0),fwd};
     }
     private static Vec3 home(ServerPlayer p) {
         ServerLevel level = p.serverLevel();
@@ -401,15 +407,15 @@ final class LegendArts {
         if (bed != null && p.getRespawnDimension() == level.dimension()) return Vec3.atBottomCenterOf(bed).add(0,.6,0);
         return Vec3.atBottomCenterOf(level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,level.getSharedSpawnPos()));
     }
-    private static void ring(ServerLevel level, Vec3 c, Vec3 fwd, Vec3 across, int age) {
+    private static void ring(ServerLevel level, Vec3 c, Vec3 fwd, Vec3 across, Vec3 up, int age) {
         if (age % 2 != 0) return;
-        for (int i = 0; i < 24; i++) {
-            double t = age*.12+i*Math.PI*2/24;
-            Vec3 at = c.add(across.scale(Math.cos(t)*1.2)).add(0,Math.sin(t)*1.4,0);
-            EpicMagic.fx(level,dust(i % 4 == 0 ? 0xFFE28A : 0xFF9A2E,1f),at.x,at.y,at.z,1,0,0,0,0);
-            if (i % 6 == 0) EpicMagic.fx(level,ParticleTypes.SMALL_FLAME,at.x,at.y,at.z,0,-Math.sin(t)*across.x*.1,Math.cos(t)*.1,-Math.sin(t)*across.z*.1,1);
+        for (int i = 0; i < 6; i++) {
+            double t = age*.12+i*Math.PI*2/6;
+            Vec3 at = c.add(across.scale(Math.cos(t)*1.4)).add(up.scale(Math.sin(t)*1.4)), spin = across.scale(-Math.sin(t)*.1).add(up.scale(Math.cos(t)*.1));
+            EpicMagic.fx(level,ParticleTypes.SMALL_FLAME,at.x,at.y,at.z,0,spin.x,spin.y,spin.z,1);
         }
-        EpicMagic.fx(level,dust(0xFFD28A,.5f),c.x,c.y,c.z,4,across.x*.6+fwd.x*.05,.7,across.z*.6+fwd.z*.05,0);
+        Vec3 spread = across.scale(.6).add(up.scale(.7)).add(fwd.scale(.05));
+        EpicMagic.fx(level,dust(0xFFD28A,.5f),c.x,c.y,c.z,4,Math.abs(spread.x),Math.abs(spread.y),Math.abs(spread.z),0);
     }
     private static void travel(ServerPlayer p, SpellDefinition s, Vec3 gate, Vec3 exit, Map<UUID,Integer> cooldown, int age) {
         ServerLevel level = p.serverLevel();
@@ -418,7 +424,8 @@ final class LegendArts {
         for (Entity e : passing) {
             if (cooldown.getOrDefault(e.getUUID(),-99) > age) continue;
             cooldown.put(e.getUUID(),age+30);
-            Vec3 to = exit.add(0,-e.getBbHeight()/2,0);
+            Vec3 to = clear(level,e,exit.add(0,-e.getBbHeight()/2,0));
+            if (to == null) continue;
             if (e instanceof ServerPlayer player) player.teleportTo(level,to.x,to.y,to.z,player.getYRot(),player.getXRot());
             else e.teleportTo(to.x,to.y,to.z);
             e.fallDistance = 0; e.hurtMarked = true;
@@ -426,6 +433,21 @@ final class LegendArts {
             sound(level,to,SoundEvents.ENDERMAN_TELEPORT,.8f,1.2f);
             EpicMagic.fx(level,ParticleTypes.FLAME,to.x,to.y+e.getBbHeight()/2,to.z,12,.3,.5,.3,.05);
         }
+    }
+
+    private static Vec3 clear(ServerLevel level, Entity e, Vec3 want) {
+        if (level.noCollision(e,e.getDimensions(e.getPose()).makeBoundingBox(want))) return want;
+        Vec3 best = null; double bestScore = Double.MAX_VALUE;
+        for (int dy = -2; dy <= 3; dy++) for (int dx = -3; dx <= 3; dx++) for (int dz = -3; dz <= 3; dz++) {
+            Vec3 at = new Vec3(Math.floor(want.x)+dx+.5,Math.floor(want.y)+dy,Math.floor(want.z)+dz+.5);
+            double score = at.distanceToSqr(want)+(dy < 0 ? 1 : 0);
+            if (score >= bestScore || !level.noCollision(e,e.getDimensions(e.getPose()).makeBoundingBox(at))) continue;
+            BlockPos below = BlockPos.containing(at).below();
+            boolean floor = !level.getBlockState(below).getCollisionShape(level,below).isEmpty();
+            if (!floor) score += 4;
+            if (score < bestScore) { best = at; bestScore = score; }
+        }
+        return best;
     }
 
     private LegendArts() {}

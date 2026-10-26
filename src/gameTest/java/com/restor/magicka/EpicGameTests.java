@@ -22,7 +22,7 @@ public final class EpicGameTests {
     @GameTest(template="empty")
     public static void epicUltimatesChannelOnlyWhileStandingStill(GameTestHelper h) {
         DeathGameTests.floor(h);
-        var p = RecipeGameTests.caster(h); var server = new CastingServer();
+        var p = RecipeGameTests.caster(h); p.setXRot(60); var server = new CastingServer();
         for (String name : new String[]{"Thunderstorm", "Meteor Shower", "Hurricane", "Blizzard"})
             h.assertTrue(RecipeGameTests.spell(name).epic() && !RecipeGameTests.spell(name).incantation().isEmpty(), name + " is an epic ultimate");
         var storm = RecipeGameTests.spell("Thunderstorm");

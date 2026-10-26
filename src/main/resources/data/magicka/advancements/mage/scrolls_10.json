@@ -1,0 +1,25 @@
+{
+  "parent": "magicka:mage/first_scroll",
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "icon": {
+      "item": "magicka:spell_scroll"
+    },
+    "title": {
+      "translate": "advancements.magicka.mage.scrolls_10.title"
+    },
+    "description": {
+      "translate": "advancements.magicka.mage.scrolls_10.description"
+    },
+    "frame": "task"
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

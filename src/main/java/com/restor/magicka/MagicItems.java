@@ -25,11 +25,20 @@ import static com.restor.magicka.MagicStats.Stat.*;
 public final class MagicItems {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(Registries.ITEM, Magicka.ID);
     public static final RegistryObject<Item> SPELLBOOK = ITEMS.register("spellbook", () -> new Item(new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<SpellScrollItem> SPELL_SCROLL = ITEMS.register("spell_scroll",
+            () -> new SpellScrollItem(new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.RARE)));
     private static final List<RegistryObject<GearItem>> GEAR = new ArrayList<>();
 
     private static RegistryObject<GearItem> gear(String id, GearItem.Kind kind, GearItem.Grade grade, UnaryOperator<GearItem.Builder> setup) {
         RegistryObject<GearItem> item = ITEMS.register(id, () -> setup.apply(GearItem.of(id, kind, grade)).build());
         GEAR.add(item);
+        return item;
+    }
+    private static final List<RegistryObject<CharmItem>> CHARMS = new ArrayList<>();
+
+    private static RegistryObject<CharmItem> charm(String id, UnaryOperator<CharmItem.Builder> setup) {
+        RegistryObject<CharmItem> item = ITEMS.register(id, () -> setup.apply(CharmItem.of(id)).build());
+        CHARMS.add(item);
         return item;
     }
     private static JsonObject patch(String json) { return JsonParser.parseString(json).getAsJsonObject(); }
@@ -116,6 +125,78 @@ public final class MagicItems {
     public static final RegistryObject<GearItem> BRITTLE_CHARM = gear("brittle_charm", TRINKET, UNCOMMON, b -> b
             .stat(COLD, 25).stat(DESTRUCTION, 30));
 
+    public static final RegistryObject<GearItem> SMOLDERING_FOCUS = gear("smoldering_focus", FOCUS, RARE, b -> b
+            .bias(.9, .95, 1, 1.05, 1.1).stat(FIRE, 15)
+            .rule("{\"elements\":[\"fire\"],\"shapes\":[\"projectile\",\"burst_projectile\"],\"patch\":{\"delivery\":{\"hot_zone\":true}}}"));
+    public static final RegistryObject<GearItem> EMBER_MANTLE = gear("ember_mantle", ROBE, UNCOMMON, b -> b
+            .stat(COLD, -15).rule("{\"elements\":[\"fire\"],\"min_size\":3,\"damage\":1.2}"));
+    public static final RegistryObject<GearItem> MENDERS_VOW = gear("menders_vow", ROBE, RARE, b -> b
+            .trait(MagicGear.Trait.DESPERATE_MENDING).stat(HEALING, 15).stat(LIFE, 10).attribute(Attributes.MAX_HEALTH, Operation.ADDITION, -2));
+    public static final RegistryObject<GearItem> GROUNDING_ROD = gear("grounding_rod", RING, UNCOMMON, b -> b
+            .rule("{\"elements\":[\"lightning\"],\"append\":[{\"type\":\"chain_targets\",\"count\":2,\"range\":5,\"amount\":1.5}]}"));
+    public static final RegistryObject<GearItem> RIME_BAND = gear("rime_band", RING, UNCOMMON, b -> b
+            .rule("{\"elements\":[\"cold\"],\"append\":[{\"type\":\"apply_status\",\"status\":\"chilled\",\"duration_ticks\":80,\"strength\":1}]}"));
+    public static final RegistryObject<GearItem> WAVE_CREST = gear("wave_crest", RING, UNCOMMON, b -> b
+            .rule("{\"elements\":[\"water\"],\"append\":[{\"type\":\"apply_force\",\"amount\":0.6,\"lift\":0.2}]}"));
+    public static final RegistryObject<GearItem> VENOM_FANG = gear("venom_fang", RING, UNCOMMON, b -> b
+            .rule("{\"elements\":[\"death\"],\"append\":[{\"type\":\"apply_status\",\"status\":\"withering\",\"duration_ticks\":80,\"strength\":1}]}"));
+    public static final RegistryObject<GearItem> SPLITTING_LENS = gear("splitting_lens", TRINKET, RARE, b -> b
+            .rule("{\"shapes\":[\"projectile\"],\"patch\":{\"delivery\":{\"fan\":3}},\"damage\":0.45}"));
+    public static final RegistryObject<GearItem> SHATTER_CHARM = gear("shatter_charm", TRINKET, RARE, b -> b
+            .stat(EARTH, 10).rule("{\"elements\":[\"earth\"],\"shapes\":[\"projectile\",\"burst_projectile\"],\"patch\":{\"delivery\":{\"shards\":4}}}"));
+    public static final RegistryObject<GearItem> VERDANT_BLOOM = gear("verdant_bloom", TRINKET, UNCOMMON, b -> b
+            .rule("{\"tags\":[\"heal\"],\"append\":[{\"type\":\"grow_plants\",\"budget\":4}],\"healing\":1.2}"));
+    public static final RegistryObject<GearItem> VOLATILE_CORE = gear("volatile_core", TRINKET, WEIRD, b -> b
+            .stat(CAST_SPEED, -10).rule("{\"shapes\":[\"projectile\",\"burst_projectile\"],\"patch\":{\"delivery\":{\"volatile\":true}},\"damage\":1.25}"));
+    public static final RegistryObject<GearItem> HUNTERS_MARK = gear("hunters_mark", TRINKET, LEGENDARY, b -> b
+            .trait(MagicGear.Trait.QUICKENING).stat(DAMAGE, -10));
+
+    public static final RegistryObject<GearItem> VELTAR_STAFF = gear("veltar_staff", FOCUS, LEGENDARY, b -> b.named()
+            .stat(FIRE, 20).rule("{\"elements\":[\"fire\"],\"shapes\":[\"projectile\",\"burst_projectile\"],\"patch\":{\"delivery\":{\"homing\":true,\"hot_zone\":true}}}"));
+    public static final RegistryObject<GearItem> MYRRA_RING = gear("myrra_ring", RING, LEGENDARY, b -> b.named()
+            .stat(WATER, 15).rule("{\"elements\":[\"water\"],\"tags\":[\"zone\"],\"patch\":{\"delivery\":{\"follow\":true}},\"append\":[{\"type\":\"apply_force\",\"amount\":0.4,\"lift\":0.1}]}"));
+    public static final RegistryObject<GearItem> ALDER_MANTLE = gear("alder_mantle", ROBE, LEGENDARY, b -> b.named()
+            .trait(MagicGear.Trait.SHARED_BLESSING).stat(HEALING, 20).stat(LIFE, 10));
+    public static final RegistryObject<GearItem> GRIMHALL_BELL = gear("grimhall_bell", TRINKET, LEGENDARY, b -> b.named()
+            .trait(MagicGear.Trait.RESONANCE).stat(DEATH, 15));
+    public static final RegistryObject<GearItem> ISKANDER_PRISM = gear("iskander_prism", TRINKET, LEGENDARY, b -> b.named()
+            .stat(ARCANE, 15).rule("{\"shapes\":[\"beam\",\"spray\"],\"patch\":{\"delivery\":{\"ricochet\":2}}}"));
+    public static final RegistryObject<GearItem> THRAIN_GAUNTLET = gear("thrain_gauntlet", RING, LEGENDARY, b -> b.named()
+            .stat(EARTH, 15).rule("{\"elements\":[\"earth\"],\"shapes\":[\"projectile\",\"burst_projectile\"],\"patch\":{\"delivery\":{\"bounce\":2,\"shards\":3}}}"));
+    public static final RegistryObject<GearItem> LISA_CROWN = gear("lisa_crown", TRINKET, LEGENDARY, b -> b.named()
+            .stat(LIGHTNING, 20).stat(CHAINS, 30));
+    public static final RegistryObject<GearItem> MORROW_LANTERN = gear("morrow_lantern", TOOL, LEGENDARY, b -> b.named()
+            .stat(LIFE, 15).rule("{\"elements\":[\"life\"],\"tags\":[\"zone\"],\"patch\":{\"delivery\":{\"follow\":true}},\"healing\":1.25}"));
+
+    public static final RegistryObject<GearItem> LEGION_BANNER = gear("legion_banner", TRINKET, RARE, b -> b
+            .stat(SUMMONS, 10).rule("{\"tags\":[\"summon\"],\"summons\":1,\"summon_health\":0.6}"));
+    public static final RegistryObject<GearItem> CHAMELEON_HIDE = gear("chameleon_hide", ROBE, RARE, b -> b
+            .trait(MagicGear.Trait.ADAPTATION).attribute(Attributes.ARMOR, Operation.ADDITION, 2));
+    public static final RegistryObject<GearItem> STEAM_RING = gear("steam_ring", RING, RARE, b -> b
+            .swap(Element.WATER, Element.FIRE).stat(FIRE, 10));
+    public static final RegistryObject<GearItem> WHISPERING_SHARD = gear("whispering_shard", TRINKET, WEIRD, b -> b
+            .infuse(Element.ARCANE).stat(ARCANE, 20).stat(CAST_SPEED, -10));
+    public static final RegistryObject<GearItem> WORLD_ROOTS = gear("world_roots", TRINKET, RARE, b -> b
+            .stat(EARTH, 10).stat(CONSTRUCTION, 15).rule("{\"elements\":[\"earth\"],\"tags\":[\"construction\"],\"lifetime\":2,\"cast\":1.5}"));
+
+    public static final RegistryObject<CharmItem> CHARM_HOMING = charm("charm_homing", b -> b
+            .rule("{\"shapes\":[\"projectile\",\"burst_projectile\"],\"patch\":{\"delivery\":{\"homing\":true}}}"));
+    public static final RegistryObject<CharmItem> CHARM_BOUNCE = charm("charm_bounce", b -> b
+            .rule("{\"shapes\":[\"projectile\",\"burst_projectile\"],\"patch\":{\"delivery\":{\"bounce\":1}}}"));
+    public static final RegistryObject<CharmItem> CHARM_RICOCHET = charm("charm_ricochet", b -> b
+            .rule("{\"shapes\":[\"beam\",\"spray\"],\"patch\":{\"delivery\":{\"ricochet\":1}}}"));
+    public static final RegistryObject<CharmItem> CHARM_DRIFT = charm("charm_drift", b -> b
+            .rule("{\"tags\":[\"zone\"],\"patch\":{\"delivery\":{\"follow\":true}}}"));
+    public static final RegistryObject<CharmItem> CHARM_LEECH = charm("charm_leech", b -> b
+            .rule("{\"tags\":[\"damage\"],\"append\":[{\"type\":\"drain_life\",\"amount\":1,\"fraction\":0.5}]}"));
+    public static final RegistryObject<CharmItem> CHARM_FROSTBITE = charm("charm_frostbite", b -> b
+            .rule("{\"elements\":[\"cold\"],\"append\":[{\"type\":\"apply_status\",\"status\":\"brittle\",\"duration_ticks\":60,\"strength\":1}]}"));
+    public static final RegistryObject<CharmItem> CHARM_SHARING = charm("charm_sharing", b -> b.trait(MagicGear.Trait.SHARED_BLESSING));
+    public static final RegistryObject<CharmItem> CHARM_RESONANCE = charm("charm_resonance", b -> b.trait(MagicGear.Trait.RESONANCE));
+    public static final RegistryObject<CharmItem> CHARM_POWER = charm("charm_power", b -> b.stat(DAMAGE, 8));
+    public static final RegistryObject<CharmItem> CHARM_REACH = charm("charm_reach", b -> b.stat(AREA, 10));
+    public static final RegistryObject<CharmItem> CHARM_SWIFT = charm("charm_swift", b -> b.stat(CAST_SPEED, 8));
+
     public static final RegistryObject<GearItem> EXPEDITION_BEACON = gear("expedition_beacon", TOOL, COMMON, b -> b
             .action(60, player -> SupportMagic.glowstone(player, SpellAim.hit(player).getLocation(), .5)));
     public static final RegistryObject<GearItem> ROPE_LAUNCHER = gear("rope_launcher", TOOL, UNCOMMON, b -> b
@@ -146,6 +227,10 @@ public final class MagicItems {
                 output.accept(SPELLBOOK.get());
                 for (GearItem.Kind kind : GearItem.Kind.values())
                     GEAR.stream().map(RegistryObject::get).filter(item -> item.kind == kind).forEach(output::accept);
+                CHARMS.forEach(charm -> output.accept(charm.get()));
+                MagicPotions.ALL.values().forEach(potion -> output.accept(MagicPotions.stack(net.minecraft.world.item.Items.POTION, potion.get())));
+                RecipeRegistry.baseRecipes().stream().filter(SpellScrolls::locked).sorted(java.util.Comparator.comparing(spell -> spell.id().toString()))
+                        .forEach(spell -> output.accept(SpellScrollItem.of(spell)));
                 com.restor.magicka.enemy.MagicEnemies.EGGS.forEach(egg -> output.accept(egg.get()));
             })
             .build());
@@ -155,5 +240,6 @@ public final class MagicItems {
         if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS) com.restor.magicka.enemy.MagicEnemies.EGGS.forEach(event::accept);
     }
     public static List<RegistryObject<GearItem>> gear() { return List.copyOf(GEAR); }
+    public static List<RegistryObject<CharmItem>> charms() { return List.copyOf(CHARMS); }
     private MagicItems() {}
 }
