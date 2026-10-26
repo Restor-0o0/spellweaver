@@ -28,7 +28,7 @@ public final class QuickCastGameTests {
         h.assertTrue(GrimoireState.valid(packed),"Ordered preset passes validation");
         var state=new GrimoireState();state.assign(0,packed);h.assertTrue(state.slot(0)==packed,"Slot keeps the order it was given");
         var plain=RecipeGameTests.spell("Firebomb");
-        h.assertTrue(plain.spokenPacked()==plain.formula().prepared().packed(),"Spells without an incantation are unaffected");
+        h.assertTrue(RecipeRegistry.recipes().stream().filter(d->d.ordered() && !d.ultimate()).anyMatch(d->!d.spoken().equals(d.formula().elements())),"Ordinary spells have their own order too");
         for(var d:RecipeRegistry.recipes())h.assertTrue(Formula.unpack(d.spokenPacked()).key().equals(d.formula()),"Ordering never changes the spell, "+d.name());
         h.assertTrue(CastingServer.spoken(ultimate.formula().prepared()).elements().equals(ultimate.spoken()),"Any stored order is filled as the incantation");
         h.succeed();
@@ -64,7 +64,12 @@ public final class QuickCastGameTests {
         for(var e:ultimate.formula().prepared().elements())CastingServer.input(p,e==Element.DEATH?13:e.ordinal());
         CastingServer.input(p,9);var cast=CastingServer.casting(p);
         h.assertTrue(cast!=null && !cast.id().equals(ultimate.id()),"Hand-typed wrong order never reaches the ultimate");
-        h.assertTrue(cast.formula().size()==ultimate.formula().size()-1,"Broken incantation drops to the lesser spell, got "+cast.name());
+        h.assertTrue(cast.id().equals(RecipeRegistry.fusion(ultimate.formula()).id()),"Wrong order casts the plain fusion, got "+cast.name());
+        var plain=RecipeGameTests.spell("Firebomb");var reversed=new java.util.ArrayList<>(plain.spoken());java.util.Collections.reverse(reversed);
+        if(!reversed.equals(plain.spoken())){
+            var other=RecipeGameTests.caster(h);CastingServer.input(other,7);for(var e:reversed)CastingServer.input(other,e==Element.DEATH?13:e.ordinal());CastingServer.input(other,9);var weak=CastingServer.casting(other);
+            h.assertTrue(weak!=null && weak.id().equals(RecipeRegistry.fusion(plain.formula()).id()),"Named spells also need their order, got "+(weak==null?"nothing":weak.name()));
+        }
         h.succeed();
     }
     @MagicTest
@@ -107,7 +112,7 @@ public final class QuickCastGameTests {
         h.assertTrue(RecipeGameTests.spell("Thunder Lance").channeled(),"Four-lightning chain is channeled");h.assertFalse(RecipeGameTests.spell("Pebble").channeled(),"Projectile is instant");
 
         CastingServer.input(p,7);CastingServer.input(p,11);h.assertTrue(CastingServer.snapshot(p).instant(),"Mode toggles on");
-        for(int e:new int[]{1,1,2,6})CastingServer.input(p,e);CastingServer.input(p,9);
+        for(var e:spike.spoken())CastingServer.input(p,e.ordinal());CastingServer.input(p,9);
         var state=CastingServer.snapshot(p);
         h.assertTrue(state.formula()==0 && state.remaining()==0,"Instant cast skips windup");
         h.runAfterDelay(2,()->{
@@ -148,7 +153,7 @@ public final class QuickCastGameTests {
     @MagicTest(timeoutTicks=100)
     public static void tappedSkybridgeKeepsGrowing(GameTestHelper h){
         var p=RecipeGameTests.caster(h);h.setBlock(new BlockPos(1,1,4),Blocks.STONE);p.setXRot(30);var server=new CastingServer();
-        CastingServer.input(p,7);CastingServer.input(p,11);for(int e:new int[]{4,4,4,6})CastingServer.input(p,e);CastingServer.input(p,9);CastingServer.input(p,12);
+        CastingServer.input(p,7);CastingServer.input(p,11);for(var e:RecipeGameTests.spell("Skybridge").spoken())CastingServer.input(p,e.ordinal());CastingServer.input(p,9);CastingServer.input(p,12);
         h.assertTrue(CastingServer.snapshot(p).channeling(),"Releasing does not cut a growing construction");
         for(int t=1;t<=30;t++)h.runAfterDelay(t,()->server.tick(new PlayerTickEvent.Post(p)));
         h.runAfterDelay(31,()->{

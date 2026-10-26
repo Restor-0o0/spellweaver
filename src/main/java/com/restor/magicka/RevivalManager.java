@@ -20,6 +20,7 @@ public final class RevivalManager {
     @SubscribeEvent(priority=net.neoforged.bus.api.EventPriority.LOWEST) public void death(LivingDeathEvent event) {
         if (event.getEntity().level() instanceof ServerLevel world && !event.isCanceled()) {
             var e = event.getEntity();
+            if (FusionRules.reborn(world, e)) return;
             if (e.getType() == EntityType.ENDER_DRAGON || e.getType() == EntityType.WITHER || e.entityTags().contains("magicka_object") || e.entityTags().contains("magicka_revived")) return;
             if (SOULS.size() >= 256) return;
             SOULS.put(e.getUUID(),new Remains(e.getUUID(),world,e.position(),e.getType(),e instanceof ServerPlayer,world.getGameTime()+MagicConfig.REVIVE_TICKS.get()));
@@ -32,7 +33,7 @@ public final class RevivalManager {
     @SubscribeEvent public void tick(ServerTickEvent.Post event) {
         SOULS.values().removeIf(r -> r.level.getGameTime() >= r.until);
         for (Remains r : SOULS.values()) if (r.level.getGameTime()%20==0 && r.level.hasChunkAt(net.minecraft.core.BlockPos.containing(r.point)))
-            r.level.sendParticles(ParticleTypes.SOUL,r.point.x,r.point.y+.8,r.point.z,2,.2,.3,.2,.01);
+            EpicMagic.fx(r.level,ParticleTypes.SOUL,r.point.x,r.point.y+.8,r.point.z,2,.2,.3,.2,.01);
     }
     public static int raise(ServerPlayer caster, Vec3 point, double radius, int count, int ticks) { return raise(caster, point, radius, count, ticks, 1); }
 
@@ -66,7 +67,7 @@ public final class RevivalManager {
             if (!level.addFreshEntity(living)) return false;
             SOULS.remove(remains.id);
         }
-        level.sendParticles(ParticleTypes.TOTEM_OF_UNDYING,remains.point.x,remains.point.y+1,remains.point.z,30,.5,.8,.5,.1);
+        EpicMagic.fx(level,ParticleTypes.TOTEM_OF_UNDYING,remains.point.x,remains.point.y+1,remains.point.z,30,.5,.8,.5,.1);
         return true;
     }
 }

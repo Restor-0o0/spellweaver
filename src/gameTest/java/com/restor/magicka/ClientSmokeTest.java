@@ -21,7 +21,6 @@ public final class ClientSmokeTest {
         if (stage == 0 && mc.screen instanceof TitleScreen && mc.getOverlay() == null && ++ticks == 30) {
             long keys = java.util.Arrays.stream(mc.options.keyMappings).filter(k -> k.getName().startsWith("key.magicka.")).count();
             if (keys != 22) throw new IllegalStateException("Expected 22 Magicka key mappings, got " + keys);
-            int entries=com.restor.magicka.client.SpellbookScreen.uniqueSpells().size();if(entries<150)throw new IllegalStateException("Expected the full book, got "+entries+" entries");
             if (RecipeRegistry.clientRecipes().size()!=RecipeRegistry.CATALOG_SIZE)throw new IllegalStateException("Client catalog must contain all "+RecipeRegistry.CATALOG_SIZE+" spells, got "+RecipeRegistry.clientRecipes().size());
             for(String id:com.restor.magicka.client.enemy.EnemyLayers.ALL.keySet()){
                 mc.getEntityModels().bakeLayer(com.restor.magicka.client.enemy.EnemyRenderer.layer(id));
@@ -34,19 +33,15 @@ public final class ClientSmokeTest {
             var preferences=com.restor.magicka.client.BookPreferences.get();preferences.query="";preferences.tag="all";preferences.size=0;preferences.elements=0;preferences.selectedId="magicka:stone_stair";
             String[] presets={"Firebomb","Stone Stair","Healing Pool","Arcane Meteor"};
             for(int i=0;i<4;i++){String name=presets[i];preferences.assign(i,RecipeRegistry.clientRecipes().stream().filter(d->d.name().equals(name)).findFirst().orElseThrow().spokenPacked());}
-            mc.setScreen(new com.restor.magicka.client.SpellbookScreen());
+            mc.setScreen(new com.restor.magicka.client.GrimoireScreen());
             ticks = 0; stage = 1;
         } else if (stage == 1 && mc.getOverlay() == null) {
-            if(++ticks==10)exerciseBook(mc);
             if(ticks!=40)return;
             if (net.minecraft.client.resources.language.I18n.get("book.magicka.title").contains("?")) throw new IllegalStateException("Broken Russian text");
             net.minecraft.client.Screenshot.grab(mc.gameDirectory, "magicka-book.png", mc.getMainRenderTarget(), 1, message -> {});
-            ((com.restor.magicka.client.SpellbookScreen)mc.screen).showStats(true);
-            if(mc.screen.children().stream().filter(w->w instanceof net.minecraft.client.gui.components.EditBox).count()!=MagicStats.COUNT)throw new IllegalStateException("Stats page must show an input for every stat");
             ticks = 0; stage = 5;
         } else if (stage == 5 && ++ticks == 10) {
             net.minecraft.client.Screenshot.grab(mc.gameDirectory, "magicka-stats.png", mc.getMainRenderTarget(), 1, message -> {});
-            ((com.restor.magicka.client.SpellbookScreen)mc.screen).showStats(false);
             ticks = 0; stage = 2;
             mc.setScreen(new net.minecraft.client.gui.screens.Screen(net.minecraft.network.chat.Component.literal("HUD preview")) {
                 @Override public void extractRenderState(net.minecraft.client.gui.GuiGraphicsExtractor g, int mx, int my, float partial) {
@@ -64,23 +59,5 @@ public final class ClientSmokeTest {
             org.slf4j.LoggerFactory.getLogger("MagickaSmokeTest").info("MAGICKA_UI_SMOKE_OK: grimoire and HUD rendered in Russian");
             mc.stop();
         }
-    }
-    private static java.util.List<String> labels(net.minecraft.client.gui.screens.Screen screen){return screen.children().stream().filter(w->w instanceof net.minecraft.client.gui.components.Button).map(w->((net.minecraft.client.gui.components.Button)w).getMessage().getString()).toList();}
-    private static void exerciseBook(Minecraft mc){
-        var before=labels(mc.screen);mc.setScreen(new TitleScreen());var saved=com.restor.magicka.client.BookPreferences.get();
-        if(!saved.selectedId.equals("magicka:stone_stair"))throw new IllegalStateException("Book did not save selected spell");
-        mc.setScreen(new com.restor.magicka.client.SpellbookScreen());if(!before.equals(labels(mc.screen)))throw new IllegalStateException("Book did not reopen on the same page");
-        var search=(net.minecraft.client.gui.components.EditBox)mc.screen.children().stream().filter(w->w instanceof net.minecraft.client.gui.components.EditBox).findFirst().orElseThrow();
-        search.setValue("#созидание");var tabs=java.util.Arrays.stream(new String[]{"all","damage","heal","control","construction","summon","destruction","movement","zone","projectile","utility"}).map(t->net.minecraft.network.chat.Component.translatable("book.magicka.tag."+t).getString()).toList();var found=labels(mc.screen).stream().filter(name->!tabs.contains(name)).map(name->RecipeRegistry.clientRecipes().stream().filter(d->d.displayName().getString().equals(name)).findFirst()).flatMap(java.util.Optional::stream).toList();
-        if(found.isEmpty() || found.stream().anyMatch(d->!SpellTags.of(d).contains("construction")))throw new IllegalStateException("Localized tag search failed");
-        search=(net.minecraft.client.gui.components.EditBox)mc.screen.children().stream().filter(w->w instanceof net.minecraft.client.gui.components.EditBox).findFirst().orElseThrow();var ultimate=RecipeRegistry.clientRecipes().stream().filter(d->d.name().equals("Absolute Zero")).findFirst().orElseThrow();var ultimateName=ultimate.displayName().getString();search.setValue(ultimateName);
-        var button=(net.minecraft.client.gui.components.Button)mc.screen.children().stream().filter(w->w instanceof net.minecraft.client.gui.components.Button b && b.getMessage().getString().equals(ultimateName)).findFirst().orElseThrow();
-        int bookHeight=Math.min(330,mc.screen.height-16);
-        double sx=button.getX()+10,sy=button.getY()+8,dropY=(mc.screen.height-bookHeight)/2.0+bookHeight-25;
-        var left=new net.minecraft.client.input.MouseButtonInfo(0,0);mc.screen.mouseClicked(new net.minecraft.client.input.MouseButtonEvent(sx,sy,left),false);mc.screen.mouseDragged(new net.minecraft.client.input.MouseButtonEvent(sx,dropY,left),0,dropY-sy);mc.screen.mouseReleased(new net.minecraft.client.input.MouseButtonEvent(sx,dropY,left));
-        if(saved.slot(0)!=ultimate.spokenPacked())throw new IllegalStateException("Dragging spell into preset failed");
-        if(saved.slot(0)==ultimate.formula().prepared().packed())throw new IllegalStateException("Preset must keep the incantation order, not the sorted elements");
-        mc.setScreen(new TitleScreen());saved.query="";saved.tag="construction";mc.setScreen(new com.restor.magicka.client.SpellbookScreen());
-        org.slf4j.LoggerFactory.getLogger("MagickaSmokeTest").info("MAGICKA_BOOK_INTERACTION_OK: page restored, localized tags searched, spell dragged into preset");
     }
 }

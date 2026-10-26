@@ -68,7 +68,9 @@ public final class MagicHud {
         if(!state.enabled() && prepared.empty() && !queuing)return;
         int y=Math.max(6,presetY-37);MagicUi.panel(g,panelX,y,111,32);
         Formula display=queuing?Formula.unpack(MagicNetwork.clientQueue.formula()):prepared;
-        Component label=display.empty()?Component.translatable("hud.magicka.prepared"):MagicClient.spell(display.key()).displayName();
+        var spell=display.empty()?null:MagicClient.spell(display.key());
+        boolean named=spell!=null && spell.ordered() && spell.spoken().equals(display.elements());
+        Component label=spell==null?Component.translatable("hud.magicka.prepared"):named?spell.displayName():Component.empty();
         MagicUi.small(g,Component.literal(fit(label.getString(),130)),panelX+4,y+3,queuing?0xFFFFDC84:casting?0xFFE0B3FF:MagicUi.GOLD);
         int cells=Math.max(com.restor.magicka.MageLevel.clientMaxElements(Minecraft.getInstance().player),display.size());
         for(int i=0;i<cells;i++){

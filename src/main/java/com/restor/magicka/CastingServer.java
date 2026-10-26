@@ -80,8 +80,8 @@ public final class CastingServer {
                 s.level = player.level();
                 s.elapsed = 0; s.attempts = 0; s.placed = 0;
                 s.root = null; s.construction = UUID.randomUUID();
-                s.recipe = MagicStats.resolve(player, s.formula.key());
-                if (!s.recipe.incantation().equals(s.typed.toString()) && !s.recipe.incantation().isEmpty()) s.recipe = fizzle(player, s);
+                var named = RecipeRegistry.resolve(s.formula.key());
+                s.recipe = !named.ordered() || named.spoken().equals(s.formula.elements()) ? MagicStats.resolve(player, s.formula.key()) : MagicStats.apply(player, RecipeRegistry.fusion(s.formula.key()));
                 s.windup = Math.max(1,(int)Math.round(s.recipe.castTicks()*MagicConfig.CAST_SCALE.get()));
                 boolean construction = s.intent == Intent.PRIMARY && s.recipe.shape().construction() || s.intent == Intent.SELF && s.recipe.selfMode().equals("construct");
                 s.total = s.windup + (construction ? s.recipe.budget()*s.recipe.interval() : 0);
@@ -112,19 +112,9 @@ public final class CastingServer {
         }
         sync(player, s);
     }
-    private static SpellDefinition fizzle(ServerPlayer player, Session s) {
-        Formula lesser = new Formula();
-        var elements = s.formula.elements();
-        for (int i = 0; i < elements.size() - 1; i++) lesser.add(elements.get(i));
-        SpellDefinition weaker = MagicStats.resolve(player, lesser.key());
-        player.level().playSound(null,player.blockPosition(),net.minecraft.sounds.SoundEvents.FIRE_EXTINGUISH,net.minecraft.sounds.SoundSource.PLAYERS,.8f,.7f);
-        player.sendOverlayMessage(net.minecraft.network.chat.Component.translatable("hud.magicka.incantation_broken",weaker.displayName()));
-        return weaker;
-    }
-    /** Presets only store which elements a spell needs, so the incantation order comes from the recipe. */
+    /** Presets only store which elements a spell needs, so the typing order comes from the recipe. */
     public static Formula spoken(Formula preset){
-        var recipe=RecipeRegistry.resolve(preset.key());
-        return recipe.incantation().isEmpty()?preset:recipe.spokenFormula();
+        return RecipeRegistry.resolve(preset.key()).spokenFormula();
     }
     public static final int QUEUE_TICKS_PER_ELEMENT = 4;
     static int pulseTicks(SpellDefinition recipe) { return recipe.shape() == SpellShape.CHAIN ? 10 : 5; }

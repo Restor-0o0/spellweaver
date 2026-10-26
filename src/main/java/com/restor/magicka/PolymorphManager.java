@@ -141,8 +141,8 @@ public final class PolymorphManager {
     }
 
     private static void puff(ServerLevel level, Vec3 at) {
-        level.sendParticles(ParticleTypes.POOF, at.x, at.y + .5, at.z, 18, .35, .4, .35, .02);
-        level.sendParticles(ParticleTypes.WITCH, at.x, at.y + .6, at.z, 10, .3, .4, .3, .01);
+        EpicMagic.fx(level,ParticleTypes.POOF, at.x, at.y + .5, at.z, 18, .35, .4, .35, .02);
+        EpicMagic.fx(level,ParticleTypes.WITCH, at.x, at.y + .6, at.z, 10, .3, .4, .3, .01);
         level.playSound(null, at.x, at.y, at.z, SoundEvents.ILLUSIONER_MIRROR_MOVE, SoundSource.HOSTILE, .7f, 1.2f);
     }
 

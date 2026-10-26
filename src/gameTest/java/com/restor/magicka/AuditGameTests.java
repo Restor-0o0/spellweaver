@@ -36,7 +36,7 @@ public final class AuditGameTests {
         CastingServer.input(spoken,7);for(int a:new int[]{4,4,0,2,4})CastingServer.input(spoken,a);CastingServer.input(spoken,9);
         CastingServer.input(scrambled,7);for(int a:new int[]{4,4,4,0,2})CastingServer.input(scrambled,a);CastingServer.input(scrambled,9);
         h.assertTrue(CastingServer.snapshot(spoken).total()==RecipeGameTests.spell("Earthquake").castTicks(),"The ritual order calls the ultimate");
-        h.assertTrue(CastingServer.snapshot(scrambled).total()==RecipeGameTests.spell("Heavy Greater Magma").castTicks(),"A scrambled order collapses to the four-element spell");
+        h.assertTrue(CastingServer.snapshot(scrambled).total()==RecipeRegistry.fusion(RecipeGameTests.spell("Earthquake").formula()).castTicks(),"A scrambled order casts the plain fusion");
         h.succeed();
     }
     @MagicTest

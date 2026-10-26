@@ -31,6 +31,7 @@ public final class SpellVisuals {
             var p=cue.packet;if(p.kind()==SpellVfx.SIGIL || p.from().distanceToSqr(mc.gameRenderer.getMainCamera().position())>128*128)continue;
             var formula=Formula.unpack(p.formula());
             if(fire(formula.key()))flames(mc,cue);
+            if(p.kind()==SpellVfx.ZONE)ambience(mc,cue,formula.key());
             if(cue.age%3!=0)continue;
             var elements=formula.elements();Element element=elements.get((cue.age/3)%elements.size());
             Vec3 point=p.from().lerp(p.to(),Math.min(1,cue.age/(double)Math.max(1,p.ticks())));
@@ -38,6 +39,54 @@ public final class SpellVisuals {
             mc.level.addParticle(particle,point.x,point.y,point.z,0,.025,0);
         }
     }
+    private static void ambience(Minecraft mc,Cue cue,SpellFormula f){
+        var random=mc.level.getRandom();var c=cue.packet.from();
+        double radius=Math.clamp(cue.packet.radius(),.5,12),time=mc.level.getGameTime();
+        int total=Math.max(1,f.size()),rim=Math.clamp((int)(radius*2.5),6,28);
+        for(Element e:Element.values()){
+            int n=f.count(e);if(n==0)continue;
+            int count=Math.max(2,rim*n/total);double share=n/(double)total;
+            switch(e){
+                case FIRE -> {
+                    for(int k=0;k<count;k++){double a=time*.14+k*Math.PI*2/count,h=.35+.3*Math.sin(time*.25+k*1.7),r=radius*(.92+.06*Math.sin(time*.3+k));
+                        mc.level.addParticle(k%3==0?ParticleTypes.SMALL_FLAME:ParticleTypes.FLAME,c.x+Math.cos(a)*r,c.y+h,c.z+Math.sin(a)*r,-Math.sin(a)*.04,.01,Math.cos(a)*.04);}
+                    if(random.nextInt(3)==0){Vec3 q=inside(random,c,radius*.9);mc.level.addParticle(ParticleTypes.LAVA,q.x,q.y+.1,q.z,0,0,0);}
+                    if(n>=3)for(int i=0;i<Math.max(2,(int)(radius*.6*share*2));i++){Vec3 q=inside(random,c,radius);
+                        mc.level.addParticle(random.nextBoolean()?ParticleTypes.FLAME:ParticleTypes.SMALL_FLAME,q.x,q.y+5+random.nextDouble()*3,q.z,(random.nextDouble()-.5)*.05,-.45-random.nextDouble()*.2,(random.nextDouble()-.5)*.05);}
+                }
+                case LIGHTNING -> {
+                    if(random.nextDouble()<.35+.5*share){Vec3 q=random.nextBoolean()?rim(random,c,radius):inside(random,c,radius);
+                        for(int i=0;i<4;i++)mc.level.addParticle(ParticleTypes.ELECTRIC_SPARK,q.x,q.y+.2+random.nextDouble()*.8,q.z,(random.nextDouble()-.5)*.4,random.nextDouble()*.3,(random.nextDouble()-.5)*.4);}
+                }
+                case COLD -> {
+                    for(int i=0;i<count/2;i++){Vec3 q=inside(random,c,radius);double a=Math.atan2(q.z-c.z,q.x-c.x);
+                        mc.level.addParticle(ParticleTypes.SNOWFLAKE,q.x,q.y+2+random.nextDouble()*2,q.z,-Math.sin(a)*.06,-.04,Math.cos(a)*.06);}
+                }
+                case WATER -> {
+                    for(int i=0;i<count/2;i++){Vec3 q=inside(random,c,radius);mc.level.addParticle(ParticleTypes.FALLING_WATER,q.x,q.y+3+random.nextDouble()*2,q.z,0,0,0);}
+                    if(random.nextInt(2)==0){Vec3 q=rim(random,c,radius);mc.level.addParticle(ParticleTypes.SPLASH,q.x,q.y+.1,q.z,0,.1,0);}
+                }
+                case EARTH -> {
+                    for(int i=0;i<count/3+1;i++){Vec3 q=rim(random,c,radius*(.7+random.nextDouble()*.3));
+                        mc.level.addParticle(new BlockParticleOption(ParticleTypes.BLOCK,net.minecraft.world.level.block.Blocks.COARSE_DIRT.defaultBlockState()),q.x,q.y+.1,q.z,0,.15+random.nextDouble()*.15,0);}
+                }
+                case LIFE -> {
+                    for(int k=0;k<3;k++){double t=((time+k*13)%40)/40,a=time*.2+k*Math.PI*2/3,r=radius*.6*(1-t);
+                        mc.level.addParticle(ParticleTypes.HAPPY_VILLAGER,c.x+Math.cos(a)*r,c.y+.2+t*2.5,c.z+Math.sin(a)*r,0,0,0);}
+                }
+                case ARCANE -> {
+                    for(int k=0;k<count/2+1;k++){double a=-time*.1+k*Math.PI*2/(count/2+1),r=radius*.55;
+                        mc.level.addParticle(ParticleTypes.END_ROD,c.x+Math.cos(a)*r,c.y+1.1+.25*Math.sin(time*.2+k),c.z+Math.sin(a)*r,0,0,0);}
+                }
+                case DEATH -> {
+                    if(random.nextInt(2)==0){Vec3 q=inside(random,c,radius);mc.level.addParticle(ParticleTypes.SOUL,q.x,q.y+.2,q.z,0,.04,0);}
+                    for(int i=0;i<count/3+1;i++){Vec3 q=rim(random,c,radius);mc.level.addParticle(ParticleTypes.SMOKE,q.x,q.y+.2,q.z,0,.03,0);}
+                }
+            }
+        }
+    }
+    private static Vec3 inside(net.minecraft.util.RandomSource random,Vec3 c,double radius){double a=random.nextDouble()*Math.PI*2,r=radius*Math.sqrt(random.nextDouble());return c.add(Math.cos(a)*r,0,Math.sin(a)*r);}
+    private static Vec3 rim(net.minecraft.util.RandomSource random,Vec3 c,double radius){double a=random.nextDouble()*Math.PI*2;return c.add(Math.cos(a)*radius,0,Math.sin(a)*radius);}
     private static boolean fire(SpellFormula formula){return formula.fire()>0 && formula.death()==0 && formula.lightning()==0;}
     private static void flames(Minecraft mc,Cue cue){
         var p=cue.packet;var random=mc.level.getRandom();double progress=Math.min(1,cue.age/(double)Math.max(1,p.ticks()));
