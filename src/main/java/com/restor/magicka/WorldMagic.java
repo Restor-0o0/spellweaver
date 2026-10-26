@@ -82,10 +82,15 @@ public final class WorldMagic {
             if (remaining <= 0) break;
             double d = Math.sqrt(bowl(pos,center));
             if (d > edge) continue;
-            if (d > core && new Random(seed^pos.asLong()*0x9E3779B97F4A7C15L).nextDouble() > .75*(edge-d)/(edge-core)) continue;
+            if (d > core && chance(seed,pos) > .75*(edge-d)/(edge-core)) continue;
             int cost=brittle(player,pos)?1:2;
             if (breakBlock(player,pos,ultimate)) remaining-=cost;
         }
+    }
+    private static double chance(long seed, BlockPos pos) {
+        long h = seed ^ pos.asLong()*0x9E3779B97F4A7C15L;
+        h = (h ^ h >>> 30)*0xBF58476D1CE4E5B9L; h = (h ^ h >>> 27)*0x94D049BB133111EBL; h ^= h >>> 31;
+        return (h >>> 11)*0x1.0p-53;
     }
     /** Squared distance with depth counted double, so the hole is a shallow bowl rather than a sphere. */
     private static double bowl(BlockPos pos, Vec3 center) {
