@@ -205,13 +205,24 @@ public final class AuditGameTests {
     }
     @MagicTest(timeoutTicks=80)
     public static void portalNeverDropsIntoAWall(GameTestHelper h){
-        DeathGameTests.floor(h);for(int x=0;x<5;x++)for(int y=2;y<6;y++)h.setBlock(new BlockPos(x,y,4),net.minecraft.world.level.block.Blocks.STONE);
+        DeathGameTests.floor(h);for(int x=0;x<5;x++)for(int y=2;y<6;y++)h.setBlock(new BlockPos(x,y,7),net.minecraft.world.level.block.Blocks.STONE);
         var p=RecipeGameTests.caster(h);p.setPos(h.absoluteVec(new Vec3(1.5,2,.5)));
         SpellRuntime.cast(p,RecipeGameTests.spell("Spark Portal"),false);
         var walker=h.spawnWithNoFreeWill(net.minecraft.world.entity.EntityType.ZOMBIE,new BlockPos(1,2,2));
         h.runAfterDelay(15,()->{
             h.assertTrue(walker.position().distanceToSqr(h.absoluteVec(new Vec3(1.5,2,2.5)))>.5,"The zombie in the gate is carried through");
             h.assertTrue(h.getLevel().noCollision(walker,walker.getBoundingBox()),"The portal never leaves anyone inside blocks");
+            h.succeed();
+        });
+    }
+    @MagicTest(timeoutTicks=60)
+    public static void portalOpensOnTheCeilingItIsAimedAt(GameTestHelper h){
+        DeathGameTests.floor(h);for(int x=0;x<5;x++)for(int z=0;z<6;z++)h.setBlock(new BlockPos(x,7,z),net.minecraft.world.level.block.Blocks.STONE);
+        var p=RecipeGameTests.caster(h);p.setPos(h.absoluteVec(new Vec3(1.5,2,.5)));p.setYRot(0);p.setXRot(-60);
+        SpellRuntime.cast(p,RecipeGameTests.spell("Spark Portal"),false);
+        var walker=h.spawnWithNoFreeWill(net.minecraft.world.entity.EntityType.ZOMBIE,new BlockPos(1,2,3));
+        h.runAfterDelay(4,()->{
+            h.assertTrue(walker.getY()>h.absoluteVec(new Vec3(0,3.5,0)).y,"The far gate hangs on the ceiling instead of dropping to the floor");
             h.succeed();
         });
     }
