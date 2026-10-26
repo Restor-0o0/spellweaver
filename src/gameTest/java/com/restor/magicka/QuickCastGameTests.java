@@ -32,7 +32,7 @@ public final class QuickCastGameTests {
         Check.assertTrue(h,GrimoireState.valid(packed),"Ordered preset passes validation");
         var state=new GrimoireState();state.assign(0,packed);Check.assertTrue(h,state.slot(0)==packed,"Slot keeps the order it was given");
         var plain=RecipeGameTests.spell("Firebomb");
-        Check.assertTrue(h,plain.spokenPacked()==plain.formula().prepared().packed(),"Spells without an incantation are unaffected");
+        Check.assertTrue(h,RecipeRegistry.recipes().stream().filter(d->d.ordered() && !d.ultimate()).anyMatch(d->!d.spoken().equals(d.formula().elements())),"Ordinary spells have their own order too");
         for(var d:RecipeRegistry.recipes())Check.assertTrue(h,Formula.unpack(d.spokenPacked()).key().equals(d.formula()),"Ordering never changes the spell, "+d.name());
         Check.assertTrue(h,CastingServer.spoken(ultimate.formula().prepared()).elements().equals(ultimate.spoken()),"Any stored order is filled as the incantation");
         h.succeed();
@@ -68,7 +68,12 @@ public final class QuickCastGameTests {
         for(var e:ultimate.formula().prepared().elements())CastingServer.input(p,e==Element.DEATH?13:e.ordinal());
         CastingServer.input(p,9);var cast=CastingServer.casting(p);
         Check.assertTrue(h,cast!=null && !cast.id().equals(ultimate.id()),"Hand-typed wrong order never reaches the ultimate");
-        Check.assertTrue(h,cast.formula().size()==ultimate.formula().size()-1,"Broken incantation drops to the lesser spell, got "+cast.name());
+        Check.assertTrue(h,cast.id().equals(RecipeRegistry.fusion(ultimate.formula()).id()),"Wrong order casts the plain fusion, got "+cast.name());
+        var plain=RecipeGameTests.spell("Firebomb");var reversed=new java.util.ArrayList<>(plain.spoken());java.util.Collections.reverse(reversed);
+        if(!reversed.equals(plain.spoken())){
+            var other=RecipeGameTests.caster(h);CastingServer.input(other,7);for(var e:reversed)CastingServer.input(other,e==Element.DEATH?13:e.ordinal());CastingServer.input(other,9);var weak=CastingServer.casting(other);
+            Check.assertTrue(h,weak!=null && weak.id().equals(RecipeRegistry.fusion(plain.formula()).id()),"Named spells also need their order, got "+(weak==null?"nothing":weak.name()));
+        }
         h.succeed();
     }
     @GameTest(template="empty")
@@ -111,7 +116,7 @@ public final class QuickCastGameTests {
         Check.assertTrue(h,RecipeGameTests.spell("Thunder Lance").channeled(),"Four-lightning chain is channeled");Check.assertFalse(h,RecipeGameTests.spell("Pebble").channeled(),"Projectile is instant");
 
         CastingServer.input(p,7);CastingServer.input(p,11);Check.assertTrue(h,CastingServer.snapshot(p).instant(),"Mode toggles on");
-        for(int e:new int[]{1,1,2,6})CastingServer.input(p,e);CastingServer.input(p,9);
+        for(var e:spike.spoken())CastingServer.input(p,e.ordinal());CastingServer.input(p,9);
         var state=CastingServer.snapshot(p);
         Check.assertTrue(h,state.formula()==0 && state.remaining()==0,"Instant cast skips windup");
         h.runAfterDelay(2,()->{
@@ -152,7 +157,7 @@ public final class QuickCastGameTests {
     @GameTest(template="empty",timeoutTicks=100)
     public static void tappedSkybridgeKeepsGrowing(GameTestHelper h){
         var p=RecipeGameTests.caster(h);h.setBlock(new BlockPos(1,1,4),Blocks.STONE);p.setXRot(30);var server=new CastingServer();
-        CastingServer.input(p,7);CastingServer.input(p,11);for(int e:new int[]{4,4,4,6})CastingServer.input(p,e);CastingServer.input(p,9);CastingServer.input(p,12);
+        CastingServer.input(p,7);CastingServer.input(p,11);for(var e:RecipeGameTests.spell("Skybridge").spoken())CastingServer.input(p,e.ordinal());CastingServer.input(p,9);CastingServer.input(p,12);
         Check.assertTrue(h,CastingServer.snapshot(p).channeling(),"Releasing does not cut a growing construction");
         for(int t=1;t<=30;t++)h.runAfterDelay(t,()->server.tick(new TickEvent.PlayerTickEvent(TickEvent.Phase.END,p)));
         h.runAfterDelay(31,()->{

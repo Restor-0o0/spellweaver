@@ -4,6 +4,7 @@
     "fire": 3,
     "arcane": 2
   },
+  "incantation": "17117",
   "name": "Explosion",
   "tier": "Signature",
   "scroll": true,
@@ -13,7 +14,7 @@
   "cast_mode": "instant",
   "delivery": {
     "legend": "explosion",
-    "radius": 8
+    "radius": 16
   },
   "effects": [
     {
@@ -32,8 +33,8 @@
     },
     {
       "type": "destroy_blocks",
-      "budget": 700,
-      "radius": 7
+      "budget": 3000,
+      "radius": 14
     }
   ],
   "self": {
@@ -55,8 +56,8 @@
       },
       {
         "type": "destroy_blocks",
-        "budget": 700,
-        "radius": 7
+        "budget": 3000,
+        "radius": 14
       }
     ]
   },

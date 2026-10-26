@@ -14,7 +14,10 @@ public final class ShapeEditorScreen extends Screen {
     private final long[] bits = MagicNetwork.clientPattern.clone();
     private int cell, gap, gridX, gridTop, panelX, panelY, panelW, panelH;
     private boolean dirty, painting, paintValue;
-    public ShapeEditorScreen(){super(Component.translatable("shape.magicka.title"));}
+    private final Screen parent;
+    public ShapeEditorScreen(){this(null);}
+    public ShapeEditorScreen(Screen parent){super(Component.translatable("shape.magicka.title"));this.parent=parent;}
+    @Override public void onClose(){minecraft.setScreen(parent);}
     @Override protected void init(){
         cell=Mth.clamp((width-72)/(SIZE*SIZE+3),9,20);gap=Math.max(4,cell/2);
         int span=SIZE*(SIZE*cell)+(SIZE-1)*gap;
@@ -24,15 +27,15 @@ public final class ShapeEditorScreen extends Screen {
         int layerRow=gridTop+SIZE*cell+8, layerWidth=SIZE*cell, half=layerWidth/2;
         for(int i=0;i<SIZE;i++){
             int layer=i, lx=gridX+i*(layerWidth+gap);
-            addRenderableWidget(new SpellbookScreen.BookButton(lx,layerRow,half-1,14,Component.literal("■"),b->layer(layer,true),false))
+            addRenderableWidget(new BookWidgets.BookButton(lx,layerRow,half-1,14,Component.literal("■"),b->layer(layer,true),false))
                     .setTooltip((Component.translatable("shape.magicka.layer_fill")));
-            addRenderableWidget(new SpellbookScreen.BookButton(lx+half+1,layerRow,layerWidth-half-1,14,Component.literal("□"),b->layer(layer,false),false))
+            addRenderableWidget(new BookWidgets.BookButton(lx+half+1,layerRow,layerWidth-half-1,14,Component.literal("□"),b->layer(layer,false),false))
                     .setTooltip((Component.translatable("shape.magicka.layer_clear")));
         }
         int wide=(span-16)/3, bottom=layerRow+20;
-        addRenderableWidget(new SpellbookScreen.BookButton(gridX,bottom,wide,18,Component.translatable("shape.magicka.clear"),b->all(false),false));
-        addRenderableWidget(new SpellbookScreen.BookButton(gridX+wide+8,bottom,wide,18,Component.translatable("shape.magicka.cube"),b->all(true),false));
-        addRenderableWidget(new SpellbookScreen.BookButton(gridX+2*wide+16,bottom,span-2*wide-16,18,Component.translatable("shape.magicka.hollow"),b->hollow(),false));
+        addRenderableWidget(new BookWidgets.BookButton(gridX,bottom,wide,18,Component.translatable("shape.magicka.clear"),b->all(false),false));
+        addRenderableWidget(new BookWidgets.BookButton(gridX+wide+8,bottom,wide,18,Component.translatable("shape.magicka.cube"),b->all(true),false));
+        addRenderableWidget(new BookWidgets.BookButton(gridX+2*wide+16,bottom,span-2*wide-16,18,Component.translatable("shape.magicka.hollow"),b->hollow(),false));
     }
     private void changed(){dirty=true;MagicNetwork.clientPattern=bits.clone();}
     private void layer(int y,boolean value){for(int x=0;x<SIZE;x++)for(int z=0;z<SIZE;z++)ShapePattern.set(bits,x,y,z,value);changed();}
@@ -95,7 +98,7 @@ public final class ShapeEditorScreen extends Screen {
                 g.renderOutline(cx,cy,cell,cell,hover?MagicUi.GOLD:filled?0xFFC9A96E:0xFF343040);
             }
         }
-        super.render(g.pose(),mouseX,mouseY,partialTick);SpellbookScreen.BookButton.renderTips(this,g,mouseX,mouseY);
+        super.render(g.pose(),mouseX,mouseY,partialTick);BookWidgets.BookButton.renderTips(this,g,mouseX,mouseY);
     }
     @Override public boolean keyPressed(int key,int scan,int modifiers){
         if(MagicClient.shapeMatches(key,scan)){onClose();return true;}

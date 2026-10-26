@@ -45,6 +45,11 @@ public final class GuiGraphics extends GuiComponent {
         RenderSystem.setShaderTexture(0, texture);
         blit(pose, x, y, u, v, w, h);
     }
+    public void blit(net.minecraft.resources.ResourceLocation texture, int x, int y, float u, float v, int w, int h, int texWidth, int texHeight) {
+        RenderSystem.setShaderTexture(0, texture);
+        blit(pose, x, y, u, v, w, h, texWidth, texHeight);
+    }
+    public void setColor(float r, float g, float b, float a) { RenderSystem.setShaderColor(r, g, b, a); }
     public void drawWordWrap(Font font, FormattedText text, int x, int y, int width, int color) {
         for (FormattedCharSequence line : font.split(text, width)) { font.draw(pose, line, x, y, color); y += font.lineHeight; }
     }

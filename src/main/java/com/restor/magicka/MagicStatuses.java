@@ -102,7 +102,7 @@ public final class MagicStatuses {
         }
         if (now % 20 == 0 && has(entity,Status.WITHERING) && !entity.isInvertedHealAndHarm()) {
             entity.hurt(net.minecraft.world.damagesource.DamageSource.WITHER,.5F+.5F*tag.getInt("WITHERING_strength"));
-            if (entity.level instanceof net.minecraft.server.level.ServerLevel level) level.sendParticles(net.minecraft.core.particles.ParticleTypes.SMOKE,entity.getX(),entity.getY()+entity.getBbHeight()*.6,entity.getZ(),4,.25,.3,.25,.01);
+            if (entity.level instanceof net.minecraft.server.level.ServerLevel level) EpicMagic.fx(level,net.minecraft.core.particles.ParticleTypes.SMOKE,entity.getX(),entity.getY()+entity.getBbHeight()*.6,entity.getZ(),4,.25,.3,.25,.01);
         }
     }
 }

@@ -91,7 +91,7 @@ public final class SupportMagic {
         var found = caster.getLevel().getEntitiesOfClass(LivingEntity.class, new AABB(point, point).inflate(r),
                 e -> e != caster && e.isAlive() && !e.isSpectator() && e.distanceToSqr(point) <= r * r && EffectGraph.canHarm(caster, e));
         for (var entity : found) entity.addEffect(new MobEffectInstance(MobEffects.GLOWING, Mth.clamp(ticks, 20, 6000), 0, false, false), caster);
-        caster.getLevel().sendParticles(ParticleTypes.FLASH, point.x, point.y + 1, point.z, 1, 0, 0, 0, 0);
+        EpicMagic.fx(caster.getLevel(),ParticleTypes.FLASH, point.x, point.y + 1, point.z, 1, 0, 0, 0, 0);
         caster.getLevel().playSound(null, new BlockPos(point), SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, .6f, 1.8f);
         return found.size();
     }
@@ -108,7 +108,7 @@ public final class SupportMagic {
             if (MinecraftForge.EVENT_BUS.post(new BlockEvent.BreakEvent(level, pos, state, caster))) continue;
             if (level.removeBlock(pos, false)) {
                 doused++;
-                level.sendParticles(ParticleTypes.CLOUD, pos.getX() + .5, pos.getY() + .3, pos.getZ() + .5, 3, .2, .1, .2, .01);
+                EpicMagic.fx(level,ParticleTypes.CLOUD, pos.getX() + .5, pos.getY() + .3, pos.getZ() + .5, 3, .2, .1, .2, .01);
             }
         }
         for (var entity : level.getEntitiesOfClass(LivingEntity.class, new AABB(point, point).inflate(radius), LivingEntity::isAlive)) {

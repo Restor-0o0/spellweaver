@@ -6,8 +6,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import java.util.*;
-import java.util.function.Function;
-import java.util.function.Predicate;
 
 public final class SpellScrolls {
     private static final String TAG = "magicka_scrolls";
@@ -47,22 +45,14 @@ public final class SpellScrolls {
     public static SpellDefinition resolve(Player player, SpellDefinition spell) {
         Set<String> known = known(player);
         boolean all = MagicConfig.UNLOCK_ALL.get();
-        return substitute(spell, s -> open(player, s, known, all), RecipeRegistry::resolve);
+        return open(player, spell, known, all) ? spell : RecipeRegistry.fusion(spell.formula());
     }
 
     public static SpellDefinition clientResolve(Player player, SpellFormula formula) {
-        return substitute(RecipeRegistry.clientResolve(formula), s -> clientOpen(player, s), RecipeRegistry::clientResolve);
+        var spell = RecipeRegistry.clientResolve(formula);
+        return clientOpen(player, spell) ? spell : RecipeRegistry.fusion(formula);
     }
 
-    /** A locked recipe falls back to the recipe without its rarest element, the one generic fusions are built from. */
-    private static SpellDefinition substitute(SpellDefinition spell, Predicate<SpellDefinition> open, Function<SpellFormula, SpellDefinition> lookup) {
-        while (!open.test(spell) && spell.formula().size() > 1) {
-            SpellFormula formula = spell.formula();
-            Element rarest = Arrays.stream(Element.values()).filter(e -> formula.count(e) > 0).min(Comparator.comparingInt(formula::count)).orElseThrow();
-            spell = lookup.apply(formula.without(rarest));
-        }
-        return spell;
-    }
 
     public static void acceptClient(boolean all, List<String> known) { clientAll = all; client = Set.copyOf(known); }
 

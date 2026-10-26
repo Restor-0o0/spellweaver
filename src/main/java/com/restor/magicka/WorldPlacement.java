@@ -66,7 +66,7 @@ public final class WorldPlacement {
                     MagicConfig.LIFETIME.get() ? world.getGameTime() + lifetime : Long.MAX_VALUE, floating);
         }
         world.updateNeighborsAt(pos, state.getBlock());
-        world.sendParticles(ParticleTypes.ENCHANT, pos.getX() + 0.5, pos.getY() + 0.8, pos.getZ() + 0.5, 8, 0.3, 0.3, 0.3, 0.03);
+        EpicMagic.fx(world,ParticleTypes.ENCHANT, pos.getX() + 0.5, pos.getY() + 0.8, pos.getZ() + 0.5, 8, 0.3, 0.3, 0.3, 0.03);
         return true;
     }
     static boolean replaceable(BlockState old, boolean solid) {
