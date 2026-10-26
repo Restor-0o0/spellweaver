@@ -2,6 +2,12 @@
 
 ## 1.4.0 — the mage's path
 
+- A new Grimoire: a leather-bound book that opens with its cover and turns real pages. The first chapters teach casting and the fusion rules; the spells follow, searchable by name, page number or tag and filterable by element, tag or formula length. Drag a spell onto one of the four quick slots. Stat tuning is a creative-only page at the back.
+- Spell pages show a short description; hold Shift for the full one.
+- Fusions: every element set without its own spell now fuses by clear rules. The lead element picks the form, every element adds its mechanic, pairs react. The 940 generated look-alike variants are gone, and the 346 hand-made recipes stay.
+- Lingering zones show what they are made of: fire circles the rim, snow swirls, water drips, sparks crackle.
+- Spell effects are visible from 128 blocks away, so long-range casts no longer look empty.
+- Deluge floods the aimed spot reliably, even on slopes and uneven ground.
 - Mage level: casting, magic kills and reading new scrolls give mage experience. New mages weave three-element formulas; four elements open at level 3, five at level 8. Each level adds 1% cast speed and 1% spell damage. Creative mode is never limited.
 - Any hostile mob from any mod can drop a spell scroll (0.5%; witches, evokers and other spellcasters 5%). Mobs with 150+ max health count as bosses and always drop one.
 - Nether scrolls lean towards fire, End scrolls towards arcane, and both carry more ultimates.

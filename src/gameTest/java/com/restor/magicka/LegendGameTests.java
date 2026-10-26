@@ -99,7 +99,7 @@ public final class LegendGameTests {
         });
     }
 
-    @GameTest(template="empty", timeoutTicks=120)
+    @GameTest(template="empty", timeoutTicks=120, batch="legend_blast")
     public static void explosionCostsEveryElement(GameTestHelper h) {
         DeathGameTests.floor(h);
         var p = RecipeGameTests.caster(h);

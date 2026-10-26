@@ -34,7 +34,7 @@ public final class SpellVfx {
         var elements=s.formula().elements().stream().distinct().toList();int per=Math.max(1,Math.min(24,count)/elements.size());
         for(Element e:elements){
             ParticleOptions type=switch(e){case FIRE->ParticleTypes.FLAME;case WATER->ParticleTypes.SPLASH;case COLD->ParticleTypes.SNOWFLAKE;case LIGHTNING->ParticleTypes.ELECTRIC_SPARK;case EARTH->new BlockParticleOption(ParticleTypes.BLOCK,net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());case LIFE->ParticleTypes.HAPPY_VILLAGER;case ARCANE->ParticleTypes.END_ROD;case DEATH->ParticleTypes.SOUL;};
-            p.serverLevel().sendParticles(type,point.x,point.y,point.z,per,spread,spread,spread,.025);
+            EpicMagic.fx(p.serverLevel(),type,point.x,point.y,point.z,per,spread,spread,spread,.025);
         }
     }
     public static void sound(ServerPlayer p,SpellDefinition s,Vec3 point,boolean impact){

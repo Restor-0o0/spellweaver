@@ -54,10 +54,17 @@ public record SpellDefinition(ResourceLocation id, SpellFormula formula, String 
     public static String string(JsonObject json, String key, String fallback) { return json.has(key) ? json.get(key).getAsString() : fallback; }
     public String incantation() { return string(source,"incantation",""); }
     public boolean ultimate() { return !incantation().isEmpty(); }
-    /** Ultimates are only unlocked by typing their elements in a fixed order; other spells accept any order. */
+    /** Generic fusions answer to their elements in any order; every named spell is one exact sequence. */
+    public boolean ordered() { return !tier.equals("Generic Fusion"); }
+    /** Ultimates author a hard sequence, other named spells shuffle their elements by id. */
     public List<Element> spoken() {
         String order = incantation();
-        if (order.isEmpty()) return formula.elements();
+        if (!ordered()) return formula.elements();
+        if (order.isEmpty()) {
+            var elements = new ArrayList<>(formula.elements());
+            java.util.Collections.shuffle(elements, new java.util.Random(id.toString().hashCode()));
+            return elements;
+        }
         var elements = new ArrayList<Element>();
         for (int i = 0; i < order.length(); i++) elements.add(Element.values()[order.charAt(i) - '1']);
         return elements;
@@ -88,9 +95,22 @@ public record SpellDefinition(ResourceLocation id, SpellFormula formula, String 
         return Math.clamp(value, 0, 72000);
     }
     public String langKey() { return "spell." + id.getNamespace() + "." + id.getPath(); }
-    public net.minecraft.network.chat.MutableComponent displayName() { return text("", name); }
+    public net.minecraft.network.chat.MutableComponent displayName() {
+        if (!source.has("fusion")) return text("", name);
+        var parts = net.minecraft.network.chat.Component.literal("");
+        for (Element e : Element.values()) {
+            int n = formula.count(e);
+            if (n == 0) continue;
+            if (!parts.getSiblings().isEmpty()) parts.append(" · ");
+            parts.append(net.minecraft.network.chat.Component.translatable(e.key()));
+            if (n > 1) parts.append(" ×" + n);
+        }
+        return net.minecraft.network.chat.Component.translatable("spell.magicka.fusion", parts);
+    }
     public net.minecraft.network.chat.MutableComponent primaryDescription() { return text(".desc", primaryText); }
     public net.minecraft.network.chat.MutableComponent selfDescription() { return text(".self", selfText); }
+    public net.minecraft.network.chat.MutableComponent primaryBrief() { return net.minecraft.network.chat.Component.translatableWithFallback(langKey() + ".brief", primaryDescription().getString().replace("%", "%%")); }
+    public net.minecraft.network.chat.MutableComponent selfBrief() { return net.minecraft.network.chat.Component.translatableWithFallback(langKey() + ".self_brief", selfDescription().getString().replace("%", "%%")); }
     private net.minecraft.network.chat.MutableComponent text(String suffix, String fallback) {
         return net.minecraft.network.chat.Component.translatableWithFallback(langKey() + suffix, fallback.replace("%", "%%"));
     }
