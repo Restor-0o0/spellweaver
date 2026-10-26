@@ -11,7 +11,7 @@ import java.util.*;
 public final class EffectGraph {
     private static final Set<String> TYPES = Set.of("deal_damage","heal","apply_status","remove_status","apply_force","set_wet","modify_temperature","add_charge",
             "spawn_projectile","spawn_zone","create_construction","destroy_blocks","heave_blocks","chain_targets","delay","conditional","revive","grow_plants","brittle_terrain","drain_life","summon_undead","raise_dead",
-            "apply_effect","polymorph","place_light","light_path","light_ring","place_glowstone","reveal","extinguish");
+            "apply_effect","polymorph","place_light","light_path","light_ring","place_glowstone","reveal","extinguish","thermal_shock","rebirth","ignite_ground");
     public static void validate(JsonObject node, int depth) {
         String type = text(node,"type","");
         if (!TYPES.contains(type) || depth > 6) throw new IllegalArgumentException("Invalid effect graph node " + type);
@@ -81,9 +81,20 @@ public final class EffectGraph {
                     target.push(direction.x*amount,number(node,"lift",0),direction.z*amount); target.syncVelocity = true;
                 }
                 case "conditional" -> {
-                    boolean passes = switch(text(node,"condition","")) { case "wet" -> MagicStatuses.has(target,MagicStatuses.Status.WET); case "was_frozen","brittle" -> frozen; case "self" -> self; default -> false; };
+                    boolean passes = switch(text(node,"condition","")) { case "wet" -> MagicStatuses.has(target,MagicStatuses.Status.WET); case "was_frozen","brittle" -> frozen; case "self" -> self;
+                        case "low_health" -> target.getHealth() < target.getMaxHealth()*.2F; case "ally" -> ally(caster,target); case "undead" -> target.isInvertedHealAndHarm(); default -> false; };
                     if (passes) damage += executeEntity(caster,target,spell,children(node),origin,self,frozen);
                 }
+                case "thermal_shock" -> {
+                    if (!canHarm(caster,target)) break;
+                    if (MagicStatuses.has(target,MagicStatuses.Status.BURNING) || MagicStatuses.has(target,MagicStatuses.Status.FROZEN)) {
+                        MagicStatuses.remove(target,MagicStatuses.Status.BURNING); MagicStatuses.remove(target,MagicStatuses.Status.FROZEN);
+                        damage += (float)amount;
+                        if (target.level() instanceof net.minecraft.server.level.ServerLevel level) EpicMagic.fx(level,net.minecraft.core.particles.ParticleTypes.EXPLOSION,target.getX(),target.getY()+target.getBbHeight()*.5,target.getZ(),1,0,0,0,0);
+                    }
+                    MagicStatuses.apply(target,MagicStatuses.Status.BRITTLE,ticks,1);
+                }
+                case "rebirth" -> { if (canHarm(caster,target) && !(target instanceof Player)) FusionRules.markRebirth(caster,target,ticks); }
                 case "delay" -> SpellRuntime.delay(caster,Math.clamp((int)number(node,"ticks",20),1,1200), () -> {
                     if (target.isAlive() && target.level() == caster.level()) entity(caster,target,spell,children(node),origin,self);
                 });
@@ -111,6 +122,7 @@ public final class EffectGraph {
             case "place_glowstone" -> SupportMagic.glowstone(caster,point,number(node,"offset_y",0));
             case "reveal" -> SupportMagic.reveal(caster,point,number(node,"radius",24),(int)number(node,"duration_ticks",600));
             case "extinguish" -> SupportMagic.extinguish(caster,point,number(node,"radius",5));
+            case "ignite_ground" -> WorldMagic.ignite(caster,point,number(node,"radius",2));
             case "revive" -> RevivalManager.revive(caster,point,spell.number("radius",3),(float)number(node,"health_fraction",.3));
             case "create_construction" -> { if (allowSpawn) MagicConstructionManager.start(caster,spell,self,point); }
             case "spawn_zone" -> { if (allowSpawn) SpellRuntime.zone(caster,spell,point,(int)number(node,"duration_ticks",100),number(node,"radius",2),false,false); }

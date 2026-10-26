@@ -130,7 +130,7 @@ public final class SpellRuntime {
     static void particles(ServerPlayer p, SpellDefinition s, Vec3 point, int count, double spread) {
         if (!p.level().hasChunkAt(BlockPos.containing(point))) return;
         int color = s.formula().elements().getFirst().color;
-        p.level().sendParticles(new DustParticleOptions(net.minecraft.util.ARGB.colorFromFloat(1f,((color>>16)&255)/255f,((color>>8)&255)/255f,(color&255)/255f),1.1f),
+        EpicMagic.fx(p.level(),new DustParticleOptions(net.minecraft.util.ARGB.colorFromFloat(1f,((color>>16)&255)/255f,((color>>8)&255)/255f,(color&255)/255f),1.1f),
                 point.x,point.y,point.z,count,spread,spread,spread,.02);
         SpellVfx.particles(p,s,point,Math.max(3,count/2),spread);
     }
@@ -202,7 +202,7 @@ public final class SpellRuntime {
         Vec3 tip=struck.isEmpty() || pierce ? end : struck.getFirst().getBoundingBox().getCenter();
         double width=s.number("beam_width",.14), length=hand.distanceTo(tip);
         SpellVfx.cue(p,s,SpellVfx.ARC,hand,tip,width,10);SpellVfx.cue(p,s,SpellVfx.ARC,hand,tip,width*.6,6);
-        for(double d=.5;d<length;d+=1.2){Vec3 at=hand.add(tip.subtract(hand).scale(d/length));p.level().sendParticles(ParticleTypes.ELECTRIC_SPARK,at.x,at.y,at.z,2,.08,.08,.08,.02);}
+        for(double d=.5;d<length;d+=1.2){Vec3 at=hand.add(tip.subtract(hand).scale(d/length));EpicMagic.fx(p.level(),ParticleTypes.ELECTRIC_SPARK,at.x,at.y,at.z,2,.08,.08,.08,.02);}
         for(LivingEntity e:struck) EffectGraph.entity(p,e,s,s.effects(),hand,false);
         Vec3 chainFrom=struck.isEmpty() ? tip : struck.getLast().getBoundingBox().getCenter();
         chainSkip=struck.stream().map(LivingEntity::getUUID).collect(java.util.stream.Collectors.toSet());
@@ -223,7 +223,7 @@ public final class SpellRuntime {
                 var victims=near(p,from,s.number("radius",8)).stream().filter(e->e!=p && EffectGraph.canHarm(p,e))
                         .filter(e->level.clip(new ClipContext(from.add(e.getBoundingBox().getCenter().subtract(from).normalize().scale(1.2)),e.getBoundingBox().getCenter(),ClipContext.Block.COLLIDER,ClipContext.Fluid.NONE,p)).getType()==HitResult.Type.MISS)
                         .sorted(Comparator.comparingDouble(e->e.distanceToSqr(from))).limit(Math.clamp((int)s.number("targets",3),1,64)).toList();
-                level.sendParticles(ParticleTypes.ELECTRIC_SPARK,from.x,from.y,from.z,6,.25,.25,.25,.05);
+                EpicMagic.fx(level,ParticleTypes.ELECTRIC_SPARK,from.x,from.y,from.z,6,.25,.25,.25,.05);
                 for(var e:victims){SpellVfx.cue(p,s,SpellVfx.ARC,from,e.getBoundingBox().getCenter(),.14,10);EffectGraph.entity(p,e,s,s.effects(),from,false);}
                 if(!victims.isEmpty())level.playSound(null,from.x,from.y,from.z,net.minecraft.sounds.SoundEvents.LIGHTNING_BOLT_IMPACT,net.minecraft.sounds.SoundSource.PLAYERS,.5f,1.8f);
                 return false;
@@ -287,7 +287,7 @@ public final class SpellRuntime {
             if(slow)for(var projectile:p.level().getEntitiesOfClass(net.minecraft.world.entity.projectile.Projectile.class,new AABB(point,point).inflate(radius)))projectile.setDeltaMovement(projectile.getDeltaMovement().scale(.8));
             if(age++%10!=0)return false;
             SpellVfx.cue(p,s,mine?SpellVfx.MINE:SpellVfx.ZONE,point,point,radius,Math.min(12,remaining+1));
-            if(s!=null)particles(p,s,point,6,radius*.5);else p.level().sendParticles(ParticleTypes.SPLASH,point.x,point.y+.05,point.z,8,radius*.5,.02,radius*.5,0);
+            if(s!=null)particles(p,s,point,6,radius*.5);else EpicMagic.fx(p.level(),ParticleTypes.SPLASH,point.x,point.y+.05,point.z,8,radius*.5,.02,radius*.5,0);
             var victims=near(p,point,radius);
             if(s!=null && s.delivery().has("grasp"))hands(p,point,radius,victims);
             if(mine){if(age>20 && victims.stream().anyMatch(e->e!=p && EffectGraph.canHarm(p,e))){impact(p,s,point,radius,self,true);return true;}return false;}
@@ -304,11 +304,11 @@ public final class SpellRuntime {
         var level=p.level();var random=level.getRandom();
         BlockPos below=BlockPos.containing(point).below();var ground=level.getBlockState(below).isAir()?net.minecraft.world.level.block.Blocks.DIRT.defaultBlockState():level.getBlockState(below);
         for(int i=0;i<6;i++){double a=random.nextDouble()*Math.PI*2,r=Math.sqrt(random.nextDouble())*radius;Vec3 at=point.add(Math.cos(a)*r,.05,Math.sin(a)*r);
-            level.sendParticles(new net.minecraft.core.particles.BlockParticleOption(ParticleTypes.BLOCK,ground),at.x,at.y,at.z,4,.15,.05,.15,.1);
-            level.sendParticles(ParticleTypes.SOUL,at.x,at.y+.2,at.z,1,.05,.2,.05,.02);}
+            EpicMagic.fx(level,new net.minecraft.core.particles.BlockParticleOption(ParticleTypes.BLOCK,ground),at.x,at.y,at.z,4,.15,.05,.15,.1);
+            EpicMagic.fx(level,ParticleTypes.SOUL,at.x,at.y+.2,at.z,1,.05,.2,.05,.02);}
         for(var e:victims){if(e==p || !EffectGraph.canHarm(p,e))continue;Vec3 feet=e.position();
-            level.sendParticles(ParticleTypes.SCULK_SOUL,feet.x,feet.y+.3,feet.z,3,e.getBbWidth()*.4,.3,e.getBbWidth()*.4,.02);
-            level.sendParticles(new net.minecraft.core.particles.BlockParticleOption(ParticleTypes.BLOCK,ground),feet.x,feet.y+.1,feet.z,10,e.getBbWidth()*.5,.1,e.getBbWidth()*.5,.15);}
+            EpicMagic.fx(level,ParticleTypes.SCULK_SOUL,feet.x,feet.y+.3,feet.z,3,e.getBbWidth()*.4,.3,e.getBbWidth()*.4,.02);
+            EpicMagic.fx(level,new net.minecraft.core.particles.BlockParticleOption(ParticleTypes.BLOCK,ground),feet.x,feet.y+.1,feet.z,10,e.getBbWidth()*.5,.1,e.getBbWidth()*.5,.15);}
         if(random.nextInt(3)==0)level.playSound(null,BlockPos.containing(point),net.minecraft.sounds.SoundEvents.ROOTED_DIRT_BREAK,net.minecraft.sounds.SoundSource.PLAYERS,.8f,.6f);
     }
     public static void zone(ServerPlayer p,SpellDefinition s,Vec3 point,int ticks,double radius,boolean self,boolean mine){
@@ -346,6 +346,7 @@ public final class SpellRuntime {
             float damage=amount*(MagicStatuses.has(victim,MagicStatuses.Status.WET)?2:1);
             if(victim instanceof Player)damage*=MagicConfig.PLAYER_DAMAGE.get().floatValue();
             com.restor.magicka.enemy.MagicEnemies.hurt(victim,p.damageSources().indirectMagic(p,p),damage,p,s,false);MagicStatuses.charge(victim,40);
+            if(s.delivery().has("plasma"))MagicStatuses.apply(victim,MagicStatuses.Status.BURNING,60,1);
         }
     }
     static void sustain(ServerPlayer p,java.util.function.IntPredicate step){add(new Active(){int age;public ServerPlayer caster(){return p;}public boolean tick(){return step.test(age++);}});}

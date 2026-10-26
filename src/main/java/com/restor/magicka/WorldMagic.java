@@ -102,7 +102,7 @@ public final class WorldMagic {
         var world = player.level();
         if (!breakBlock(player,pos,true)) return;
         world.levelEvent(2001,pos,Block.getId(Blocks.SPAWNER.defaultBlockState()));
-        world.sendParticles(ParticleTypes.SOUL,pos.getX()+.5,pos.getY()+.5,pos.getZ()+.5,24,.4,.4,.4,.04);
+        EpicMagic.fx(world,ParticleTypes.SOUL,pos.getX()+.5,pos.getY()+.5,pos.getZ()+.5,24,.4,.4,.4,.04);
         world.playSound(null,pos,net.minecraft.sounds.SoundEvents.RESPAWN_ANCHOR_DEPLETE.value(),net.minecraft.sounds.SoundSource.BLOCKS,1.2F,.7F);
     }
     public static void temperature(ServerPlayer player, Vec3 point, double amount, SpellDefinition spell) {
@@ -114,7 +114,7 @@ public final class WorldMagic {
             if (amount > 0) {
                 if (state.is(MagicBlocks.ROOT.get())) { burnRoots(player,pos); budget--; }
                 else if (state.is(MagicBlocks.ICE.get()) || state.is(Blocks.ICE) || state.is(Blocks.PACKED_ICE) || state.is(Blocks.SNOW) || state.is(Blocks.SNOW_BLOCK)) {
-                    if (breakBlock(player,pos)) { budget--; world.sendParticles(ParticleTypes.SPLASH,pos.getX()+.5,pos.getY()+.5,pos.getZ()+.5,8,.3,.3,.3,.02); }
+                    if (breakBlock(player,pos)) { budget--; EpicMagic.fx(world,ParticleTypes.SPLASH,pos.getX()+.5,pos.getY()+.5,pos.getZ()+.5,8,.3,.3,.3,.02); }
                 } else if (world.getBlockEntity(pos) instanceof MagicBlocks.MagicBlockEntity magic) {
                     if(NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.block.BreakBlockEvent(world,pos,state,player)).isCanceled())continue;
                     magic.integrity = Math.max(1,magic.integrity-.5F); magic.heat = Math.min(200,magic.heat+(float)amount); magic.setChanged();
@@ -141,6 +141,15 @@ public final class WorldMagic {
             BlockPos pos = queue.remove();
             if (!seen.add(pos) || !caster.level().hasChunkAt(pos) || !caster.level().getBlockState(pos).is(MagicBlocks.ROOT.get()) || !breakBlock(caster,pos)) continue;
             budget--; for (Direction direction : Direction.values()) queue.add(pos.relative(direction));
+        }
+    }
+    public static void ignite(ServerPlayer player, Vec3 point, double radius) {
+        var world = player.level(); BlockPos center = BlockPos.containing(point); int r = (int)Math.ceil(radius);
+        for (BlockPos p : BlockPos.betweenClosed(center.offset(-r,-2,-r),center.offset(r,2,r))) {
+            if (p.distSqr(center) > radius*radius+4 || world.getRandom().nextFloat() > .6f) continue;
+            BlockPos pos = p.immutable();
+            if (world.getBlockState(pos).isAir() && world.getBlockState(pos.below()).isFaceSturdy(world,pos.below(),Direction.UP) && WorldPlacement.allowed(player,pos))
+                world.setBlockAndUpdate(pos,BaseFireBlock.getState(world,pos));
         }
     }
     public static void brittle(ServerPlayer player, Vec3 point, double radius) {

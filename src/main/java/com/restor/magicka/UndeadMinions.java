@@ -74,7 +74,7 @@ public final class UndeadMinions {
         if (!level.addFreshEntity(mob)) { MINIONS.remove(mob.getUUID()); return false; }
         RISING.put(mob, at);
         trim(owner);
-        level.sendParticles(ParticleTypes.LARGE_SMOKE, at.x, at.y + .1, at.z, 8, .4, .1, .4, .01);
+        EpicMagic.fx(level,ParticleTypes.LARGE_SMOKE, at.x, at.y + .1, at.z, 8, .4, .1, .4, .01);
         level.playSound(null, at.x, at.y, at.z, SoundEvents.ZOMBIE_VILLAGER_CURE, SoundSource.HOSTILE, .5f, .6f);
         level.playSound(null, at.x, at.y, at.z, SoundEvents.ROOTED_DIRT_BREAK, SoundSource.HOSTILE, 1f, .7f);
         return true;
@@ -111,19 +111,19 @@ public final class UndeadMinions {
         double y = Math.min(at.y, mob.getY() + mob.getBbHeight() / RISE_TICKS);
         mob.setPos(at.x, y, at.z);
         var ground = level.getBlockState(BlockPos.containing(at).below());
-        if (!ground.isAir()) level.sendParticles(new net.minecraft.core.particles.BlockParticleOption(ParticleTypes.BLOCK, ground), at.x, at.y + .1, at.z, 6, .3, .05, .3, .1);
+        if (!ground.isAir()) EpicMagic.fx(level,new net.minecraft.core.particles.BlockParticleOption(ParticleTypes.BLOCK, ground), at.x, at.y + .1, at.z, 6, .3, .05, .3, .1);
         if (y < at.y) return;
         RISING.remove(mob);
         mob.noPhysics = false;
         mob.setNoAi(false);
-        level.sendParticles(ParticleTypes.SOUL, at.x, at.y + .5, at.z, 16, .35, .6, .35, .02);
+        EpicMagic.fx(level,ParticleTypes.SOUL, at.x, at.y + .5, at.z, 16, .35, .6, .35, .02);
     }
 
     private static void vanish(Mob mob) {
         RISING.remove(mob);
         MINIONS.remove(mob.getUUID());
         if (mob.level() instanceof ServerLevel level && mob.isAlive())
-            level.sendParticles(ParticleTypes.SOUL, mob.getX(), mob.getY() + .8, mob.getZ(), 12, .3, .5, .3, .03);
+            EpicMagic.fx(level,ParticleTypes.SOUL, mob.getX(), mob.getY() + .8, mob.getZ(), 12, .3, .5, .3, .03);
         mob.discard();
     }
 
