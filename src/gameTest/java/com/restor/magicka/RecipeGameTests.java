@@ -167,6 +167,18 @@ public final class RecipeGameTests {
         RecipeRegistry.resetClient();h.succeed();
     }
     @GameTest(template="empty")
+    public static void blastsLeaveAShallowBowlWithACrackedRim(GameTestHelper h){
+        for(int x=0;x<10;x++)for(int z=0;z<10;z++)for(int y=1;y<7;y++)h.setBlock(new BlockPos(x,y,z),Blocks.STONE);
+        var node=new com.google.gson.JsonObject();node.addProperty("type","destroy_blocks");node.addProperty("budget",300);node.addProperty("radius",4);
+        EffectGraph.world(caster(h),spell("Pebble"),List.of(node),h.absoluteVec(new Vec3(5,7,5)),false,false);
+        h.assertBlockPresent(Blocks.AIR,new BlockPos(4,6,4));
+        h.assertBlockPresent(Blocks.STONE,new BlockPos(4,3,4));
+        int rim=0,broken=0;
+        for(int x=0;x<10;x++)for(int z=0;z<10;z++){double d=Math.hypot(x+.5-5,z+.5-5);if(d<3.6 || d>4.6)continue;rim++;if(h.getBlockState(new BlockPos(x,6,z)).isAir())broken++;}
+        h.assertTrue(broken>0 && broken<rim,"The rim is cracked: some blocks knocked out, some left ("+broken+"/"+rim+")");
+        h.succeed();
+    }
+    @GameTest(template="empty")
     public static void ultimatesShatterSpawners(GameTestHelper h){
         var p=caster(h);BlockPos local=new BlockPos(2,2,2);Vec3 point=h.absoluteVec(new Vec3(2.5,2.5,2.5));
         SpellDefinition quake=spell("Earthquake"),pebble=spell("Pebble");

@@ -72,16 +72,26 @@ public final class WorldMagic {
         int r = Math.clamp((int)Math.ceil(radius),0,16); BlockPos base = BlockPos.containing(center);
         var positions = new ArrayList<BlockPos>();
         BlockPos.betweenClosed(base.offset(-r,-r,-r),base.offset(r,r,r)).forEach(p -> positions.add(p.immutable()));
-        positions.sort(Comparator.comparingDouble(p -> p.distToCenterSqr(center)));
-        double reach = (radius+.8)*(radius+.8);
+        positions.sort(Comparator.comparingDouble(p -> bowl(p,center)));
+        double reach = (radius+.8)*(radius+.8), core = Math.max(1,radius*.65), edge = Math.max(core+.3,radius+.8);
         if (ultimate) for (BlockPos pos : positions)
             if (pos.distToCenterSqr(center) <= reach && player.serverLevel().getBlockState(pos).is(SHATTERABLE)) shatter(player,pos);
         int remaining = Math.clamp(budget,0,4096)*2;
+        long seed = player.level().getGameTime()*31+base.asLong();
         for (BlockPos pos : positions) {
             if (remaining <= 0) break;
+            double d = Math.sqrt(bowl(pos,center));
+            if (d > edge) continue;
+            if (d > core && new Random(seed^pos.asLong()*0x9E3779B97F4A7C15L).nextDouble() > .75*(edge-d)/(edge-core)) continue;
             int cost=brittle(player,pos)?1:2;
-            if (pos.distToCenterSqr(center) <= reach && breakBlock(player,pos,ultimate)) remaining-=cost;
+            if (breakBlock(player,pos,ultimate)) remaining-=cost;
         }
+    }
+    /** Squared distance with depth counted double, so the hole is a shallow bowl rather than a sphere. */
+    private static double bowl(BlockPos pos, Vec3 center) {
+        double dx = pos.getX()+.5-center.x, dy = pos.getY()+.5-center.y, dz = pos.getZ()+.5-center.z;
+        if (dy < -.6) dy = dy*2+.6;
+        return dx*dx+dy*dy+dz*dz;
     }
     private static void shatter(ServerPlayer player, BlockPos pos) {
         var world = player.serverLevel();
