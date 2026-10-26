@@ -103,14 +103,14 @@ public final class RecipeGameTests {
     public static void mineAndHealingObject(GameTestHelper h){
         var p=caster(h);var pig=h.spawnWithNoFreeWill(EntityTypes.PIG,new BlockPos(2,2,2));pig.setHealth(3);
         SpellRuntime.cast(p,spell("Healing Spring"),true);
-        h.runAfterDelay(24,()->{
+        h.succeedWhen(()->{
             h.assertTrue(pig.getHealth()>3,"Healing summon pulses");
             var objects=h.getLevel().getEntitiesOfClass(MagicSummon.class,pig.getBoundingBox().inflate(4));
             h.assertTrue(!objects.isEmpty(),"Healer has a damageable object");var object=objects.getFirst();
             float hp=object.getHealth();object.hurt(p.damageSources().magic(),3);
             h.assertTrue(object.getHealth()==hp-3,"Object loses actual HP");
             h.assertTrue(!object.shouldBeSaved() && object.interact(p,net.minecraft.world.InteractionHand.MAIN_HAND,Vec3.ZERO)==net.minecraft.world.InteractionResult.FAIL,"No persistent orphan or equipment farming");
-            object.hurt(p.damageSources().magic(),100);h.assertTrue(object.isRemoved(),"Object destroyed at zero HP");h.succeed();
+            object.hurt(p.damageSources().magic(),100);h.assertTrue(object.isRemoved(),"Object destroyed at zero HP");
         });
     }
     @MagicTest(timeoutTicks=80)
