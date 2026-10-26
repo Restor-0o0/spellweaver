@@ -101,7 +101,7 @@ public final class RecipeGameTests {
     }
     @MagicTest(timeoutTicks=80)
     public static void mineAndHealingObject(GameTestHelper h){
-        var p=caster(h);var pig=h.spawnWithNoFreeWill(EntityTypes.PIG,new BlockPos(2,2,2));pig.setHealth(3);
+        DeathGameTests.floor(h);var p=caster(h);var pig=h.spawnWithNoFreeWill(EntityTypes.PIG,new BlockPos(2,2,2));pig.setHealth(3);
         SpellRuntime.cast(p,spell("Healing Spring"),true);
         h.succeedWhen(()->{
             h.assertTrue(pig.getHealth()>3,"Healing summon pulses");

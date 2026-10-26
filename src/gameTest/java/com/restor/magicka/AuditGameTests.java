@@ -114,7 +114,7 @@ public final class AuditGameTests {
             h.assertTrue(h.getBlockState(new BlockPos(2,2,2)).isAir(),"Nothing is built in front of the aim point");h.succeed();
         });
     }
-    @MagicTest(timeoutTicks=80)
+    @MagicTest(timeoutTicks=80,batch="slab")
     public static void stoneSlabBridgesGapAhead(GameTestHelper h){
         var p=RecipeGameTests.caster(h);p.setPos(h.absoluteVec(new Vec3(2.5,2,0.5)));h.setBlock(new BlockPos(2,1,0),net.minecraft.world.level.block.Blocks.STONE);
         SpellRuntime.cast(p,RecipeGameTests.spell("Stone Slab"),false);
