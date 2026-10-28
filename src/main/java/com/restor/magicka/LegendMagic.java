@@ -69,6 +69,7 @@ public final class LegendMagic {
             case "purifying_flame" -> LegendLife.purifyingFlame(p,s,self);
             case "cryosleep" -> LegendLife.cryosleep(p,s,self);
             case "phoenix" -> LegendLife.phoenix(p,s,self);
+            case "soul_keeper" -> LegendLife.soulKeeper(p,s,self);
             case "kaioken" -> LegendLife.kaioken(p,s);
             case "protego" -> LegendLife.protego(p,s,self);
             case "zombie_cure" -> LegendLife.zombieCure(p,s,self);
@@ -171,7 +172,7 @@ public final class LegendMagic {
         announce(p,24,"magicka.legend.zoltraak");
         for (int i = 0; i < rays; i++) SpellVfx.attached(p,s.formula(),rayOffset(i,rays),new Vec3(1,0,0),.45,charge+rays*3+4);
         sound(level,p.getEyePosition(),SoundEvents.BEACON_POWER_SELECT,.8f,1.8f);
-        SpellRuntime.repeat(p,charge+rays*3,age -> {
+        SpellRuntime.repeatBeam(p,charge+rays*3,age -> {
             if (age < charge || (age-charge) % 3 != 0) return;
             Vec3 eye = p.getEyePosition(), look = p.getLookAngle(), from = rayOrigin(p,(age-charge)/3,rays);
             LivingEntity marked = SpellRuntime.target(p);
@@ -180,6 +181,7 @@ public final class LegendMagic {
             Vec3 dir = aim.subtract(from).normalize(), to = reach(p,from,dir,range);
             line(level,from,to,.5,dust(0xF4EEFF,.8f));
             SpellVfx.cue(p,s,SpellVfx.BEAM,from,to,.08,6);
+            BeamClash.beam(p,from,to);
             for (LivingEntity e : segment(p,from,to,.35)) if (foe(p,e)) { e.invulnerableTime = 0; EffectGraph.entity(p,e,s,s.effects(),from,false); }
             sound(level,from,SoundEvents.AMETHYST_BLOCK_RESONATE,.9f,1.9f);
             sound(level,from,SoundEvents.ILLUSIONER_CAST_SPELL,.6f,1.6f);
@@ -219,7 +221,7 @@ public final class LegendMagic {
         ServerLevel level = p.serverLevel();
         int charge = 30, fire = 24;
         announce(p,32,"magicka.legend.kamehameha_charge");
-        SpellRuntime.repeat(p,charge+fire,age -> {
+        SpellRuntime.repeatBeam(p,charge+fire,age -> {
             Vec3 dir = self ? new Vec3(0,-1,0) : p.getLookAngle();
             Vec3 hand = self ? p.position().add(0,.1,0) : p.getEyePosition().add(dir.scale(.9)).add(0,-.3,0);
             if (self) p.fallDistance = 0;
@@ -245,7 +247,9 @@ public final class LegendMagic {
             line(level,hand,to,1.2,ParticleTypes.END_ROD);
             EpicMagic.fx(level,ParticleTypes.EXPLOSION,to.x,to.y,to.z,1,.3,.3,.3,0);
             if (t % 2 == 0) SpellVfx.cue(p,s,SpellVfx.BEAM,hand,to,.6,3);
+            BeamClash.beam(p,hand,to);
             if (t % 4 == 0) for (LivingEntity e : segment(p,hand,to,1.3)) if (foe(p,e)) {
+                e.invulnerableTime = 0;
                 EffectGraph.entity(p,e,s,s.effects(),hand,false);
                 e.push(dir.x*.6,.15,dir.z*.6); e.hurtMarked = true;
             }
@@ -467,6 +471,7 @@ public final class LegendMagic {
             }
         });
     }
+    private static final int DAZE_TICKS = 60;
     private static void detonate(ServerPlayer p, SpellDefinition s, Vec3 target, double radius, boolean self) {
         ServerLevel level = p.serverLevel();
         for (int i = 0; i < 48; i++) EpicMagic.fx(level,dust(0xFFF2D0,3f),target.x,target.y+i*.5,target.z,3,.4,.2,.4,0);
@@ -476,12 +481,28 @@ public final class LegendMagic {
         sound(level,target,SoundEvents.GENERIC_EXPLODE.value(),6f,.5f);
         sound(level,target,SoundEvents.LIGHTNING_BOLT_THUNDER,4f,.6f);
         if (self) { p.setDeltaMovement(0,2.2,0); p.hurtMarked = true; MagicStatuses.apply(p,MagicStatuses.Status.SLOW_FALLING,160,1); }
-        SpellRuntime.impact(p,s,target,radius,false,true);
+        for (LivingEntity e : SpellRuntime.near(p,target,radius)) {
+            if (e == p && (self || !MagicConfig.selfHarm())) continue;
+            double falloff = 1-.6*Math.min(1,e.position().distanceTo(target)/radius);
+            List<JsonObject> graph = new ArrayList<>();
+            for (JsonObject n : s.effects()) {
+                JsonObject c = n.deepCopy();
+                if (EffectGraph.text(c,"type","").equals("deal_damage")) c.addProperty("amount",EffectGraph.number(c,"amount",0)*falloff);
+                graph.add(c);
+            }
+            EffectGraph.entity(p,e,s,graph,target,false);
+        }
+        EffectGraph.world(p,s,s.effects(),target,false,true);
+        SpellVfx.cue(p,s,SpellVfx.IMPACT,target,target,radius,12);
         announce(p,64,"magicka.legend.explosion");
-        p.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN,160,3));
-        p.addEffect(new MobEffectInstance(MobEffects.WEAKNESS,160,1));
-        ElementLocks.lock(p,0xFF,160);
-        p.displayClientMessage(Component.translatable("magicka.legend.explosion_spent"),true);
+        double daze = Math.min(radius*1.25,radius+6);
+        Set<LivingEntity> dazed = new HashSet<>(level.getEntitiesOfClass(LivingEntity.class,new AABB(target,target).inflate(daze),LivingEntity::isAlive));
+        dazed.add(p);
+        for (LivingEntity e : dazed) {
+            if (e.position().distanceTo(target) > daze) continue;
+            e.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN,DAZE_TICKS,1));
+            if (e instanceof ServerPlayer player) ElementLocks.stun(player,DAZE_TICKS);
+        }
     }
     private static void circle(ServerLevel level, Vec3 center, double radius, double spin, int color) {
         ParticleOptions glow = dust(color,1.4f);

@@ -27,9 +27,9 @@ public final class RecipeGameTests {
     public static void catalogAndDataOverride(GameTestHelper h){
         int[] counts=new int[6];Set<SpellFormula> keys=new HashSet<>();
         for(var d:RecipeRegistry.recipes()){counts[d.formula().size()]++;keys.add(d.formula());}
-        h.assertTrue(Arrays.equals(counts,new int[]{0,8,36,91,189,22}) && keys.size()==RecipeRegistry.CATALOG_SIZE,"Complete canonical catalog");
+        h.assertTrue(Arrays.equals(counts,new int[]{0,8,36,91,189,23}) && keys.size()==RecipeRegistry.CATALOG_SIZE,"Complete canonical catalog");
         long signatures=RecipeRegistry.recipes().stream().filter(d->d.tier().equals("Signature")).count();
-        h.assertTrue(signatures==206,"All signatures imported, got "+signatures);
+        h.assertTrue(signatures==207,"All signatures imported, got "+signatures);
         var base=spell("Ember");var json=base.source().deepCopy();json.addProperty("cast_ticks",33);json.addProperty("shape","beam");
         var changed=SpellDefinition.parse(ResourceLocation.parse("test:custom_ember"),json);
         h.assertTrue(changed.shape()==SpellShape.BEAM && changed.castTicks()==33 && changed.formula().equals(base.formula()),"New delivery is defined by data alone");

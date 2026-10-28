@@ -215,6 +215,11 @@ public final class CastingServer {
         if (!s.formula.empty()) return Formula.unpack(s.formula.packed());
         return s.last != null && player.serverLevel().getGameTime() - s.lastCast < 100 ? Formula.unpack(s.last.packed()) : new Formula();
     }
+    static void interrupt(ServerPlayer player) {
+        Session s = SESSIONS.get(player.getUUID());
+        if (s != null && s.recipe != null) finishChannel(player, s);
+        SpellRuntime.interrupt(player);
+    }
     static void dissolveLocked(ServerPlayer player) {
         Session s = SESSIONS.get(player.getUUID());
         if (s == null || s.committed() || (ElementLocks.mask(s.formula) & ElementLocks.active(player)) == 0 && s.queued == null) return;

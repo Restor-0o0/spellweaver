@@ -58,7 +58,7 @@ public final class SpellRuntime {
     }
     private static double speed(SpellDefinition s) { return Math.clamp(s.number("speed",.8)*(leads(s,Element.EARTH)?2:1),.1,4); }
     private static double gravity(SpellDefinition s) { return s.number("gravity",0)*(leads(s,Element.EARTH)?.25:1); }
-    private static List<LivingEntity> near(ServerPlayer p, Vec3 point, double radius) {
+    static List<LivingEntity> near(ServerPlayer p, Vec3 point, double radius) {
         return p.serverLevel().getEntitiesOfClass(LivingEntity.class,new AABB(point,point).inflate(radius),
                 e -> e.isAlive() && !e.isSpectator() && e.getBoundingBox().distanceToSqr(point) <= radius*radius);
     }
@@ -70,6 +70,7 @@ public final class SpellRuntime {
         try { cast(p, s, self); } finally { MagicConstructionManager.instantBuilds = false; }
     }
     static void pulse(ServerPlayer p, SpellDefinition s) {
+        Conduction.backfire(p,s,false);
         switch(s.shape()) {
             case BEAM -> beam(p,s,false);
             case SPRAY -> beam(p,s,true);
@@ -79,6 +80,7 @@ public final class SpellRuntime {
     }
     public static void cast(ServerPlayer p, SpellDefinition s, boolean self) {
         OWNERS.put(p.getUUID(),p);
+        Conduction.backfire(p,s,self);
         p.serverLevel().playSound(null,p.blockPosition(),net.minecraft.sounds.SoundEvents.EVOKER_CAST_SPELL,net.minecraft.sounds.SoundSource.PLAYERS,.6f,1.1f);
         if (s.formula().size() >= 5) {
             p.serverLevel().playSound(null,p.blockPosition(),net.minecraft.sounds.SoundEvents.ENDER_DRAGON_GROWL,net.minecraft.sounds.SoundSource.PLAYERS,.7f,1.3f);
@@ -119,7 +121,7 @@ public final class SpellRuntime {
             case CHAIN -> lightning(p,s);
             case TARGETED_EXPLOSION -> impact(p,s,point,s.number("radius",3),false,true);
             case TARGETED_ZONE -> { if(Fissure.handles(s))Fissure.open(p,s,point); zone(p,s,point,(int)s.number("duration_ticks",160),s.number("radius",3),false,false); }
-            case NOVA -> impact(p,s,p.position(),s.number("radius",3),false,true);
+            case NOVA -> impact(p,s,p.position(),s.number("radius",3),false,true,true);
             case DIRECT_TARGET -> { LivingEntity victim=target(p); if(victim != null && victim.distanceToSqr(p.getEyePosition())<=reach*reach) { point=victim.position(); EffectGraph.entity(p,victim,s,s.effects(),p.position(),false); } EffectGraph.world(p,s,s.effects(),point,false,true); }
             case DASH -> dash(p,s);
             case SUMMON_OBJECT -> summon(p,s,point,false);
@@ -134,10 +136,11 @@ public final class SpellRuntime {
                 point.x,point.y,point.z,count,spread,spread,spread,.02);
         SpellVfx.particles(p,s,point,Math.max(3,count/2),spread);
     }
-    public static void impact(ServerPlayer p, SpellDefinition s, Vec3 point, double radius, boolean self, boolean spawn) {
+    public static void impact(ServerPlayer p, SpellDefinition s, Vec3 point, double radius, boolean self, boolean spawn) { impact(p,s,point,radius,self,spawn,false); }
+    private static void impact(ServerPlayer p, SpellDefinition s, Vec3 point, double radius, boolean self, boolean spawn, boolean spareCaster) {
         radius=Math.clamp(radius,.4,32);
         List<JsonObject> graph=self?s.selfEffects():s.effects();
-        for (LivingEntity e:near(p,point,radius)) if (e != p || self) EffectGraph.entity(p,e,s,graph,point,self);
+        for (LivingEntity e:near(p,point,radius)) if (e != p || self || !spareCaster && MagicConfig.selfHarm()) EffectGraph.entity(p,e,s,graph,point,self);
         EffectGraph.world(p,s,graph,point,self,spawn); particles(p,s,point,18,radius/3);
         SpellVfx.cue(p,s,SpellVfx.IMPACT,point,point,radius,12);SpellVfx.sound(p,s,point,true);
     }
@@ -177,6 +180,7 @@ public final class SpellRuntime {
     private static void segment(ServerPlayer p,SpellDefinition s,boolean spray,Vec3 from,Vec3 end,Set<LivingEntity> struck) {
         Vec3 look=end.subtract(from).normalize();
         SpellVfx.cue(p,s,spray?SpellVfx.SPRAY:SpellVfx.BEAM,from,end,spray?1.5:s.number("beam_width",.15),10);
+        if(!spray)BeamClash.beam(p,from,end);
         for(double d=.5;d<from.distanceTo(end);d+=Math.max(.8,from.distanceTo(end)/64)) particles(p,s,from.add(look.scale(d)),spray?3:1,spray?d*.12:.04);
         double burst=s.number("end_burst",0);
         for(LivingEntity e:along(p,from,end,spray)) if(struck.add(e) && (burst<=0 || e.getBoundingBox().distanceToSqr(end)>burst*burst)) EffectGraph.entity(p,e,s,s.effects(),from,false);
@@ -295,7 +299,7 @@ public final class SpellRuntime {
             int interval=Math.max(10,(int)s.number("interval_ticks",20));if((age-1)%interval!=0)return false;
             boolean weakest=s.delivery().has("heal_weakest");
             if(weakest)victims=victims.stream().filter(e->EffectGraph.ally(p,e)).sorted(Comparator.comparingDouble(e->e.getHealth()/e.getMaxHealth())).limit(1).toList();
-            for(var e:victims)if(e!=p || self || s.formula().life()>0)EffectGraph.entity(p,e,s,self?s.selfEffects():s.effects(),point,self);
+            for(var e:victims)if(e!=p || self || s.formula().life()>0 || MagicConfig.selfHarm() && !s.delivery().has("follow"))EffectGraph.entity(p,e,s,self?s.selfEffects():s.effects(),point,self);
             else if(s.delivery().has("hits_caster"))EffectGraph.entity(p,p,s,s.effects().stream().filter(n->!SpellDefinition.string(n,"type","").equals("deal_damage")).toList(),point,false);
             EffectGraph.world(p,s,self?s.selfEffects():s.effects(),point,self,false);return false;
         }
@@ -315,6 +319,9 @@ public final class SpellRuntime {
         if(s.delivery().has("ice_surface"))freezeSurface(p,point,radius);
         add(new Zone(p,s,point,ticks,radius,self,mine,false));
     }
+    static boolean inWetZone(LivingEntity e){
+        return java.util.stream.Stream.concat(ACTIVE.stream(),PENDING.stream()).anyMatch(a->a instanceof Zone z && z.p.level()==e.level() && (z.wet || z.s!=null && z.s.delivery().has("conductive")) && z.point.distanceToSqr(e.position())<z.radius*z.radius);
+    }
     public static void wetZone(ServerPlayer p,Vec3 point,double radius,int ticks){
         for(Active a:java.util.stream.Stream.concat(ACTIVE.stream(),PENDING.stream()).toList())if(a instanceof Zone z && z.wet && z.p==p && z.point.distanceToSqr(point)<1){z.remaining=Math.max(z.remaining,ticks);return;}
         add(new Zone(p,null,point,ticks,radius,false,false,true));
@@ -332,7 +339,7 @@ public final class SpellRuntime {
     }
     public static void chain(ServerPlayer p,SpellDefinition s,Vec3 point,int count,double range,float amount){
         java.util.stream.Stream.concat(ACTIVE.stream(),PENDING.stream()).filter(a->LEVELS.get(a)==p.serverLevel()).forEach(a->a.charge(point,range));
-        Set<UUID> seen=new HashSet<>(chainSkip);seen.add(p.getUUID());Vec3 current=point;
+        Set<UUID> seen=new HashSet<>(chainSkip);if(!Conduction.wetCaster(p))seen.add(p.getUUID());Vec3 current=point;
         for(int i=0;i<Math.clamp(count,0,128);i++){
             final Vec3 from=current;
             boolean conductive=java.util.stream.Stream.concat(ACTIVE.stream(),PENDING.stream()).anyMatch(a->a instanceof Zone z && LEVELS.get(z)==p.serverLevel() && (z.wet || z.s!=null && z.s.delivery().has("conductive")) && z.point.distanceToSqr(from)<Math.pow(z.radius+1,2));
@@ -345,11 +352,15 @@ public final class SpellRuntime {
             SpellVfx.cue(p,s,SpellVfx.ARC,from,current,.12,10);
             float damage=amount*(MagicStatuses.has(victim,MagicStatuses.Status.WET)?2:1);
             if(victim instanceof Player)damage*=MagicConfig.PLAYER_DAMAGE.get().floatValue();
-            com.restor.magicka.enemy.MagicEnemies.hurt(victim,p.damageSources().indirectMagic(p,p),damage,p,s,false);MagicStatuses.charge(victim,40);
+            if(victim==p)damage*=MagicConfig.selfHarmScale();
+            com.restor.magicka.enemy.MagicEnemies.hurt(victim,victim==p?p.damageSources().magic():p.damageSources().indirectMagic(p,p),damage,p,s,false);Conduction.puddle(p,victim,s,s.effects(),current);MagicStatuses.charge(victim,40);
             if(s.delivery().has("plasma"))MagicStatuses.apply(victim,MagicStatuses.Status.BURNING,60,1);
         }
     }
     static void sustain(ServerPlayer p,java.util.function.IntPredicate step){add(new Active(){int age;public ServerPlayer caster(){return p;}public boolean tick(){return step.test(age++);}});}
+    private static final Map<UUID,Long> INTERRUPTS=new HashMap<>();
+    static void interrupt(ServerPlayer p){INTERRUPTS.put(p.getUUID(),p.serverLevel().getGameTime());}
+    static void repeatBeam(ServerPlayer p,int ticks,java.util.function.IntConsumer step){long start=p.serverLevel().getGameTime();add(new Active(){int age;public ServerPlayer caster(){return p;}public boolean tick(){if(INTERRUPTS.getOrDefault(p.getUUID(),-1L)>=start)return true;step.accept(age);return ++age>=ticks;}});}
     static void repeat(ServerPlayer p,int ticks,java.util.function.IntConsumer step){add(new Active(){int age;public ServerPlayer caster(){return p;}public boolean tick(){step.accept(age);return ++age>=ticks;}});}
     static void timed(ServerPlayer p,int ticks,java.util.function.IntConsumer step,Runnable end){add(new Active(){int age;boolean done;public ServerPlayer caster(){return p;}public boolean tick(){step.accept(age);return ++age>=ticks;}public void dispose(){if(!done){done=true;end.run();}}});}
     public static void delay(ServerPlayer p,int ticks,Runnable action){add(new Active(){int remaining=Math.clamp(ticks,1,1200);public ServerPlayer caster(){return p;}public boolean tick(){if(--remaining<=0){action.run();return true;}return false;}});}
