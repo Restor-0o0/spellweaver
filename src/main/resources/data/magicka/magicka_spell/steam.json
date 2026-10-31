@@ -1,13 +1,11 @@
 {
   "id": "magicka:steam",
   "formula": {
-    "fire": 1,
-    "water": 1
+    "steam": 1
   },
   "name": "Steam",
   "tier": "Signature",
-
-  "incantation": "12",
+  "keys": "12",
   "tags": "DMG/DOT/SETUP/CC",
   "shape": "projectile",
   "origin": "caster_front",

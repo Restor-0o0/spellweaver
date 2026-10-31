@@ -13,7 +13,8 @@ public final class MagicUi {
     public static final int GOLD = 0xFFD4B77A, INK = 0xFF302B37, MUTED = 0xFFAFA6B9;
     private static final ItemStack[] ICONS = {
         new ItemStack(Items.BLAZE_POWDER), new ItemStack(Items.WATER_BUCKET), new ItemStack(Items.SNOWBALL),
-        new ItemStack(Items.GLOWSTONE_DUST), new ItemStack(Items.CLAY_BALL), new ItemStack(Items.OAK_SAPLING), new ItemStack(Items.AMETHYST_SHARD), new ItemStack(Items.SKELETON_SKULL)
+        new ItemStack(Items.GLOWSTONE_DUST), new ItemStack(Items.CLAY_BALL), new ItemStack(Items.OAK_SAPLING), new ItemStack(Items.AMETHYST_SHARD), new ItemStack(Items.SKELETON_SKULL),
+        new ItemStack(Items.WIND_CHARGE), new ItemStack(Items.ICE), new ItemStack(Items.SHIELD)
     };
     private static final ItemStack[] COMPOSITES = {new ItemStack(Items.WIND_CHARGE), new ItemStack(Items.PRISMARINE_CRYSTALS), new ItemStack(Items.SHIELD)};
     public static void panel(GuiGraphics g, int x, int y, int w, int h) {

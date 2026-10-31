@@ -6,8 +6,7 @@
   },
   "name": "Ice Spear",
   "tier": "Signature",
-
-  "incantation": "335",
+  "keys": "335",
   "tags": "DMG/CC",
   "shape": "projectile",
   "origin": "caster_front",
@@ -36,7 +35,7 @@
     },
     {
       "type": "deal_damage",
-      "amount": 2.0,
+      "amount": 6,
       "element": "earth"
     },
     {

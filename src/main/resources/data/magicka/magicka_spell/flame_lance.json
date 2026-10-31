@@ -5,8 +5,7 @@
   },
   "name": "Flame Lance",
   "tier": "Signature",
-
-  "incantation": "111",
+  "keys": "111",
   "tags": "DMG/DOT",
   "shape": "beam",
   "origin": "caster_front",

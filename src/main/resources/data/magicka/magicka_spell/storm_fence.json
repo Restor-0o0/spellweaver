@@ -1,0 +1,55 @@
+{
+  "id": "magicka:storm_fence",
+  "formula": {
+    "shield": 1,
+    "lightning": 1
+  },
+  "keys": "574",
+  "name": "Storm Fence",
+  "tier": "Signature",
+  "tags": "AOE/ZONE",
+  "shape": "targeted_zone",
+  "origin": "aim_ground",
+  "cast_ticks": 9,
+  "delivery": {
+    "radius": 0.9,
+    "speed": 1.0,
+    "duration_ticks": 200,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.0,
+    "row": 4,
+    "row_spacing": 3.0,
+    "arcs": true,
+    "visual": "pylon"
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 1.0,
+      "element": "lightning"
+    },
+    {
+      "type": "add_charge",
+      "amount": 35
+    },
+    {
+      "type": "apply_status",
+      "status": "shocked",
+      "duration_ticks": 20,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "add_charge",
+        "amount": 35
+      }
+    ]
+  },
+  "primary": "Four posts joined by arcs.\nA fence across your view at the aim point for 10 s. Whoever touches a post or crosses an arc:\n• Damage 0.5 ❤ lightning (×2 on wet)\n• Charge and a short shock",
+  "self_description": "On you: a static charge.",
+  "balanced": true
+}

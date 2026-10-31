@@ -25,8 +25,8 @@ public final class MobResistances {
     public static boolean resists(LivingEntity entity, Element element) {
         if (is(entity, RESISTS.get(element))) return true;
         return switch (element) {
-            case FIRE -> entity.fireImmune();
-            case COLD -> is(entity, EntityTypeTags.FREEZE_IMMUNE_ENTITY_TYPES);
+            case FIRE, STEAM -> entity.fireImmune();
+            case COLD, ICE -> is(entity, EntityTypeTags.FREEZE_IMMUNE_ENTITY_TYPES);
             case WATER -> is(entity, EntityTypeTags.AQUATIC);
             case DEATH -> is(entity, EntityTypeTags.UNDEAD);
             default -> false;

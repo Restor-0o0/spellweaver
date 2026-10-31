@@ -57,7 +57,7 @@ public final class MagicHud {
         MagicUi.small(g,Component.translatable("hud.magicka.elements"),px+4,py+4,MagicUi.GOLD);
         if(state.instant())MagicUi.small(g,Component.literal("⚡"),px+37,py+4,0xFFFFDC84);
         else if(!state.enabled())MagicUi.small(g,MagicClient.toggleKey(),px+36,py+4,MagicUi.MUTED);
-        for(Element element:Element.values()){
+        for(Element element:Element.BASE){
             int sx=px+4+(element.ordinal()%2)*20,sy=py+13+(element.ordinal()/2)*18;
             socket(g,element,sx,sy,state.enabled());
             long lockLeft=MagicNetwork.clientLocksUntil-System.currentTimeMillis();

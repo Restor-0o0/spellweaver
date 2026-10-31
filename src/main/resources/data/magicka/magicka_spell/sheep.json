@@ -7,8 +7,7 @@
   },
   "name": "Sheep",
   "tier": "Signature",
-
-  "incantation": "568",
+  "keys": "568",
   "tags": "CC",
   "shape": "direct_target",
   "origin": "aim_hit",

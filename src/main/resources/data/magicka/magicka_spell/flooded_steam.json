@@ -1,13 +1,12 @@
 {
   "id": "magicka:flooded_steam",
   "formula": {
-    "fire": 1,
-    "water": 2
+    "water": 1,
+    "steam": 1
   },
+  "keys": "221",
   "name": "Flooded Steam",
   "tier": "Family Variant",
-
-  "incantation": "122",
   "tags": "DMG/DOT/SETUP/CC",
   "shape": "spray",
   "origin": "caster_front",

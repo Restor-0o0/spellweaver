@@ -1,0 +1,66 @@
+{
+  "id": "magicka:ice_lances",
+  "formula": {
+    "ice": 1,
+    "earth": 1
+  },
+  "keys": "235",
+  "name": "Ice Lances",
+  "tier": "Signature",
+  "tags": "DMG",
+  "shape": "projectile",
+  "origin": "caster_front",
+  "cast_ticks": 9,
+  "delivery": {
+    "radius": 3.0,
+    "speed": 1.6,
+    "duration_ticks": 60,
+    "interval_ticks": 20,
+    "gravity": 0.02,
+    "burst_radius": 3.0,
+    "pierce": true,
+    "fan": 3,
+    "visual": "lance"
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 3.0,
+      "element": "earth"
+    },
+    {
+      "type": "deal_damage",
+      "amount": 1.0,
+      "element": "cold"
+    },
+    {
+      "type": "apply_force",
+      "amount": 0.4,
+      "lift": 0.05
+    },
+    {
+      "type": "apply_status",
+      "status": "brittle",
+      "duration_ticks": 60,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "stone_shell",
+        "duration_ticks": 100,
+        "strength": 1
+      },
+      {
+        "type": "modify_temperature",
+        "amount": -40
+      }
+    ]
+  },
+  "primary": "Three heavy icicles that pierce through.\nA fan of 3 lances; each flies through every enemy in its path:\n• Damage 1.5 ❤ physical + 0.5 ❤ cold (physical ×2 on frozen)\n• Knockback\n• Brittle for 3 s",
+  "self_description": "On you: stone skin for 5 s and a chill.",
+  "balanced": true
+}

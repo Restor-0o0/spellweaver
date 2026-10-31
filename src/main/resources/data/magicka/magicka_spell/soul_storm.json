@@ -6,8 +6,7 @@
   },
   "name": "Soul Storm",
   "tier": "Signature",
-
-  "incantation": "48",
+  "keys": "48",
   "tags": "DMG/CC",
   "shape": "chain",
   "origin": "aim_hit",

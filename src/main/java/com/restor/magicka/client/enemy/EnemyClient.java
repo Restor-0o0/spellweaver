@@ -19,7 +19,8 @@ public final class EnemyClient {
             Map.entry("element_binder", .4f), Map.entry("burrower", .55f), Map.entry("cave_wisp", .35f), Map.entry("stone_eater", .75f),
             Map.entry("flood_caster", .5f), Map.entry("countermage", .4f), Map.entry("spark_imp", .25f),
             Map.entry("goblin_warrior", .4f), Map.entry("goblin_archer", .4f), Map.entry("goblin_mage", .4f),
-            Map.entry("goblin_frost_mage", .4f), Map.entry("goblin_storm_mage", .4f), Map.entry("goblin_bomber", .4f), Map.entry("goblin_shaman", .4f));
+            Map.entry("goblin_frost_mage", .4f), Map.entry("goblin_storm_mage", .4f), Map.entry("goblin_bomber", .4f), Map.entry("goblin_shaman", .4f),
+            Map.entry("troll", 1f), Map.entry("armored_knight", .5f));
 
     @SubscribeEvent public static void layers(EntityRenderersEvent.RegisterLayerDefinitions event) {
         EnemyLayers.ALL.forEach((id, layer) -> event.registerLayerDefinition(EnemyRenderer.layer(id), layer));

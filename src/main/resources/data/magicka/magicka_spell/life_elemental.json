@@ -7,8 +7,7 @@
   },
   "name": "Grove Elemental",
   "tier": "Signature",
-
-  "incantation": "6678",
+  "keys": "6678",
   "scroll": true,
   "tags": "SUMMON",
   "shape": "summon_object",

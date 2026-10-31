@@ -7,8 +7,7 @@
   },
   "name": "Heavy Permafrost Convergence",
   "tier": "Family Variant",
-
-  "incantation": "3455",
+  "keys": "3455",
   "tags": "CC/DEBUFF/DMG/BREAK",
   "shape": "projectile",
   "origin": "caster_front",

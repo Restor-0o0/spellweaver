@@ -5,7 +5,8 @@
     "arcane": 1,
     "lightning": 3
   },
-  "incantation": "42447",
+  "keys": "42447",
+  "ultimate": true,
   "name": "Thunderstorm",
   "tier": "Signature",
   "tags": "DMG/AOE",

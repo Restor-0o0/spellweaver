@@ -5,7 +5,7 @@
     "life": 3,
     "arcane": 1
   },
-  "incantation": "26766",
+  "keys": "26766",
   "name": "Font of Life",
   "tier": "Signature",
   "ultimate": true,
@@ -20,7 +20,8 @@
     "duration_ticks": 400,
     "interval_ticks": 15,
     "gravity": 0,
-    "burst_radius": 9.0
+    "burst_radius": 9.0,
+    "visual": "pool"
   },
   "effects": [
     {

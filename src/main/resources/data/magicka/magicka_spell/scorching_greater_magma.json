@@ -6,8 +6,7 @@
   },
   "name": "Scorching Greater Magma",
   "tier": "Family Variant",
-
-  "incantation": "1115",
+  "keys": "1115",
   "tags": "DMG/DOT/BREAK",
   "shape": "spray",
   "origin": "caster_front",

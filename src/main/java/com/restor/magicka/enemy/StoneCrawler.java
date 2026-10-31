@@ -68,7 +68,7 @@ public class StoneCrawler extends SpecialEnemy {
             return amount * ARMORED;
         }
         int size = Math.max(1, spell.formula().size());
-        return amount * (1.2f + .5f * (spell.formula().count(Element.FIRE) + spell.formula().count(Element.ARCANE)) / size);
+        return amount * (1.2f + .5f * (spell.formula().total(Element.FIRE) + spell.formula().count(Element.ARCANE)) / size);
     }
     @Override protected float physicalDamage(DamageSource source, float amount) {
         return armored() && !source.is(DamageTypes.GENERIC_KILL) && !source.is(DamageTypes.FELL_OUT_OF_WORLD) ? amount * ARMORED : amount;

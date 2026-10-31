@@ -1,14 +1,13 @@
 {
   "id": "magicka:flooded_frostflow_convergence_water2_cold1_life1",
   "formula": {
-    "water": 2,
-    "cold": 1,
-    "life": 1
+    "water": 1,
+    "life": 1,
+    "ice": 1
   },
   "name": "Flooded Frostflow Convergence",
   "tier": "Family Variant",
-
-  "incantation": "2236",
+  "keys": "2236",
   "tags": "SETUP/CC/DEBUFF/HEAL/BUFF",
   "shape": "targeted_zone",
   "origin": "aim_ground",
@@ -19,7 +18,8 @@
     "duration_ticks": 280,
     "interval_ticks": 20,
     "gravity": 0,
-    "burst_radius": 3.0
+    "burst_radius": 3.0,
+    "visual": "pool"
   },
   "construction": {
     "material": "ice",

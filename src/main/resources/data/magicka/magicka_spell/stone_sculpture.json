@@ -5,8 +5,7 @@
   },
   "name": "Stone Sculpture",
   "tier": "Signature",
-
-  "incantation": "5555",
+  "keys": "5555",
   "tags": "BUILD",
   "shape": "wall",
   "origin": "caster_feet",

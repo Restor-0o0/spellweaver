@@ -6,8 +6,7 @@
   },
   "name": "Bubble Lift",
   "tier": "Signature",
-
-  "incantation": "227",
+  "keys": "227",
   "tags": "MOVE/CC/MEME",
   "shape": "summon_object",
   "origin": "aim_ground",

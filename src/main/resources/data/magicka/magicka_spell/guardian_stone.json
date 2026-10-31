@@ -7,8 +7,7 @@
   },
   "name": "Guardian Stone",
   "tier": "Signature",
-
-  "incantation": "5667",
+  "keys": "5667",
   "tags": "HEAL/DEF/BUILD",
   "shape": "summon_object",
   "origin": "aim_ground",

@@ -7,8 +7,7 @@
   },
   "name": "Unstable Suspension Convergence",
   "tier": "Family Variant",
-
-  "incantation": "2677",
+  "keys": "2677",
   "tags": "SETUP/CC/HEAL/BUFF",
   "shape": "targeted_explosion",
   "origin": "aim_hit",

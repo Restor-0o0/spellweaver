@@ -166,6 +166,51 @@ public class EnemyModel<T extends SpecialEnemy> extends HierarchicalModel<T> {
                     part("head").xRot -= .35f;
                 }
             }
+            case "troll" -> {
+                look("head", yaw * .6f, pitch * .5f);
+                float legs = walk * .7f * amount;
+                part("leg_left").xRot += legs; part("leg_right").xRot -= legs;
+                part("arm_left").xRot -= legs * .6f; part("arm_right").xRot += legs * .4f;
+                mirror("forearm_left", -.15f - Math.abs(step) * .2f * amount, 0, 0);
+                part("body").y += Mth.sin(age * .08f) * .4f;
+                part("jaw").xRot += .08f + Mth.sin(age * .08f) * .06f;
+                mirror("ear_left", 0, Mth.sin(age * .11f) * .12f, 0);
+                if (attackTime > 0) {
+                    float a = Mth.sin(Mth.sqrt(attackTime) * Mth.PI);
+                    part("arm_right").xRot -= a * 2.1f; part("body").yRot += a * .3f; part("jaw").xRot += a * .3f;
+                }
+                if (mob.action() == Troll.SMASH) {
+                    float lift = Math.min(1, cast / 14f);
+                    part("arm_right").xRot = Mth.lerp(lift, part("arm_right").xRot, -2.9f);
+                    part("arm_left").xRot = Mth.lerp(lift, part("arm_left").xRot, -2.4f);
+                    part("body").xRot -= .2f * lift;
+                    part("jaw").xRot += .5f * lift;
+                }
+            }
+            case "armored_knight" -> {
+                look("head", yaw, pitch);
+                float legs = Mth.cos(swing * .6662f) * .9f * amount;
+                part("leg_left").xRot += legs; part("leg_right").xRot -= legs;
+                part("arm_right").xRot += legs * .5f;
+                part("arm_left").xRot += mob.getTarget() != null ? -.75f : -legs * .4f - .1f;
+                part("arm_right").zRot -= .05f + Mth.sin(age * .07f) * .03f;
+                if (attackTime > 0) {
+                    float a = Mth.sin(Mth.sqrt(attackTime) * Mth.PI);
+                    part("arm_right").xRot -= a * 1.8f; part("arm_right").yRot += a * .5f; part("body").yRot -= a * .3f;
+                }
+                if (mob.action() == ArmoredKnight.CLEAVE) {
+                    float wind = Math.min(1, cast / 12f);
+                    part("arm_right").xRot = Mth.lerp(wind, part("arm_right").xRot, -2.9f);
+                    part("body").yRot += .3f * wind;
+                    part("arm_left").xRot = Mth.lerp(wind, part("arm_left").xRot, -1.1f);
+                }
+                if (mob.action() == ArmoredKnight.LEAP) {
+                    float crouch = Math.min(1, cast / 8f);
+                    part("body").xRot += .3f * crouch;
+                    mirror("leg_left", -.5f * crouch, 0, 0);
+                    part("arm_right").xRot -= .6f * crouch;
+                }
+            }
             default -> {}
         }
     }

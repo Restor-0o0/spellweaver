@@ -6,8 +6,7 @@
   },
   "name": "Charged Greater Vital Spark",
   "tier": "Family Variant",
-
-  "incantation": "4446",
+  "keys": "4446",
   "tags": "DMG/CC/HEAL/BUFF",
   "shape": "chain",
   "origin": "aim_hit",

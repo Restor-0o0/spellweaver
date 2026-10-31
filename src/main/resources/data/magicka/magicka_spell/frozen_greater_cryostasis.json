@@ -6,8 +6,7 @@
   },
   "name": "Frozen Greater Cryostasis",
   "tier": "Family Variant",
-
-  "incantation": "3336",
+  "keys": "3336",
   "tags": "CC/DEBUFF/HEAL/BUFF",
   "shape": "projectile",
   "origin": "caster_front",

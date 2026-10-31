@@ -1,14 +1,13 @@
 {
   "id": "magicka:ice_ramp",
   "formula": {
-    "water": 2,
-    "cold": 1,
-    "arcane": 1
+    "water": 1,
+    "arcane": 1,
+    "ice": 1
   },
+  "keys": "2732",
   "name": "Ice Spike",
   "tier": "Signature",
-
-  "incantation": "2237",
   "tags": "BUILD/MOVE/DMG",
   "shape": "spike",
   "origin": "caster_feet",

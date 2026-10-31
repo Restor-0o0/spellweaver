@@ -1,5 +1,6 @@
 {
   "id": "magicka:volatile_magma_core",
+  "keys": "517",
   "formula": {
     "fire": 1,
     "earth": 1,
@@ -7,8 +8,6 @@
   },
   "name": "Volatile Magma Core",
   "tier": "Signature",
-
-  "incantation": "157",
   "tags": "DMG/AOE/BREAK",
   "shape": "burst_projectile",
   "origin": "caster_front",

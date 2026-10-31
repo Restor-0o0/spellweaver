@@ -7,8 +7,7 @@
   },
   "name": "Static Stasis",
   "tier": "Signature",
-
-  "incantation": "3477",
+  "keys": "3477",
   "tags": "AOE/CC",
   "shape": "targeted_zone",
   "origin": "aim_ground",
@@ -20,7 +19,8 @@
     "interval_ticks": 20,
     "gravity": 0,
     "burst_radius": 3.6,
-    "slow_projectiles": true
+    "slow_projectiles": true,
+    "visual": "spires"
   },
   "construction": {
     "material": "ice",

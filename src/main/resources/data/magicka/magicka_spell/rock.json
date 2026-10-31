@@ -5,8 +5,7 @@
   },
   "name": "Rock",
   "tier": "Signature",
-
-  "incantation": "55",
+  "keys": "55",
   "tags": "BREAK",
   "shape": "projectile",
   "origin": "caster_front",

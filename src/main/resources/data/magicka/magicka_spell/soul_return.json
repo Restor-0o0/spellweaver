@@ -6,8 +6,7 @@
   },
   "name": "Soul Return",
   "tier": "Signature",
-
-  "incantation": "68",
+  "keys": "68",
   "tags": "HEAL/REVIVE",
   "shape": "direct_target",
   "origin": "aim_hit",

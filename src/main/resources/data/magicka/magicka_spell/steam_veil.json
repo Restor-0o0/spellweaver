@@ -1,0 +1,55 @@
+{
+  "id": "magicka:steam_veil",
+  "formula": {
+    "shield": 1,
+    "steam": 1
+  },
+  "keys": "5721",
+  "name": "Steam Veil",
+  "tier": "Signature",
+  "tags": "AOE/DEF",
+  "shape": "targeted_zone",
+  "origin": "aim_ground",
+  "cast_ticks": 9,
+  "delivery": {
+    "radius": 1.3,
+    "speed": 1.0,
+    "duration_ticks": 200,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.0,
+    "row": 5,
+    "row_spacing": 1.6,
+    "slow_projectiles": true,
+    "visual": "mist"
+  },
+  "effects": [
+    {
+      "type": "set_wet",
+      "duration_ticks": 100
+    },
+    {
+      "type": "deal_damage",
+      "amount": 1.0,
+      "element": "fire"
+    },
+    {
+      "type": "apply_status",
+      "status": "obscured",
+      "duration_ticks": 60,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 100
+      }
+    ]
+  },
+  "primary": "A wall of scalding steam.\nFive steam clouds in a row at the aim point for 10 s. Shots passing through slow down. Every second, whoever stands inside:\n• Damage 0.5 ❤ fire (×0.5 on wet)\n• Soaked for 5 s\n• Blindness for 3 s",
+  "self_description": "On you: soaked for 5 s.",
+  "balanced": true
+}

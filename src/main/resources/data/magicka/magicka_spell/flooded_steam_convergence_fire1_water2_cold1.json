@@ -1,14 +1,12 @@
 {
   "id": "magicka:flooded_steam_convergence_fire1_water2_cold1",
   "formula": {
-    "fire": 1,
-    "water": 2,
-    "cold": 1
+    "steam": 1,
+    "ice": 1
   },
   "name": "Flooded Steam Convergence",
   "tier": "Family Variant",
-
-  "incantation": "1223",
+  "keys": "1223",
   "tags": "DMG/DOT/SETUP/CC/DEBUFF",
   "shape": "targeted_zone",
   "origin": "aim_ground",
@@ -19,7 +17,8 @@
     "duration_ticks": 240,
     "interval_ticks": 20,
     "gravity": 0,
-    "burst_radius": 3.4
+    "burst_radius": 3.4,
+    "visual": "mist"
   },
   "construction": {
     "material": "ice",

@@ -4,7 +4,7 @@
     "fire": 3,
     "arcane": 2
   },
-  "incantation": "17117",
+  "keys": "17117",
   "name": "Explosion",
   "tier": "Signature",
   "ultimate": true,
@@ -20,7 +20,7 @@
   "effects": [
     {
       "type": "deal_damage",
-      "amount": 24,
+      "amount": 20,
       "element": "fire"
     },
     {
@@ -43,7 +43,7 @@
     "effects": [
       {
         "type": "deal_damage",
-        "amount": 24,
+        "amount": 20,
         "element": "fire"
       },
       {
@@ -63,6 +63,6 @@
     ]
   },
   "balanced": true,
-  "primary": "Three spinning crimson magic circles stack above the aimed spot for 2 s, then a pillar of light strikes it. Everyone within 8 blocks:\n• Damage 12 ❤ fire\n• Heat 120\n• Thrown far away\nIt blasts a crater 7 blocks in radius (up to 700 blocks) and leaves a mushroom cloud.\nThe price: for 8 s you cannot cast any element, get Slowness IV and Weakness II.",
-  "self_description": "The blast goes off at your feet and throws you high into the air with slow falling for 8 s; you take no damage from it. The price is the same."
+  "primary": "Three spinning crimson magic circles stack above the aimed spot for 2 s, then a pillar of light strikes it. Everyone within 16 blocks:\n• Fire damage: 10 ❤ at the centre, 4 ❤ at the edge\n• Heat 120\n• Thrown far away\nIt blasts a crater 14 blocks in radius (up to 3000 blocks) and leaves a mushroom cloud.\nDaze: everyone within 20 blocks, you included, cannot cast for 3 s and is slowed. Throw it far.",
+  "self_description": "The blast goes off at your feet and throws you high into the air with slow falling for 8 s; you take no damage from it, but the daze is yours."
 }

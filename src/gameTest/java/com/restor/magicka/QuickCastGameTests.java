@@ -65,7 +65,7 @@ public final class QuickCastGameTests {
     public static void typingTheWrongOrderStillFizzles(GameTestHelper h){
         var p=RecipeGameTests.caster(h);var ultimate=RecipeGameTests.spell("Absolute Zero");
         CastingServer.input(p,7);
-        for(var e:ultimate.formula().prepared().elements())CastingServer.input(p,e==Element.DEATH?13:e.ordinal());
+        for(var e:ultimate.keys().reversed())CastingServer.input(p,e==Element.DEATH?13:e.ordinal());
         CastingServer.input(p,9);var cast=CastingServer.casting(p);
         h.assertTrue(cast!=null && !cast.id().equals(ultimate.id()),"Hand-typed wrong order never reaches the ultimate");
         h.assertTrue(cast.id().equals(RecipeRegistry.fusion(ultimate.formula()).id()),"Wrong order casts the plain fusion, got "+cast.name());
@@ -116,7 +116,7 @@ public final class QuickCastGameTests {
         h.assertTrue(RecipeGameTests.spell("Thunder Lance").channeled(),"Four-lightning chain is channeled");h.assertFalse(RecipeGameTests.spell("Pebble").channeled(),"Projectile is instant");
 
         CastingServer.input(p,7);CastingServer.input(p,11);h.assertTrue(CastingServer.snapshot(p).instant(),"Mode toggles on");
-        for(var e:spike.spoken())CastingServer.input(p,e.ordinal());CastingServer.input(p,9);
+        for(var e:spike.keys())CastingServer.input(p,e.ordinal());CastingServer.input(p,9);
         var state=CastingServer.snapshot(p);
         h.assertTrue(state.formula()==0 && state.remaining()==0,"Instant cast skips windup");
         h.runAfterDelay(2,()->{
@@ -157,7 +157,7 @@ public final class QuickCastGameTests {
     @GameTest(template="empty",timeoutTicks=100)
     public static void tappedSkybridgeKeepsGrowing(GameTestHelper h){
         var p=RecipeGameTests.caster(h);h.setBlock(new BlockPos(1,1,4),Blocks.STONE);p.setXRot(30);var server=new CastingServer();
-        CastingServer.input(p,7);CastingServer.input(p,11);for(var e:RecipeGameTests.spell("Skybridge").spoken())CastingServer.input(p,e.ordinal());CastingServer.input(p,9);CastingServer.input(p,12);
+        CastingServer.input(p,7);CastingServer.input(p,11);for(var e:RecipeGameTests.spell("Skybridge").keys())CastingServer.input(p,e.ordinal());CastingServer.input(p,9);CastingServer.input(p,12);
         h.assertTrue(CastingServer.snapshot(p).channeling(),"Releasing does not cut a growing construction");
         for(int t=1;t<=30;t++)h.runAfterDelay(t,()->server.tick(new PlayerTickEvent.Post(p)));
         h.runAfterDelay(31,()->{

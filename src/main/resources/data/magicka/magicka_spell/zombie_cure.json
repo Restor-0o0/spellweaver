@@ -7,8 +7,7 @@
   },
   "name": "Zombie Cure",
   "tier": "Signature",
-
-  "incantation": "5668",
+  "keys": "5668",
   "scroll": true,
   "tags": "UTIL/DMG",
   "shape": "targeted_zone",

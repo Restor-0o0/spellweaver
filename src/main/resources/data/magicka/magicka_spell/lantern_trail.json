@@ -7,8 +7,7 @@
   },
   "name": "Lantern Trail",
   "tier": "Signature",
-
-  "incantation": "167",
+  "keys": "167",
   "tags": "UTIL",
   "shape": "direct_target",
   "origin": "aim_hit",

@@ -6,8 +6,7 @@
   },
   "name": "Living Greater Cryostasis",
   "tier": "Family Variant",
-
-  "incantation": "3666",
+  "keys": "3666",
   "tags": "CC/DEBUFF/HEAL/BUFF",
   "shape": "targeted_zone",
   "origin": "aim_ground",
@@ -18,7 +17,8 @@
     "duration_ticks": 280,
     "interval_ticks": 20,
     "gravity": 0,
-    "burst_radius": 2.8
+    "burst_radius": 2.8,
+    "visual": "bloom"
   },
   "construction": {
     "material": "ice",

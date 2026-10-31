@@ -1,0 +1,72 @@
+{
+  "id": "magicka:life_mines",
+  "formula": {
+    "shield": 1,
+    "life": 1
+  },
+  "keys": "576",
+  "name": "Life Mines",
+  "tier": "Signature",
+  "tags": "AOE/SUPPORT",
+  "shape": "mine",
+  "origin": "aim_ground",
+  "cast_ticks": 9,
+  "delivery": {
+    "radius": 2.5,
+    "speed": 1.0,
+    "duration_ticks": 600,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.0,
+    "row": 3,
+    "row_spacing": 2.5,
+    "visual": "totem"
+  },
+  "effects": [
+    {
+      "type": "conditional",
+      "condition": "ally",
+      "effects": [
+        {
+          "type": "heal",
+          "amount": 4.0
+        },
+        {
+          "type": "apply_status",
+          "status": "regenerating",
+          "duration_ticks": 100,
+          "strength": 1
+        }
+      ]
+    },
+    {
+      "type": "conditional",
+      "condition": "undead",
+      "effects": [
+        {
+          "type": "deal_damage",
+          "amount": 4.0,
+          "element": "life"
+        }
+      ]
+    },
+    {
+      "type": "apply_status",
+      "status": "rooted",
+      "duration_ticks": 40,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "heal",
+        "amount": 2.0
+      }
+    ]
+  },
+  "primary": "Three mines of living light.\nMines at the aim point for 30 s: each arms in 1 s and bursts in a 2.5-block radius when an enemy comes near:\n• Allies nearby heal 2 ❤ and regenerate for 5 s\n• Undead take 2 ❤ life damage\n• Enemies are rooted for 2 s",
+  "self_description": "On you: heal 1 ❤.",
+  "balanced": true
+}

@@ -6,8 +6,7 @@
   },
   "name": "Thermal Shock",
   "tier": "Signature",
-
-  "incantation": "13",
+  "keys": "13",
   "tags": "DMG/DOT/CC/DEBUFF",
   "shape": "projectile",
   "origin": "caster_front",

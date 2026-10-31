@@ -5,8 +5,7 @@
   },
   "name": "Fork",
   "tier": "Signature",
-
-  "incantation": "444",
+  "keys": "444",
   "tags": "DMG/CC",
   "shape": "chain",
   "origin": "aim_hit",

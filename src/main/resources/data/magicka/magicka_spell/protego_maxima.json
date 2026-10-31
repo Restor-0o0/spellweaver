@@ -6,7 +6,7 @@
   },
   "name": "Great Aegis",
   "tier": "Signature",
-  "incantation": "6777",
+  "keys": "6777",
   "scroll": true,
   "tags": "DEF/CC",
   "shape": "targeted_zone",

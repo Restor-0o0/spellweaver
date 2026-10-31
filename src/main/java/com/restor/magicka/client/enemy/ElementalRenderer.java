@@ -18,7 +18,7 @@ public class ElementalRenderer extends MobRenderer<Elemental, ElementalModel<Ele
 
     public ElementalRenderer(EntityRendererProvider.Context context) {
         super(context, new ElementalModel<>(context.bakeLayer(EnemyRenderer.layer("fire_elemental")), "fire_elemental"), .4f);
-        for (Element e : Element.values()) {
+        for (Element e : Element.BASE) {
             String id = Elementals.id(e, "elemental");
             models.put(e, new ElementalModel<>(context.bakeLayer(EnemyRenderer.layer(id)), id));
         }

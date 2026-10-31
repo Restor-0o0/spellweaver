@@ -6,8 +6,7 @@
   },
   "name": "Living Greater Spring",
   "tier": "Family Variant",
-
-  "incantation": "2666",
+  "keys": "2666",
   "tags": "SETUP/CC/HEAL/BUFF",
   "shape": "targeted_zone",
   "origin": "aim_ground",
@@ -18,7 +17,8 @@
     "duration_ticks": 300,
     "interval_ticks": 20,
     "gravity": 0,
-    "burst_radius": 2.8
+    "burst_radius": 2.8,
+    "visual": "pool"
   },
   "construction": {
     "material": "root",

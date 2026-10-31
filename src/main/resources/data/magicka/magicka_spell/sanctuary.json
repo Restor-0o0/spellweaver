@@ -6,8 +6,7 @@
   },
   "name": "Sanctuary",
   "tier": "Signature",
-
-  "incantation": "6667",
+  "keys": "6667",
   "scroll": true,
   "tags": "HEAL/DEF/AOE",
   "shape": "targeted_zone",
@@ -19,7 +18,8 @@
     "duration_ticks": 240,
     "interval_ticks": 20,
     "gravity": 0,
-    "burst_radius": 3.0
+    "burst_radius": 3.0,
+    "visual": "bloom"
   },
   "construction": {
     "material": "root",

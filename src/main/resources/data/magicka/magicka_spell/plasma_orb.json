@@ -7,8 +7,7 @@
   },
   "name": "Plasma Orb",
   "tier": "Signature",
-
-  "incantation": "147",
+  "keys": "147",
   "tags": "DMG/AOE/MEME",
   "shape": "projectile",
   "origin": "caster_front",

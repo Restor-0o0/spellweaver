@@ -6,8 +6,7 @@
   },
   "name": "Thunder Nova",
   "tier": "Signature",
-
-  "incantation": "447",
+  "keys": "447",
   "tags": "AOE/DMG/CC",
   "shape": "targeted_explosion",
   "origin": "aim_hit",

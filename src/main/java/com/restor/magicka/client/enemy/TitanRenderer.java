@@ -25,7 +25,7 @@ public class TitanRenderer extends EntityRenderer<ElementalTitan> {
     public TitanRenderer(EntityRendererProvider.Context context) {
         super(context);
         shadowRadius = 0;
-        for (Element e : Element.values()) {
+        for (Element e : Element.BASE) {
             String id = Elementals.id(e, "titan");
             models.put(e, new ElementalModel<>(context.bakeLayer(EnemyRenderer.layer(id)), id));
         }

@@ -6,8 +6,7 @@
   },
   "name": "Heavy Greater Mud",
   "tier": "Family Variant",
-
-  "incantation": "2555",
+  "keys": "2555",
   "tags": "SETUP/CC/BREAK",
   "shape": "projectile",
   "origin": "caster_front",

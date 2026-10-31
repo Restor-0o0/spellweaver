@@ -6,8 +6,7 @@
   },
   "name": "Greater Plasma",
   "tier": "Family Variant",
-
-  "incantation": "1144",
+  "keys": "1144",
   "tags": "DMG/DOT/CC",
   "shape": "chain",
   "origin": "aim_hit",

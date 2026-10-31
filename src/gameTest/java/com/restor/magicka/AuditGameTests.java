@@ -38,7 +38,9 @@ public final class AuditGameTests {
     public static void ritualOrderGatesUltimates(GameTestHelper h){
         DeathGameTests.floor(h);var spoken=RecipeGameTests.caster(h);var scrambled=RecipeGameTests.caster(h);
         CastingServer.input(spoken,7);for(int a:new int[]{4,4,0,2,4})CastingServer.input(spoken,a);CastingServer.input(spoken,9);
-        CastingServer.input(scrambled,7);for(int a:new int[]{4,4,4,0,2})CastingServer.input(scrambled,a);CastingServer.input(scrambled,9);
+        int[] order=java.util.stream.Stream.of(new int[]{4,4,4,0,2},new int[]{4,4,0,4,2},new int[]{4,0,4,4,2},new int[]{0,4,4,4,2},new int[]{4,4,4,2,0},new int[]{4,4,2,4,0},new int[]{4,2,4,4,0},new int[]{2,4,4,4,0},new int[]{4,4,2,0,4},new int[]{4,2,0,4,4},new int[]{2,0,4,4,4},new int[]{4,0,2,4,4},new int[]{0,2,4,4,4})
+                .filter(o->Reactions.type(java.util.Arrays.stream(o).mapToObj(x->Element.values()[x]).toList(),true).size()==5).findFirst().orElseThrow();
+        CastingServer.input(scrambled,7);for(int a:order)CastingServer.input(scrambled,a);CastingServer.input(scrambled,9);
         h.assertTrue(CastingServer.snapshot(spoken).total()==RecipeGameTests.spell("Earthquake").castTicks(),"The ritual order calls the ultimate");
         h.assertTrue(CastingServer.snapshot(scrambled).total()==RecipeRegistry.fusion(RecipeGameTests.spell("Earthquake").formula()).castTicks(),"A scrambled order casts the plain fusion");
         h.succeed();
@@ -95,7 +97,7 @@ public final class AuditGameTests {
     public static void structureSpellsFollowView(GameTestHelper h){
         DeathGameTests.floor(h);var p=RecipeGameTests.caster(h);p.setPos(h.absoluteVec(new Vec3(2.5,2,0.5)));BlockPos feet=p.blockPosition();
         var wall=RecipeGameTests.spell("Stone Wall");
-        h.assertTrue(wall.formula().equals(new SpellFormula(0,0,0,0,1,0,2,0)),"Stone Wall uses earth + 2 arcane");
+        h.assertTrue(wall.formula().equals(new SpellFormula(0,0,0,0,0,0,1,0,0,0,1)),"Stone Wall uses shield + arcane");
         Vec3 south=new Vec3(0,0,1),center=Vec3.atCenterOf(feet);
         p.setXRot(-80);var tent=MagicConstructionManager.Plan.template(p,"wall",center,south);
         h.assertTrue(tent.size()==80 && tent.contains(feet.above(4)) && !tent.contains(feet.above(2)),"Looking up raises a tent over the caster, got "+tent.size());

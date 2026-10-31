@@ -5,8 +5,7 @@
   },
   "name": "Mend",
   "tier": "Signature",
-
-  "incantation": "6",
+  "keys": "6",
   "tags": "HEAL/BUFF",
   "shape": "projectile",
   "origin": "caster_front",

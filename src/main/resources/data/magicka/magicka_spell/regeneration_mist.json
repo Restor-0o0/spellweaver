@@ -7,8 +7,7 @@
   },
   "name": "Regeneration Mist",
   "tier": "Signature",
-
-  "incantation": "267",
+  "keys": "267",
   "tags": "HEAL/AOE/SETUP",
   "shape": "targeted_zone",
   "origin": "aim_ground",
@@ -19,7 +18,8 @@
     "duration_ticks": 200,
     "interval_ticks": 20,
     "gravity": 0,
-    "burst_radius": 2.8
+    "burst_radius": 2.8,
+    "visual": "mist"
   },
   "construction": {
     "material": "root",

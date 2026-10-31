@@ -7,8 +7,7 @@
   },
   "name": "Living Spring Convergence",
   "tier": "Family Variant",
-
-  "incantation": "2466",
+  "keys": "2466",
   "tags": "SETUP/CC/DMG/HEAL/BUFF",
   "shape": "targeted_zone",
   "origin": "aim_ground",
@@ -19,7 +18,8 @@
     "duration_ticks": 260,
     "interval_ticks": 20,
     "gravity": 0,
-    "burst_radius": 3.0
+    "burst_radius": 3.0,
+    "visual": "pool"
   },
   "construction": {
     "material": "root",

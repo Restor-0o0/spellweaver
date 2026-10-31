@@ -7,8 +7,7 @@
   },
   "name": "Glowstone",
   "tier": "Signature",
-
-  "incantation": "156",
+  "keys": "156",
   "tags": "UTIL",
   "shape": "direct_target",
   "origin": "aim_hit",

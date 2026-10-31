@@ -1,5 +1,6 @@
 {
   "id": "magicka:flooded_mud_convergence_water2_earth1_arcane1",
+  "keys": "2725",
   "formula": {
     "water": 2,
     "earth": 1,
@@ -7,8 +8,6 @@
   },
   "name": "Flooded Mud Convergence",
   "tier": "Family Variant",
-
-  "incantation": "2257",
   "tags": "SETUP/CC/BREAK/BUILD/MOVE",
   "shape": "spray",
   "origin": "caster_front",
