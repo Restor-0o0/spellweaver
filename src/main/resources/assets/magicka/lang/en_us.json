@@ -75,6 +75,7 @@
   "book.magicka.composite.steam": "Steam — Fire + Water",
   "book.magicka.composite.ice": "Ice — Water + Cold",
   "book.magicka.composite.shield": "Shield — Earth + Arcane",
+  "book.magicka.composite.rule": "Either order gives the same rune. Every spell whose formula holds %s is found under each of its elements as well.",
   "book.magicka.tag.heal": "Healing",
   "book.magicka.tag.movement": "Movement",
   "book.magicka.tag.projectile": "Projectile",

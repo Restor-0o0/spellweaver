@@ -75,6 +75,7 @@
   "book.magicka.composite.steam": "Пар — Огонь + Вода",
   "book.magicka.composite.ice": "Лёд — Вода + Холод",
   "book.magicka.composite.shield": "Щит — Земля + Аркана",
+  "book.magicka.composite.rule": "Порядок не важен — руна одна. Каждое заклинание с руной «%s» находится и по каждой из её стихий.",
   "book.magicka.tag.heal": "Лечение",
   "book.magicka.tag.movement": "Перемещение",
   "book.magicka.tag.projectile": "Снаряд",

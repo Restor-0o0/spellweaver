@@ -23,6 +23,7 @@ public final class GrimoireScreen extends Screen {
     private static final int PANEL=88,TOP=4,MAX_HEIGHT=560,MIN_HALF=150,LEAF=11,STAGGER=2,OPEN_IN=7,OPEN_TURN=14,SEGMENTS=10,MUTED_INK=0xFF816B50,RUNE_INK=0x40302B37,FACT_INK=0x5A4A3A,CELL=18,CELL_W=20;
     private static final float RATIO=1.42f;
     private static final int FORMULAS=formulas();
+    private static final int COMPOSITES=3;
     private static final Style RUNES=Style.EMPTY.withFont(ResourceLocation.withDefaultNamespace("alt"));
     private static final ResourceLocation EMBLEM=ResourceLocation.fromNamespaceAndPath(Magicka.ID,"textures/gui/cover_emblem.png");
     private static final ResourceLocation ELEMENTS=ResourceLocation.fromNamespaceAndPath(Magicka.ID,"textures/gui/elements.png");
@@ -51,7 +52,7 @@ public final class GrimoireScreen extends Screen {
     public GrimoireScreen(){
         super(Component.translatable("book.magicka.title"));var saved=BookPreferences.get();
         tag=Arrays.asList(TAGS).contains(saved.tag)?saved.tag:"all";query=saved.query;restoreId=saved.selectedId;
-        elements=Math.clamp(saved.elements,0,255);
+        elements=Math.clamp(saved.elements,0,2047);
     }
     private static int formulas(){
         int total=0;
@@ -68,7 +69,10 @@ public final class GrimoireScreen extends Screen {
         catalog=RecipeRegistry.clientRecipes().stream().filter(d->d.tier().equalsIgnoreCase("Signature") || d.name().equals("Shield"))
                 .sorted(Comparator.comparingInt((SpellDefinition d)->RecipeRegistry.catalogPosition(d.id())).thenComparing(d->d.id().toString())).toList();
         List<Integer> found=new ArrayList<>();
-        if(filtering())for(int i=0;i<catalog.size();i++)if(matches(catalog.get(i)))found.add(front()+i);
+        if(filtering()){
+            for(int i=0;i<COMPOSITES;i++)if(matchesComposite(i))found.add(front()+i);
+            for(int i=0;i<catalog.size();i++)if(matches(catalog.get(i)))found.add(front()+COMPOSITES+i);
+        }
         matches=found;
     }
     private boolean open(SpellDefinition spell){return SpellScrolls.clientOpen(minecraft.player,spell);}
@@ -81,6 +85,14 @@ public final class GrimoireScreen extends Screen {
         String text=(d.name()+" "+d.displayName().getString()+" "+d.tags()+" "+d.primaryDescription().getString()+" "+d.selfDescription().getString()+" "+tagText(d)).toLowerCase(Locale.ROOT);
         return words().stream().allMatch(text::contains);
     }
+    private boolean matchesComposite(int composite){
+        Element element=Element.values()[8+composite];
+        if(!tag.equals("all"))return false;
+        for(Element selected:Element.values())if((elements&1<<selected.ordinal())!=0 && selected!=element && !element.parents().contains(selected))return false;
+        String text=Component.translatable(compositeKey(element)).getString().toLowerCase(Locale.ROOT);
+        return words().stream().allMatch(text::contains);
+    }
+    private static String compositeKey(Element element){return "book.magicka.composite."+element.name().toLowerCase(Locale.ROOT);}
     private boolean dimmed(int p){return filtering() && p>=front() && p<statsPage() && !matches.contains(p);}
     private String tagText(SpellDefinition spell){return String.join(" · ",SpellTags.of(spell).stream().map(t->Component.translatable("book.magicka.tag."+t).getString()).toList());}
     private static Component label(SpellDefinition spell){return spell.ultimate()?Component.literal("★ ").append(spell.displayName()):spell.displayName();}
@@ -126,7 +138,7 @@ public final class GrimoireScreen extends Screen {
     private int magicPages(){return layout("book.magicka.magic").size();}
     private int front(){return (guidePages()+magicPages()+1)/2*2;}
     private boolean creative(){return minecraft.player!=null && minecraft.player.isCreative();}
-    private int statsPage(){return front()+(Math.max(FORMULAS,catalog.size())+1)/2*2;}
+    private int statsPage(){return front()+(Math.max(FORMULAS,catalog.size()+COMPOSITES)+1)/2*2;}
     private boolean onStats(){return creative() && page/2==statsPage()/2;}
     private int pages(View v){return statsPage()+(creative()?2:0);}
 
@@ -145,7 +157,7 @@ public final class GrimoireScreen extends Screen {
         y=TOP+Math.max(0,(height-TOP-4-bookHeight)/2);
         frameX=PANEL+8+(room-frameWidth)/2;panelX=frameX-PANEL-4;bookX=single?frameX-half/2:frameX;x=bookX;spine=x+half;splits.clear();layouts.clear();
         refresh();
-        if(!laidOut){for(int i=0;i<catalog.size();i++)if(catalog.get(i).id().toString().equals(restoreId))page=front()+i;restoreId="";}
+        if(!laidOut){for(int i=0;i<catalog.size();i++)if(catalog.get(i).id().toString().equals(restoreId))page=front()+COMPOSITES+i;restoreId="";}
         page=Math.clamp(page,0,pages(current())-1);
         camFrom=camTo=target();camStart=-100;
         laidOut=true;from=null;
@@ -201,14 +213,14 @@ public final class GrimoireScreen extends Screen {
         turn(before,was);rebuild(false);
     }
     private int firstOfSize(int size){
-        for(int i=0;i<catalog.size();i++)if(catalog.get(i).formula().size()==size && open(catalog.get(i)) && (!filtering() || matches.contains(front()+i)))return front()+i;
+        for(int i=0;i<catalog.size();i++)if(catalog.get(i).formula().size()==size && open(catalog.get(i)) && (!filtering() || matches.contains(front()+COMPOSITES+i)))return front()+COMPOSITES+i;
         return -1;
     }
     private void jump(int size){
         int target=firstOfSize(size);if(target<0)return;
         View before=current();int was=page;page=target;turn(before,was);rebuild(search!=null && search.isFocused());
     }
-    private SpellDefinition spellOn(int p){int i=p-front();return i>=0 && i<catalog.size() && open(catalog.get(i))?catalog.get(i):null;}
+    private SpellDefinition spellOn(int p){int i=p-front()-COMPOSITES;return i>=0 && i<catalog.size() && open(catalog.get(i))?catalog.get(i):null;}
     private SpellDefinition shown(){return spellOn(page);}
 
     private void rebuild(boolean focus){
@@ -410,8 +422,10 @@ public final class GrimoireScreen extends Screen {
             if(p<guidePages()+magicPages())guidePage(g,p<guidePages()?layout("book.magicka.guide").get(p):layout("book.magicka.magic").get(p-guidePages()),px,top,pw);
             return;
         }
-        if(p-front()<catalog.size()){
-            var spell=catalog.get(p-front());
+        int index=p-front();
+        if(index<COMPOSITES)compositePage(g,index,px,top,pw,bottom);
+        else if(index-COMPOSITES<catalog.size()){
+            var spell=catalog.get(index-COMPOSITES);
             if(open(spell))spellPage(g,spell,px,top,pw,bottom,side);else sealed(g,px,top,pw,bottom,p);
             if(!single && p==page && spell==shown()){int rx=px+pw-8;g.fill(rx,y+2,rx+6,y+24,0xFF9A2E2A);g.fill(rx+2,y+21,rx+4,y+24,0xFFEADBB8);}
         }
@@ -445,6 +459,19 @@ public final class GrimoireScreen extends Screen {
         int h=lines.size()*10+8,ty=(top+bottom-h)/2;
         g.fill(px+2,ty,px+pw-2,ty+h,0xF0EFE2C4);g.renderOutline(px+2,ty,pw-4,h,0xFFAA8C59);
         for(int i=0;i<lines.size();i++)g.drawString(font,lines.get(i),px+pw/2-font.width(lines.get(i))/2,ty+5+i*10,MagicUi.INK,false);
+    }
+    private void compositePage(GuiGraphics g,int index,int px,int top,int pw,int bottom){
+        Element element=Element.values()[8+index];
+        int cx=px+pw/2,cy=top+2;
+        for(var line:split("composite/"+index+"/name",Component.translatable(compositeKey(element)),pw)){g.drawString(font,line,cx-font.width(line)/2,cy,MagicUi.INK,false);cy+=11;}
+        cy+=10;
+        var parents=element.parents();
+        transitionRow(g,parents,index,cx,cy,pw);cy+=32;
+        transitionRow(g,List.of(parents.get(1),parents.get(0)),index,cx,cy,pw);cy+=32;
+        int arm=pw/3;g.fill(cx-arm,cy,cx-5,cy+1,0xFFAA8C59);g.fill(cx+5,cy,cx+arm,cy+1,0xFFAA8C59);g.fill(cx-1,cy-2,cx+1,cy+3,0xFF8A6A3A);g.fill(cx-2,cy-1,cx+2,cy+2,0xFF8A6A3A);
+        cy+=6;
+        var rule=Component.translatable("book.magicka.composite.rule",Component.translatable(element.key()));
+        fit(g,"composite/"+index+"/rule",rule,px,cy,pw,bottom,MagicUi.INK);
     }
     private void spellPage(GuiGraphics g,SpellDefinition entry,int px,int top,int pw,int bottom,int side){
         int cx=px+pw/2,cy=top+2;
