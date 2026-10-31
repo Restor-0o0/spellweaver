@@ -16,7 +16,6 @@ public final class MagicUi {
         new ItemStack(Items.GLOWSTONE_DUST), new ItemStack(Items.CLAY_BALL), new ItemStack(Items.OAK_SAPLING), new ItemStack(Items.AMETHYST_SHARD), new ItemStack(Items.SKELETON_SKULL),
         new ItemStack(Items.WIND_CHARGE), new ItemStack(Items.ICE), new ItemStack(Items.SHIELD)
     };
-    private static final ItemStack[] COMPOSITES = {new ItemStack(Items.WIND_CHARGE), new ItemStack(Items.PRISMARINE_CRYSTALS), new ItemStack(Items.SHIELD)};
     public static void panel(GuiGraphics g, int x, int y, int w, int h) {
         g.fill(x + 2, y + 3, x + w + 2, y + h + 3, 0x60000000);
         g.fill(x, y, x + w, y + h, 0xDF141820);
@@ -39,9 +38,7 @@ public final class MagicUi {
         return ElementBlend.composite(first,second);
     }
     public static void compositeSocket(GuiGraphics g, int composite, int x, int y) {
-        int color = switch (composite) { case 0 -> 0xFFD8D4DC; case 1 -> 0xFF72E4F2; default -> 0xFFFFD95A; };
-        g.fill(x, y, x + 24, y + 24, 0xFF0E1119);g.renderOutline(x, y, 24, 24, color);
-        g.renderItem(COMPOSITES[composite], x + 4, y + 3);g.fill(x + 6, y + 21, x + 18, y + 22, color);
+        socket(g, Element.values()[8 + composite], x, y, true);
     }
     public static void text(GuiGraphics g, Component text, int x, int y, int color) {
         g.drawString(Minecraft.getInstance().font, text, x, y, color, false);

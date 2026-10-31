@@ -20,15 +20,12 @@ import java.util.*;
 public final class GrimoireScreen extends Screen {
     private static final String[] TAGS={"damage","heal","control","construction","destruction","summon","utility","defense"};
     private static final Item[] TAG_ICONS={Items.IRON_SWORD,Items.GOLDEN_APPLE,Items.COBWEB,Items.BRICKS,Items.TNT,Items.ZOMBIE_HEAD,Items.COMPASS,Items.SHIELD};
-    private static final String[] COMPOSITES={"steam","ice","shield"};
-    private static final int[][] COMPOSITE_ELEMENTS={{0,1},{1,2},{4,6}};
     private static final int PANEL=88,TOP=4,MAX_HEIGHT=560,MIN_HALF=150,LEAF=11,STAGGER=2,OPEN_IN=7,OPEN_TURN=14,SEGMENTS=10,MUTED_INK=0xFF816B50,RUNE_INK=0x40302B37,FACT_INK=0x5A4A3A,CELL=18,CELL_W=20;
     private static final float RATIO=1.42f;
     private static final int FORMULAS=formulas();
     private static final Style RUNES=Style.EMPTY.withFont(ResourceLocation.withDefaultNamespace("alt"));
     private static final ResourceLocation EMBLEM=ResourceLocation.fromNamespaceAndPath(Magicka.ID,"textures/gui/cover_emblem.png");
     private static final ResourceLocation ELEMENTS=ResourceLocation.fromNamespaceAndPath(Magicka.ID,"textures/gui/elements.png");
-    private static final ResourceLocation COMPOSITE_TEXTURE=ResourceLocation.fromNamespaceAndPath(Magicka.ID,"textures/gui/composites.png");
     private record StatRow(MagicStats.Stat stat,int x,int y,int width){}
     private record RecipeRune(Element element,int composite){}
     private interface Face{void draw(GuiGraphics g,int side);}
@@ -36,7 +33,7 @@ public final class GrimoireScreen extends Screen {
     private record Line(FormattedCharSequence text,int kind){}
     private static final View BOOK=new View(null);
     private static final int TEXT=0,HEADING=1,BULLET=2,MORE=3;
-    private int x,y,bookX,bookWidth,bookHeight,half,spine,frameX,frameWidth,panelX,page,elements,composites,ticks,spellPage,catalogRevision=-1;
+    private int x,y,bookX,bookWidth,bookHeight,half,spine,frameX,frameWidth,panelX,page,elements,ticks,spellPage,catalogRevision=-1;
     private float clock,camFrom,camTo,camStart=-100;
     private String query="",tag="all",restoreId="";
     private boolean single,laidOut;
@@ -77,11 +74,10 @@ public final class GrimoireScreen extends Screen {
     private boolean open(SpellDefinition spell){return SpellScrolls.clientOpen(minecraft.player,spell);}
     private String number(){String q=query.trim();return q.matches("\\d{1,5}")?q:null;}
     private List<String> words(){String q=query.toLowerCase(Locale.ROOT).replace("#","").trim();return number()!=null || q.isEmpty()?List.of():List.of(q.split("\\s+"));}
-    private boolean filtering(){return !tag.equals("all") || elements!=0 || composites!=0 || !words().isEmpty();}
+    private boolean filtering(){return !tag.equals("all") || elements!=0 || !words().isEmpty();}
     private boolean matches(SpellDefinition d){
         if(!open(d) || !tag.equals("all") && !SpellTags.of(d).contains(tag))return false;
         for(Element element:Element.values())if((elements&1<<element.ordinal())!=0 && d.formula().total(element)==0)return false;
-        for(int i=0;i<COMPOSITES.length;i++)if((composites&1<<i)!=0 && d.formula().count(Element.values()[COMPOSITE_ELEMENTS[i][0]])==0 && d.formula().count(Element.values()[COMPOSITE_ELEMENTS[i][1]])==0)return false;
         String text=(d.name()+" "+d.displayName().getString()+" "+d.tags()+" "+d.primaryDescription().getString()+" "+d.selfDescription().getString()+" "+tagText(d)).toLowerCase(Locale.ROOT);
         return words().stream().allMatch(text::contains);
     }
@@ -225,8 +221,6 @@ public final class GrimoireScreen extends Screen {
             b.active=firstOfSize(i)>=0;b.setTooltip(Tooltip.create(Component.translatable("book.magicka.filter.points",i)));}
         for(Element element:Element.values()){int bit=1<<element.ordinal();
             addRenderableWidget(new RuneElement(sideX(1)+1+(element.base()?0:CELL_W),elementY(element),16,16,element,(elements&bit)!=0,b->refilter(()->elements^=bit)));}
-        for(int i=0;i<COMPOSITES.length;i++){int bit=1<<i;String key="book.magicka.composite."+COMPOSITES[i];
-            addRenderableWidget(new RuneComposite(compositeX()+1,compositeY(i),16,16,i,Component.translatable(key),(composites&bit)!=0,b->refilter(()->composites^=bit)));}
         search=new SearchBox(font,panelX+4,y+5,PANEL-8,14,Component.translatable("book.magicka.search"));
         search.setValue(query);search.setHint(Component.translatable("book.magicka.search"));
         search.setResponder(value->{
@@ -279,10 +273,6 @@ public final class GrimoireScreen extends Screen {
     }
     private boolean stacked(){return bookHeight-8>=13.5f*16;}
     private int sideX(int group){return frameX+frameWidth+4+(stacked()?0:group)*CELL_W;}
-    private int compositeX(){int elements=sideX(1);return elements+(stacked()?CELL_W:-CELL_W);}
-    private int compositeY(int index){
-        return (sideY(1,index)+sideY(1,index+1))/2;
-    }
     private int tagsY(){return slotY(4)+2;}
     /** Derived elements sit in a second column, halfway between their parents. */
     private int elementY(Element element){return sideY(1,(float)element.parents().stream().mapToInt(Element::ordinal).average().orElse(0));}
@@ -662,22 +652,6 @@ public final class GrimoireScreen extends Screen {
         }
         private static void disc(GuiGraphics g,int cx,int cy,int r,int color){
             for(int dy=-r;dy<r;dy++){float yy=dy+0.5f;int hw=Math.round((float)Math.sqrt(r*r-yy*yy));g.fill(cx-hw,cy+dy,cx+hw,cy+dy+1,color);}
-        }
-    }
-    private static final class RuneComposite extends Button {
-        private final int cell;private final boolean on;
-        RuneComposite(int x,int y,int width,int height,int cell,Component label,boolean on,OnPress press){
-            super(x,y,width,height,label,press,DEFAULT_NARRATION);this.cell=cell;this.on=on;setTooltip(Tooltip.create(label));
-        }
-        @Override protected void renderWidget(GuiGraphics g,int mouseX,int mouseY,float partialTick){
-            boolean hover=isHoveredOrFocused();
-            int color=switch(cell){case 0->0xFFD8D4DC;case 1->0xFF72E4F2;default->0xFFFFD95A;};
-            if(on)g.renderOutline(getX()-2,getY()-2,width+4,height+4,color);
-            else if(hover)g.renderOutline(getX()-1,getY()-1,width+2,height+2,0xFF8B7BB0);
-            float tone=on||hover?1f:0.6f;g.setColor(tone,tone,tone,1f);
-            g.pose().pushPose();g.pose().translate(getX(),getY(),0);g.pose().scale(width/32f,height/32f,1);
-            com.mojang.blaze3d.systems.RenderSystem.enableBlend();g.blit(COMPOSITE_TEXTURE,0,0,cell*32,0,32,32,96,32);
-            g.pose().popPose();g.setColor(1f,1f,1f,1f);
         }
     }
 }
