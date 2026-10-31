@@ -213,6 +213,7 @@ public final class MagicClient {
         int shown = stencil && path.template != null ? path.template.size() : Math.min(3, state.budget());
         for (int i = 0; i < shown; i++) {
             var pos = path.next(mc.player, i);
+            if (pos == null) break;
             boolean free = mc.level.getBlockState(pos).isAir();
             net.minecraft.client.renderer.LevelRenderer.renderLineBox(stack, buffers.getBuffer(net.minecraft.client.renderer.RenderType.lines()),
                     new net.minecraft.world.phys.AABB(pos).inflate(0.002), free ? 0.5F : 1F, free ? 0.9F : 0.3F, 0.95F, 0.7F);

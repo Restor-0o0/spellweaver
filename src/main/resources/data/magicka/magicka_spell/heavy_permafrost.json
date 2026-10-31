@@ -6,6 +6,8 @@
   },
   "name": "Heavy Permafrost",
   "tier": "Family Variant",
+
+  "incantation": "355",
   "tags": "CC/DEBUFF/BREAK",
   "shape": "projectile",
   "origin": "caster_front",

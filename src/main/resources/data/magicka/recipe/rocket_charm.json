@@ -7,15 +7,9 @@
     " G "
   ],
   "key": {
-    "S": {
-      "item": "minecraft:string"
-    },
-    "G": {
-      "item": "minecraft:iron_ingot"
-    },
-    "T": {
-      "item": "minecraft:firework_rocket"
-    }
+    "S": "minecraft:string",
+    "G": "minecraft:iron_ingot",
+    "T": "minecraft:firework_rocket"
   },
   "result": {
     "id": "magicka:rocket_charm",

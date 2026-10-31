@@ -7,12 +7,8 @@
     " G "
   ],
   "key": {
-    "G": {
-      "item": "minecraft:iron_ingot"
-    },
-    "T": {
-      "item": "minecraft:copper_ingot"
-    }
+    "G": "minecraft:iron_ingot",
+    "T": "minecraft:copper_ingot"
   },
   "result": {
     "id": "magicka:conductor_ring",

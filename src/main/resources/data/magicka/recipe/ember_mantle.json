@@ -7,15 +7,9 @@
     "LGL"
   ],
   "key": {
-    "L": {
-      "item": "minecraft:leather"
-    },
-    "G": {
-      "item": "minecraft:iron_ingot"
-    },
-    "T": {
-      "item": "minecraft:magma_cream"
-    }
+    "L": "minecraft:leather",
+    "G": "minecraft:iron_ingot",
+    "T": "minecraft:magma_cream"
   },
   "result": {
     "id": "magicka:ember_mantle",

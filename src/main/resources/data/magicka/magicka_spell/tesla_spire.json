@@ -7,6 +7,8 @@
   },
   "name": "Tesla Spire",
   "tier": "Signature",
+
+  "incantation": "4557",
   "scroll": true,
   "tags": "BUILD/DMG/AOE",
   "shape": "pillar",

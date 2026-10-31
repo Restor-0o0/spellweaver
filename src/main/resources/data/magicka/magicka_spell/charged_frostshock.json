@@ -6,6 +6,8 @@
   },
   "name": "Charged Frostshock",
   "tier": "Family Variant",
+
+  "incantation": "344",
   "tags": "CC/DEBUFF/DMG",
   "shape": "chain",
   "origin": "aim_hit",

@@ -7,15 +7,9 @@
     " S "
   ],
   "key": {
-    "S": {
-      "item": "minecraft:stick"
-    },
-    "G": {
-      "item": "minecraft:diamond"
-    },
-    "T": {
-      "item": "minecraft:blaze_rod"
-    }
+    "S": "minecraft:stick",
+    "G": "minecraft:diamond",
+    "T": "minecraft:blaze_rod"
   },
   "result": {
     "id": "magicka:veltar_staff",

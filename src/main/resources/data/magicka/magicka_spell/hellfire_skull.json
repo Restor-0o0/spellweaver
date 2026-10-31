@@ -6,6 +6,8 @@
   },
   "name": "Hellfire Skull",
   "tier": "Signature",
+
+  "incantation": "18",
   "tags": "DMG/DOT",
   "shape": "projectile",
   "origin": "caster_front",

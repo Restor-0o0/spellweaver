@@ -7,12 +7,8 @@
     " A "
   ],
   "key": {
-    "A": {
-      "item": "minecraft:amethyst_shard"
-    },
-    "T": {
-      "item": "minecraft:echo_shard"
-    }
+    "A": "minecraft:amethyst_shard",
+    "T": "minecraft:echo_shard"
   },
   "result": {
     "id": "magicka:charm_resonance",

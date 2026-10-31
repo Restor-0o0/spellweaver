@@ -7,12 +7,8 @@
     " G "
   ],
   "key": {
-    "G": {
-      "item": "minecraft:gold_ingot"
-    },
-    "T": {
-      "item": "minecraft:amethyst_shard"
-    }
+    "G": "minecraft:gold_ingot",
+    "T": "minecraft:amethyst_shard"
   },
   "result": {
     "id": "magicka:ring_of_suspension",

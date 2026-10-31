@@ -6,6 +6,7 @@
   },
   "name": "Crimson Aura",
   "tier": "Signature",
+  "incantation": "4666",
   "scroll": true,
   "tags": "BUFF",
   "shape": "nova",

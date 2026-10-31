@@ -7,15 +7,9 @@
     "LGL"
   ],
   "key": {
-    "L": {
-      "item": "minecraft:leather"
-    },
-    "G": {
-      "item": "minecraft:diamond"
-    },
-    "T": {
-      "item": "minecraft:golden_chestplate"
-    }
+    "L": "minecraft:leather",
+    "G": "minecraft:diamond",
+    "T": "minecraft:golden_chestplate"
   },
   "result": {
     "id": "magicka:alder_mantle",

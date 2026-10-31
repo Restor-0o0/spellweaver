@@ -6,6 +6,8 @@
   },
   "name": "Death Elemental",
   "tier": "Signature",
+
+  "incantation": "7888",
   "scroll": true,
   "tags": "SUMMON",
   "shape": "summon_object",

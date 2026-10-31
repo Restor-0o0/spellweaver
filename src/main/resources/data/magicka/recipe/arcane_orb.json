@@ -7,15 +7,9 @@
     " S "
   ],
   "key": {
-    "S": {
-      "item": "minecraft:stick"
-    },
-    "G": {
-      "item": "minecraft:gold_ingot"
-    },
-    "T": {
-      "item": "minecraft:ender_eye"
-    }
+    "S": "minecraft:stick",
+    "G": "minecraft:gold_ingot",
+    "T": "minecraft:ender_eye"
   },
   "result": {
     "id": "magicka:arcane_orb",

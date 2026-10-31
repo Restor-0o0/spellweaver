@@ -6,6 +6,8 @@
   },
   "name": "Cryosleep",
   "tier": "Signature",
+
+  "incantation": "366",
   "scroll": true,
   "tags": "HEAL/CC",
   "shape": "direct_target",

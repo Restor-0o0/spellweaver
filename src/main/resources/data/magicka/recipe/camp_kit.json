@@ -7,15 +7,9 @@
     " S "
   ],
   "key": {
-    "S": {
-      "item": "minecraft:stick"
-    },
-    "G": {
-      "item": "minecraft:copper_ingot"
-    },
-    "T": {
-      "item": "minecraft:leather"
-    }
+    "S": "minecraft:stick",
+    "G": "minecraft:copper_ingot",
+    "T": "minecraft:leather"
   },
   "result": {
     "id": "magicka:camp_kit",

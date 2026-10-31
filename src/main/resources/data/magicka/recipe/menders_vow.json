@@ -7,15 +7,9 @@
     "LGL"
   ],
   "key": {
-    "L": {
-      "item": "minecraft:leather"
-    },
-    "G": {
-      "item": "minecraft:gold_ingot"
-    },
-    "T": {
-      "item": "minecraft:chainmail_chestplate"
-    }
+    "L": "minecraft:leather",
+    "G": "minecraft:gold_ingot",
+    "T": "minecraft:chainmail_chestplate"
   },
   "result": {
     "id": "magicka:menders_vow",

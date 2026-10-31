@@ -6,6 +6,8 @@
   },
   "name": "Greater Thunderstone",
   "tier": "Family Variant",
+
+  "incantation": "4455",
   "tags": "DMG/CC/BREAK",
   "shape": "chain",
   "origin": "aim_hit",

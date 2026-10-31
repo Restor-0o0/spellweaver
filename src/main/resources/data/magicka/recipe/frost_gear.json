@@ -7,15 +7,9 @@
     "LGL"
   ],
   "key": {
-    "L": {
-      "item": "minecraft:leather"
-    },
-    "G": {
-      "item": "minecraft:iron_ingot"
-    },
-    "T": {
-      "item": "minecraft:blue_ice"
-    }
+    "L": "minecraft:leather",
+    "G": "minecraft:iron_ingot",
+    "T": "minecraft:blue_ice"
   },
   "result": {
     "id": "magicka:frost_gear",

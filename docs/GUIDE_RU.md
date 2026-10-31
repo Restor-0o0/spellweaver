@@ -202,7 +202,6 @@
 
 # Мирный мультиплеер
 #friendlyFire = false
-#selfHarm = "OFF"
 #playerMagicDamageMultiplier = 0.0
 
 # Враги Spellweaver не появляются в мире
@@ -217,9 +216,7 @@
 | --- | --- |
 | `allowTerrainDamage` | `true` |
 | `friendlyFire` | `true` |
-| `selfHarm` | `FULL` — свои взрывы, зоны и бури задевают заклинателя; `SCALED` — с множителем, `OFF` — нет |
-| `selfHarmMultiplier` | `0.5` — урон по себе в режиме `SCALED` |
-| `playerMagicDamageMultiplier` | `2.0` — урон заклинаний по игрокам, включая свои (0–10) |
+| `playerMagicDamageMultiplier` | `0.5` — прямой урон другим игрокам |
 | `constructiveMagic` / `magicBlockLifetime` / `collapseWithRoot` | `true` |
 | `earthLifetimeTicks` / `iceLifetimeTicks` / `rootLifetimeTicks` / `arcaneLifetimeTicks` | `1200 / 600 / 900 / 400` |
 | `maxConstructionBlocks` | `16` |

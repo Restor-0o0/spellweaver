@@ -7,15 +7,9 @@
     " S "
   ],
   "key": {
-    "S": {
-      "item": "minecraft:stick"
-    },
-    "G": {
-      "item": "minecraft:gold_ingot"
-    },
-    "T": {
-      "item": "minecraft:book"
-    }
+    "S": "minecraft:stick",
+    "G": "minecraft:gold_ingot",
+    "T": "minecraft:book"
   },
   "result": {
     "id": "magicka:ritual_tome",

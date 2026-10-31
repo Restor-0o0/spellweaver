@@ -7,15 +7,9 @@
     "LGL"
   ],
   "key": {
-    "L": {
-      "item": "minecraft:leather"
-    },
-    "G": {
-      "item": "minecraft:copper_ingot"
-    },
-    "T": {
-      "item": "minecraft:leather_chestplate"
-    }
+    "L": "minecraft:leather",
+    "G": "minecraft:copper_ingot",
+    "T": "minecraft:leather_chestplate"
   },
   "result": {
     "id": "magicka:heavy_expedition_coat",

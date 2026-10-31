@@ -6,6 +6,8 @@
   },
   "name": "Soul",
   "tier": "Signature",
+
+  "incantation": "67",
   "tags": "HEAL/BUFF/SETUP",
   "shape": "projectile",
   "origin": "caster_front",

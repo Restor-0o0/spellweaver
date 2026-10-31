@@ -7,12 +7,8 @@
     " G "
   ],
   "key": {
-    "G": {
-      "item": "minecraft:gold_ingot"
-    },
-    "T": {
-      "item": "minecraft:heart_of_the_sea"
-    }
+    "G": "minecraft:gold_ingot",
+    "T": "minecraft:heart_of_the_sea"
   },
   "result": {
     "id": "magicka:drowned_kings_ring",

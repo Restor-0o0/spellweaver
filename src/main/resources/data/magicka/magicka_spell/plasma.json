@@ -6,6 +6,8 @@
   },
   "name": "Plasma",
   "tier": "Signature",
+
+  "incantation": "14",
   "tags": "DMG/DOT/CC",
   "shape": "projectile",
   "origin": "caster_front",

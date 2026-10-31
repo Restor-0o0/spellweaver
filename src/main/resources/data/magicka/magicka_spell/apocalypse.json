@@ -8,6 +8,7 @@
   "incantation": "88185",
   "name": "Apocalypse",
   "tier": "Signature",
+  "ultimate": true,
   "scroll": true,
   "tags": "SUMMON/DMG/DEBUFF",
   "shape": "summon_object",

@@ -7,12 +7,8 @@
     " A "
   ],
   "key": {
-    "A": {
-      "item": "minecraft:amethyst_shard"
-    },
-    "T": {
-      "item": "minecraft:prismarine_shard"
-    }
+    "A": "minecraft:amethyst_shard",
+    "T": "minecraft:prismarine_shard"
   },
   "result": {
     "id": "magicka:charm_ricochet",

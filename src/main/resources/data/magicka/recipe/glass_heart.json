@@ -7,15 +7,9 @@
     " G "
   ],
   "key": {
-    "S": {
-      "item": "minecraft:string"
-    },
-    "G": {
-      "item": "minecraft:diamond"
-    },
-    "T": {
-      "item": "minecraft:glass"
-    }
+    "S": "minecraft:string",
+    "G": "minecraft:diamond",
+    "T": "minecraft:glass"
   },
   "result": {
     "id": "magicka:glass_heart",

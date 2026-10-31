@@ -6,6 +6,7 @@
   },
   "name": "Greater Cautery",
   "tier": "Family Variant",
+  "incantation": "1166",
   "tags": "DMG/DOT/HEAL/BUFF",
   "shape": "targeted_zone",
   "origin": "aim_ground",

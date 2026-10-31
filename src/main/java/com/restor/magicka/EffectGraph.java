@@ -42,10 +42,8 @@ public final class EffectGraph {
         boolean frozen = MagicStatuses.has(target,MagicStatuses.Status.FROZEN) || MagicStatuses.has(target,MagicStatuses.Status.BRITTLE);
         float damage = executeEntity(caster,target,spell,graph,origin,self,frozen);
         if (damage > 0 && canHarm(caster,target)) {
-            if (target instanceof Player && (target != caster || !self)) damage *= MagicConfig.PLAYER_DAMAGE.get().floatValue();
-            if (target == caster && !self) damage *= MagicConfig.selfHarmScale();
+            if (target instanceof Player && target != caster) damage *= MagicConfig.PLAYER_DAMAGE.get().floatValue();
             com.restor.magicka.enemy.MagicEnemies.hurt(target,target == caster ? caster.damageSources().magic() : caster.damageSources().indirectMagic(caster,caster),damage,caster,spell,frozen);
-            Conduction.puddle(caster,target,spell,graph,origin);
         }
     }
     private static float executeEntity(ServerPlayer caster, LivingEntity target, SpellDefinition spell, List<JsonObject> graph, Vec3 origin, boolean self, boolean frozen) {
@@ -57,7 +55,8 @@ public final class EffectGraph {
                 case "deal_damage" -> {
                     if (!canHarm(caster,target)) break;
                     String element = text(node,"element","arcane");
-                    double multiplier = element.equals("lightning") && MagicStatuses.has(target,MagicStatuses.Status.WET) ? 2 : element.equals("earth") && frozen ? 2 : element.equals("fire") && MagicStatuses.has(target,MagicStatuses.Status.WET) ? .5 : 1;
+                    boolean wet = target.isInWaterOrBubble() || MagicStatuses.has(target,MagicStatuses.Status.WET);
+                    double multiplier = element.equals("lightning") && wet ? 2 : element.equals("earth") && frozen ? 2 : element.equals("fire") && wet ? .5 : 1;
                     damage += (float)(amount*multiplier*MobResistances.multiplier(target,element));
                 }
                 case "heal" -> target.heal(MagicGear.heal(caster,target,(float)amount));
@@ -84,15 +83,13 @@ public final class EffectGraph {
                     MagicStatuses.apply(target,MagicStatuses.Status.BRITTLE,ticks,1);
                 }
                 case "rebirth" -> { if (canHarm(caster,target) && !(target instanceof Player)) FusionRules.markRebirth(caster,target,ticks); }
-                case "polymorph" -> PolymorphManager.apply(caster,target,text(node,"entity","minecraft:sheep"),ticks);
+                case "polymorph" -> PolymorphManager.apply(caster,target,text(node,"entity","minecraft:sheep"),ticks,node.has("allow_large_targets") && node.get("allow_large_targets").getAsBoolean());
                 case "remove_status" -> MagicStatuses.remove(target,MagicStatuses.Status.valueOf(text(node,"status","").toUpperCase(Locale.ROOT)));
                 case "apply_force" -> {
                     if (!canHarm(caster,target)) break;
                     Vec3 direction = target.position().subtract(origin).normalize();
                     if (direction.lengthSqr() < .001) direction = caster.getLookAngle();
-                    double lift = number(node,"lift",0);
-                    if (target instanceof Player && (target != caster || !self)) { amount *= MagicConfig.PLAYER_KNOCKBACK; lift = lift*MagicConfig.PLAYER_KNOCKBACK+.1; }
-                    target.push(direction.x*amount,lift,direction.z*amount); target.hurtMarked = true;
+                    target.push(direction.x*amount,number(node,"lift",0),direction.z*amount); target.hurtMarked = true;
                 }
                 case "conditional" -> {
                     boolean passes = switch(text(node,"condition","")) { case "wet" -> MagicStatuses.has(target,MagicStatuses.Status.WET); case "was_frozen","brittle" -> frozen; case "self" -> self;

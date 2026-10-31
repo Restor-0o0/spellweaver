@@ -7,15 +7,9 @@
     "LGL"
   ],
   "key": {
-    "L": {
-      "item": "minecraft:leather"
-    },
-    "G": {
-      "item": "minecraft:iron_ingot"
-    },
-    "T": {
-      "item": "minecraft:rabbit_hide"
-    }
+    "L": "minecraft:leather",
+    "G": "minecraft:iron_ingot",
+    "T": "minecraft:rabbit_hide"
   },
   "result": {
     "id": "magicka:insulated_suit",

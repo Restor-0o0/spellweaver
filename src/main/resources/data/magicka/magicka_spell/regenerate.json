@@ -5,6 +5,8 @@
   },
   "name": "Regenerate",
   "tier": "Signature",
+
+  "incantation": "666",
   "tags": "HEAL/BUFF",
   "shape": "targeted_zone",
   "origin": "aim_ground",

@@ -7,6 +7,8 @@
   },
   "name": "Ice Spike",
   "tier": "Signature",
+
+  "incantation": "2237",
   "tags": "BUILD/MOVE/DMG",
   "shape": "spike",
   "origin": "caster_feet",

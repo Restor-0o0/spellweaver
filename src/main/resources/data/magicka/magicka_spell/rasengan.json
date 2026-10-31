@@ -6,6 +6,7 @@
   },
   "name": "Spiral Sphere",
   "tier": "Signature",
+  "incantation": "277",
   "scroll": true,
   "tags": "DMG/MOVE",
   "shape": "dash",

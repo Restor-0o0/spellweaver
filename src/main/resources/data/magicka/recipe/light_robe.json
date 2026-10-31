@@ -7,15 +7,9 @@
     "LGL"
   ],
   "key": {
-    "L": {
-      "item": "minecraft:leather"
-    },
-    "G": {
-      "item": "minecraft:copper_ingot"
-    },
-    "T": {
-      "item": "minecraft:phantom_membrane"
-    }
+    "L": "minecraft:leather",
+    "G": "minecraft:copper_ingot",
+    "T": "minecraft:phantom_membrane"
   },
   "result": {
     "id": "magicka:light_robe",

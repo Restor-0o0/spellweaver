@@ -7,6 +7,8 @@
   },
   "name": "Haste Surge",
   "tier": "Signature",
+
+  "incantation": "4667",
   "tags": "MOVE/BUFF",
   "shape": "direct_target",
   "origin": "aim_hit",

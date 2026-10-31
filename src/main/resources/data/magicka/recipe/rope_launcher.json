@@ -7,15 +7,9 @@
     " S "
   ],
   "key": {
-    "S": {
-      "item": "minecraft:stick"
-    },
-    "G": {
-      "item": "minecraft:iron_ingot"
-    },
-    "T": {
-      "item": "minecraft:crossbow"
-    }
+    "S": "minecraft:stick",
+    "G": "minecraft:iron_ingot",
+    "T": "minecraft:crossbow"
   },
   "result": {
     "id": "magicka:rope_launcher",

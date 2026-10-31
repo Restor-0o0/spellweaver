@@ -6,6 +6,8 @@
   },
   "name": "Stone Wall",
   "tier": "Signature",
+
+  "incantation": "577",
   "tags": "BUILD",
   "shape": "wall",
   "origin": "caster_feet",

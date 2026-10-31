@@ -7,15 +7,9 @@
     " S "
   ],
   "key": {
-    "S": {
-      "item": "minecraft:stick"
-    },
-    "G": {
-      "item": "minecraft:gold_ingot"
-    },
-    "T": {
-      "item": "minecraft:fire_charge"
-    }
+    "S": "minecraft:stick",
+    "G": "minecraft:gold_ingot",
+    "T": "minecraft:fire_charge"
   },
   "result": {
     "id": "magicka:smoldering_focus",

@@ -7,15 +7,9 @@
     " S "
   ],
   "key": {
-    "S": {
-      "item": "minecraft:stick"
-    },
-    "G": {
-      "item": "minecraft:iron_ingot"
-    },
-    "T": {
-      "item": "minecraft:spyglass"
-    }
+    "S": "minecraft:stick",
+    "G": "minecraft:iron_ingot",
+    "T": "minecraft:spyglass"
   },
   "result": {
     "id": "magicka:survey_scanner",

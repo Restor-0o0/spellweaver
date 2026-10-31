@@ -7,15 +7,9 @@
     " S "
   ],
   "key": {
-    "S": {
-      "item": "minecraft:stick"
-    },
-    "G": {
-      "item": "minecraft:iron_ingot"
-    },
-    "T": {
-      "item": "minecraft:end_rod"
-    }
+    "S": "minecraft:stick",
+    "G": "minecraft:iron_ingot",
+    "T": "minecraft:end_rod"
   },
   "result": {
     "id": "magicka:staff",

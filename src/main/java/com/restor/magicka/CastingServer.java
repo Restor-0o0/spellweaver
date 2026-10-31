@@ -100,12 +100,25 @@ public final class CastingServer {
                 } else if (s.instant() && s.intent == Intent.PRIMARY && s.recipe.channeled()) {
                     s.windup = 0; s.channeling = true; s.channelStart = now;
                     s.total = construction ? s.recipe.budget()*s.recipe.interval() : MagicConfig.CHANNEL_TICKS.get()*(1+s.recipe.formula().size());
-                    SpellRuntime.cast(player, s.recipe, false);
-                    MageLevel.cast(player, s.recipe, false);
+                    try {
+                        SpellRuntime.cast(player, s.recipe, false);
+                        MageLevel.cast(player, s.recipe, false);
+                    } catch (RuntimeException error) {
+                        clearCast(s);
+                        sync(player, s);
+                        throw error;
+                    }
                 } else if (s.instant()) {
-                    SpellRuntime.cast(player, s.recipe, s.intent == Intent.SELF, true);
-                    MageLevel.cast(player, s.recipe, s.intent == Intent.SELF);
-                    s.formula.clear(); s.recipe = null; s.total = 0;
+                    try {
+                        SpellRuntime.cast(player, s.recipe, s.intent == Intent.SELF, true);
+                        MageLevel.cast(player, s.recipe, s.intent == Intent.SELF);
+                    } catch (RuntimeException error) {
+                        clearCast(s);
+                        sync(player, s);
+                        throw error;
+                    } finally {
+                        clearCast(s);
+                    }
                 }
                 s.remaining = s.total;
             }
@@ -142,7 +155,8 @@ public final class CastingServer {
     private static void startEpic(ServerPlayer player, Session s) {
         if (EpicMagic.cramped(player)) { deny(player); s.anchor = null; s.remaining = s.total = 0; s.formula.clear(); s.recipe = null; return; }
         s.channeling = true; s.channelStart = player.serverLevel().getGameTime(); s.elapsed = 0;
-        s.total = s.remaining = Math.clamp((int)s.recipe.number("duration_ticks",240),20,1200);
+        boolean persistentTitan = "titan".equals(SpellDefinition.string(s.recipe.delivery(), "epic", ""));
+        s.total = s.remaining = persistentTitan ? 1 : Math.clamp((int)s.recipe.number("duration_ticks",240),20,1200);
         s.epic = EpicMagic.start(player, s.recipe);
         MageLevel.cast(player, s.recipe, false);
     }    public static void quickFill(ServerPlayer player,int packed){
@@ -180,17 +194,28 @@ public final class CastingServer {
         if (!player.isAlive() || player.isSpectator() || player.serverLevel() != s.level) {
             reset(player); return;
         }
-        s.elapsed++; s.remaining--;
+        boolean persistentTitan = s.epic != null && s.recipe != null && "titan".equals(SpellDefinition.string(s.recipe.delivery(), "epic", ""));
+        s.elapsed++; if (!persistentTitan) s.remaining--;
         if (s.anchor != null && moved(player, s)) { breakEpic(player, s); return; }
+        if (persistentTitan && !s.epic.live) { finishChannel(player, s); return; }
         if (s.channeling) {
-            if (s.remaining <= 0) { finishChannel(player, s); return; }
+            if (!persistentTitan && s.remaining <= 0) { finishChannel(player, s); return; }
             if (s.epic == null && !s.recipe.shape().construction() && s.elapsed % 2 == 0) SpellVfx.hand(player, s.recipe.formula(), 8);
             if (s.epic == null && !s.recipe.shape().construction() && s.elapsed % pulseTicks(s.recipe) == 0) SpellRuntime.pulse(player, s.recipe);
             sync(player, s); return;
         }
         if (s.elapsed < s.windup && s.elapsed % 3 == 0) SpellRuntime.particles(player,s.recipe,player.getEyePosition().add(player.getLookAngle().scale(.6)),3,.15);
         if (s.elapsed == s.windup && s.anchor != null) { startEpic(player, s); sync(player, s); return; }
-        if (s.elapsed == s.windup) { if (s.secret) SecretSpell.INSTANCE.cast(player); else { SpellRuntime.cast(player,s.recipe,s.intent == Intent.SELF); MageLevel.cast(player,s.recipe,s.intent == Intent.SELF); } }
+        if (s.elapsed == s.windup) {
+            try {
+                if (s.secret) SecretSpell.INSTANCE.cast(player);
+                else { SpellRuntime.cast(player,s.recipe,s.intent == Intent.SELF); MageLevel.cast(player,s.recipe,s.intent == Intent.SELF); }
+            } catch (RuntimeException error) {
+                clearCast(s);
+                sync(player, s);
+                throw error;
+            }
+        }
         if (s.remaining == 0) { s.formula.clear(); s.recipe = null; }
         sync(player, s);
     }
@@ -215,11 +240,6 @@ public final class CastingServer {
         if (!s.formula.empty()) return Formula.unpack(s.formula.packed());
         return s.last != null && player.serverLevel().getGameTime() - s.lastCast < 100 ? Formula.unpack(s.last.packed()) : new Formula();
     }
-    static void interrupt(ServerPlayer player) {
-        Session s = SESSIONS.get(player.getUUID());
-        if (s != null && s.recipe != null) finishChannel(player, s);
-        SpellRuntime.interrupt(player);
-    }
     static void dissolveLocked(ServerPlayer player) {
         Session s = SESSIONS.get(player.getUUID());
         if (s == null || s.committed() || (ElementLocks.mask(s.formula) & ElementLocks.active(player)) == 0 && s.queued == null) return;
@@ -230,6 +250,10 @@ public final class CastingServer {
     static void clearFormula(ServerPlayer player) {
         Session s = SESSIONS.get(player.getUUID());
         if (s != null && s.remaining == 0 && !s.formula.empty()) { s.formula.clear(); sync(player, s); }
+    }
+    private static void clearCast(Session s) {
+        s.remaining = 0; s.total = 0; s.elapsed = 0; s.channeling = false;
+        s.epic = null; s.anchor = null; s.formula.clear(); s.recipe = null;
     }
     static SpellDefinition casting(ServerPlayer player) { Session s=SESSIONS.get(player.getUUID()); return s==null?null:s.recipe; }
     static void construction(ServerPlayer player, int attempts) { Session s=SESSIONS.get(player.getUUID()); if(s!=null)s.attempts=attempts; }

@@ -6,6 +6,8 @@
   },
   "name": "Greater Suspension",
   "tier": "Family Variant",
+
+  "incantation": "2277",
   "tags": "SETUP/CC",
   "shape": "targeted_explosion",
   "origin": "aim_hit",

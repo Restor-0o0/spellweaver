@@ -6,6 +6,8 @@
   },
   "name": "Conductive Flood",
   "tier": "Signature",
+
+  "incantation": "224",
   "tags": "AOE/SETUP/CC",
   "shape": "targeted_zone",
   "origin": "aim_ground",

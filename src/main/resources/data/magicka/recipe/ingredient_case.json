@@ -7,15 +7,9 @@
     " S "
   ],
   "key": {
-    "S": {
-      "item": "minecraft:stick"
-    },
-    "G": {
-      "item": "minecraft:copper_ingot"
-    },
-    "T": {
-      "item": "minecraft:bundle"
-    }
+    "S": "minecraft:stick",
+    "G": "minecraft:copper_ingot",
+    "T": "minecraft:bundle"
   },
   "result": {
     "id": "magicka:ingredient_case",

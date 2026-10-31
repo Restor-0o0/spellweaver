@@ -53,7 +53,7 @@ public final class UndeadMinions {
         }
         Vec3 at = place(level, mob, point, index);
         if (at == null || !WorldPlacement.allowed(owner, BlockPos.containing(at))) { mob.discard(); return false; }
-        mob.moveTo(at.x, at.y - mob.getBbHeight(), at.z, owner.getYRot() + index * 45, 0);
+        mob.moveTo(at.x, at.y - mob.getBbHeight() - .15, at.z, owner.getYRot() + index * 45, 0);
         mob.finalizeSpawn(level, level.getCurrentDifficultyAt(mob.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
         if (mob.getVehicle() != null) { Entity vehicle = mob.getVehicle(); mob.stopRiding(); vehicle.discard(); }
         if (mob instanceof Zombie zombie) zombie.setBaby(false);
@@ -111,10 +111,21 @@ public final class UndeadMinions {
         var ground = level.getBlockState(BlockPos.containing(at).below());
         if (!ground.isAir()) EpicMagic.fx(level,new net.minecraft.core.particles.BlockParticleOption(ParticleTypes.BLOCK, ground), at.x, at.y + .1, at.z, 6, .3, .05, .3, .1);
         if (y < at.y) return;
+        Vec3 safe = safeFeet(level, mob, at);
+        if (safe != null) { at = safe; mob.setPos(at.x, at.y, at.z); }
         RISING.remove(mob);
         mob.noPhysics = false;
         mob.setNoAi(false);
         EpicMagic.fx(level,ParticleTypes.SOUL, at.x, at.y + .5, at.z, 16, .35, .6, .35, .02);
+    }
+
+    private static Vec3 safeFeet(ServerLevel level, Mob mob, Vec3 requested) {
+        for (int dy = 0; dy <= 3; dy++) for (int dx = -1; dx <= 1; dx++) for (int dz = -1; dz <= 1; dz++) {
+            Vec3 candidate = requested.add(dx,dy,dz);
+            BlockPos feet = BlockPos.containing(candidate);
+            if (!level.getBlockState(feet.below()).getCollisionShape(level,feet.below()).isEmpty() && level.noCollision(mob,mob.getType().getDimensions().makeBoundingBox(candidate))) return candidate;
+        }
+        return null;
     }
 
     private static void vanish(Mob mob) {

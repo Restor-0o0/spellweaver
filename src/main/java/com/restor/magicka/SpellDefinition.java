@@ -38,8 +38,18 @@ public record SpellDefinition(ResourceLocation id, SpellFormula formula, String 
     private static List<JsonObject> genericSelf(SpellFormula formula) {
         var result=new ArrayList<JsonObject>();
         if(formula.water()>0)result.add(node("set_wet","duration_ticks",100+60*formula.water()));
+        if(formula.fire()>0 && formula.water()>0) {
+            result.add(status("obscured",40+20*formula.water(),1));
+            var shock=node("thermal_shock","amount",2*formula.fire());
+            shock.addProperty("duration_ticks",80);
+            result.add(shock);
+        }
         if(formula.fire()>0){var damage=node("deal_damage","amount",2*formula.fire());damage.addProperty("element","fire");result.add(damage);result.add(node("modify_temperature","amount",40*formula.fire()));}
-        if(formula.cold()>0)result.add(node("modify_temperature","amount",-40*formula.cold()));
+        if(formula.cold()>0) {
+            result.add(node("modify_temperature","amount",-40*formula.cold()));
+            if(formula.water()>0)result.add(status("chilled",100+40*formula.cold(),formula.cold()));
+            if(formula.water()>0 && formula.cold()>=2)result.add(status("frozen",40,1));
+        }
         if(formula.lightning()>0)result.add(node("add_charge","amount",35*formula.lightning()));
         if(formula.earth()>0){result.add(status("stone_shell",140,formula.earth()));result.add(status("chilled",110,formula.earth()));}
         if(formula.life()>0){result.add(node("heal","amount",2*formula.life()));result.add(status("regenerating",140,formula.life()));}
@@ -53,7 +63,7 @@ public record SpellDefinition(ResourceLocation id, SpellFormula formula, String 
     public static JsonObject object(JsonObject json, String key) { return json.has(key) ? json.getAsJsonObject(key).deepCopy() : new JsonObject(); }
     public static String string(JsonObject json, String key, String fallback) { return json.has(key) ? json.get(key).getAsString() : fallback; }
     public String incantation() { return string(source,"incantation",""); }
-    public boolean ultimate() { return !incantation().isEmpty(); }
+    public boolean ultimate() { return source.has("ultimate") && source.get("ultimate").getAsBoolean(); }
     /** Generic fusions answer to their elements in any order; every named spell is one exact sequence. */
     public boolean ordered() { return !tier.equals("Generic Fusion"); }
     /** Ultimates author a hard sequence, other named spells shuffle their elements by id. */
@@ -96,6 +106,7 @@ public record SpellDefinition(ResourceLocation id, SpellFormula formula, String 
     }
     public String langKey() { return "spell." + id.getNamespace() + "." + id.getPath(); }
     public net.minecraft.network.chat.MutableComponent displayName() {
+        if (source.has("fusion") && name.equals("Shield")) return net.minecraft.network.chat.Component.translatableWithFallback("spell.magicka.generic_shield", "Shield");
         if (!source.has("fusion")) return text("", name);
         var parts = net.minecraft.network.chat.Component.literal("");
         for (Element e : Element.values()) {

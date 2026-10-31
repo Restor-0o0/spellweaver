@@ -39,7 +39,7 @@ public final class Elementals {
     public static final int LIMIT = 2;
     private static final Map<UUID, Deque<Elemental>> OWNED = new HashMap<>();
 
-    public static void attributes(EntityAttributeCreationEvent event) { event.put(COMPANION.get(), Elemental.attributes().build()); }
+    public static void attributes(EntityAttributeCreationEvent event) { event.put(COMPANION.get(), Elemental.attributes().build()); event.put(TITAN.get(), ElementalTitan.attributes().build()); }
     public static void stop(ServerStoppedEvent event) { OWNED.clear(); }
 
     public static Element element(SpellDefinition s) {

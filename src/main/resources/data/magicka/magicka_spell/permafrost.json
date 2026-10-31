@@ -6,6 +6,8 @@
   },
   "name": "Permafrost",
   "tier": "Signature",
+
+  "incantation": "35",
   "tags": "CC/DEBUFF/BREAK",
   "shape": "projectile",
   "origin": "caster_front",

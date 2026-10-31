@@ -7,15 +7,9 @@
     " G "
   ],
   "key": {
-    "S": {
-      "item": "minecraft:string"
-    },
-    "G": {
-      "item": "minecraft:iron_ingot"
-    },
-    "T": {
-      "item": "minecraft:iron_nugget"
-    }
+    "S": "minecraft:string",
+    "G": "minecraft:iron_ingot",
+    "T": "minecraft:iron_nugget"
   },
   "result": {
     "id": "magicka:impact_seal",

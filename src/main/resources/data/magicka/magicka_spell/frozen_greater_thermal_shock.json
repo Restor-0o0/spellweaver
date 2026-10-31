@@ -6,6 +6,8 @@
   },
   "name": "Frozen Greater Thermal Shock",
   "tier": "Family Variant",
+
+  "incantation": "1333",
   "tags": "DMG/DOT/CC/DEBUFF",
   "shape": "projectile",
   "origin": "caster_front",

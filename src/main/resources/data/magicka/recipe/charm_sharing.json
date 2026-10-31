@@ -7,12 +7,8 @@
     " A "
   ],
   "key": {
-    "A": {
-      "item": "minecraft:amethyst_shard"
-    },
-    "T": {
-      "item": "minecraft:glistering_melon_slice"
-    }
+    "A": "minecraft:amethyst_shard",
+    "T": "minecraft:glistering_melon_slice"
   },
   "result": {
     "id": "magicka:charm_sharing",

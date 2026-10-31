@@ -7,12 +7,8 @@
     " G "
   ],
   "key": {
-    "G": {
-      "item": "minecraft:iron_ingot"
-    },
-    "T": {
-      "item": "minecraft:snowball"
-    }
+    "G": "minecraft:iron_ingot",
+    "T": "minecraft:snowball"
   },
   "result": {
     "id": "magicka:rime_band",

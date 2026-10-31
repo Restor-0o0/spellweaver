@@ -14,7 +14,7 @@ import java.util.*;
 
 public final class RecipeRegistry {
     public static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
-    public static final int CATALOG_SIZE = 347;
+    public static final int CATALOG_SIZE = 346;
     private static final List<ResourceLocation> INDEX = readIndex();
     private static final Map<ResourceLocation, Integer> POSITIONS = positions();
     private static final Map<SpellFormula, SpellDefinition> BASE = loadBase();

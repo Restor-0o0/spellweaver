@@ -7,6 +7,8 @@
   },
   "name": "Soul Chain",
   "tier": "Signature",
+
+  "incantation": "678",
   "tags": "DMG/HEAL",
   "shape": "chain",
   "origin": "aim_hit",

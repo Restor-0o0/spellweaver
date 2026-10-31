@@ -7,15 +7,9 @@
     " S "
   ],
   "key": {
-    "S": {
-      "item": "minecraft:stick"
-    },
-    "G": {
-      "item": "minecraft:diamond"
-    },
-    "T": {
-      "item": "minecraft:lantern"
-    }
+    "S": "minecraft:stick",
+    "G": "minecraft:diamond",
+    "T": "minecraft:lantern"
   },
   "result": {
     "id": "magicka:morrow_lantern",

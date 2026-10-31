@@ -7,6 +7,7 @@
   },
   "name": "Beckon",
   "tier": "Signature",
+  "incantation": "578",
   "scroll": true,
   "tags": "UTIL/CC",
   "shape": "projectile",

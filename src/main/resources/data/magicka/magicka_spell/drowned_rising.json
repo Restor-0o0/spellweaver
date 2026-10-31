@@ -6,6 +6,8 @@
   },
   "name": "Drowned Rising",
   "tier": "Signature",
+
+  "incantation": "288",
   "tags": "SUMMON",
   "shape": "summon_object",
   "origin": "aim_hit",

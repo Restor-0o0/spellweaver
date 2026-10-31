@@ -7,12 +7,8 @@
     " A "
   ],
   "key": {
-    "A": {
-      "item": "minecraft:amethyst_shard"
-    },
-    "T": {
-      "item": "minecraft:blaze_powder"
-    }
+    "A": "minecraft:amethyst_shard",
+    "T": "minecraft:blaze_powder"
   },
   "result": {
     "id": "magicka:charm_power",

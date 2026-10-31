@@ -6,6 +6,8 @@
   },
   "name": "Stone Stair",
   "tier": "Signature",
+
+  "incantation": "5556",
   "tags": "BUILD/MOVE",
   "shape": "stair",
   "origin": "caster_feet",

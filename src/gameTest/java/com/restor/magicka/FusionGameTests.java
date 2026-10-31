@@ -47,6 +47,20 @@ public final class FusionGameTests {
         h.succeed();
     }
     @GameTest(template="empty")
+    public static void genericSelfReactionsRemainAvailable(GameTestHelper h) {
+        var steam = RecipeRegistry.fusion(of(1,1,0,0,0,0,0,0));
+        var ice = RecipeRegistry.fusion(of(0,1,1,0,0,0,0,0));
+        var earth = RecipeRegistry.fusion(of(0,0,0,0,1,0,0,0));
+        var shield = RecipeRegistry.fusion(of(0,0,0,0,1,0,1,0));
+        var namedShield = RecipeRegistry.resolve(of(0,0,0,0,1,0,1,0));
+        h.assertTrue(steam.selfEffects().stream().anyMatch(e -> e.get("type").getAsString().equals("thermal_shock")), "Fire and water keep the steam reaction");
+        h.assertTrue(ice.selfEffects().stream().anyMatch(e -> e.get("type").getAsString().equals("apply_status") && e.get("status").getAsString().equals("chilled")), "Water and cold keep the ice self effect");
+        h.assertTrue(earth.selfEffects().stream().anyMatch(e -> e.get("type").getAsString().equals("apply_status") && e.get("status").getAsString().equals("stone_shell")), "Earth keeps the shield self effect");
+        h.assertTrue(shield.name().equals("Shield") && shield.tags().contains("DEF"), "Earth and Arcane keep the generic shield");
+        h.assertTrue(namedShield.name().equals("Shield") && !namedShield.ordered(), "Earth and Arcane no longer resolve to Crystal");
+        h.succeed();
+    }
+    @GameTest(template="empty")
     public static void rebirthRaisesTheSlainForTheCaster(GameTestHelper h) {
         var p = RecipeGameTests.caster(h);
         var zombie = h.spawnWithNoFreeWill(EntityType.ZOMBIE, new BlockPos(3, 2, 3));

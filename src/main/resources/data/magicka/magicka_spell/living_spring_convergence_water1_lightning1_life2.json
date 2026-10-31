@@ -7,6 +7,8 @@
   },
   "name": "Living Spring Convergence",
   "tier": "Family Variant",
+
+  "incantation": "2466",
   "tags": "SETUP/CC/DMG/HEAL/BUFF",
   "shape": "targeted_zone",
   "origin": "aim_ground",

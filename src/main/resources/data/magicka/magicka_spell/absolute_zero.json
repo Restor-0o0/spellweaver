@@ -19,7 +19,8 @@
     "duration_ticks": 300,
     "interval_ticks": 15,
     "gravity": 0,
-    "burst_radius": 9.0
+    "burst_radius": 9.0,
+    "ice_surface": true
   },
   "effects": [
     {
@@ -46,7 +47,7 @@
     },
     {
       "type": "deal_damage",
-      "amount": 16,
+      "amount": 16.0,
       "element": "cold"
     }
   ],
@@ -66,6 +67,6 @@
     ]
   },
   "balanced": true,
-  "primary": "Everything within five blocks freezes solid and stops moving.\nA projectile flies where you look and explodes in a 9-block radius on hit. Effects:\n• Damage 8 ❤ cold\n• Cold 240: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Slowness V for 16 s\n• Rooted in place for 10 s\n• Brittle (earth damage ×2) for 16 s",
+  "primary": "Everything within five blocks freezes solid and stops moving.\nA projectile flies where you look and explodes in a 9-block radius on hit. Effects:\n• Damage 5.75 ❤ cold\n• Cold 240: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Slowness V for 16 s\n• Rooted in place for 10 s\n• Brittle (earth damage ×2) for 16 s",
   "self_description": "On you:\n• Stone skin (Resistance III) for 15 s\n• Cold 60: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze"
 }

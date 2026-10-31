@@ -7,15 +7,9 @@
     " G "
   ],
   "key": {
-    "S": {
-      "item": "minecraft:string"
-    },
-    "G": {
-      "item": "minecraft:gold_ingot"
-    },
-    "T": {
-      "item": "minecraft:emerald"
-    }
+    "S": "minecraft:string",
+    "G": "minecraft:gold_ingot",
+    "T": "minecraft:emerald"
   },
   "result": {
     "id": "magicka:heart_of_the_mountain",

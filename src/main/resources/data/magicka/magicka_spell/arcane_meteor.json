@@ -7,6 +7,8 @@
   },
   "name": "Arcane Meteor",
   "tier": "Signature",
+
+  "incantation": "1557",
   "scroll": true,
   "tags": "DMG/BREAK/AOE",
   "shape": "targeted_explosion",

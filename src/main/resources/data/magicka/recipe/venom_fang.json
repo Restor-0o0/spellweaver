@@ -7,12 +7,8 @@
     " G "
   ],
   "key": {
-    "G": {
-      "item": "minecraft:iron_ingot"
-    },
-    "T": {
-      "item": "minecraft:fermented_spider_eye"
-    }
+    "G": "minecraft:iron_ingot",
+    "T": "minecraft:fermented_spider_eye"
   },
   "result": {
     "id": "magicka:venom_fang",

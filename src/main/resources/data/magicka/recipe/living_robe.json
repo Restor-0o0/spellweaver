@@ -7,15 +7,9 @@
     "LGL"
   ],
   "key": {
-    "L": {
-      "item": "minecraft:leather"
-    },
-    "G": {
-      "item": "minecraft:gold_ingot"
-    },
-    "T": {
-      "item": "minecraft:moss_block"
-    }
+    "L": "minecraft:leather",
+    "G": "minecraft:gold_ingot",
+    "T": "minecraft:moss_block"
   },
   "result": {
     "id": "magicka:living_robe",

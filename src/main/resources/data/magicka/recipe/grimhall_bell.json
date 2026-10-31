@@ -7,15 +7,9 @@
     " G "
   ],
   "key": {
-    "S": {
-      "item": "minecraft:string"
-    },
-    "G": {
-      "item": "minecraft:diamond"
-    },
-    "T": {
-      "item": "minecraft:bell"
-    }
+    "S": "minecraft:string",
+    "G": "minecraft:diamond",
+    "T": "minecraft:bell"
   },
   "result": {
     "id": "magicka:grimhall_bell",

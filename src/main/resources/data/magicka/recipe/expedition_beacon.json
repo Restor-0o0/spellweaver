@@ -7,15 +7,9 @@
     " S "
   ],
   "key": {
-    "S": {
-      "item": "minecraft:stick"
-    },
-    "G": {
-      "item": "minecraft:copper_ingot"
-    },
-    "T": {
-      "item": "minecraft:torch"
-    }
+    "S": "minecraft:stick",
+    "G": "minecraft:copper_ingot",
+    "T": "minecraft:torch"
   },
   "result": {
     "id": "magicka:expedition_beacon",

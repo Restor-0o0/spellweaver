@@ -7,12 +7,8 @@
     " A "
   ],
   "key": {
-    "A": {
-      "item": "minecraft:amethyst_shard"
-    },
-    "T": {
-      "item": "minecraft:snowball"
-    }
+    "A": "minecraft:amethyst_shard",
+    "T": "minecraft:snowball"
   },
   "result": {
     "id": "magicka:charm_frostbite",

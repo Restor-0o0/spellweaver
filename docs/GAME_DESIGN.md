@@ -362,7 +362,7 @@ Primary-эффекты — это дерево узлов (`EffectGraph`). Ог�
 
 ## 8. Урон и реакции стихий
 
-Итоговый урон = `amount` × множители характеристик (§16) × реакции × (×2 по игрокам, включая самого заклинателя, `playerMagicDamageMultiplier`).
+Итоговый урон = `amount` × множители характеристик (§16) × реакции × (0,5 по игрокам, `playerMagicDamageMultiplier`).
 
 | Реакция | Условие | Множитель |
 |---|---|---|
@@ -870,14 +870,12 @@ Primary-эффекты — это дерево узлов (`EffectGraph`). Ог�
 | `maxConstructionBlocks` | 16 (1–64) | Лимит блоков в постройке |
 | `castTimeMultiplier` | 1.0 (0,25–4) | Множитель подготовки |
 | `channelMaxTicksPerElement` | 20 | Максимум потока на стихию |
-| `playerMagicDamageMultiplier` | 2.0 | Множитель магического урона по игрокам, включая самого заклинателя (0–10) |
+| `playerMagicDamageMultiplier` | 0.5 | Множитель магического урона по игрокам |
 | `maxActiveSpellsPerPlayer` | 32 | Активных снарядов/зон на игрока |
 | `revivalWindowTicks` | 600 | Окно воскрешения |
 | `maxUndeadMinionsPerPlayer` | 24 | Лимит слуг |
 | `allowTerrainDamage` | true | Разрушение блоков |
 | `friendlyFire` | true | Урон по союзникам |
-| `selfHarm` | FULL | Свои взрывы, зоны и бури задевают заклинателя: FULL / SCALED / OFF |
-| `selfHarmMultiplier` | 0.5 | Урон по себе в режиме SCALED |
 | `collapseWithRoot` | true | Обрушение построек |
 | `specialEnemyNaturalSpawns` | true | Естественный спавн врагов-специалистов в пещерах (ниже Y=48) |
 

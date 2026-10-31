@@ -6,6 +6,7 @@
   },
   "name": "Phoenix Tears",
   "tier": "Signature",
+  "incantation": "1666",
   "scroll": true,
   "tags": "HEAL/BUFF",
   "shape": "direct_target",
@@ -43,6 +44,6 @@
     ]
   },
   "balanced": true,
-  "primary": "The ally you aim at (or you) heals 2 ❤, gains regeneration for 5 s and a phoenix mark for 60 s. If the marked one would die while it lasts, they rise from the ashes instead:\n• Back to half health\n• A shield for 5 s: no damage at all, speed II to get away\n• Fire resistance 10 s, regeneration II 5 s\n• Hostile mobs within 5 blocks catch fire and are thrown back",
+  "primary": "The ally you aim at (or you) heals 2 ❤, gains regeneration for 5 s and a phoenix mark for 60 s. If the marked one would die while it lasts, they rise from the ashes instead:\n• Back to half health\n• Fire resistance 10 s, regeneration II 5 s\n• Hostile mobs within 5 blocks catch fire and are thrown back",
   "self_description": "The phoenix mark goes on you."
 }

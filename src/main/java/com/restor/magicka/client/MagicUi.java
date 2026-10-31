@@ -1,6 +1,7 @@
 package com.restor.magicka.client;
 
 import com.restor.magicka.Element;
+import com.restor.magicka.ElementBlend;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -14,6 +15,7 @@ public final class MagicUi {
         new ItemStack(Items.BLAZE_POWDER), new ItemStack(Items.WATER_BUCKET), new ItemStack(Items.SNOWBALL),
         new ItemStack(Items.GLOWSTONE_DUST), new ItemStack(Items.CLAY_BALL), new ItemStack(Items.OAK_SAPLING), new ItemStack(Items.AMETHYST_SHARD), new ItemStack(Items.SKELETON_SKULL)
     };
+    private static final ItemStack[] COMPOSITES = {new ItemStack(Items.WIND_CHARGE), new ItemStack(Items.PRISMARINE_CRYSTALS), new ItemStack(Items.SHIELD)};
     public static void panel(GuiGraphics g, int x, int y, int w, int h) {
         g.fill(x + 2, y + 3, x + w + 2, y + h + 3, 0x60000000);
         g.fill(x, y, x + w, y + h, 0xDF141820);
@@ -31,6 +33,14 @@ public final class MagicUi {
             g.fill(x + 11, y + 10, x + 13, y + 14, 0xFF514957);
             g.fill(x + 10, y + 11, x + 14, y + 13, 0xFF514957);
         }
+    }
+    public static int composite(Element first, Element second) {
+        return ElementBlend.composite(first,second);
+    }
+    public static void compositeSocket(GuiGraphics g, int composite, int x, int y) {
+        int color = switch (composite) { case 0 -> 0xFFD8D4DC; case 1 -> 0xFF72E4F2; default -> 0xFFFFD95A; };
+        g.fill(x, y, x + 24, y + 24, 0xFF0E1119);g.renderOutline(x, y, 24, 24, color);
+        g.renderItem(COMPOSITES[composite], x + 4, y + 3);g.fill(x + 6, y + 21, x + 18, y + 22, color);
     }
     public static void text(GuiGraphics g, Component text, int x, int y, int color) {
         g.drawString(Minecraft.getInstance().font, text, x, y, color, false);

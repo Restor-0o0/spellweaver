@@ -75,7 +75,7 @@ public final class EpicMagic {
     }
     static List<LivingEntity> area(ServerPlayer p, Vec3 center, double radius, double below, double above) {
         return p.serverLevel().getEntitiesOfClass(LivingEntity.class,new AABB(center.x-radius,center.y-below,center.z-radius,center.x+radius,center.y+above,center.z+radius),
-                e -> (e != p || MagicConfig.selfHarm()) && e.isAlive() && !e.isSpectator() && square(e.getX()-center.x)+square(e.getZ()-center.z) <= radius*radius);
+                e -> e != p && e.isAlive() && !e.isSpectator() && square(e.getX()-center.x)+square(e.getZ()-center.z) <= radius*radius);
     }
     private static double square(double v) { return v*v; }
     private static Vec3 scatter(RandomSource r, Vec3 center, double radius, double y) {
@@ -298,7 +298,7 @@ public final class EpicMagic {
         double fall = Math.max(1.5,-v.y*2+1);
         var below = level.clip(new ClipContext(at,at.add(0,-fall,0),ClipContext.Block.COLLIDER,ClipContext.Fluid.ANY,chunk));
         boolean hit = below.getType() != HitResult.Type.MISS || chunk.tickCount > 100
-                || !level.getEntitiesOfClass(LivingEntity.class,chunk.getBoundingBox().inflate(.3),e -> (e != p || MagicConfig.selfHarm()) && e.isAlive() && EffectGraph.canHarm(p,e)).isEmpty();
+                || !level.getEntitiesOfClass(LivingEntity.class,chunk.getBoundingBox().inflate(.3),e -> e != p && e.isAlive() && EffectGraph.canHarm(p,e)).isEmpty();
         if (!hit) return false;
         Vec3 point = below.getType() != HitResult.Type.MISS ? below.getLocation() : at;
         chunk.discard();

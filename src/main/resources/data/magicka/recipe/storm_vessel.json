@@ -7,15 +7,9 @@
     " G "
   ],
   "key": {
-    "S": {
-      "item": "minecraft:string"
-    },
-    "G": {
-      "item": "minecraft:gold_ingot"
-    },
-    "T": {
-      "item": "minecraft:glass_bottle"
-    }
+    "S": "minecraft:string",
+    "G": "minecraft:gold_ingot",
+    "T": "minecraft:glass_bottle"
   },
   "result": {
     "id": "magicka:storm_vessel",

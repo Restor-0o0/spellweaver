@@ -6,6 +6,8 @@
   },
   "name": "Flooded Greater Suspension",
   "tier": "Family Variant",
+
+  "incantation": "2227",
   "tags": "SETUP/CC",
   "shape": "spray",
   "origin": "caster_front",

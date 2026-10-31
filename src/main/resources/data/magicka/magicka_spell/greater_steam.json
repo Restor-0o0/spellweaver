@@ -6,6 +6,8 @@
   },
   "name": "Greater Steam",
   "tier": "Family Variant",
+
+  "incantation": "1122",
   "tags": "DMG/DOT/SETUP/CC",
   "shape": "spray",
   "origin": "caster_front",
