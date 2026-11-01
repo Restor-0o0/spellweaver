@@ -70,7 +70,7 @@ public class ElementalTitan extends PathfinderMob implements ElementalBody {
         level.playSound(null, c.focus.x, c.focus.y, c.focus.z, Elementals.shot(titan.element()), SoundSource.PLAYERS, 2f, .5f);
     }
 
-    @Override protected void defineSynchedData() { entityData.define(ELEMENT, 0); entityData.define(ACTION, 0); entityData.define(OWNER, -1); entityData.define(SINKING, false); }
+    @Override protected void defineSynchedData() { super.defineSynchedData(); entityData.define(ELEMENT, 0); entityData.define(ACTION, 0); entityData.define(OWNER, -1); entityData.define(SINKING, false); }
     @Override public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
         super.onSyncedDataUpdated(key);
         if (ACTION.equals(key)) { previous = shown; shown = entityData.get(ACTION); actionStart = tickCount; }
