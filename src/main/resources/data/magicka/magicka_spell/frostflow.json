@@ -6,6 +6,8 @@
   },
   "name": "Frostflow",
   "tier": "Signature",
+
+  "incantation": "23",
   "tags": "SETUP/CC/DEBUFF",
   "shape": "projectile",
   "origin": "caster_front",

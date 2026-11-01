@@ -7,6 +7,8 @@
   },
   "name": "Living Cryostasis Convergence",
   "tier": "Family Variant",
+
+  "incantation": "3466",
   "tags": "CC/DEBUFF/DMG/HEAL/BUFF",
   "shape": "targeted_zone",
   "origin": "aim_ground",

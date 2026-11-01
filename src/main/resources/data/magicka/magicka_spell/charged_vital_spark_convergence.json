@@ -7,6 +7,8 @@
   },
   "name": "Charged Vital Spark Convergence",
   "tier": "Family Variant",
+
+  "incantation": "4467",
   "tags": "DMG/CC/HEAL/BUFF/SETUP",
   "shape": "chain",
   "origin": "aim_hit",

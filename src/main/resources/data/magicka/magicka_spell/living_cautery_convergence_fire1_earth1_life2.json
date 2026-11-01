@@ -7,6 +7,8 @@
   },
   "name": "Living Cautery Convergence",
   "tier": "Family Variant",
+
+  "incantation": "1566",
   "tags": "DMG/DOT/BREAK/HEAL/BUFF",
   "shape": "projectile",
   "origin": "caster_front",

@@ -7,6 +7,8 @@
   },
   "name": "Charged Thunderstone Convergence",
   "tier": "Family Variant",
+
+  "incantation": "4457",
   "tags": "DMG/CC/BREAK/SETUP/BUILD",
   "shape": "chain",
   "origin": "aim_hit",

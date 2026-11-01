@@ -6,6 +6,8 @@
   },
   "name": "Arcane Detonation",
   "tier": "Signature",
+
+  "incantation": "177",
   "tags": "DMG/AOE/CC",
   "shape": "targeted_explosion",
   "origin": "aim_hit",

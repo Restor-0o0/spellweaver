@@ -6,6 +6,8 @@
   },
   "name": "Floating Platform",
   "tier": "Signature",
+
+  "incantation": "5577",
   "tags": "BUILD/MOVE",
   "shape": "platform",
   "origin": "caster",

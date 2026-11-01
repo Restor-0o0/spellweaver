@@ -7,6 +7,8 @@
   },
   "name": "Volatile Magma Core",
   "tier": "Signature",
+
+  "incantation": "157",
   "tags": "DMG/AOE/BREAK",
   "shape": "burst_projectile",
   "origin": "caster_front",

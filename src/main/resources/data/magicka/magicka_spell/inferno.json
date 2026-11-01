@@ -5,6 +5,8 @@
   },
   "name": "Inferno",
   "tier": "Signature",
+
+  "incantation": "1111",
   "scroll": true,
   "tags": "DMG/DOT",
   "shape": "spray",

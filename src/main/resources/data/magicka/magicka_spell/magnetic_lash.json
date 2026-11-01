@@ -7,6 +7,8 @@
   },
   "name": "Magnetic Lash",
   "tier": "Signature",
+
+  "incantation": "457",
   "tags": "CC/DMG",
   "shape": "projectile",
   "origin": "aim_hit",

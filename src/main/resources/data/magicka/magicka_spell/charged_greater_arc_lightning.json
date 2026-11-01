@@ -6,6 +6,8 @@
   },
   "name": "Charged Greater Arc Lightning",
   "tier": "Family Variant",
+
+  "incantation": "4447",
   "tags": "DMG/CC/SETUP",
   "shape": "chain",
   "origin": "aim_hit",

@@ -7,6 +7,8 @@
   },
   "name": "Shatter Bolt",
   "tier": "Signature",
+
+  "incantation": "137",
   "tags": "DMG/SETUP",
   "shape": "projectile",
   "origin": "aim_hit",

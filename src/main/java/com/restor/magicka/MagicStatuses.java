@@ -80,7 +80,7 @@ public final class MagicStatuses {
         }
         if (now % 10 == 0) {
             if (has(entity,Status.CHILLED) || immobilized) entity.addEffect(new MobEffectInstance(MobEffects.SLOWNESS,15,immobilized ? 5 : Math.max(0,tag.getIntOr("CHILLED_strength", 0)-1),false,false));
-            if (has(entity,Status.STONE_SHELL)) entity.addEffect(new MobEffectInstance(MobEffects.RESISTANCE,15,Math.min(2,tag.getIntOr("STONE_SHELL_strength", 0)-1),false,false));
+            if (has(entity,Status.STONE_SHELL)) entity.addEffect(new MobEffectInstance(MobEffects.RESISTANCE,(int)Math.clamp(tag.getLongOr("STONE_SHELL",0L)-now,1,72000),Math.min(2,tag.getIntOr("STONE_SHELL_strength", 0)-1),false,false,true));
             if (has(entity,Status.SHOCKED)) entity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS,15,0,false,false));
             if (has(entity,Status.LEVITATING)) entity.addEffect(new MobEffectInstance(MobEffects.LEVITATION,15,0,false,false));
             if (has(entity,Status.SLOW_FALLING)) entity.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING,15,0,false,false));

@@ -6,6 +6,8 @@
   },
   "name": "Firebomb",
   "tier": "Signature",
+
+  "incantation": "117",
   "tags": "DMG/AOE/DOT",
   "shape": "burst_projectile",
   "origin": "caster_front",

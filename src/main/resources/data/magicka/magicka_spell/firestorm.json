@@ -8,6 +8,7 @@
   "incantation": "71141",
   "name": "Firestorm",
   "tier": "Signature",
+  "ultimate": true,
   "scroll": true,
   "tags": "DMG/DOT/AOE",
   "shape": "targeted_zone",

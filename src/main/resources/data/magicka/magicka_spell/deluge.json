@@ -8,6 +8,7 @@
   "incantation": "22532",
   "name": "Deluge",
   "tier": "Signature",
+  "ultimate": true,
   "scroll": true,
   "tags": "CC/AOE",
   "shape": "nova",

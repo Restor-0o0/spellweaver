@@ -6,6 +6,8 @@
   },
   "name": "Glacier Hammer",
   "tier": "Signature",
+
+  "incantation": "3355",
   "scroll": true,
   "tags": "DMG/CC/BREAK",
   "shape": "projectile",

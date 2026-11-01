@@ -7,6 +7,7 @@
   },
   "name": "Trap Sign",
   "tier": "Signature",
+  "incantation": "345",
   "scroll": true,
   "tags": "CC/ZONE",
   "shape": "targeted_zone",

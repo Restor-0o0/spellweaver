@@ -5,6 +5,8 @@
   },
   "name": "Thunder Lance",
   "tier": "Signature",
+
+  "incantation": "4444",
   "scroll": true,
   "tags": "DMG/CC",
   "shape": "chain",

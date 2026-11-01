@@ -7,6 +7,8 @@
   },
   "name": "Crystal Anchor",
   "tier": "Signature",
+
+  "incantation": "3577",
   "tags": "BUILD/MOVE/SETUP",
   "shape": "summon_object",
   "origin": "aim_surface",

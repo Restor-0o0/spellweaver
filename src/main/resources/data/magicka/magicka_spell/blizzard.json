@@ -8,6 +8,7 @@
   "incantation": "33253",
   "name": "Blizzard",
   "tier": "Signature",
+  "ultimate": true,
   "scroll": true,
   "tags": "DMG/CC/AOE",
   "shape": "targeted_zone",

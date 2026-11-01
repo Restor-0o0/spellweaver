@@ -7,6 +7,8 @@
   },
   "name": "Unstable Suspension Convergence",
   "tier": "Family Variant",
+
+  "incantation": "2377",
   "tags": "SETUP/CC/DEBUFF/BUILD",
   "shape": "targeted_zone",
   "origin": "aim_ground",

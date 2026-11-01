@@ -6,6 +6,8 @@
   },
   "name": "Mjolnir",
   "tier": "Signature",
+
+  "incantation": "448",
   "scroll": true,
   "tags": "DMG/CC/MOVE",
   "shape": "dash",

@@ -6,6 +6,8 @@
   },
   "name": "Flooded Mud",
   "tier": "Family Variant",
+
+  "incantation": "225",
   "tags": "SETUP/CC/BREAK",
   "shape": "spray",
   "origin": "caster_front",

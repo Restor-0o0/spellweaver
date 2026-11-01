@@ -6,6 +6,8 @@
   },
   "name": "Stasis",
   "tier": "Signature",
+
+  "incantation": "37",
   "tags": "CC/DEBUFF/SETUP",
   "shape": "projectile",
   "origin": "caster_front",

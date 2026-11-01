@@ -5,6 +5,8 @@
   },
   "name": "Pebble",
   "tier": "Signature",
+
+  "incantation": "5",
   "tags": "BREAK",
   "shape": "projectile",
   "origin": "caster_front",

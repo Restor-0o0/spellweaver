@@ -5,6 +5,8 @@
   },
   "name": "Jet",
   "tier": "Signature",
+
+  "incantation": "22",
   "tags": "SETUP/CC",
   "shape": "spray",
   "origin": "caster_front",

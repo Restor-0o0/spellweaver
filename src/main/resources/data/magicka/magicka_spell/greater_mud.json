@@ -6,6 +6,8 @@
   },
   "name": "Greater Mud",
   "tier": "Family Variant",
+
+  "incantation": "2255",
   "tags": "SETUP/CC/BREAK",
   "shape": "projectile",
   "origin": "caster_front",

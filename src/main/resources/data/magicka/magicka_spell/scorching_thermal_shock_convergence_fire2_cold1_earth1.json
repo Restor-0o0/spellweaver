@@ -7,6 +7,8 @@
   },
   "name": "Scorching Thermal Shock Convergence",
   "tier": "Family Variant",
+
+  "incantation": "1135",
   "tags": "DMG/DOT/CC/DEBUFF/BREAK",
   "shape": "spray",
   "origin": "caster_front",

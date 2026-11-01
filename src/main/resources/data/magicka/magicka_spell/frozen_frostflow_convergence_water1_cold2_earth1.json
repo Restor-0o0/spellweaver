@@ -7,6 +7,8 @@
   },
   "name": "Frozen Frostflow Convergence",
   "tier": "Family Variant",
+
+  "incantation": "2335",
   "tags": "SETUP/CC/DEBUFF/BREAK/BUILD",
   "shape": "targeted_zone",
   "origin": "aim_ground",

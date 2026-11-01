@@ -6,6 +6,8 @@
   },
   "name": "Cryostasis",
   "tier": "Signature",
+
+  "incantation": "36",
   "tags": "CC/DEBUFF/HEAL/BUFF",
   "shape": "projectile",
   "origin": "caster_front",

@@ -16,7 +16,8 @@
   "delivery": {
     "epic": "storm",
     "duration_ticks": 240,
-    "radius": 12.0
+    "radius": 12.0,
+    "conductive": true
   },
   "effects": [
     {
