@@ -40,11 +40,11 @@ public final class Elementals {
     public static final int LIMIT = 2;
     private static final Map<UUID, Deque<Elemental>> OWNED = new HashMap<>();
 
-    public static void attributes(EntityAttributeCreationEvent event) { event.put(COMPANION.get(), Elemental.attributes().build()); }
+    public static void attributes(EntityAttributeCreationEvent event) { event.put(COMPANION.get(), Elemental.attributes().build()); event.put(TITAN.get(), ElementalTitan.attributes().build()); }
     public static void stop(ServerStoppedEvent event) { OWNED.clear(); }
 
     public static Element element(SpellDefinition s) {
-        try { return Element.valueOf(SpellDefinition.string(s.delivery(),"element","fire").toUpperCase(Locale.ROOT)); }
+        try { return Element.valueOf(SpellDefinition.string(s.delivery(),"element","fire").toUpperCase(Locale.ROOT)).primary(); }
         catch (IllegalArgumentException e) { return Element.FIRE; }
     }
     public static String id(Element e, String kind) { return e.name().toLowerCase(Locale.ROOT) + "_" + kind; }
@@ -121,6 +121,9 @@ public final class Elementals {
             case LIFE -> ParticleTypes.HAPPY_VILLAGER;
             case ARCANE -> new DustParticleOptions(new Vector3f(1f, .45f, .85f), 1.5f);
             case DEATH -> ParticleTypes.SOUL_FIRE_FLAME;
+            case STEAM -> ParticleTypes.CLOUD;
+            case ICE -> ParticleTypes.ITEM_SNOWBALL;
+            case SHIELD -> new DustParticleOptions(new Vector3f(.91f, .78f, .42f), 1.5f);
         };
     }
     static ParticleOptions spark(Element e) {
@@ -133,6 +136,9 @@ public final class Elementals {
             case LIFE -> ParticleTypes.COMPOSTER;
             case ARCANE -> ParticleTypes.WITCH;
             case DEATH -> ParticleTypes.SOUL;
+            case STEAM -> ParticleTypes.POOF;
+            case ICE -> new BlockParticleOption(ParticleTypes.BLOCK, Blocks.PACKED_ICE.defaultBlockState());
+            case SHIELD -> ParticleTypes.WAX_ON;
         };
     }
     static SoundEvent shot(Element e) {
@@ -145,6 +151,9 @@ public final class Elementals {
             case LIFE -> SoundEvents.BONE_MEAL_USE;
             case ARCANE -> SoundEvents.EVOKER_CAST_SPELL;
             case DEATH -> SoundEvents.WITHER_SHOOT;
+            case STEAM -> SoundEvents.LAVA_EXTINGUISH;
+            case ICE -> SoundEvents.GLASS_HIT;
+            case SHIELD -> SoundEvents.SHIELD_BLOCK;
         };
     }
     static SoundEvent hit(Element e) {
@@ -157,6 +166,9 @@ public final class Elementals {
             case LIFE -> SoundEvents.AZALEA_LEAVES_BREAK;
             case ARCANE -> SoundEvents.AMETHYST_BLOCK_BREAK;
             case DEATH -> SoundEvents.SOUL_ESCAPE;
+            case STEAM -> SoundEvents.FIRE_EXTINGUISH;
+            case ICE -> SoundEvents.GLASS_BREAK;
+            case SHIELD -> SoundEvents.ANVIL_LAND;
         };
     }
     static void burst(ServerLevel level, Element e, Vec3 at, int count, double spread) {

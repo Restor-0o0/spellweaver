@@ -1,9 +1,10 @@
 {
   "id": "magicka:frozen_frostflow",
   "formula": {
-    "water": 1,
-    "cold": 2
+    "cold": 1,
+    "ice": 1
   },
+  "keys": "323",
   "name": "Frozen Frostflow",
   "tier": "Family Variant",
   "tags": "SETUP/CC/DEBUFF/BUILD",
@@ -16,7 +17,8 @@
     "duration_ticks": 200,
     "interval_ticks": 20,
     "gravity": 0,
-    "burst_radius": 2.7
+    "burst_radius": 2.7,
+    "visual": "spires"
   },
   "construction": {
     "material": "ice",

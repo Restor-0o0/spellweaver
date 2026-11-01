@@ -6,6 +6,7 @@
   },
   "name": "Charged Greater Frostshock",
   "tier": "Family Variant",
+  "keys": "3444",
   "tags": "CC/DEBUFF/DMG",
   "shape": "chain",
   "origin": "aim_hit",

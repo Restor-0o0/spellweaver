@@ -5,9 +5,10 @@
     "fire": 3,
     "arcane": 1
   },
-  "incantation": "51171",
+  "keys": "51171",
   "name": "Fire Titan",
   "tier": "Signature",
+  "ultimate": true,
   "scroll": true,
   "tags": "SUMMON/DMG/AOE",
   "shape": "targeted_zone",
@@ -57,6 +58,6 @@
     ]
   },
   "balanced": true,
-  "primary": "A giant fire titan rises waist-deep from the ground at the aimed spot and fights from there while you keep the channel.\nUltimate channel: just stand still for up to 12 s. Stepping aside breaks the channel and the titan sinks back underground; instant mode does not apply. Needs open sky above the aimed spot.\nIt picks foes within 20 blocks and, about every 1.5 s, either hurls fireballs that explode within 2.5 blocks: damage 5 ❤ fire, heat 120;\nor slams the ground with both fists, which sets the ground on fire; everyone within 5 blocks takes 4 ❤ fire and heat 150.",
+  "primary": "A giant fire titan rises waist-deep from the ground at the aimed spot and fights there while you stand still. Moving breaks the summon and the titan sinks back underground; instant mode does not apply. Needs open sky above the aimed spot.\nIt picks foes within 20 blocks and, about every 1.5 s, either hurls fireballs that explode within 2.5 blocks: damage 5 ❤ fire, heat 120;\nor slams the ground with both fists, which sets the ground on fire; everyone within 5 blocks takes 4 ❤ fire and heat 150.",
   "self_description": "On you:\n• Heat 40\n• Stone skin (resistance II), 15 s"
 }

@@ -6,6 +6,7 @@
   },
   "name": "Glacier Hammer",
   "tier": "Signature",
+  "keys": "3355",
   "scroll": true,
   "tags": "DMG/CC/BREAK",
   "shape": "projectile",

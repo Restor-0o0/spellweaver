@@ -4,8 +4,9 @@
     "lightning": 2,
     "death": 1
   },
-  "name": "Mjolnir",
+  "name": "Thunder Hammer",
   "tier": "Signature",
+  "keys": "448",
   "scroll": true,
   "tags": "DMG/CC/MOVE",
   "shape": "dash",
@@ -55,6 +56,6 @@
     ]
   },
   "balanced": true,
-  "primary": "Thor's hammer strike. You leap high forward and when you land, lightning strikes where you fell. Foes within 4 blocks:\n• Damage 3 ❤ lightning (×2 on wet)\n• Stun for 1 s\n• Knocked away\nNo fall damage for you.",
+  "primary": "A thunder hammer strike. You leap high forward and when you land, lightning strikes where you fell. Foes within 4 blocks:\n• Damage 3 ❤ lightning (×2 on wet)\n• Stun for 1 s\n• Knocked away\nNo fall damage for you.",
   "self_description": "No leap: lightning strikes at your feet right away."
 }

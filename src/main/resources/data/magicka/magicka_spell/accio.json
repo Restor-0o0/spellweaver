@@ -1,5 +1,6 @@
 {
   "id": "magicka:accio",
+  "keys": "587",
   "formula": {
     "earth": 1,
     "arcane": 1,

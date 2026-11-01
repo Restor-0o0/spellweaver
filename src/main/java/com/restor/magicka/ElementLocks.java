@@ -7,7 +7,7 @@ import net.minecraft.sounds.SoundSource;
 import java.util.*;
 
 public final class ElementLocks {
-    private record Lock(int mask, long until) {}
+    private record Lock(int mask, long until, boolean stun) {}
     private static final Map<UUID, Lock> LOCKS = new HashMap<>();
 
     public static int mask(Formula formula) {
@@ -18,10 +18,17 @@ public final class ElementLocks {
     public static void lock(ServerPlayer player, int mask, int ticks) {
         if (mask == 0) return;
         long now = player.getLevel().getGameTime();
-        LOCKS.put(player.getUUID(), new Lock(mask | active(player), now + ticks));
+        LOCKS.put(player.getUUID(), new Lock(mask | active(player), now + ticks, false));
         MagicNetwork.sendToPlayer(player, new MagicNetwork.Locks(active(player), ticks));
         player.getLevel().playSound(null, player.blockPosition(), SoundEvents.CHAIN_PLACE, SoundSource.HOSTILE, 1f, .6f);
         player.displayClientMessage(Component.translatable("hud.magicka.elements_locked", names(mask), ticks / 20), true);
+        CastingServer.dissolveLocked(player);
+    }
+    public static void stun(ServerPlayer player, int ticks) {
+        long now = player.getLevel().getGameTime();
+        Lock old = LOCKS.get(player.getUUID());
+        LOCKS.put(player.getUUID(), new Lock(0xFF, Math.max(now + ticks, old == null ? 0 : old.until), true));
+        MagicNetwork.sendToPlayer(player, new MagicNetwork.Locks(0xFF, ticks));
         CastingServer.dissolveLocked(player);
     }
     public static int active(ServerPlayer player) {
@@ -33,7 +40,8 @@ public final class ElementLocks {
     public static boolean locked(ServerPlayer player, Element element) { return (active(player) & 1 << element.ordinal()) != 0; }
     public static void reject(ServerPlayer player, Element element) {
         player.getLevel().playSound(null, player.blockPosition(), SoundEvents.CHAIN_HIT, SoundSource.PLAYERS, .7f, 1.4f);
-        player.displayClientMessage(Component.translatable("hud.magicka.element_locked", Component.translatable(element.key())), true);
+        Lock lock = LOCKS.get(player.getUUID());
+        if (lock == null || !lock.stun) player.displayClientMessage(Component.translatable("hud.magicka.element_locked", Component.translatable(element.key())), true);
     }
     public static void clear(ServerPlayer player) {
         if (LOCKS.remove(player.getUUID()) != null) MagicNetwork.sendToPlayer(player, new MagicNetwork.Locks(0, 0));

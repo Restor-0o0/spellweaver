@@ -7,6 +7,7 @@
   },
   "name": "Fire Elemental",
   "tier": "Signature",
+  "keys": "1178",
   "scroll": true,
   "tags": "SUMMON",
   "shape": "summon_object",

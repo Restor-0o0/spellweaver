@@ -18,6 +18,10 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.monster.Enemy;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -25,10 +29,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** A waist-deep elemental giant that stands in place while its ultimate is channelled and sinks back when the channel breaks. */
-public class ElementalTitan extends Entity implements ElementalBody {
-    @Override public net.minecraft.network.protocol.Packet<?> getAddEntityPacket() { return net.minecraftforge.network.NetworkHooks.getEntitySpawningPacket(this); }
+public class ElementalTitan extends PathfinderMob implements ElementalBody {
     private static final EntityDataAccessor<Integer> ELEMENT = SynchedEntityData.defineId(ElementalTitan.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> ACTION = SynchedEntityData.defineId(ElementalTitan.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> OWNER = SynchedEntityData.defineId(ElementalTitan.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> SINKING = SynchedEntityData.defineId(ElementalTitan.class, EntityDataSerializers.BOOLEAN);
     public static final float SCALE = 2.4f;
     public static final int RISE = 30, SINK = 24, THROW = 1, SLAM = 2, THROW_TICKS = 14, SLAM_TICKS = 18;
@@ -39,8 +43,10 @@ public class ElementalTitan extends Entity implements ElementalBody {
     private List<JsonObject> slam = List.of();
     private LivingEntity target;
     private int cooldown = 10, windup, attacks, sinkAge, actionStart, sinkStart, shown, previous;
+    private boolean specialWindup;
 
     public ElementalTitan(EntityType<? extends ElementalTitan> type, Level level) { super(type, level); noPhysics = true; setNoGravity(true); }
+    public static net.minecraft.world.entity.ai.attributes.AttributeSupplier.Builder attributes() { return Mob.createMobAttributes().add(Attributes.MAX_HEALTH,160).add(Attributes.ARMOR,5).add(Attributes.ATTACK_DAMAGE,10).add(Attributes.KNOCKBACK_RESISTANCE,1).add(Attributes.FOLLOW_RANGE,32); }
 
     static void rise(ServerPlayer p, SpellDefinition s, EpicMagic.Channel c) {
         ServerLevel level = p.getLevel();
@@ -49,11 +55,14 @@ public class ElementalTitan extends Entity implements ElementalBody {
         titan.owner = p; titan.spell = s; titan.channel = c;
         titan.slam = SpellDefinition.graph(s.delivery(), "slam");
         titan.entityData.set(ELEMENT, Elementals.element(s).ordinal());
+        titan.entityData.set(OWNER, p.getId());
+        titan.configureRole();
         titan.moveTo(c.focus.x, c.focus.y, c.focus.z, p.getYRot(), 0);
         titan.setYHeadRot(p.getYRot());
         if (!level.addFreshEntity(titan)) return;
         SpellRuntime.sustain(p, age -> {
-            if (!titan.isAlive() || !c.live) return true;
+            if (!titan.isAlive()) { c.live = false; return true; }
+            if (!c.live) return true;
             if (age % 5 == 0) SpellVfx.sigil(p, s.formula(), c.focus.add(0, .08, 0), new net.minecraft.world.phys.Vec3(0, 1, 0), 4.5, 12);
             return false;
         });
@@ -61,20 +70,21 @@ public class ElementalTitan extends Entity implements ElementalBody {
         level.playSound(null, c.focus.x, c.focus.y, c.focus.z, Elementals.shot(titan.element()), SoundSource.PLAYERS, 2f, .5f);
     }
 
-    @Override protected void defineSynchedData() { entityData.define(ELEMENT, 0); entityData.define(ACTION, 0); entityData.define(SINKING, false); }
+    @Override protected void defineSynchedData() { super.defineSynchedData(); entityData.define(ELEMENT, 0); entityData.define(ACTION, 0); entityData.define(OWNER, -1); entityData.define(SINKING, false); }
     @Override public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
         super.onSyncedDataUpdated(key);
         if (ACTION.equals(key)) { previous = shown; shown = entityData.get(ACTION); actionStart = tickCount; }
         if (SINKING.equals(key) && sinking()) sinkStart = tickCount;
     }
-    @Override protected void readAdditionalSaveData(CompoundTag tag) {}
-    @Override protected void addAdditionalSaveData(CompoundTag tag) {}
+    @Override public void readAdditionalSaveData(CompoundTag tag) {}
+    @Override public void addAdditionalSaveData(CompoundTag tag) {}
     @Override public boolean shouldBeSaved() { return false; }
-    @Override public boolean isPickable() { return false; }
+    @Override public boolean isPickable() { return true; }
     @Override public boolean isPushable() { return false; }
-    @Override public boolean hurt(DamageSource source, float amount) { return false; }
+    @Override public void knockback(double strength, double x, double z) {}
+    @Override public boolean hurt(DamageSource source, float amount) { return sinking() || !isAlive() ? false : super.hurt(source,amount); }
     @Override public boolean fireImmune() { return true; }
-    @Override public boolean isAttackable() { return false; }
+    @Override public boolean isAttackable() { return true; }
     @Override protected Component getTypeName() { return Component.translatable("entity.magicka." + modelId()); }
     @Override public Element element() { return Element.values()[Math.floorMod(entityData.get(ELEMENT), Element.values().length)]; }
     @Override public int action() { return entityData.get(ACTION); }
@@ -82,12 +92,49 @@ public class ElementalTitan extends Entity implements ElementalBody {
     @Override public float actionTime(float partial) { return tickCount - actionStart + partial; }
     public boolean sinking() { return entityData.get(SINKING); }
     public ServerPlayer owner() { return owner; }
+    public boolean ownedBy(Entity entity) { return entity != null && entityData.get(OWNER) == entity.getId(); }
     public float emergence(float partial) {
         if (sinking()) return Mth.clamp(1 - (tickCount - sinkStart + partial) / SINK, 0, 1);
         float t = Mth.clamp((tickCount + partial) / RISE, 0, 1);
         return 1 - (1 - t) * (1 - t);
     }
     private void act(int action) { entityData.set(ACTION, action); }
+    private void configureRole() {
+        double health = switch (element().primary()) {
+            case EARTH -> 360;
+            case LIFE -> 220;
+            case WATER -> 240;
+            case COLD -> 210;
+            case DEATH -> 190;
+            case FIRE, ARCANE -> 180;
+            case LIGHTNING -> 170;
+            default -> 180;
+        };
+        double armor = switch (element().primary()) {
+            case EARTH -> 20;
+            case LIFE -> 10;
+            case WATER, COLD -> 8;
+            case DEATH -> 6;
+            case FIRE, ARCANE -> 5;
+            case LIGHTNING -> 4;
+            default -> 5;
+        };
+        double damage = switch (element().primary()) {
+            case EARTH -> 10;
+            case LIFE -> 5;
+            case WATER -> 7;
+            case COLD -> 10;
+            case DEATH -> 16;
+            case FIRE -> 14;
+            case ARCANE -> 12;
+            case LIGHTNING -> 15;
+            default -> 12;
+        };
+        getAttribute(Attributes.MAX_HEALTH).setBaseValue(health);
+        getAttribute(Attributes.ARMOR).setBaseValue(armor);
+        getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(damage);
+        setHealth((float) health);
+    }
 
     /** A point of the model in Blockbench pixels, turned into world space at full height. */
     Vec3 local(double x, double y, double z) {
@@ -98,9 +145,11 @@ public class ElementalTitan extends Entity implements ElementalBody {
     }
 
     @Override public void tick() {
+        Vec3 anchor = position();
         super.tick();
         if (level.isClientSide) { ambient(); return; }
         ServerLevel level = (ServerLevel) this.level;
+        if (!sinking()) { if (distanceToSqr(anchor) > .0001) setPos(anchor.x, anchor.y, anchor.z); setDeltaMovement(Vec3.ZERO); hurtMarked = true; }
         if (!sinking() && (owner == null || channel == null || !channel.live || !owner.isAlive() || owner.isRemoved() || owner.level != level)) sink(level);
         if (sinking()) {
             if (++sinkAge > SINK) discard();
@@ -112,6 +161,8 @@ public class ElementalTitan extends Entity implements ElementalBody {
             if (tickCount % 8 == 0) level.playSound(null, getX(), getY(), getZ(), SoundEvents.WARDEN_DIG, SoundSource.PLAYERS, 1.5f, .6f);
             return;
         }
+        if (tickCount % 10 == 0) attractEnemies(level);
+        if (tickCount % 20 == 0) passive(level);
         if (tickCount == RISE) { Elementals.ring(level, element(), position(), 4); Elementals.burst(level, element(), local(0, 34, -6), 40, 1.2); }
         if (target != null && !(target.isAlive() && target.level == level && target.distanceToSqr(this) < REACH * REACH * 1.3 && Elementals.foe(owner, target))) target = null;
         if (windup == 0 && (target == null || tickCount % 10 == 0)) {
@@ -126,17 +177,60 @@ public class ElementalTitan extends Entity implements ElementalBody {
         }
         if (windup > 0) {
             windup--;
+            if (windup % 2 == 0) attackEffects(level);
             if (action() == SLAM && windup % 3 == 0) Elementals.ring(level, element(), impact(level), SLAM_RADIUS * (1 - windup / (double)SLAM_TICKS) + .5);
             if (action() == THROW && windup % 2 == 0) Elementals.burst(level, element(), hand(), 4, .3);
-            if (windup == 0) { if (action() == SLAM) slam(level); else throwAt(level); act(0); cooldown = 14; }
+            if (windup == 0) { if (action() == SLAM) slam(level); else if (specialWindup) specialAttack(level); else throwAt(level); specialWindup = false; act(0); cooldown = 14; }
             return;
         }
         if (cooldown > 0) { cooldown--; return; }
         if (target == null) return;
         boolean close = target.distanceToSqr(impact(level)) < SLAM_REACH * SLAM_REACH;
-        if (close && attacks % 3 != 1 || !close && attacks % 4 == 3) { act(SLAM); windup = SLAM_TICKS; level.playSound(null, getX(), getY() + 4, getZ(), SoundEvents.RAVAGER_ROAR, SoundSource.PLAYERS, 1.2f, .6f); }
+        if (attacks > 0 && attacks % 4 == 0) { act(THROW); specialWindup = true; windup = THROW_TICKS + 4; level.playSound(null, getX(), getY() + 4, getZ(), Elementals.shot(element()), SoundSource.PLAYERS, 1.5f, .5f); }
+        else if (close && attacks % 3 != 1 || !close && attacks % 4 == 3) { act(SLAM); windup = SLAM_TICKS; level.playSound(null, getX(), getY() + 4, getZ(), SoundEvents.RAVAGER_ROAR, SoundSource.PLAYERS, 1.2f, .6f); }
         else { act(THROW); windup = THROW_TICKS; }
         attacks++;
+    }
+    private void attractEnemies(ServerLevel level) { for (Mob mob : level.getEntitiesOfClass(Mob.class,getBoundingBox().inflate(REACH),candidate -> candidate != this && candidate.isAlive() && candidate instanceof Enemy && Elementals.foe(owner,candidate))) mob.setTarget(this); }
+    private void attackEffects(ServerLevel level) {
+        Vec3 at = action() == SLAM ? local(0,5,-8) : hand(); int count = specialWindup ? 10 : 5; double spread = specialWindup ? .65 : .35;
+        switch (element()) {
+            case FIRE -> { EpicMagic.fx(level,ParticleTypes.FLAME,at.x,at.y,at.z,count,spread,spread,spread,.02); EpicMagic.fx(level,ParticleTypes.LAVA,at.x,at.y,at.z,Math.max(1,count/3),spread,spread,spread,.01); }
+            case WATER -> { EpicMagic.fx(level,ParticleTypes.FALLING_WATER,at.x,at.y,at.z,count,spread,spread,spread,.03); EpicMagic.fx(level,ParticleTypes.SPLASH,at.x,at.y,at.z,Math.max(1,count/2),spread,spread,spread,.06); }
+            case EARTH -> EpicMagic.fx(level,new BlockParticleOption(ParticleTypes.BLOCK,net.minecraft.world.level.block.Blocks.STONE.defaultBlockState()),at.x,at.y,at.z,count,spread,spread,spread,.08);
+            case LIFE -> { EpicMagic.fx(level,ParticleTypes.HAPPY_VILLAGER,at.x,at.y,at.z,count,spread,spread,spread,.08); EpicMagic.fx(level,ParticleTypes.COMPOSTER,at.x,at.y,at.z,Math.max(1,count/2),spread,spread,spread,.04); }
+            case COLD -> { EpicMagic.fx(level,ParticleTypes.SNOWFLAKE,at.x,at.y,at.z,count,spread,spread,spread,.04); EpicMagic.fx(level,ParticleTypes.WHITE_ASH,at.x,at.y,at.z,Math.max(1,count/2),spread,spread,spread,.02); }
+            case LIGHTNING -> { EpicMagic.fx(level,ParticleTypes.ELECTRIC_SPARK,at.x,at.y,at.z,count*2,spread,spread,spread,.12); EpicMagic.fx(level,ParticleTypes.END_ROD,at.x,at.y,at.z,Math.max(1,count/3),spread,spread,spread,.03); }
+            case ARCANE -> { EpicMagic.fx(level,ParticleTypes.REVERSE_PORTAL,at.x,at.y,at.z,count*2,spread,spread,spread,.04); EpicMagic.fx(level,ParticleTypes.ENCHANT,at.x,at.y,at.z,count,spread,spread,spread,.15); }
+            case DEATH -> { EpicMagic.fx(level,ParticleTypes.SOUL_FIRE_FLAME,at.x,at.y,at.z,count,spread,spread,spread,.03); EpicMagic.fx(level,ParticleTypes.SCULK_SOUL,at.x,at.y,at.z,Math.max(1,count/2),spread,spread,spread,.04); }
+        }
+    }
+    private void passive(ServerLevel level) {
+        Vec3 center = position();
+        switch (element()) {
+            case FIRE -> { for (LivingEntity e : foes(center, 4, 8)) e.setSecondsOnFire(1); }
+            case WATER -> { SpellRuntime.wetZone(owner, center, 4, 30); heal(1.5f); }
+            case EARTH -> MagicStatuses.apply(this, MagicStatuses.Status.STONE_SHELL, 30, 1);
+            case LIFE -> { for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, new AABB(center, center).inflate(8), e -> e == owner || EffectGraph.ally(owner, e))) MagicGear.heal(owner, e, 1.5f); }
+            case COLD -> { for (LivingEntity e : foes(center, 5, 8)) MagicStatuses.apply(e, MagicStatuses.Status.CHILLED, 30, 1); }
+            case LIGHTNING -> { for (LivingEntity e : foes(center, 4, 8)) { MagicStatuses.apply(e, MagicStatuses.Status.WET, 30, 1); MagicStatuses.charge(e, 8); } }
+            case ARCANE -> EpicMagic.fx(level, ParticleTypes.REVERSE_PORTAL, getX(), getY() + 2, getZ(), 8, 1.5, 1.5, 1.5, .02);
+            case DEATH -> { if (!foes(center, 7, 1).isEmpty()) heal(1.5f); }
+        }
+    }
+    private void specialAttack(ServerLevel level) {
+        if (target == null || !target.isAlive()) return;
+        Vec3 at = target.position();
+        switch (element()) {
+            case FIRE -> { for (LivingEntity e : foes(at, 5, 8)) { e.setSecondsOnFire(4); e.push(e.getX() - getX(), .35, e.getZ() - getZ()); } EpicMagic.fx(level, ParticleTypes.FLAME, at.x, at.y + 1, at.z, 80, 2.5, 1, 2.5, .08); }
+            case WATER -> { SpellRuntime.wetZone(owner, at, 6, 120); for (LivingEntity e : foes(at, 6, 8)) e.push((e.getX() - at.x) * .8, .5, (e.getZ() - at.z) * .8); heal(5); EpicMagic.fx(level, ParticleTypes.SPLASH, at.x, at.y + 1, at.z, 120, 3, 1, 3, .2); }
+            case EARTH -> { WorldMagic.heave(owner, at, 18, 5, 1); for (LivingEntity e : foes(at, 5, 8)) { MagicStatuses.apply(e, MagicStatuses.Status.STUNNED, 35, 1); e.push(0, .8, 0); } }
+            case LIFE -> { for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, new AABB(at, at).inflate(8), e -> e == owner || EffectGraph.ally(owner, e))) { MagicGear.heal(owner, e, 8); MagicStatuses.apply(e, MagicStatuses.Status.REGENERATING, 160, 2); } EpicMagic.fx(level, ParticleTypes.HAPPY_VILLAGER, at.x, at.y + 1, at.z, 100, 4, 2, 4, .1); }
+            case COLD -> { SpellRuntime.freezeSurface(owner, at, 5); for (LivingEntity e : foes(at, 6, 8)) { MagicStatuses.apply(e, MagicStatuses.Status.CHILLED, 120, 4); MagicStatuses.apply(e, MagicStatuses.Status.ROOTED, 45, 1); } EpicMagic.fx(level, ParticleTypes.SNOWFLAKE, at.x, at.y + 1, at.z, 100, 3, 2, 3, .1); }
+            case LIGHTNING -> { SpellRuntime.chain(owner, spell, hand(), 6, REACH, 5); EpicMagic.fx(level, ParticleTypes.ELECTRIC_SPARK, at.x, at.y + 1, at.z, 80, 2, 2, 2, .15); }
+            case ARCANE -> { for (LivingEntity e : foes(at, 8, 12)) { Vec3 pull = at.subtract(e.position()).normalize().scale(.9); e.push(pull.x, pull.y + .15, pull.z); MagicStatuses.apply(e, MagicStatuses.Status.ARCANE_UNSTABLE, 160, 2); } EpicMagic.fx(level, ParticleTypes.REVERSE_PORTAL, at.x, at.y + 1, at.z, 100, 3, 3, 3, .04); }
+            case DEATH -> { float total = 0; for (LivingEntity e : foes(at, 6, 8)) { float before = e.getHealth(); e.hurt(net.minecraft.world.damagesource.DamageSource.indirectMagic(owner, owner), 8); total += Math.max(0, before - e.getHealth()); MagicStatuses.apply(e, MagicStatuses.Status.WITHERING, 100, 2); } heal(Math.min(12, total * .5f)); EpicMagic.fx(level, ParticleTypes.SOUL, at.x, at.y + 1, at.z, 90, 3, 2, 3, .05); }
+        }
     }
     private void sink(ServerLevel level) {
         entityData.set(SINKING, true);
@@ -162,8 +256,8 @@ public class ElementalTitan extends Entity implements ElementalBody {
     }
     private List<LivingEntity> foes(Vec3 around, double radius, int max) {
         var list = new ArrayList<LivingEntity>();
-        if (target != null && target.isAlive()) list.add(target);
-        for (var e : level.getEntitiesOfClass(LivingEntity.class, new AABB(around, around).inflate(radius), e -> e != target && Elementals.foe(owner, e) && e.distanceToSqr(around) < radius * radius)) {
+        if (target != null && target.isAlive() && target != this) list.add(target);
+        for (var e : level.getEntitiesOfClass(LivingEntity.class, new AABB(around, around).inflate(radius), e -> e != this && e != target && Elementals.foe(owner, e) && e.distanceToSqr(around) < radius * radius)) {
             if (list.size() >= max) break;
             list.add(e);
         }
@@ -178,10 +272,10 @@ public class ElementalTitan extends Entity implements ElementalBody {
         level.playSound(null, from.x, from.y, from.z, SoundEvents.RAVAGER_ATTACK, SoundSource.PLAYERS, 1f, .6f);
         switch (e) {
             case FIRE -> Elementals.bolt(owner, spell, e, from, target, 1, .6, 2.5, graph);
-            case WATER -> Elementals.bolt(owner, spell, e, from, target, .9, .6, 2.5, graph);
+            case WATER, STEAM -> Elementals.bolt(owner, spell, e, from, target, .9, .6, 2.5, graph);
             case EARTH -> Elementals.bolt(owner, spell, e, from, target, .8, .8, 2.2, graph);
             case LIFE -> Elementals.bolt(owner, spell, e, from, target, .8, .45, 2, graph);
-            case COLD -> { for (var v : foes(target.position(), 8, 3)) Elementals.bolt(owner, spell, e, from, v, 1.2, .3, 0, graph); }
+            case COLD, ICE -> { for (var v : foes(target.position(), 8, 3)) Elementals.bolt(owner, spell, e, from, v, 1.2, .3, 0, graph); }
             case ARCANE -> { for (var v : foes(position(), REACH, 3)) Elementals.beam(owner, spell, e, from, v, graph); }
             case LIGHTNING -> {
                 Vec3 at = from;
@@ -199,7 +293,8 @@ public class ElementalTitan extends Entity implements ElementalBody {
         switch (e) {
             case FIRE -> { for (int i = 0; i < 6; i++) EpicMagic.ignite(owner, new BlockPos(at.add(random.nextGaussian() * 2, -.5, random.nextGaussian() * 2))); }
             case WATER -> { SpellRuntime.wetZone(owner, at, SLAM_RADIUS, 120); EpicMagic.fx(level, ParticleTypes.SPLASH, at.x, at.y + 1, at.z, 80, 1.5, 1.5, 1.5, .3); }
-            case COLD -> SpellRuntime.freezeSurface(owner, at, 3);
+            case COLD, ICE -> SpellRuntime.freezeSurface(owner, at, 3);
+            case STEAM -> EpicMagic.fx(level, ParticleTypes.CLOUD, at.x, at.y + 1, at.z, 80, 2, 1, 2, .05);
             case LIGHTNING -> EpicMagic.strike(owner, spell, at, at.y + 9, 1.5);
             case EARTH -> WorldMagic.heave(owner, at, 10, 3, .7);
             case LIFE -> {
@@ -213,7 +308,7 @@ public class ElementalTitan extends Entity implements ElementalBody {
             case DEATH -> EpicMagic.fx(level, ParticleTypes.SCULK_SOUL, at.x, at.y + .5, at.z, 40, SLAM_RADIUS * .4, .4, SLAM_RADIUS * .4, .08);
         }
         Elementals.blast(owner, spell, e, at, SLAM_RADIUS, slam, true);
-        for (var v : level.getEntitiesOfClass(LivingEntity.class, new AABB(at, at).inflate(SLAM_RADIUS), v -> Elementals.hostile(owner, v) && v.distanceToSqr(at) < SLAM_RADIUS * SLAM_RADIUS)) {
+        for (var v : level.getEntitiesOfClass(LivingEntity.class, new AABB(at, at).inflate(SLAM_RADIUS), v -> v != this && Elementals.hostile(owner, v) && v.distanceToSqr(at) < SLAM_RADIUS * SLAM_RADIUS)) {
             v.push(0, .45, 0); v.hurtMarked = true;
         }
     }

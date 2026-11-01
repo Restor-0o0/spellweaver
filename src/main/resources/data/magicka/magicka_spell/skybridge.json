@@ -1,11 +1,12 @@
 {
   "id": "magicka:skybridge",
   "formula": {
-    "earth": 3,
-    "arcane": 1
+    "earth": 2,
+    "shield": 1
   },
   "name": "Skybridge",
   "tier": "Signature",
+  "keys": "5557",
   "tags": "BUILD/MOVE",
   "shape": "bridge",
   "origin": "aim_hit",

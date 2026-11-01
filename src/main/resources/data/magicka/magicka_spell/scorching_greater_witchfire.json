@@ -6,6 +6,7 @@
   },
   "name": "Scorching Greater Witchfire",
   "tier": "Family Variant",
+  "keys": "1117",
   "tags": "DMG/DOT/SETUP",
   "shape": "burst_projectile",
   "origin": "caster_front",

@@ -7,6 +7,7 @@
   },
   "name": "Living Vital Spark Convergence",
   "tier": "Family Variant",
+  "keys": "4566",
   "tags": "DMG/CC/BREAK/HEAL/BUFF",
   "shape": "projectile",
   "origin": "caster_front",

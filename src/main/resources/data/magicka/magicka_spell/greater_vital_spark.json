@@ -6,6 +6,7 @@
   },
   "name": "Greater Vital Spark",
   "tier": "Family Variant",
+  "keys": "4466",
   "tags": "DMG/CC/HEAL/BUFF",
   "shape": "targeted_zone",
   "origin": "aim_ground",
@@ -16,7 +17,8 @@
     "duration_ticks": 240,
     "interval_ticks": 20,
     "gravity": 0,
-    "burst_radius": 3.1
+    "burst_radius": 3.1,
+    "visual": "bloom"
   },
   "construction": {
     "material": "root",

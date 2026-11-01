@@ -6,6 +6,7 @@
   },
   "name": "Stormwater",
   "tier": "Signature",
+  "keys": "24",
   "tags": "SETUP/CC/DMG",
   "shape": "projectile",
   "origin": "caster_front",

@@ -6,6 +6,7 @@
   },
   "name": "Grave Chill",
   "tier": "Signature",
+  "keys": "38",
   "tags": "CC/DOT",
   "shape": "targeted_zone",
   "origin": "aim_hit",
@@ -15,7 +16,8 @@
     "duration_ticks": 120,
     "interval_ticks": 20,
     "gravity": 0,
-    "burst_radius": 3.0
+    "burst_radius": 3.0,
+    "visual": "spires"
   },
   "effects": [
     {

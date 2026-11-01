@@ -6,6 +6,7 @@
   },
   "name": "Miner's Vigor",
   "tier": "Signature",
+  "keys": "445",
   "tags": "UTIL",
   "shape": "direct_target",
   "origin": "aim_hit",

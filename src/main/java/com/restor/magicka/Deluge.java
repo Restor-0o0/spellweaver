@@ -59,9 +59,17 @@ final class Deluge {
                     if (cell != null) water(p, cell, placed);
                 }
             }
+            if (flood && center != null && age == travel / 2) {
+                int r = (int) Math.min(4, width / 2);
+                for (int dx = -r; dx <= r; dx++) for (int dz = -r; dz <= r; dz++) {
+                    if (dx * dx + dz * dz > r * r + 1) continue;
+                    BlockPos cell = surface(level, Vec3.atBottomCenterOf(center.offset(dx, 0, dz)), center.getY());
+                    if (cell != null) water(p, cell, placed);
+                }
+            }
             if (age % 4 == 0) level.playSound(null, new BlockPos(front), SoundEvents.GENERIC_SPLASH, SoundSource.PLAYERS, 1f, .7f + (float) t * .3f);
             AABB box = new AABB(front, front).inflate(half + 1, 2.5, half + 1).expandTowards(direction.scale(-1.5));
-            for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, box, e -> e != p && e.isAlive() && !struck.contains(e.getUUID()))) {
+            for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, box, e -> (e != p || MagicConfig.selfHarm()) && e.isAlive() && !struck.contains(e.getUUID()))) {
                 Vec3 rel = e.position().subtract(start);
                 if (rel.dot(direction) < reach - 2.5 || Math.abs(rel.dot(side)) > half + .8) continue;
                 struck.add(e.getUUID());

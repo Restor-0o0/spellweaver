@@ -3,6 +3,7 @@ package com.restor.magicka;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 public final class MagicConfig {
+    public static final double PLAYER_KNOCKBACK = 1.6;
     private static final ForgeConfigSpec.Builder B = new ForgeConfigSpec.Builder();
     public static final ForgeConfigSpec.BooleanValue CONSTRUCTION = B.comment("Spells may place blocks: walls, bridges, stairs, ice. false turns building spells off").define("constructiveMagic", true);
     public static final ForgeConfigSpec.BooleanValue LIFETIME = B.comment("Ice, arcane and other temporary magic blocks disappear after their lifetime").define("magicBlockLifetime", true);
@@ -16,12 +17,15 @@ public final class MagicConfig {
     public static final ForgeConfigSpec.BooleanValue INSTANT_CAST = B.comment("Spells fire at once without a cast time; channeled spells last while the button is held. false brings back the cast time").define("instantCast", true);
     public static final ForgeConfigSpec.DoubleValue CAST_SCALE = B.comment("Scales every cast time; below 1 is faster").defineInRange("castTimeMultiplier", 1.0, 0.25, 4.0);
     public static final ForgeConfigSpec.IntValue CHANNEL_TICKS = B.comment("Maximum channel ticks per element in the formula").defineInRange("channelMaxTicksPerElement", 20, 5, 200);
-    public static final ForgeConfigSpec.DoubleValue PLAYER_DAMAGE = B.comment("Multiplier for spell damage dealt to players").defineInRange("playerMagicDamageMultiplier", 0.5, 0.0, 2.0);
+    public static final ForgeConfigSpec.DoubleValue PLAYER_DAMAGE = B.comment("Multiplier for spell damage dealt to players, the caster included").defineInRange("playerMagicDamageMultiplier", 2.0, 0.0, 10.0);
     public static final ForgeConfigSpec.IntValue MAX_RUNTIME = B.comment("How many spells one player may have running at once").defineInRange("maxActiveSpellsPerPlayer", 32, 4, 128);
     public static final ForgeConfigSpec.IntValue REVIVE_TICKS = B.comment("Ticks a fallen creature can still be revived").defineInRange("revivalWindowTicks", 600, 40, 6000);
     public static final ForgeConfigSpec.IntValue MAX_MINIONS = B.comment("How many undead servants one player may command").defineInRange("maxUndeadMinionsPerPlayer", 24, 1, 64);
     public static final ForgeConfigSpec.BooleanValue TERRAIN_DAMAGE = B.comment("Spells may break blocks. false keeps the world intact").define("allowTerrainDamage", true);
     public static final ForgeConfigSpec.BooleanValue FRIENDLY_FIRE = B.comment("Spells can hurt other players").define("friendlyFire", true);
+    public static final ForgeConfigSpec.BooleanValue CANCEL_OPPOSITES = B.comment("Typing an element opposite to a queued one cancels both, unless the sequence leads to a named spell").define("cancelOpposites", true);
+    public static final ForgeConfigSpec.EnumValue<SelfHarm> SELF_HARM = B.comment("Your own blasts, zones and storms hit you: FULL, SCALED by selfHarmMultiplier, or OFF").defineEnum("selfHarm", SelfHarm.FULL);
+    public static final ForgeConfigSpec.DoubleValue SELF_HARM_MULTIPLIER = B.comment("Multiplier for your own spell damage on you when selfHarm is SCALED").defineInRange("selfHarmMultiplier", 0.5, 0.0, 2.0);
     public static final ForgeConfigSpec.BooleanValue COLLAPSE = B.comment("Constructions collapse when their base is destroyed").define("collapseWithRoot", true);
     public static final ForgeConfigSpec.BooleanValue SPECIAL_SPAWNS = B.comment("Spellweaver specialist enemies spawn in the world. false stops natural spawns").define("specialEnemyNaturalSpawns", true);
     public static final ForgeConfigSpec.BooleanValue UNLOCK_ALL = B.comment("Open every sealed spell without scrolls").define("unlockAllSpells", false);
@@ -50,6 +54,12 @@ public final class MagicConfig {
     public static final ForgeConfigSpec.IntValue LEVEL_CAST_SPEED = B.comment("Cast speed per mage level, in percent").defineInRange("castSpeedPerLevel", 1, 0, 10);
     public static final ForgeConfigSpec.IntValue LEVEL_DAMAGE = B.comment("Spell damage per mage level, in percent").defineInRange("damagePerLevel", 1, 0, 10);
     public static final ForgeConfigSpec SPEC = B.build();
+    public enum SelfHarm {
+        FULL, SCALED, OFF;
+        public net.minecraft.network.chat.Component getTranslatedName() { return net.minecraft.network.chat.Component.translatable("magicka.configuration.selfHarm."+name().toLowerCase(java.util.Locale.ROOT)); }
+    }
+    public static boolean selfHarm() { return SELF_HARM.get() != SelfHarm.OFF; }
+    public static float selfHarmScale() { return SELF_HARM.get() == SelfHarm.SCALED ? SELF_HARM_MULTIPLIER.get().floatValue() : 1; }
     public static boolean permanent(String material) {
         return switch(material) { case "earth" -> PERMANENT_EARTH.get(); case "root" -> PERMANENT_ROOTS.get(); case "light", "glowstone" -> true; default -> false; };
     }

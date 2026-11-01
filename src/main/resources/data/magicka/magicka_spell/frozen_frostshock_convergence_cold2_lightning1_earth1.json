@@ -7,6 +7,7 @@
   },
   "name": "Frozen Frostshock Convergence",
   "tier": "Family Variant",
+  "keys": "3345",
   "tags": "CC/DEBUFF/DMG/BREAK",
   "shape": "projectile",
   "origin": "caster_front",

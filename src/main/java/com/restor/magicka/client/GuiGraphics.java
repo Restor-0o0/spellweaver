@@ -18,6 +18,7 @@ public final class GuiGraphics extends GuiComponent {
     public GuiGraphics(PoseStack pose) { this.pose = pose; }
 
     public PoseStack pose() { return pose; }
+    public void flush() {}
     public int guiWidth() { return Minecraft.getInstance().getWindow().getGuiScaledWidth(); }
     public int guiHeight() { return Minecraft.getInstance().getWindow().getGuiScaledHeight(); }
 

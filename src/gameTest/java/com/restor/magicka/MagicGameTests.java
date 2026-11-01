@@ -93,6 +93,59 @@ public final class MagicGameTests {
         helper.succeed();
     }
     @GameTest(template = "empty")
+    public static void crossingBeamsExplode(GameTestHelper helper) {
+        var v = new net.minecraft.world.phys.Vec3(0, 0, 0);
+        Check.assertTrue(helper,BeamClash.crossing(v, new net.minecraft.world.phys.Vec3(10, 0, 0), new net.minecraft.world.phys.Vec3(5, -5, .3), new net.minecraft.world.phys.Vec3(5, 5, .3)) != null, "Crossing beams meet");
+        Check.assertTrue(helper,BeamClash.crossing(v, new net.minecraft.world.phys.Vec3(10, 0, 0), new net.minecraft.world.phys.Vec3(0, 3, 0), new net.minecraft.world.phys.Vec3(10, 3, 0)) == null, "Parallel beams pass by");
+        var a = FakePlayerFactory.get(helper.getLevel(), new com.mojang.authlib.GameProfile(UUID.randomUUID(), "BeamA"));
+        var b = FakePlayerFactory.get(helper.getLevel(), new com.mojang.authlib.GameProfile(UUID.randomUUID(), "BeamB"));
+        var pig = helper.spawnWithNoFreeWill(net.minecraft.world.entity.EntityType.PIG, new net.minecraft.core.BlockPos(2, 2, 2));
+        float hp = pig.getHealth();
+        var at = pig.position().add(1, .5, 0);
+        BeamClash.beam(a, at.add(-6, 0, 0), at.add(6, 0, 0));
+        BeamClash.beam(b, at.add(0, 0, -6), at.add(0, 0, 6));
+        Check.assertTrue(helper,pig.getHealth() < hp, "The clash blast hurts what stands nearby");
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 80)
+    public static void wadingSoaksAndStaysWet(GameTestHelper helper) {
+        helper.setBlock(new net.minecraft.core.BlockPos(2, 1, 2), net.minecraft.world.level.block.Blocks.STONE);
+        helper.setBlock(new net.minecraft.core.BlockPos(2, 2, 2), net.minecraft.world.level.block.Blocks.WATER);
+        var pig = helper.spawnWithNoFreeWill(net.minecraft.world.entity.EntityType.PIG, new net.minecraft.core.BlockPos(2, 2, 2));
+        helper.runAfterDelay(25, () -> {
+            Check.assertTrue(helper,pig.isInWaterOrRain(), "Pig wades in water");
+            Check.assertTrue(helper,MagicStatuses.has(pig, MagicStatuses.Status.WET) && pig.getPersistentData().getCompound("magicka:statuses").contains("WET"), "Wading soaks the pig");
+            pig.setNoGravity(true);
+            pig.teleportTo(pig.getX(), pig.getY() + 12, pig.getZ());
+            helper.runAfterDelay(30, () -> {
+                Check.assertTrue(helper,!pig.isInWaterOrRain(), "Pig left the water");
+                Check.assertTrue(helper,MagicStatuses.has(pig, MagicStatuses.Status.WET), "A mob stays wet after leaving water");
+                helper.succeed();
+            });
+        });
+    }
+
+    @GameTest(template = "empty")
+    public static void wetCasterIsShockedByOwnLightning(GameTestHelper helper) {
+        var player = new net.minecraft.server.level.ServerPlayer(helper.getLevel().getServer(), helper.getLevel(),
+                new com.mojang.authlib.GameProfile(UUID.randomUUID(), "WetTester"), null);
+        player.connection = FakePlayerFactory.getMinecraft(helper.getLevel()).connection;
+        player.setPos(helper.absoluteVec(new net.minecraft.world.phys.Vec3(2, 2, 2)));
+        player.setXRot(-90);
+        for (int i = 0; i < 61; i++) player.tick();
+        player.setHealth(20); player.invulnerableTime = 0; player.getAbilities().invulnerable = false;
+        Formula bolt = new Formula(); bolt.add(Element.LIGHTNING);
+        var spell = RecipeRegistry.resolve(bolt.key());
+        SpellRuntime.cast(player, spell, false);
+        Check.assertTrue(helper,player.getHealth() == 20, "A dry caster is not shocked by own lightning");
+        MagicStatuses.apply(player, MagicStatuses.Status.WET, 100, 1);
+        SpellRuntime.cast(player, spell, false);
+        Check.assertTrue(helper,player.getHealth() < 20, "A wet caster is shocked by own lightning");
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty")
     public static void literalSelfAndElementReactions(GameTestHelper helper) {
         // A real ServerPlayer is needed: NeoForge FakePlayer rejects every damage source.
         var player = new net.minecraft.server.level.ServerPlayer(helper.getLevel().getServer(), helper.getLevel(),

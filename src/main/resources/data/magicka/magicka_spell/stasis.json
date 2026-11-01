@@ -6,6 +6,7 @@
   },
   "name": "Stasis",
   "tier": "Signature",
+  "keys": "37",
   "tags": "CC/DEBUFF/SETUP",
   "shape": "projectile",
   "origin": "caster_front",

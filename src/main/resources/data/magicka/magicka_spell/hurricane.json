@@ -4,9 +4,10 @@
     "arcane": 3,
     "water": 2
   },
-  "incantation": "72277",
+  "keys": "72277",
   "name": "Hurricane",
   "tier": "Signature",
+  "ultimate": true,
   "scroll": true,
   "tags": "CC/DMG/AOE",
   "shape": "targeted_zone",

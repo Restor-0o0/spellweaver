@@ -1,8 +1,9 @@
 {
   "id": "magicka:stone_slab",
+  "keys": "7577",
   "formula": {
-    "earth": 1,
-    "arcane": 3
+    "arcane": 2,
+    "shield": 1
   },
   "name": "Stone Slab",
   "tier": "Signature",

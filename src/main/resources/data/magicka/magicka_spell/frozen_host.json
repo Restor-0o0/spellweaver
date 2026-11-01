@@ -6,6 +6,7 @@
   },
   "name": "Frozen Host",
   "tier": "Signature",
+  "keys": "388",
   "tags": "SUMMON/CC",
   "shape": "summon_object",
   "origin": "aim_hit",

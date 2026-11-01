@@ -6,16 +6,17 @@
   },
   "name": "Ice Spear",
   "tier": "Signature",
+  "keys": "335",
   "tags": "DMG/CC",
   "shape": "projectile",
   "origin": "caster_front",
   "cast_ticks": 14,
   "delivery": {
     "radius": 3.0,
-    "speed": 0.99,
+    "speed": 2.0,
     "duration_ticks": 200,
     "interval_ticks": 20,
-    "gravity": 0.025,
+    "gravity": 0.001,
     "burst_radius": 2.8
   },
   "construction": {
@@ -34,7 +35,7 @@
     },
     {
       "type": "deal_damage",
-      "amount": 2.0,
+      "amount": 6,
       "element": "earth"
     },
     {
@@ -83,7 +84,7 @@
       }
     ]
   },
-  "primary": "An ice spear that pins the target in place.\nA projectile flies in an arc where you look and strikes the first target. Effects:\n• Damage 1 ❤ earth (earth ×2 on frozen)\n• Cold 80: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Light push\n• Breaks up to 3 blocks within 0.5 blocks (twice as many if brittle)\n• Rooted in place for 2.75 s\n• Brittle (earth damage ×2) for 5.5 s",
+  "primary": "An ice spear that pins the target in place.\nA rail-fast spear flies almost straight where you look and strikes the first target. Effects:\n• Damage 1 ❤ earth (earth ×2 on frozen)\n• Cold 80: extinguishes and slows, freezes for 4 s at 100 built-up cold (×2.5 on wet); puddles freeze\n• Light push\n• Breaks up to 3 blocks within 0.5 blocks (twice as many if brittle)\n• Rooted in place for 2.75 s\n• Brittle (earth damage ×2) for 5.5 s",
   "self_description": "On you:\n• Stone skin (Resistance II) for 8.8 s\n• Slowness III for 8.8 s\n• Brittle (earth damage ×2) for 5.5 s",
   "balanced": true
 }

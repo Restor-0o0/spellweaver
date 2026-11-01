@@ -6,6 +6,7 @@
   },
   "name": "Plasma",
   "tier": "Signature",
+  "keys": "14",
   "tags": "DMG/DOT/CC",
   "shape": "projectile",
   "origin": "caster_front",

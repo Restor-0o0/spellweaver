@@ -2,9 +2,10 @@
   "id": "magicka:frozen_thermal_shock_convergence_fire1_water1_cold2",
   "formula": {
     "fire": 1,
-    "water": 1,
-    "cold": 2
+    "cold": 1,
+    "ice": 1
   },
+  "keys": "3213",
   "name": "Frozen Thermal Shock Convergence",
   "tier": "Family Variant",
   "tags": "DMG/DOT/SETUP/CC/DEBUFF",
@@ -17,7 +18,8 @@
     "duration_ticks": 240,
     "interval_ticks": 20,
     "gravity": 0,
-    "burst_radius": 3.4
+    "burst_radius": 3.4,
+    "visual": "spires"
   },
   "construction": {
     "material": "ice",

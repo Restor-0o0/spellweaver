@@ -6,6 +6,7 @@
   },
   "name": "Death Elemental",
   "tier": "Signature",
+  "keys": "7888",
   "scroll": true,
   "tags": "SUMMON",
   "shape": "summon_object",

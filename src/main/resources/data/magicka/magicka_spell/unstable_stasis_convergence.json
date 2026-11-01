@@ -7,6 +7,7 @@
   },
   "name": "Unstable Stasis Convergence",
   "tier": "Family Variant",
+  "keys": "3677",
   "tags": "CC/DEBUFF/HEAL/BUFF/SETUP",
   "shape": "targeted_explosion",
   "origin": "aim_hit",

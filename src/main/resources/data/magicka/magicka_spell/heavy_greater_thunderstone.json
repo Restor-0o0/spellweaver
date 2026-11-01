@@ -6,6 +6,7 @@
   },
   "name": "Heavy Greater Thunderstone",
   "tier": "Family Variant",
+  "keys": "4555",
   "tags": "DMG/CC/BREAK",
   "shape": "projectile",
   "origin": "caster_front",

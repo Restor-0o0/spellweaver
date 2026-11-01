@@ -5,6 +5,7 @@
   },
   "name": "Bolt",
   "tier": "Signature",
+  "keys": "44",
   "tags": "DMG/CC",
   "shape": "chain",
   "origin": "aim_hit",

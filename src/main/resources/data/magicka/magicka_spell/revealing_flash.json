@@ -6,6 +6,7 @@
   },
   "name": "Revealing Flash",
   "tier": "Signature",
+  "keys": "477",
   "tags": "UTIL",
   "shape": "direct_target",
   "origin": "aim_hit",

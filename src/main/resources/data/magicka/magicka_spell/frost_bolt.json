@@ -5,6 +5,7 @@
   },
   "name": "Frost Bolt",
   "tier": "Signature",
+  "keys": "33",
   "tags": "CC/DEBUFF",
   "shape": "projectile",
   "origin": "caster_front",

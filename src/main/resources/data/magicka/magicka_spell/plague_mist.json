@@ -6,6 +6,7 @@
   },
   "name": "Plague Mist",
   "tier": "Signature",
+  "keys": "28",
   "tags": "DOT/DEBUFF",
   "shape": "spray",
   "origin": "caster_front",

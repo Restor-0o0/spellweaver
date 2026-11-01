@@ -1,5 +1,6 @@
 {
   "id": "magicka:arcane_meteor",
+  "keys": "7155",
   "formula": {
     "fire": 1,
     "earth": 2,

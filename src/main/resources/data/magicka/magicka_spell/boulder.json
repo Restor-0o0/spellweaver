@@ -5,6 +5,7 @@
   },
   "name": "Boulder",
   "tier": "Signature",
+  "keys": "555",
   "tags": "BREAK",
   "shape": "projectile",
   "origin": "caster_front",

@@ -1,10 +1,11 @@
 {
   "id": "magicka:scorching_steam_convergence_fire2_water1_cold1",
   "formula": {
-    "fire": 2,
-    "water": 1,
-    "cold": 1
+    "fire": 1,
+    "cold": 1,
+    "steam": 1
   },
+  "keys": "3121",
   "name": "Scorching Steam Convergence",
   "tier": "Family Variant",
   "tags": "DMG/DOT/SETUP/CC/DEBUFF",
@@ -17,7 +18,8 @@
     "duration_ticks": 220,
     "interval_ticks": 20,
     "gravity": 0,
-    "burst_radius": 3.7
+    "burst_radius": 3.7,
+    "visual": "mist"
   },
   "construction": {
     "material": "ice",

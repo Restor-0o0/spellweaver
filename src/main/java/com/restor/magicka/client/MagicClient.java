@@ -46,12 +46,14 @@ public final class MagicClient {
     // Elements stay under the resting left hand: 1-4 above WASD, Q E R F around it.
     private static final int[] ELEMENT_KEYS = {GLFW.GLFW_KEY_1, GLFW.GLFW_KEY_2, GLFW.GLFW_KEY_3, GLFW.GLFW_KEY_4,
             GLFW.GLFW_KEY_Q, GLFW.GLFW_KEY_E, GLFW.GLFW_KEY_R, GLFW.GLFW_KEY_F};
-    private static final KeyMapping[] ELEMENTS = java.util.Arrays.stream(Element.values()).map(e ->
+    private static final KeyMapping[] ELEMENTS = Element.BASE.stream().map(e ->
             key(e.name().toLowerCase(java.util.Locale.ROOT), InputConstants.Type.KEYSYM, ELEMENT_KEYS[e.ordinal()])).toArray(KeyMapping[]::new);
     private static final KeyMapping TOGGLE = key("toggle", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_G);
     private static final KeyMapping CLEAR = key("clear", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_V);
     private static final KeyMapping DIRECTED = key("directed", InputConstants.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_LEFT);
     private static final KeyMapping SELF = key("self", InputConstants.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_RIGHT);
+    private static final KeyMapping AREA = new KeyMapping("key.magicka.area", KeyConflictContext.IN_GAME, net.minecraftforge.client.settings.KeyModifier.SHIFT, InputConstants.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_RIGHT, "key.categories.magicka");
+    private static final KeyMapping IMBUE = new KeyMapping("key.magicka.imbue", KeyConflictContext.IN_GAME, net.minecraftforge.client.settings.KeyModifier.SHIFT, InputConstants.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_LEFT, "key.categories.magicka");
     private static final KeyMapping BOOK = key("spellbook", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_B);
     private static final KeyMapping SHAPE = key("shape", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_K);
     private static final KeyMapping LOADOUT = key("loadout", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_J);
@@ -103,8 +105,10 @@ public final class MagicClient {
             return true;
         }
         if (!state.enabled()) return false;
-        for (int i = 0; i < ELEMENTS.length; i++) if (matches.test(ELEMENTS[i])) { send(elementAction(Element.values()[i])); return true; }
+        for (int i = 0; i < ELEMENTS.length; i++) if (matches.test(ELEMENTS[i])) { send(elementAction(Element.BASE.get(i))); return true; }
         if (matches.test(CLEAR)) { send(8); return true; }
+        if (matches.test(AREA) && AREA.getKeyModifier().isActive(AREA.getKeyConflictContext())) { send(15); return true; }
+        if (matches.test(IMBUE) && IMBUE.getKeyModifier().isActive(IMBUE.getKeyConflictContext())) { send(16); return true; }
         if (matches.test(DIRECTED)) { directedHeld = true; send(9); return true; }
         if (matches.test(SELF)) { send(10); return true; }
         return false;
@@ -187,6 +191,7 @@ public final class MagicClient {
         int shown = stencil && path.template != null ? path.template.size() : Math.min(3, state.budget());
         for (int i = 0; i < shown; i++) {
             var pos = path.next(mc.player, i);
+            if (pos == null) break;
             boolean free = mc.level.getBlockState(pos).isAir();
             net.minecraft.client.renderer.LevelRenderer.renderLineBox(stack, buffers.getBuffer(net.minecraft.client.renderer.RenderType.lines()),
                     new net.minecraft.world.phys.AABB(pos).inflate(0.002), free ? 0.5F : 1F, free ? 0.9F : 0.3F, 0.95F, 0.7F);
@@ -199,7 +204,7 @@ public final class MagicClient {
         @SubscribeEvent public static void keys(RegisterKeyMappingsEvent event) {
             for (KeyMapping key : ELEMENTS) event.register(key);
             for(KeyMapping key:QUICK)event.register(key);
-            for (KeyMapping key : new KeyMapping[]{TOGGLE, CLEAR, DIRECTED, SELF, BOOK, SHAPE, LOADOUT}) event.register(key);
+            for (KeyMapping key : new KeyMapping[]{TOGGLE, CLEAR, DIRECTED, SELF, AREA, IMBUE, BOOK, SHAPE, LOADOUT}) event.register(key);
             for (KeyMapping key : POTIONS) event.register(key);
         }
         @SubscribeEvent public static void screens(net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent event) {

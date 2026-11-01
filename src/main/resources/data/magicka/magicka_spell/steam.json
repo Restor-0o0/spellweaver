@@ -1,11 +1,11 @@
 {
   "id": "magicka:steam",
   "formula": {
-    "fire": 1,
-    "water": 1
+    "steam": 1
   },
   "name": "Steam",
   "tier": "Signature",
+  "keys": "12",
   "tags": "DMG/DOT/SETUP/CC",
   "shape": "projectile",
   "origin": "caster_front",
@@ -29,22 +29,14 @@
   },
   "effects": [
     {
-      "type": "set_wet",
-      "duration_ticks": 200
-    },
-    {
       "type": "apply_force",
       "amount": 0.15,
       "lift": 0
     },
     {
       "type": "deal_damage",
-      "amount": 1.5,
-      "element": "fire"
-    },
-    {
-      "type": "modify_temperature",
-      "amount": 40
+      "amount": 2.0,
+      "element": "steam"
     },
     {
       "type": "apply_status",
@@ -57,26 +49,18 @@
     "mode": "generic",
     "effects": [
       {
-        "type": "set_wet",
-        "duration_ticks": 200
-      },
-      {
         "type": "apply_force",
         "amount": 0.15,
         "lift": 0
       },
       {
         "type": "deal_damage",
-        "amount": 1.5,
-        "element": "fire"
-      },
-      {
-        "type": "modify_temperature",
-        "amount": 40
+        "amount": 2.0,
+        "element": "steam"
       }
     ]
   },
-  "primary": "A cloud of hot steam.\nA projectile flies where you look and strikes the first target. Effects:\n• Damage 0.75 ❤ fire (fire ×0.5 on wet)\n• Soaked for 10 s and leaves a puddle\n• Light push\n• Heat: sets on fire for 6 s (wet targets just dry off), thaws; melts ice and burns roots\n• Blindness for 3.1 s",
-  "self_description": "On you:\n• Damage 0.75 ❤ fire (fire ×0.5 on wet)\n• Soaked for 10 s and leaves a puddle\n• Light push\n• Heat: sets on fire for 6 s (wet targets just dry off), thaws; melts ice and burns roots",
+  "primary": "A condensed burst of steam.\nA projectile flies where you look and strikes the first target. Effects:\n• Damage 1 ❤ steam\n• Light push\n• Blindness for 3.1 s",
+  "self_description": "On you:\n• Damage 1 ❤ steam\n• Light push",
   "balanced": true
 }

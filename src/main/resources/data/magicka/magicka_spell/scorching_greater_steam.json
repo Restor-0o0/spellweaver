@@ -1,9 +1,10 @@
 {
   "id": "magicka:scorching_greater_steam",
   "formula": {
-    "fire": 3,
-    "water": 1
+    "fire": 2,
+    "steam": 1
   },
+  "keys": "1211",
   "name": "Scorching Greater Steam",
   "tier": "Family Variant",
   "tags": "DMG/DOT/SETUP/CC",

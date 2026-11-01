@@ -5,9 +5,10 @@
     "fire": 1,
     "earth": 1
   },
-  "incantation": "88185",
+  "keys": "88185",
   "name": "Apocalypse",
   "tier": "Signature",
+  "ultimate": true,
   "scroll": true,
   "tags": "SUMMON/DMG/DEBUFF",
   "shape": "summon_object",

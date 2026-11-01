@@ -1,5 +1,6 @@
 {
   "id": "magicka:shall_not_pass",
+  "keys": "5477",
   "formula": {
     "lightning": 1,
     "earth": 1,

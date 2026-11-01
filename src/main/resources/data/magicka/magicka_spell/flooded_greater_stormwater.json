@@ -6,6 +6,7 @@
   },
   "name": "Flooded Greater Stormwater",
   "tier": "Family Variant",
+  "keys": "2224",
   "tags": "SETUP/CC/DMG",
   "shape": "spray",
   "origin": "caster_front",

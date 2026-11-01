@@ -6,6 +6,7 @@
   },
   "name": "Greater Frostshock",
   "tier": "Family Variant",
+  "keys": "3344",
   "tags": "CC/DEBUFF/DMG",
   "shape": "chain",
   "origin": "aim_hit",

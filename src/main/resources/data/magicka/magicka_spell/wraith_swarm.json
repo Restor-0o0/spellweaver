@@ -6,6 +6,7 @@
   },
   "name": "Wraith Swarm",
   "tier": "Signature",
+  "keys": "788",
   "tags": "SUMMON/DMG",
   "shape": "summon_object",
   "origin": "aim_hit",

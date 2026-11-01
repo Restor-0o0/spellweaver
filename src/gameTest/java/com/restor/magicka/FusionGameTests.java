@@ -5,7 +5,7 @@ import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.gametest.framework.GameTest;
-import net.minecraftforge.gametest.*;
+import net.minecraftforge.gametest.*;;
 import java.util.*;
 
 @GameTestHolder(Magicka.ID)
@@ -21,19 +21,19 @@ public final class FusionGameTests {
     @GameTest(template="empty")
     public static void everyElementSetCastsSomething(GameTestHelper h) {
         var all = new ArrayList<SpellFormula>(); every(new int[8], 0, 5, all);
-        Check.assertTrue(h, all.size() == 1286, "All element sets enumerated, got " + all.size());
+        Check.assertTrue(h,all.size() == 1286, "All element sets enumerated, got " + all.size());
         for (var formula : all) {
             var spell = RecipeRegistry.resolve(formula);
-            Check.assertTrue(h, spell.formula().equals(formula), "The spell for " + formula + " keeps its elements");
+            Check.assertTrue(h,spell.formula().equals(formula), "The spell for " + formula + " keeps its elements");
             var fusion = RecipeRegistry.fusion(formula);
-            Check.assertTrue(h, !fusion.ordered() && fusion.formula().equals(formula) && !fusion.effects().isEmpty(), "A fusion is built for " + formula);
+            Check.assertTrue(h,!fusion.ordered() && fusion.formula().equals(formula) && !fusion.effects().isEmpty(), "A fusion is built for " + formula);
         }
-        Check.assertTrue(h, RecipeRegistry.fusion(of(1,0,0,0,1,0,0,0)).shape() == SpellShape.PROJECTILE, "Earth leads into a heavy projectile");
-        Check.assertTrue(h, RecipeRegistry.fusion(of(0,0,0,0,3,0,0,0)).shape() == SpellShape.BURST_PROJECTILE, "Three Earth burst on impact");
-        Check.assertTrue(h, RecipeRegistry.fusion(of(0,1,0,2,0,0,0,0)).shape() == SpellShape.CHAIN, "Lightning leads into a chain");
-        Check.assertTrue(h, RecipeRegistry.fusion(of(0,0,0,0,0,1,0,1)).shape() == SpellShape.BEAM, "Life and Death make a beam");
-        Check.assertTrue(h, RecipeRegistry.fusion(of(0,1,2,0,0,0,0,0)).number("fan", 1) > 1, "Cold with Water fans out ice shards");
-        Check.assertTrue(h, RecipeRegistry.fusion(of(1,0,0,0,0,0,1,0)).number("radius", 0) > RecipeRegistry.fusion(of(2,0,0,0,0,0,0,0)).number("radius", 0), "Arcane widens the fusion");
+        Check.assertTrue(h,RecipeRegistry.fusion(of(1,0,0,0,1,0,0,0)).shape() == SpellShape.PROJECTILE, "Earth leads into a heavy projectile");
+        Check.assertTrue(h,RecipeRegistry.fusion(of(0,0,0,0,3,0,0,0)).shape() == SpellShape.BURST_PROJECTILE, "Three Earth burst on impact");
+        Check.assertTrue(h,RecipeRegistry.fusion(of(0,1,0,2,0,0,0,0)).shape() == SpellShape.CHAIN, "Lightning leads into a chain");
+        Check.assertTrue(h,RecipeRegistry.fusion(of(0,0,0,0,0,1,0,1)).shape() == SpellShape.BEAM, "Life and Death make a beam");
+        Check.assertTrue(h,RecipeRegistry.fusion(of(0,1,2,0,0,0,0,0)).number("fan", 1) > 1, "Cold with Water fans out ice shards");
+        Check.assertTrue(h,RecipeRegistry.fusion(of(1,0,0,0,0,0,1,0)).number("radius", 0) > RecipeRegistry.fusion(of(2,0,0,0,0,0,0,0)).number("radius", 0), "Arcane widens the fusion");
         h.succeed();
     }
     @GameTest(template="empty")
@@ -42,8 +42,22 @@ public final class FusionGameTests {
         var pig = h.spawnWithNoFreeWill(EntityType.PIG, new BlockPos(3, 2, 3));
         MagicStatuses.apply(pig, MagicStatuses.Status.BURNING, 100, 1);
         EffectGraph.entity(p, pig, RecipeRegistry.fusion(of(1,0,1,0,0,0,0,0)), List.of(node("thermal_shock", 4)), p.position(), false);
-        Check.assertTrue(h, pig.getHealth() <= pig.getMaxHealth() - 3, "A burning target bursts, health " + pig.getHealth());
-        Check.assertTrue(h, MagicStatuses.has(pig, MagicStatuses.Status.BRITTLE) && !MagicStatuses.has(pig, MagicStatuses.Status.BURNING), "The shock leaves it brittle and puts the fire out");
+        Check.assertTrue(h,pig.getHealth() <= pig.getMaxHealth() - 3, "A burning target bursts, health " + pig.getHealth());
+        Check.assertTrue(h,MagicStatuses.has(pig, MagicStatuses.Status.BRITTLE) && !MagicStatuses.has(pig, MagicStatuses.Status.BURNING), "The shock leaves it brittle and puts the fire out");
+        h.succeed();
+    }
+    @GameTest(template="empty")
+    public static void genericSelfReactionsRemainAvailable(GameTestHelper h) {
+        var steam = RecipeRegistry.fusion(of(1,1,0,0,0,0,0,0));
+        var ice = RecipeRegistry.fusion(of(0,1,1,0,0,0,0,0));
+        var earth = RecipeRegistry.fusion(of(0,0,0,0,1,0,0,0));
+        var shield = RecipeRegistry.fusion(of(0,0,0,0,1,0,1,0));
+        var namedShield = RecipeRegistry.resolve(of(0,0,0,0,1,0,1,0));
+        Check.assertTrue(h,steam.selfEffects().stream().anyMatch(e -> e.get("type").getAsString().equals("thermal_shock")), "Fire and water keep the steam reaction");
+        Check.assertTrue(h,ice.selfEffects().stream().anyMatch(e -> e.get("type").getAsString().equals("apply_status") && e.get("status").getAsString().equals("chilled")), "Water and cold keep the ice self effect");
+        Check.assertTrue(h,earth.selfEffects().stream().anyMatch(e -> e.get("type").getAsString().equals("apply_status") && e.get("status").getAsString().equals("stone_shell")), "Earth keeps the shield self effect");
+        Check.assertTrue(h,shield.name().equals("Shield") && shield.tags().contains("DEF"), "Earth and Arcane keep the generic shield");
+        Check.assertTrue(h,namedShield.name().equals("Shield") && !namedShield.ordered(), "Earth and Arcane no longer resolve to Crystal");
         h.succeed();
     }
     @GameTest(template="empty")
@@ -52,6 +66,6 @@ public final class FusionGameTests {
         var zombie = h.spawnWithNoFreeWill(EntityType.ZOMBIE, new BlockPos(3, 2, 3));
         EffectGraph.entity(p, zombie, RecipeRegistry.fusion(of(0,0,0,0,0,1,0,1)), List.of(node("rebirth", 0)), p.position(), false);
         zombie.hurt(net.minecraft.world.damagesource.DamageSource.MAGIC, 1000);
-        h.succeedWhen(() -> Check.assertTrue(h, !h.getLevel().getEntitiesOfClass(Mob.class, zombie.getBoundingBox().inflate(4), e -> e != zombie && e.isAlive() && UndeadMinions.ownedBy(e, p)).isEmpty(), "The slain zombie rises for the caster"));
+        h.succeedWhen(() -> Check.assertTrue(h,!h.getLevel().getEntitiesOfClass(Mob.class, zombie.getBoundingBox().inflate(4), e -> e != zombie && e.isAlive() && UndeadMinions.ownedBy(e, p)).isEmpty(), "The slain zombie rises for the caster"));
     }
 }

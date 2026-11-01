@@ -4,9 +4,10 @@
     "earth": 2,
     "life": 3
   },
-  "incantation": "65566",
+  "keys": "65566",
   "name": "Grove",
   "tier": "Signature",
+  "ultimate": true,
   "scroll": true,
   "tags": "UTIL",
   "shape": "targeted_zone",

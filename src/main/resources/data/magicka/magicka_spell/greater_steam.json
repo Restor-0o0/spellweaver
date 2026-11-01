@@ -1,9 +1,9 @@
 {
   "id": "magicka:greater_steam",
   "formula": {
-    "fire": 2,
-    "water": 2
+    "steam": 2
   },
+  "keys": "1221",
   "name": "Greater Steam",
   "tier": "Family Variant",
   "tags": "DMG/DOT/SETUP/CC",

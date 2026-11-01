@@ -1,0 +1,52 @@
+{
+  "id": "magicka:death_mines",
+  "formula": {
+    "shield": 1,
+    "death": 1
+  },
+  "keys": "578",
+  "name": "Death Mines",
+  "tier": "Signature",
+  "tags": "AOE/SETUP",
+  "shape": "mine",
+  "origin": "aim_ground",
+  "cast_ticks": 9,
+  "delivery": {
+    "radius": 2.0,
+    "speed": 1.0,
+    "duration_ticks": 600,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.0,
+    "row": 3,
+    "row_spacing": 2.5,
+    "visual": "totem"
+  },
+  "effects": [
+    {
+      "type": "drain_life",
+      "amount": 3.0,
+      "fraction": 0.5
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 100,
+      "strength": 2
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 60,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "Three mines that drink life.\nMines at the aim point for 30 s: each arms in 1 s and bursts in a 2-block radius when an enemy comes near:\n• Drains 1.5 ❤, half of it heals you\n• Withering II for 5 s",
+  "self_description": "On you: Withering for 3 s.",
+  "balanced": true
+}

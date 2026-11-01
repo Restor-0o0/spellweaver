@@ -1,11 +1,12 @@
 {
   "id": "magicka:stone_platform",
   "formula": {
-    "earth": 2,
-    "arcane": 1
+    "earth": 1,
+    "shield": 1
   },
   "name": "Stone Platform",
   "tier": "Signature",
+  "keys": "557",
   "tags": "BUILD/MOVE",
   "shape": "platform",
   "origin": "aim_surface",

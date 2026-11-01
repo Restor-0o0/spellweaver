@@ -6,6 +6,7 @@
   },
   "name": "Frozen Thermal Shock",
   "tier": "Family Variant",
+  "keys": "133",
   "tags": "DMG/DOT/CC/DEBUFF",
   "shape": "projectile",
   "origin": "caster_front",

@@ -6,6 +6,7 @@
   },
   "name": "Creeper Graves",
   "tier": "Signature",
+  "keys": "188",
   "tags": "SUMMON/DMG/AOE",
   "shape": "summon_object",
   "origin": "aim_hit",

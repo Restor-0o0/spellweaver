@@ -32,8 +32,10 @@ public final class Magicka {
         MinecraftForge.EVENT_BUS.addListener(LegendMagic::target);
         MinecraftForge.EVENT_BUS.addListener(LegendMagic::ward);
         MinecraftForge.EVENT_BUS.addListener(LegendLife::death);
+        MinecraftForge.EVENT_BUS.addListener(LegendLife::soulShield);
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, MagicConfig.SPEC, "spellweaver-server.toml");
         MinecraftForge.EVENT_BUS.register(new CastingServer());
+        MinecraftForge.EVENT_BUS.register(new CastModes());
         MinecraftForge.EVENT_BUS.register(new MagicStats());
         MinecraftForge.EVENT_BUS.register(new MagicGear());
         MinecraftForge.EVENT_BUS.register(new SpellScrolls());
@@ -51,5 +53,6 @@ public final class Magicka {
         MinecraftForge.EVENT_BUS.register(new ShapePattern());
         MinecraftForge.EVENT_BUS.addListener(MagicBlocks::climbRoots);
         MinecraftForge.EVENT_BUS.register(new com.restor.magicka.enemy.MagicEnemies());
+        MinecraftForge.EVENT_BUS.register(new com.restor.magicka.enemy.Arena());
     }
 }

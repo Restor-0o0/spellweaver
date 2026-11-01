@@ -7,6 +7,7 @@
   },
   "name": "Scorching Magma Convergence",
   "tier": "Family Variant",
+  "keys": "1156",
   "tags": "DMG/DOT/BREAK/HEAL/BUFF",
   "shape": "spray",
   "origin": "caster_front",

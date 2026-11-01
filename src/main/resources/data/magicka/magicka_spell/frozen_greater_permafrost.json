@@ -6,6 +6,7 @@
   },
   "name": "Frozen Greater Permafrost",
   "tier": "Family Variant",
+  "keys": "3335",
   "tags": "CC/DEBUFF/BREAK",
   "shape": "projectile",
   "origin": "caster_front",

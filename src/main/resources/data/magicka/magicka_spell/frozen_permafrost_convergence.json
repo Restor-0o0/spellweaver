@@ -7,6 +7,7 @@
   },
   "name": "Frozen Permafrost Convergence",
   "tier": "Family Variant",
+  "keys": "3356",
   "tags": "CC/DEBUFF/BREAK/HEAL/BUFF",
   "shape": "projectile",
   "origin": "caster_front",

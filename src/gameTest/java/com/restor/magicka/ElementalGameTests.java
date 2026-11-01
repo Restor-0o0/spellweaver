@@ -18,7 +18,7 @@ public final class ElementalGameTests {
 
     @GameTest(template="empty")
     public static void everyElementHasACompanionAndATitan(GameTestHelper h) {
-        for (Element e : Element.values()) {
+        for (Element e : Element.BASE) {
             var companion = RecipeRegistry.recipes().stream().filter(d -> d.id().getPath().equals(Elementals.id(e, "elemental"))).findFirst().orElseThrow();
             var titan = RecipeRegistry.recipes().stream().filter(d -> d.id().getPath().equals(Elementals.id(e, "titan"))).findFirst().orElseThrow();
             Check.assertTrue(h,Elementals.element(companion) == e && companion.tier().equals("Signature") && !companion.epic(), e + " companion is a plain signature");

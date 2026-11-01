@@ -6,6 +6,7 @@
   },
   "name": "Flooded Greater Spring",
   "tier": "Family Variant",
+  "keys": "2226",
   "tags": "SETUP/CC/HEAL/BUFF",
   "shape": "spray",
   "origin": "caster_front",

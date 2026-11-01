@@ -6,6 +6,7 @@
   },
   "name": "Root Spire",
   "tier": "Signature",
+  "keys": "556",
   "tags": "BUILD/MOVE",
   "shape": "pillar",
   "origin": "aim_surface",

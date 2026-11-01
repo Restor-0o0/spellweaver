@@ -5,6 +5,7 @@
   },
   "name": "Chill",
   "tier": "Signature",
+  "keys": "3",
   "tags": "CC/DEBUFF",
   "shape": "projectile",
   "origin": "caster_front",

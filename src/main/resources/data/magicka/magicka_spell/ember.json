@@ -5,6 +5,7 @@
   },
   "name": "Ember",
   "tier": "Signature",
+  "keys": "1",
   "tags": "DMG/DOT",
   "shape": "projectile",
   "origin": "caster_front",

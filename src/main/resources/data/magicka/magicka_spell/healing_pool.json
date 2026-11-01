@@ -6,6 +6,7 @@
   },
   "name": "Healing Pool",
   "tier": "Signature",
+  "keys": "266",
   "tags": "HEAL/BUILD/SETUP",
   "shape": "targeted_zone",
   "origin": "aim_ground",
@@ -16,7 +17,8 @@
     "duration_ticks": 300,
     "interval_ticks": 20,
     "gravity": 0,
-    "burst_radius": 2.5
+    "burst_radius": 2.5,
+    "visual": "pool"
   },
   "construction": {
     "material": "root",

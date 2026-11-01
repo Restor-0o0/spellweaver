@@ -6,6 +6,7 @@
   },
   "name": "Rootstone",
   "tier": "Signature",
+  "keys": "56",
   "tags": "BREAK/HEAL/BUFF/BUILD/MOVE",
   "shape": "projectile",
   "origin": "caster_front",

@@ -1,0 +1,39 @@
+{
+  "id": "magicka:reflection",
+  "formula": {
+    "shield": 2,
+    "arcane": 1
+  },
+  "keys": "57577",
+  "name": "Reflection",
+  "tier": "Signature",
+  "tags": "DEF",
+  "shape": "targeted_zone",
+  "origin": "caster",
+  "cast_ticks": 14,
+  "delivery": {
+    "radius": 2.5,
+    "speed": 1.0,
+    "duration_ticks": 200,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.0,
+    "follow": true,
+    "reflect_projectiles": true,
+    "visual": "mirror"
+  },
+  "effects": [
+    {
+      "type": "apply_force",
+      "amount": 0.4,
+      "lift": 0.1
+    }
+  ],
+  "self": {
+    "mode": "zone",
+    "effects": []
+  },
+  "primary": "A mirror shell that throws shots back.\nFor 10 s a 2.5-block shell follows you:\n• Enemy shots that fly into it turn back and become yours\n• Enemies inside are pushed away every second",
+  "self_description": "The same shell around you.",
+  "balanced": true
+}

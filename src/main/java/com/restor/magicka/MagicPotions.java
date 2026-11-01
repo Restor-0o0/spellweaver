@@ -32,6 +32,11 @@ public final class MagicPotions {
     }
     public static final RegistryObject<MobEffect> SWIFT_CASTING = effect("swift_casting", 0xFFFFDC84);
     public static final RegistryObject<MobEffect> SPELL_FOCUS = effect("spell_focus", 0xFFC79ADB);
+    public static final Map<MagicStatuses.Status, RegistryObject<MobEffect>> STATUS = new EnumMap<>(MagicStatuses.Status.class);
+    static {
+        for (MagicStatuses.Status status : MagicStatuses.Status.values()) if (status != MagicStatuses.Status.BURNING)
+            STATUS.put(status, EFFECTS.register("status_" + status.name().toLowerCase(Locale.ROOT), () -> new Effect(status.color, status.harmful ? MobEffectCategory.HARMFUL : MobEffectCategory.BENEFICIAL)));
+    }
     public static final Map<String, RegistryObject<Potion>> ALL = new LinkedHashMap<>();
     static {
         WARDS.values().forEach(MagicPotions::potions);
@@ -42,7 +47,8 @@ public final class MagicPotions {
     private static final Set<UUID> DIRTY = new HashSet<>();
 
     private static final class Effect extends MobEffect {
-        Effect(int color) { super(MobEffectCategory.BENEFICIAL, color & 0xFFFFFF); }
+        Effect(int color) { this(color, MobEffectCategory.BENEFICIAL); }
+        Effect(int color, MobEffectCategory category) { super(category, color & 0xFFFFFF); }
     }
 
     private static RegistryObject<MobEffect> effect(String name, int color) {

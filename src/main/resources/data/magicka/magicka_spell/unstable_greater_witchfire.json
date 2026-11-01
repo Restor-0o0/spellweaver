@@ -6,6 +6,7 @@
   },
   "name": "Unstable Greater Witchfire",
   "tier": "Family Variant",
+  "keys": "1777",
   "tags": "DMG/DOT/SETUP",
   "shape": "targeted_explosion",
   "origin": "aim_hit",

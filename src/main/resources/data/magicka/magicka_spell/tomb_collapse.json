@@ -6,6 +6,7 @@
   },
   "name": "Tomb Collapse",
   "tier": "Signature",
+  "keys": "558",
   "tags": "DMG/BREAK/AOE",
   "shape": "targeted_explosion",
   "origin": "aim_hit",

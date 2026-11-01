@@ -155,6 +155,7 @@ settings, or replace the file in a world's `serverconfig/`. Options you leave ou
 
 # Peaceful multiplayer
 #friendlyFire = false
+#selfHarm = "OFF"
 #playerMagicDamageMultiplier = 0.0
 
 # No Spellweaver enemies spawning in the world
@@ -216,8 +217,10 @@ and Forge resets it.
 | `instantCast` | true | Spells fire at once; channeled spells last while the button is held |
 | `castTimeMultiplier` | 1.0 | Scales every cast time |
 | `channelMaxTicksPerElement` | 20 | Channel length per element |
-| `playerMagicDamageMultiplier` | 0.5 | Spell damage dealt to players |
+| `playerMagicDamageMultiplier` | 2.0 | Spell damage dealt to players, your own included (0–10) |
 | `friendlyFire` | true | Spells can hurt other players |
+| `selfHarm` | FULL | Your own blasts, zones and storms hit you: `FULL`, `SCALED` or `OFF` |
+| `selfHarmMultiplier` | 0.5 | Self damage when `selfHarm` is `SCALED` |
 | `maxActiveSpellsPerPlayer` | 32 | Running spells per player |
 | `revivalWindowTicks` | 600 | How long a fallen creature can still be revived |
 | `maxUndeadMinionsPerPlayer` | 24 | Undead servants per player |

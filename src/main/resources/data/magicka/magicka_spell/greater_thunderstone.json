@@ -6,6 +6,7 @@
   },
   "name": "Greater Thunderstone",
   "tier": "Family Variant",
+  "keys": "4455",
   "tags": "DMG/CC/BREAK",
   "shape": "chain",
   "origin": "aim_hit",

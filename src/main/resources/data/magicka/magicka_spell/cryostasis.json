@@ -6,6 +6,7 @@
   },
   "name": "Cryostasis",
   "tier": "Signature",
+  "keys": "36",
   "tags": "CC/DEBUFF/HEAL/BUFF",
   "shape": "projectile",
   "origin": "caster_front",
