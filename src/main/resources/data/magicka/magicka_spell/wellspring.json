@@ -6,6 +6,7 @@
   },
   "name": "Wellspring",
   "tier": "Signature",
+  "keys": "2266",
   "scroll": true,
   "tags": "HEAL/ZONE",
   "shape": "targeted_zone",

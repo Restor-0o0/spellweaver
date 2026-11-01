@@ -6,6 +6,7 @@
   },
   "name": "Cryosleep",
   "tier": "Signature",
+  "keys": "366",
   "scroll": true,
   "tags": "HEAL/CC",
   "shape": "direct_target",

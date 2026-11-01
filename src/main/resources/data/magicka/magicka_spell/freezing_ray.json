@@ -5,6 +5,7 @@
   },
   "name": "Freezing Ray",
   "tier": "Signature",
+  "keys": "333",
   "tags": "CC/DEBUFF",
   "shape": "beam",
   "origin": "caster_front",

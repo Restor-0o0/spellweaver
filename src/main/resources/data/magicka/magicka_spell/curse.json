@@ -6,6 +6,7 @@
   },
   "name": "Curse",
   "tier": "Signature",
+  "keys": "778",
   "tags": "DEBUFF/DMG",
   "shape": "direct_target",
   "origin": "aim_hit",

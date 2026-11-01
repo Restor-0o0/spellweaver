@@ -6,6 +6,7 @@
   },
   "name": "Soul",
   "tier": "Signature",
+  "keys": "67",
   "tags": "HEAL/BUFF/SETUP",
   "shape": "projectile",
   "origin": "caster_front",

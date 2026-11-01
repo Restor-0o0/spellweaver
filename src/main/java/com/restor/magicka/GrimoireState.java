@@ -19,7 +19,7 @@ public final class GrimoireState {
             var json=JsonParser.parseString(Files.readString(path,StandardCharsets.UTF_8)).getAsJsonObject();
             state.selectedId=SpellDefinition.string(json,"selected","");state.query=SpellDefinition.string(json,"query","");
             state.tag=SpellDefinition.string(json,"tag","all");
-            state.size=SpellDefinition.integer(json,"size",0,0,Formula.MAX);state.elements=SpellDefinition.integer(json,"elements",0,0,255);state.page=SpellDefinition.integer(json,"page",0,0,1000);state.scroll=SpellDefinition.integer(json,"scroll",0,0,10000);
+            state.size=SpellDefinition.integer(json,"size",0,0,Formula.MAX);state.elements=SpellDefinition.integer(json,"elements",0,0,2047);state.page=SpellDefinition.integer(json,"page",0,0,1000);state.scroll=SpellDefinition.integer(json,"scroll",0,0,10000);
             if(json.has("slots")){var array=json.getAsJsonArray("slots");for(int i=0;i<Math.min(4,array.size());i++)state.assign(i,array.get(i).getAsInt());}
             return state;
         }catch(RuntimeException invalid){return new GrimoireState();}

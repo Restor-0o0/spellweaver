@@ -6,6 +6,7 @@
   },
   "name": "Unstable Greater Arc Lightning",
   "tier": "Family Variant",
+  "keys": "4777",
   "tags": "DMG/CC/SETUP",
   "shape": "targeted_explosion",
   "origin": "aim_hit",

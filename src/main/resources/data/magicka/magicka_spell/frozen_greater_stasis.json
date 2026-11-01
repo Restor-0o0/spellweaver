@@ -6,6 +6,7 @@
   },
   "name": "Frozen Greater Stasis",
   "tier": "Family Variant",
+  "keys": "3337",
   "tags": "CC/DEBUFF/SETUP",
   "shape": "projectile",
   "origin": "caster_front",

@@ -1,5 +1,6 @@
 {
   "id": "magicka:tesla_spire",
+  "keys": "5547",
   "formula": {
     "lightning": 1,
     "earth": 2,

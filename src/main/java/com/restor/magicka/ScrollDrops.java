@@ -43,7 +43,7 @@ public final class ScrollDrops {
 
     public static int bias(Level level, SpellDefinition spell) {
         if (level == null || !MagicConfig.DIMENSION_SCROLLS.get()) return 1;
-        if (level.dimension() == Level.NETHER) return spell.formula().fire() > 0 || spell.ultimate() ? 3 : 1;
+        if (level.dimension() == Level.NETHER) return spell.formula().total(Element.FIRE) > 0 || spell.ultimate() ? 3 : 1;
         if (level.dimension() == Level.END) return spell.formula().arcane() > 0 || spell.ultimate() ? 3 : 1;
         return 1;
     }

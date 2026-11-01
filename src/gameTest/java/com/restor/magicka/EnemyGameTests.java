@@ -33,8 +33,8 @@ public final class EnemyGameTests {
         h.assertTrue(ElementLocks.locked(p, Element.FIRE) && !ElementLocks.locked(p, Element.WATER), "Only the bound element is locked");
         CastingServer.input(p, Element.FIRE.ordinal());
         h.assertTrue(CastingServer.prepared(p).count(Element.FIRE) == 0, "A locked element cannot be typed");
-        CastingServer.input(p, Element.WATER.ordinal());
-        h.assertTrue(CastingServer.prepared(p).count(Element.WATER) == 1, "Other elements still work");
+        CastingServer.input(p, Element.EARTH.ordinal());
+        h.assertTrue(CastingServer.prepared(p).count(Element.EARTH) == 1, "Other elements still work");
         ElementLocks.clear(p);
         CastingServer.input(p, Element.FIRE.ordinal());
         h.assertTrue(CastingServer.prepared(p).count(Element.FIRE) == 1, "Clearing the lock restores the element");
@@ -149,6 +149,46 @@ public final class EnemyGameTests {
     public static void stoneEaterOnlyEatsMagic(GameTestHelper h) {
         h.assertFalse(StoneEater.edible(net.minecraft.world.level.block.Blocks.STONE.defaultBlockState()), "Natural stone is not food");
         h.assertFalse(StoneEater.edible(MagicBlocks.PUDDLE.get().defaultBlockState()), "Puddles are not food");
+        h.succeed();
+    }
+
+    @GameTest(template="empty")
+    public static void trollRegenerates(GameTestHelper h) {
+        DeathGameTests.floor(h);
+        Troll troll = mob(h, MagicEnemies.TROLL.get(), 2.5, 2.5, 0);
+        troll.setHealth(30);
+        h.succeedWhen(() -> h.assertTrue(troll.getHealth() >= 34, "Troll heals itself, at " + troll.getHealth()));
+    }
+
+    @GameTest(template="empty")
+    public static void fireStopsTrollRegeneration(GameTestHelper h) {
+        DeathGameTests.floor(h);
+        ServerPlayer p = RecipeGameTests.caster(h);
+        Troll troll = mob(h, MagicEnemies.TROLL.get(), 2.5, 3.5, 0);
+        SpellDefinition fire = find(d -> d.formula().count(Element.FIRE) > 0);
+        float burnt = hit(troll, p, fire, 10, false);
+        h.assertTrue(burnt >= 14.9f, "Fire hurts the troll more, took " + burnt);
+        h.assertTrue(troll.scorched(), "Fire scorches the troll");
+        float after = troll.getHealth();
+        h.runAfterDelay(40, () -> {
+            h.assertTrue(troll.getHealth() <= after, "A scorched troll does not regenerate");
+            h.succeed();
+        });
+    }
+
+    @GameTest(template="empty")
+    public static void knightShrugsOffMagicButNotLightning(GameTestHelper h) {
+        DeathGameTests.floor(h);
+        ServerPlayer p = RecipeGameTests.caster(h);
+        ArmoredKnight knight = mob(h, MagicEnemies.ARMORED_KNIGHT.get(), 2.5, 3.5, 0);
+        SpellDefinition arcane = find(d -> d.formula().size() > 0 && d.formula().count(Element.LIGHTNING) == 0);
+        SpellDefinition lightning = find(d -> d.formula().count(Element.LIGHTNING) > 0);
+        h.assertTrue(hit(knight, p, arcane, 10, false) <= 3.6f, "Armor wards off plain spells");
+        h.assertFalse(MagicStatuses.has(knight, MagicStatuses.Status.STUNNED), "Plain spells do not stun");
+        knight.invulnerableTime = 0;
+        float shocked = hit(knight, p, lightning, 5, false);
+        h.assertTrue(shocked >= 9.9f, "Lightning hits armor twice as hard, took " + shocked);
+        h.assertTrue(MagicStatuses.has(knight, MagicStatuses.Status.STUNNED), "Lightning stuns the knight");
         h.succeed();
     }
 }

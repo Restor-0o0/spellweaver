@@ -6,6 +6,7 @@
   },
   "name": "Charged Plasma",
   "tier": "Family Variant",
+  "keys": "144",
   "tags": "DMG/DOT/CC",
   "shape": "chain",
   "origin": "aim_hit",

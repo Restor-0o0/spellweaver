@@ -1,11 +1,12 @@
 {
   "id": "magicka:flooded_frostflow",
   "formula": {
-    "water": 2,
-    "cold": 1
+    "water": 1,
+    "ice": 1
   },
   "name": "Flooded Frostflow",
   "tier": "Family Variant",
+  "keys": "223",
   "tags": "SETUP/CC/DEBUFF/BUILD",
   "shape": "targeted_zone",
   "origin": "aim_ground",
@@ -16,7 +17,8 @@
     "duration_ticks": 220,
     "interval_ticks": 20,
     "gravity": 0,
-    "burst_radius": 2.7
+    "burst_radius": 2.7,
+    "visual": "pool"
   },
   "construction": {
     "material": "ice",

@@ -5,6 +5,7 @@
   },
   "name": "Water Cannon",
   "tier": "Signature",
+  "keys": "2222",
   "tags": "SETUP/CC",
   "shape": "spray",
   "origin": "caster_front",

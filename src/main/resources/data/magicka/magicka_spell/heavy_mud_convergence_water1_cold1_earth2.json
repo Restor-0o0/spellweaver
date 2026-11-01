@@ -1,10 +1,10 @@
 {
   "id": "magicka:heavy_mud_convergence_water1_cold1_earth2",
   "formula": {
-    "water": 1,
-    "cold": 1,
-    "earth": 2
+    "earth": 2,
+    "ice": 1
   },
+  "keys": "5523",
   "name": "Heavy Mud Convergence",
   "tier": "Family Variant",
   "tags": "SETUP/CC/DEBUFF/BREAK/BUILD",
@@ -17,7 +17,8 @@
     "duration_ticks": 260,
     "interval_ticks": 20,
     "gravity": 0.025,
-    "burst_radius": 3.3
+    "burst_radius": 3.3,
+    "visual": "spires"
   },
   "construction": {
     "material": "ice",

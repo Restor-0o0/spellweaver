@@ -18,10 +18,11 @@ public final class SpellVisuals {
     private static final class Cue {MagicNetwork.Visual packet;int age,until;Cue(MagicNetwork.Visual packet){this.packet=packet;until=Math.min(100,packet.ticks());}}
     public static void clear(){CUES.clear();}
     public static void receive(MagicNetwork.Visual packet){
-        if(packet.kind()<0 || packet.kind()>SpellVfx.SIGIL || !GrimoireState.valid(packet.formula()) || !Double.isFinite(packet.from().lengthSqr()+packet.to().lengthSqr()) || !Float.isFinite(packet.radius()))return;
-        if(packet.kind()==SpellVfx.ZONE || packet.kind()==SpellVfx.MINE || packet.kind()==SpellVfx.SIGIL)
-            for(Cue c:CUES)if(c.packet.kind()==packet.kind() && c.packet.formula()==packet.formula() && c.packet.anchor()==packet.anchor() && c.packet.from().distanceToSqr(packet.from())<.04){
-                c.packet=packet;c.until=Math.max(c.until,c.age+Math.min(100,packet.ticks()));return;
+        if(packet.kind()<0 || packet.kind()>SpellVfx.EMBERFALL || !GrimoireState.valid(packet.formula()) || !Double.isFinite(packet.from().lengthSqr()+packet.to().lengthSqr()) || !Float.isFinite(packet.radius()))return;
+        boolean model=SpellModels.merges(packet.kind());
+        if(packet.kind()==SpellVfx.ZONE || packet.kind()==SpellVfx.MINE || packet.kind()==SpellVfx.SIGIL || model)
+            for(Cue c:CUES)if(c.packet.kind()==packet.kind() && c.packet.formula()==packet.formula() && c.packet.anchor()==packet.anchor() && (packet.anchor()>=0 && model || c.packet.from().distanceToSqr(packet.from())<.04)){
+                c.packet=packet;c.until=model?c.age+Math.min(100,packet.ticks()):Math.max(c.until,c.age+Math.min(100,packet.ticks()));return;
             }
         if(CUES.size()>=512)CUES.remove(0);CUES.add(new Cue(packet));
     }
@@ -30,21 +31,43 @@ public final class SpellVisuals {
         CUES.removeIf(c->++c.age>c.until || c.packet.anchor()>=0 && mc.level.getEntity(c.packet.anchor())==null);
         for(Cue cue:CUES){
             var p=cue.packet;if(p.kind()==SpellVfx.SIGIL || p.from().distanceToSqr(mc.gameRenderer.getMainCamera().getPosition())>128*128)continue;
-            var formula=Formula.unpack(p.formula());
-            if(fire(formula.key()))flames(mc,cue);
-            if(p.kind()==SpellVfx.ZONE)ambience(mc,cue,formula.key());
+            var formula=Formula.unpack(p.formula());var blend=ElementBlend.of(formula.key());
+            if(formula.key().water()==1 && formula.key().life()==1 && formula.key().arcane()==1){mist(mc,cue);continue;}
+            compounds(mc,cue,blend);
+            if(fire(blend))flames(mc,cue);
+            if(p.kind()==SpellVfx.ZONE)ambience(mc,cue,formula.key(),blend);
+            if(SpellModels.handles(p.kind())){SpellModels.tick(mc,p,cue.age,cue.until);continue;}
             if(cue.age%3!=0)continue;
-            var elements=formula.elements();Element element=elements.get((cue.age/3)%elements.size());
+            var elements=remaining(blend);if(elements.isEmpty())continue;Element element=elements.get((cue.age/3)%elements.size());
             Vec3 point=p.from().lerp(p.to(),Math.min(1,cue.age/(double)Math.max(1,p.ticks())));
-            ParticleOptions particle=switch(element){case FIRE->ParticleTypes.FLAME;case WATER->ParticleTypes.BUBBLE_POP;case COLD->ParticleTypes.SNOWFLAKE;case LIGHTNING->ParticleTypes.ELECTRIC_SPARK;case EARTH->ParticleTypes.CRIT;case LIFE->ParticleTypes.HAPPY_VILLAGER;case ARCANE->ParticleTypes.END_ROD;case DEATH->ParticleTypes.SOUL;};
+            ParticleOptions particle=switch(element){case FIRE->ParticleTypes.FLAME;case WATER->ParticleTypes.BUBBLE_POP;case COLD->ParticleTypes.SNOWFLAKE;case LIGHTNING->ParticleTypes.ELECTRIC_SPARK;case EARTH->ParticleTypes.CRIT;case LIFE->ParticleTypes.HAPPY_VILLAGER;case ARCANE->ParticleTypes.END_ROD;case DEATH->ParticleTypes.SOUL;case STEAM->ParticleTypes.CLOUD;case ICE->ParticleTypes.ITEM_SNOWBALL;case SHIELD->ParticleTypes.WAX_ON;};
             mc.level.addParticle(particle,point.x,point.y,point.z,0,.025,0);
         }
     }
-    private static void ambience(Minecraft mc,Cue cue,SpellFormula f){
+    private static void mist(Minecraft mc,Cue cue){var random=mc.level.getRandom();var c=cue.packet.from();double radius=Mth.clamp(cue.packet.radius(),.5,12);for(int i=0;i<12;i++){Vec3 q=inside(random,c,radius*.95);mc.level.addParticle(ParticleTypes.CLOUD,q.x,q.y+.12+random.nextDouble()*1.25,q.z,(random.nextDouble()-.5)*.018,.008+random.nextDouble()*.012,(random.nextDouble()-.5)*.018);}}
+    private static List<Element> remaining(ElementBlend blend){var elements=new ArrayList<Element>();for(Element element:Element.values())for(int i=0;i<blend.count(element);i++)elements.add(element);return elements;}
+    private static void compounds(Minecraft mc,Cue cue,ElementBlend blend){
+        if(blend.steam()+blend.ice()+blend.shield()==0)return;
+        var p=cue.packet;var random=mc.level.random;double progress=Math.min(1,cue.age/(double)Math.max(1,p.ticks())),spread=Mth.clamp(p.radius(),.15,12);
+        Vec3 point=switch(p.kind()){
+            case SpellVfx.BEAM,SpellVfx.ARC,SpellVfx.SPRAY->p.from().lerp(p.to(),random.nextDouble());
+            case SpellVfx.ORB->p.from().lerp(p.to(),progress);
+            case SpellVfx.IMPACT,SpellVfx.ZONE,SpellVfx.MINE,SpellVfx.TELEGRAPH->{double a=random.nextDouble()*Math.PI*2,r=spread*Math.sqrt(random.nextDouble());yield p.from().add(Math.cos(a)*r,.15+random.nextDouble()*.5,Math.sin(a)*r);}
+            default->p.from();
+        };
+        for(int i=0;i<blend.steam()*2;i++)mc.level.addParticle(ParticleTypes.CLOUD,point.x+(random.nextDouble()-.5)*.28,point.y+(random.nextDouble()-.5)*.18,point.z+(random.nextDouble()-.5)*.28,(random.nextDouble()-.5)*.025,.018+random.nextDouble()*.025,(random.nextDouble()-.5)*.025);
+        for(int i=0;i<blend.ice();i++){ParticleOptions crystal=(cue.age+i)%2==0?new BlockParticleOption(ParticleTypes.BLOCK,net.minecraft.world.level.block.Blocks.PACKED_ICE.defaultBlockState()):ParticleTypes.SNOWFLAKE;mc.level.addParticle(crystal,point.x+(random.nextDouble()-.5)*.22,point.y+(random.nextDouble()-.5)*.22,point.z+(random.nextDouble()-.5)*.22,(random.nextDouble()-.5)*.04,.01,(random.nextDouble()-.5)*.04);}
+        for(int i=0;i<blend.shield();i++){double a=cue.age*.35+i*Math.PI*2/Math.max(1,blend.shield()),r=.25+spread*.12;mc.level.addParticle(i%2==0?ParticleTypes.WAX_ON:ParticleTypes.END_ROD,point.x+Math.cos(a)*r,point.y+.15+Math.sin(a*.7)*.18,point.z+Math.sin(a)*r,0,.015,0);}
+    }
+    private static void ambience(Minecraft mc,Cue cue,SpellFormula formula,ElementBlend f){
         var random=mc.level.getRandom();var c=cue.packet.from();
         double radius=Mth.clamp(cue.packet.radius(),.5,12),time=mc.level.getGameTime();
+        if(formula.arcane()==3 && formula.cold()==1 && formula.death()==1){singularityParticles(mc,c,time);return;}
         int total=Math.max(1,f.size()),rim=Mth.clamp((int)(radius*2.5),6,28);
-        for(Element e:Element.values()){
+        if(f.steam()>0)for(int i=0;i<Math.max(1,rim*f.steam()/total);i++){Vec3 q=inside(random,c,radius);mc.level.addParticle(ParticleTypes.CLOUD,q.x,q.y+.15+random.nextDouble()*1.2,q.z,(random.nextDouble()-.5)*.02,.015+random.nextDouble()*.02,(random.nextDouble()-.5)*.02);}
+        if(f.ice()>0)for(int i=0;i<Math.max(1,rim*f.ice()/total);i++){Vec3 q=inside(random,c,radius);ParticleOptions crystal=i%3==0?new BlockParticleOption(ParticleTypes.BLOCK,net.minecraft.world.level.block.Blocks.PACKED_ICE.defaultBlockState()):ParticleTypes.SNOWFLAKE;mc.level.addParticle(crystal,q.x,q.y+.4+random.nextDouble()*1.8,q.z,(random.nextDouble()-.5)*.03,-.015,(random.nextDouble()-.5)*.03);}
+        if(f.shield()>0)for(int i=0;i<Math.max(1,rim*f.shield()/total);i++){double a=time*.12+i*Math.PI*2/Math.max(1,rim*f.shield()/total);mc.level.addParticle(i%2==0?ParticleTypes.WAX_ON:ParticleTypes.END_ROD,c.x+Math.cos(a)*radius,c.y+.35+.18*Math.sin(time*.2+i),c.z+Math.sin(a)*radius,-Math.sin(a)*.025,.01,Math.cos(a)*.025);}
+        for(Element e:Element.BASE){
             int n=f.count(e);if(n==0)continue;
             int count=Math.max(2,rim*n/total);double share=n/(double)total;
             switch(e){
@@ -86,9 +109,27 @@ public final class SpellVisuals {
             }
         }
     }
+    private static void singularityParticles(Minecraft mc,Vec3 c,double time){
+        double t=time*.07;
+        for(int i=0;i<12;i++){
+            double a=t*(i%3==0?1.35:i%3==1?-.9:.62)+i*Math.PI*2/12;
+            double r=1.35+(i%4)*.48;
+            Vec3 q=switch(i%3){
+                case 0->c.add(Math.cos(a)*r,.9+Math.sin(a*.7)*.35,Math.sin(a)*r);
+                case 1->c.add(Math.cos(a)*r,Math.sin(a)*r*.72,.4*Math.sin(a)*r);
+                default->c.add(Math.cos(a)*r*.78,Math.sin(a)*r*.48,Math.sin(a)*r*.78);
+            };
+            ParticleOptions type=switch(i%4){case 0->ParticleTypes.END_ROD;case 1->ParticleTypes.REVERSE_PORTAL;case 2->ParticleTypes.SOUL;default->ParticleTypes.SNOWFLAKE;};
+            mc.level.addParticle(type,q.x,q.y+1,q.z,0,0,0);
+        }
+        for(int i=0;i<7;i++){
+            double a=t*1.4+i*Math.PI*2/7,r=.35+.12*Math.sin(t+i);
+            mc.level.addParticle(i%2==0?ParticleTypes.DRAGON_BREATH:ParticleTypes.END_ROD,c.x+Math.cos(a)*r,c.y+1+Math.sin(t*.8+i)*r,c.z+Math.sin(a)*r,0,0,0);
+        }
+    }
     private static Vec3 inside(net.minecraft.util.RandomSource random,Vec3 c,double radius){double a=random.nextDouble()*Math.PI*2,r=radius*Math.sqrt(random.nextDouble());return c.add(Math.cos(a)*r,0,Math.sin(a)*r);}
     private static Vec3 rim(net.minecraft.util.RandomSource random,Vec3 c,double radius){double a=random.nextDouble()*Math.PI*2;return c.add(Math.cos(a)*radius,0,Math.sin(a)*radius);}
-    private static boolean fire(SpellFormula formula){return formula.fire()>0 && formula.death()==0 && formula.lightning()==0;}
+    private static boolean fire(ElementBlend blend){return blend.fire()>0 && blend.death()==0 && blend.lightning()==0;}
     private static void flames(Minecraft mc,Cue cue){
         var p=cue.packet;var random=mc.level.random;double progress=Math.min(1,cue.age/(double)Math.max(1,p.ticks()));
         double spread=Mth.clamp(p.radius(),.15,6);
@@ -113,10 +154,15 @@ public final class SpellVisuals {
     public static void render(PoseStack pose,MultiBufferSource.BufferSource buffers,Vec3 camera,float partial){
         var mc=Minecraft.getInstance();var consumer=buffers.getBuffer(RenderType.lightning());
         for(Cue cue:CUES){
-            var p=cue.packet;var formula=Formula.unpack(p.formula()).key();
+            var p=cue.packet;var formula=Formula.unpack(p.formula()).key();var blend=ElementBlend.of(formula);
+            if(formula.cold()==2 && formula.earth()==1 && p.kind()==SpellVfx.IMPACT)continue;
             float progress=Mth.clamp((cue.age+partial)/Math.max(1,p.ticks()),0,1),alpha=(1-progress)*.85f;
             int color=color(formula);double radius=Mth.clamp(p.radius(),.05,16);Vec3 center=p.from();
-            boolean flames=fire(formula);
+            boolean flames=fire(blend);
+            if(SpellModels.handles(p.kind())){
+                if(p.from().distanceToSqr(camera)<128*128)SpellModels.strokes(mc,pose,consumer,camera,p,cue.age+partial,cue.until,partial);
+                continue;
+            }
             if(flames && (p.kind()==SpellVfx.BEAM || p.kind()==SpellVfx.ARC || p.kind()==SpellVfx.SPRAY))continue;
             switch(p.kind()){
                 case SpellVfx.BEAM,SpellVfx.ARC -> {
@@ -132,18 +178,20 @@ public final class SpellVisuals {
                     for(int j=-2;j<=2;j++)stroke(pose,consumer,camera,center,p.to().add(side.scale(j*radius*.35)),.06,color,alpha*.5f);
                 }
                 case SpellVfx.ORB -> {
+                    if(formula.cold()==2 && formula.earth()==1){spear(pose,consumer,camera,p,progress);continue;}
                     alpha=.9f;
                     center=p.from().lerp(p.to(),progress);double orb=radius;
                     if(!flames){ring(pose,consumer,camera,center,orb,0,color,alpha,.05);ring(pose,consumer,camera,center,orb,1,color,alpha,.05);ring(pose,consumer,camera,center,orb,2,0xFFFFFF,alpha*.8f,.025);
                     stroke(pose,consumer,camera,p.from(),center,.09,color,alpha*.45f);}
-                    if(formula.earth()>0){
+                    if(blend.earth()>0){
                         pose.pushPose();pose.translate(center.x,center.y,center.z);float scale=(float)(orb*1.7);pose.scale(scale,scale,scale);pose.mulPose(Axis.YP.rotationDegrees(((mc.level==null?cue.age:mc.level.getGameTime())+partial)*18));pose.mulPose(Axis.XP.rotationDegrees(25));
-                        var item=formula.fire()>0?Items.MAGMA_BLOCK:formula.cold()>0?Items.PACKED_ICE:Items.COBBLESTONE;
+                        var item=formula.ice()>0?Items.BLUE_ICE:formula.total(Element.FIRE)>0?Items.MAGMA_BLOCK:formula.total(Element.COLD)>0?Items.PACKED_ICE:Items.COBBLESTONE;
                         mc.getItemRenderer().renderStatic(new ItemStack(item),ItemDisplayContext.FIXED,LightTexture.FULL_BRIGHT,OverlayTexture.NO_OVERLAY,pose,buffers,mc.level,0);pose.popPose();
                         consumer=buffers.getBuffer(RenderType.lightning());
                     }
                 }
                 case SpellVfx.ZONE,SpellVfx.MINE,SpellVfx.TELEGRAPH -> {
+                    if(singularity(formula)){singularityOrbit(pose,buffers,consumer,camera,center,mc.level.getGameTime()+partial,alpha);continue;}
                     float in=Math.min(1,(cue.age+partial)/4);
                     sigil(pose,consumer,camera,center.add(0,.07,0),new Vec3(0,1,0),radius,spin(partial,radius),p.formula(),.75f*in);
                     if(p.kind()==SpellVfx.TELEGRAPH)stroke(pose,consumer,camera,center,center.add(0,10,0),.045,color,alpha);
@@ -167,11 +215,35 @@ public final class SpellVisuals {
             }
         }
         buffers.endBatch(RenderType.lightning());
+        boolean drawn=false;
+        for(Cue cue:CUES)if(SpellModels.handles(cue.packet.kind()) && cue.packet.from().distanceToSqr(camera)<128*128){
+            SpellModels.models(mc,pose,buffers,cue.packet,cue.age+partial,cue.until,partial);drawn=true;
+        }
+        if(drawn)buffers.endBatch();
     }
+    private static boolean singularity(SpellFormula f){return f.arcane()==3 && f.cold()==1 && f.death()==1;}
+    private static void singularityOrbit(PoseStack pose,MultiBufferSource.BufferSource buffers,VertexConsumer consumer,Vec3 camera,Vec3 center,double time,float alpha){
+        Minecraft mc=Minecraft.getInstance();Vec3 c=center.add(0,1,0);double t=time*.045;
+        orbit(pose,consumer,camera,c,new Vec3(0,1,0),2.15,t*.9,.18,0xFF8E6BFF,alpha*.5f);
+        orbit(pose,consumer,camera,c,new Vec3(1,.35,.2).normalize(),2.8,-t*1.25,.14,0xFFCA9CFF,alpha*.4f);
+        orbit(pose,consumer,camera,c,new Vec3(-.25,.6,1).normalize(),3.45,t*.7,.1,0xFF6B4C9E,alpha*.35f);
+        pose.pushPose();pose.translate(c.x,c.y,c.z);pose.scale(.62f,.62f,.62f);pose.mulPose(Axis.YP.rotationDegrees((float)(time*2.5)));pose.mulPose(Axis.XP.rotationDegrees(25));
+        mc.getItemRenderer().renderStatic(new ItemStack(Items.ENDER_EYE),ItemDisplayContext.FIXED,LightTexture.FULL_BRIGHT,OverlayTexture.NO_OVERLAY,pose,buffers,mc.level,0);pose.popPose();
+        Item[] bodies={Items.AMETHYST_SHARD,Items.ENDER_PEARL,Items.CRYING_OBSIDIAN,Items.SNOWBALL};
+        for(int i=0;i<12;i++){
+            int ring=i%3;double r=ring==0?2.15:ring==1?2.8:3.45,a=(ring==0?t*.9:ring==1?-t*1.25:t*.7)+i/3*Math.PI*2/4;
+            Vec3 q=switch(ring){case 0->c.add(Math.cos(a)*r,.0,Math.sin(a)*r);case 1->c.add(Math.cos(a)*r,Math.sin(a)*r*.35,.2*Math.sin(a)*r);default->c.add(Math.cos(a)*r*.78,Math.sin(a)*r*.48,Math.sin(a)*r*.78);};
+            pose.pushPose();pose.translate(q.x,q.y,q.z);pose.scale(.18f+ring*.035f,.18f+ring*.035f,.18f+ring*.035f);pose.mulPose(Axis.YP.rotationDegrees((float)(time*7+i*37)));pose.mulPose(Axis.XP.rotationDegrees(35));
+            mc.getItemRenderer().renderStatic(new ItemStack(bodies[i%bodies.length]),ItemDisplayContext.FIXED,LightTexture.FULL_BRIGHT,OverlayTexture.NO_OVERLAY,pose,buffers,mc.level,0);pose.popPose();
+        }
+    }
+    private static void orbit(PoseStack pose,VertexConsumer consumer,Vec3 camera,Vec3 center,Vec3 normal,double radius,double spin,double width,int color,float alpha){
+        Vec3 u=normal.cross(new Vec3(0,1,0));u=u.lengthSqr()<1e-5?new Vec3(1,0,0):u.normalize();Vec3 v=normal.cross(u).normalize();Vec3 previous=center.add(u.scale(radius));
+        for(int i=1;i<=32;i++){double a=spin+i*Math.PI*2/32;Vec3 next=center.add(u.scale(Math.cos(a)*radius)).add(v.scale(Math.sin(a)*radius));stroke(pose,consumer,camera,previous,next,width,color,alpha);previous=next;}
+    }
+    private static void spear(PoseStack pose,VertexConsumer consumer,Vec3 camera,MagicNetwork.Visual p,float progress){Vec3 direction=p.to().subtract(p.from());if(direction.lengthSqr()<1e-6)return;direction=direction.normalize();Vec3 center=p.from().lerp(p.to(),progress);Vec3 side=direction.cross(new Vec3(0,1,0));side=side.lengthSqr()<1e-6?new Vec3(1,0,0):side.normalize();Vec3 lift=side.cross(direction).normalize();Vec3 tail=center.add(direction.scale(-1.6)),base=center.add(direction.scale(.65)),tip=center.add(direction.scale(2.4));stroke(pose,consumer,camera,tail,base,.11,0x80DEEA,.95f);stroke(pose,consumer,camera,tail,base,.035,0xFFFFFF,.95f);for(Vec3 edge:new Vec3[]{side,lift,side.scale(-1),lift.scale(-1)}){Vec3 corner=base.add(edge.scale(.38));stroke(pose,consumer,camera,corner,tip,.09,0x80DEEA,.95f);stroke(pose,consumer,camera,corner,tip,.025,0xFFFFFF,.9f);stroke(pose,consumer,camera,base,corner,.06,0xB3E5FC,.85f);}}
     private static int color(SpellFormula formula){
-        // Retain an elemental identity; mixed recipes show their other elements in the particle layer.
-        Element element=formula.death()>0?Element.DEATH:formula.lightning()>0?Element.LIGHTNING:formula.fire()>0?Element.FIRE:formula.cold()>0?Element.COLD:formula.life()>0?Element.LIFE:formula.arcane()>0?Element.ARCANE:formula.water()>0?Element.WATER:Element.EARTH;
-        return element.color;
+        return ElementBlend.of(formula).color();
     }
     private static final double[][] GLYPHS={
         {-.6,-1,0,1, 0,1,.6,-1, -.6,-1,.6,-1},
@@ -214,7 +286,7 @@ public final class SpellVisuals {
         Vec3 n=normal.normalize(),u=(Math.abs(n.y)>.95?new Vec3(1,0,0):new Vec3(0,1,0)).cross(n).normalize(),v=n.cross(u);
         double line=Mth.clamp(radius*.02,.012,.08);
         int[] word=new int[Mth.clamp(elements.size()*2,4,10)];
-        for(int i=0;i<word.length;i++)word[i]=elements.get(i%elements.size()).ordinal()*3+random.nextInt(3);
+        for(int i=0;i<word.length;i++)word[i]=elements.get(i%elements.size()).primary().ordinal()*3+random.nextInt(3);
         int points=new int[]{3,4,5,6,7,8}[(distinct.size()+random.nextInt(4))%6],step=points<5?1:points==6?2:(points-1)/2;
         boolean doubled=random.nextBoolean(),inner=random.nextBoolean();
         arc(pose,consumer,camera,center,u,v,radius,line*1.6,color,alpha);
@@ -224,7 +296,7 @@ public final class SpellVisuals {
         for(int k=0;k<count;k++){
             int slot=k%slots;double angle=spin+k*Math.PI*2/count;
             if(slot==word.length)glyph(pose,consumer,camera,center,u,v,angle,radius*.9,size,SEPARATOR,line*.7,color,alpha);
-            else glyph(pose,consumer,camera,center,u,v,angle,radius*.9,size,GLYPHS[word[slot]],line*.7,tint(Element.values()[word[slot]/3].color),alpha);
+            else glyph(pose,consumer,camera,center,u,v,angle,radius*.9,size,safeGlyph(word[slot]),line*.7,tint(Element.values()[Math.min(Element.values().length-1,word[slot]/3)].color),alpha);
         }
         double star=inner?radius*.72:radius*.8;
         for(int i=0;i<points;i++){
@@ -240,9 +312,11 @@ public final class SpellVisuals {
         arc(pose,consumer,camera,center,u,v,core,line,0xFFFFFF,alpha*.8f);
         if(radius>.5)for(int i=0;i<distinct.size();i++){
             Element e=distinct.get(i);
-            glyph(pose,consumer,camera,center,u,v,-spin*2+i*Math.PI*2/distinct.size(),core*.55,core*.28,GLYPHS[e.ordinal()*3+((packed>>>i)&3)%3],line*.7,tint(e.color),alpha);
+            glyph(pose,consumer,camera,center,u,v,-spin*2+i*Math.PI*2/distinct.size(),core*.55,core*.28,safeGlyph(e.ordinal()*3+((packed>>>i)&3)%3),line*.7,tint(e.color),alpha);
+            glyph(pose,consumer,camera,center,u,v,-spin*2+i*Math.PI*2/distinct.size(),core*.55,core*.28,GLYPHS[e.primary().ordinal()*3+((packed>>>i)&3)%3],line*.7,tint(e.color),alpha);
         }
     }
+    private static double[] safeGlyph(int index){return GLYPHS[Math.floorMod(index,GLYPHS.length)];}
     private static void glyph(PoseStack pose,VertexConsumer consumer,Vec3 camera,Vec3 center,Vec3 u,Vec3 v,double angle,double distance,double size,double[] g,double width,int color,float alpha){
         Vec3 r=u.scale(Math.cos(angle)).add(v.scale(Math.sin(angle))),t=u.scale(-Math.sin(angle)).add(v.scale(Math.cos(angle))),base=center.add(r.scale(distance));
         for(int i=0;i+3<g.length;i+=4)stroke(pose,consumer,camera,base.add(t.scale(g[i]*size)).add(r.scale(g[i+1]*size)),base.add(t.scale(g[i+2]*size)).add(r.scale(g[i+3]*size)),width,color,alpha);
@@ -254,7 +328,7 @@ public final class SpellVisuals {
     private static void ring(PoseStack pose,VertexConsumer consumer,Vec3 camera,Vec3 center,double radius,int plane,int color,float alpha,double width){
         Vec3 previous=null;for(int i=0;i<=40;i++){double a=i*Math.PI/20,x=Math.cos(a)*radius,y=Math.sin(a)*radius;Vec3 point=center.add(plane==2?0:x,plane==0?0:y,plane==0?y:plane==2?x:0);if(previous!=null)stroke(pose,consumer,camera,previous,point,width,color,alpha);previous=point;}
     }
-    private static void stroke(PoseStack pose,VertexConsumer out,Vec3 camera,Vec3 from,Vec3 to,double width,int color,float alpha){
+    static void stroke(PoseStack pose,VertexConsumer out,Vec3 camera,Vec3 from,Vec3 to,double width,int color,float alpha){
         Vec3 side=to.subtract(from).cross(camera.subtract(from)).normalize().scale(width);if(side.lengthSqr()<1e-8)side=new Vec3(width,0,0);
         float r=((color>>16)&255)/255f,g=((color>>8)&255)/255f,b=(color&255)/255f;
         for(Vec3 v:new Vec3[]{from.subtract(side),from.add(side),to.add(side),to.subtract(side)})out.vertex(pose.last().pose(),(float)v.x,(float)v.y,(float)v.z).color(r,g,b,alpha).endVertex();

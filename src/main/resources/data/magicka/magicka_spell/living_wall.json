@@ -6,6 +6,7 @@
   },
   "name": "Living Wall",
   "tier": "Signature",
+  "keys": "5566",
   "tags": "BUILD/DEF",
   "shape": "wall",
   "origin": "aim_ground",

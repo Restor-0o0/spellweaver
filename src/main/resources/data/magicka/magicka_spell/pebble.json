@@ -5,6 +5,7 @@
   },
   "name": "Pebble",
   "tier": "Signature",
+  "keys": "5",
   "tags": "BREAK",
   "shape": "projectile",
   "origin": "caster_front",

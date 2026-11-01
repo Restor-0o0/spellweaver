@@ -1,11 +1,12 @@
 {
   "id": "magicka:frozen_greater_frostflow",
   "formula": {
-    "water": 1,
-    "cold": 3
+    "cold": 2,
+    "ice": 1
   },
   "name": "Frozen Greater Frostflow",
   "tier": "Family Variant",
+  "keys": "2333",
   "tags": "SETUP/CC/DEBUFF/BUILD",
   "shape": "targeted_zone",
   "origin": "aim_ground",
@@ -16,7 +17,8 @@
     "duration_ticks": 240,
     "interval_ticks": 20,
     "gravity": 0,
-    "burst_radius": 3.1
+    "burst_radius": 3.1,
+    "visual": "spires"
   },
   "construction": {
     "material": "ice",

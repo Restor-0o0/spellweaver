@@ -5,6 +5,7 @@
   },
   "name": "Arcane Beam",
   "tier": "Signature",
+  "keys": "777",
   "tags": "SETUP",
   "shape": "beam",
   "origin": "aim_hit",

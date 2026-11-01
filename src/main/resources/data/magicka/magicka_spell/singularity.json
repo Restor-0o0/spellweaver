@@ -5,7 +5,7 @@
     "cold": 1,
     "death": 1
   },
-  "incantation": "73877",
+  "keys": "73877",
   "name": "Singularity",
   "tier": "Signature",
   "scroll": true,
@@ -19,7 +19,9 @@
     "duration_ticks": 240,
     "interval_ticks": 12,
     "gravity": 0,
-    "burst_radius": 9.0
+    "burst_radius": 9.0,
+    "legend": "singularity",
+    "visual": "vortex"
   },
   "effects": [
     {

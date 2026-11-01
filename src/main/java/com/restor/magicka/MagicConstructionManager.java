@@ -272,7 +272,7 @@ public final class MagicConstructionManager extends SavedData {
                 boolean template=build.plan.template!=null;
                 boolean push=build.plan.shape==SpellShape.PILLAR || build.spell.origin()==OriginMode.UNDER_TARGET || build.self || spike || template;
                 if (WorldPlacement.placeBlock(player,pos,block.defaultBlockState(),build.id,root,build.spell.floating() || spike || template,push,null)) {
-                    var data=(MagicBlocks.MagicBlockEntity)level.getBlockEntity(pos);
+                    if (!(level.getBlockEntity(pos) instanceof MagicBlocks.MagicBlockEntity data)) continue;
                     int defaultLife=switch(build.spell.material()) {case "ice" -> MagicConfig.ICE_LIFE.get();case "root" -> MagicConfig.ROOT_LIFE.get();case "arcane" -> MagicConfig.ARCANE_LIFE.get();default -> MagicConfig.EARTH_LIFE.get();};
                     if (airAnchor) defaultLife=MagicConfig.ARCANE_LIFE.get();
                     int life=(int)Mth.clamp(SpellDefinition.integer(build.spell.construction(),"lifetime_ticks",defaultLife,20,72000)*EffectGraph.number(build.spell.construction(),"lifetime_scale",1),20,72000);

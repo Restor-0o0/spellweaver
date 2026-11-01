@@ -6,6 +6,7 @@
   },
   "name": "Unstable Greater Suspension",
   "tier": "Family Variant",
+  "keys": "2777",
   "tags": "SETUP/CC",
   "shape": "targeted_explosion",
   "origin": "aim_hit",

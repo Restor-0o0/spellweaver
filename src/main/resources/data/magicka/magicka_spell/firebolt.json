@@ -5,6 +5,7 @@
   },
   "name": "Firebolt",
   "tier": "Signature",
+  "keys": "11",
   "tags": "DMG/DOT",
   "shape": "projectile",
   "origin": "caster_front",

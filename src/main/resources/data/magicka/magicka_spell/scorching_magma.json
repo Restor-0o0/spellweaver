@@ -6,6 +6,7 @@
   },
   "name": "Scorching Magma",
   "tier": "Family Variant",
+  "keys": "115",
   "tags": "DMG/DOT/BREAK",
   "shape": "spray",
   "origin": "caster_front",

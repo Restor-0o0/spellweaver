@@ -6,6 +6,7 @@
   },
   "name": "Thunderstone",
   "tier": "Signature",
+  "keys": "45",
   "tags": "DMG/CC/BREAK",
   "shape": "projectile",
   "origin": "caster_front",

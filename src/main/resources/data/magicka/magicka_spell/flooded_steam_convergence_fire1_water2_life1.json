@@ -1,10 +1,11 @@
 {
   "id": "magicka:flooded_steam_convergence_fire1_water2_life1",
   "formula": {
-    "fire": 1,
-    "water": 2,
-    "life": 1
+    "water": 1,
+    "life": 1,
+    "steam": 1
   },
+  "keys": "6221",
   "name": "Flooded Steam Convergence",
   "tier": "Family Variant",
   "tags": "DMG/DOT/SETUP/CC/HEAL",

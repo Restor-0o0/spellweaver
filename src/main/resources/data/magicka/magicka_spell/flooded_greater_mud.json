@@ -6,6 +6,7 @@
   },
   "name": "Flooded Greater Mud",
   "tier": "Family Variant",
+  "keys": "2225",
   "tags": "SETUP/CC/BREAK",
   "shape": "spray",
   "origin": "caster_front",

@@ -90,7 +90,6 @@ public final class SupportMagic {
         double r = Mth.clamp(radius, 1, 128);
         var found = caster.serverLevel().getEntitiesOfClass(LivingEntity.class, new AABB(point, point).inflate(r),
                 e -> e != caster && e.isAlive() && !e.isSpectator() && e.distanceToSqr(point) <= r * r && EffectGraph.canHarm(caster, e));
-        for (var entity : found) entity.addEffect(new MobEffectInstance(MobEffects.GLOWING, Mth.clamp(ticks, 20, 6000), 0, false, false), caster);
         EpicMagic.fx(caster.serverLevel(),ParticleTypes.FLASH, point.x, point.y + 1, point.z, 1, 0, 0, 0, 0);
         caster.serverLevel().playSound(null, BlockPos.containing(point), SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, .6f, 1.8f);
         return found.size();

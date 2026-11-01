@@ -6,6 +6,7 @@
   },
   "name": "Arc Lightning",
   "tier": "Signature",
+  "keys": "47",
   "tags": "DMG/CC/SETUP",
   "shape": "projectile",
   "origin": "caster_front",

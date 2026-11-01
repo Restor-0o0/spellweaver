@@ -42,7 +42,7 @@ public final class MagicItems {
         return item;
     }
     private static JsonObject patch(String json) { return JsonParser.parseString(json).getAsJsonObject(); }
-    private static final SpellFormula STONE_PLATFORM = new SpellFormula(0, 0, 0, 0, 2, 0, 1, 0);
+    private static final SpellFormula STONE_PLATFORM = new SpellFormula(0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1);
     private static final SpellFormula ICE_STEP = new SpellFormula(0, 1, 1, 0, 0, 0, 1, 0);
     private static final SpellFormula FIREBOMB = new SpellFormula(2, 0, 0, 0, 0, 0, 1, 0);
     private static final SpellFormula BUBBLE_LIFT = new SpellFormula(0, 2, 0, 0, 0, 0, 1, 0);

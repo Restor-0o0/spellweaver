@@ -1,9 +1,9 @@
 {
   "id": "magicka:flash_freeze_lake",
   "formula": {
-    "water": 2,
-    "cold": 2
+    "ice": 2
   },
+  "keys": "2332",
   "name": "Flash Freeze Lake",
   "tier": "Signature",
   "tags": "AOE/CC/BUILD",
@@ -17,7 +17,8 @@
     "interval_ticks": 20,
     "gravity": 0,
     "burst_radius": 3.1,
-    "ice_surface": true
+    "ice_surface": true,
+    "visual": "spires"
   },
   "construction": {
     "material": "ice",

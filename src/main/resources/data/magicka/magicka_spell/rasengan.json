@@ -6,6 +6,7 @@
   },
   "name": "Spiral Sphere",
   "tier": "Signature",
+  "keys": "277",
   "scroll": true,
   "tags": "DMG/MOVE",
   "shape": "dash",

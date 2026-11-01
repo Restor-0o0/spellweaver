@@ -1,10 +1,10 @@
 {
   "id": "magicka:charged_plasma_convergence_fire1_water1_lightning2",
   "formula": {
-    "fire": 1,
-    "water": 1,
-    "lightning": 2
+    "lightning": 2,
+    "steam": 1
   },
+  "keys": "2144",
   "name": "Charged Plasma Convergence",
   "tier": "Family Variant",
   "tags": "DMG/DOT/SETUP/CC",

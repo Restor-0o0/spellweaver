@@ -6,6 +6,7 @@
   },
   "name": "Charged Stormwater",
   "tier": "Family Variant",
+  "keys": "244",
   "tags": "SETUP/CC/DMG",
   "shape": "chain",
   "origin": "aim_hit",

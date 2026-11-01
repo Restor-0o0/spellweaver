@@ -7,6 +7,7 @@
   },
   "name": "Heavy Magma Convergence",
   "tier": "Family Variant",
+  "keys": "1355",
   "tags": "DMG/DOT/CC/DEBUFF/BREAK",
   "shape": "projectile",
   "origin": "caster_front",

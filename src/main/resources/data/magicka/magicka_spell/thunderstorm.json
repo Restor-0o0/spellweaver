@@ -5,7 +5,8 @@
     "arcane": 1,
     "lightning": 3
   },
-  "incantation": "42447",
+  "keys": "42447",
+  "ultimate": true,
   "name": "Thunderstorm",
   "tier": "Signature",
   "tags": "DMG/AOE",
@@ -16,7 +17,8 @@
   "delivery": {
     "epic": "storm",
     "duration_ticks": 240,
-    "radius": 12.0
+    "radius": 12.0,
+    "conductive": true
   },
   "effects": [
     {

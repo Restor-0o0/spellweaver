@@ -1,5 +1,6 @@
 {
   "id": "magicka:ice_wall",
+  "keys": "7355",
   "formula": {
     "cold": 1,
     "earth": 2,

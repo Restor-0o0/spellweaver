@@ -6,6 +6,7 @@
   },
   "name": "Suspension",
   "tier": "Signature",
+  "keys": "27",
   "tags": "SETUP/CC",
   "shape": "projectile",
   "origin": "caster_front",

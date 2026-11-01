@@ -5,6 +5,7 @@
   },
   "name": "Spark",
   "tier": "Signature",
+  "keys": "4",
   "tags": "DMG/CC",
   "shape": "projectile",
   "origin": "caster_front",

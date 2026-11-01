@@ -21,7 +21,7 @@ public final class ClientSmokeTest {
         }
         if (stage == 0 && mc.screen instanceof TitleScreen && mc.getOverlay() == null && ++ticks == 30) {
             long keys = java.util.Arrays.stream(mc.options.keyMappings).filter(k -> k.getName().startsWith("key.magicka.")).count();
-            if (keys != 22) throw new IllegalStateException("Expected 22 Magicka key mappings, got " + keys);
+            if (keys != 24) throw new IllegalStateException("Expected 24 Magicka key mappings, got " + keys);
             if (RecipeRegistry.clientRecipes().size()!=RecipeRegistry.CATALOG_SIZE)throw new IllegalStateException("Client catalog must contain all "+RecipeRegistry.CATALOG_SIZE+" spells, got "+RecipeRegistry.clientRecipes().size());
             for(String id:com.restor.magicka.client.enemy.EnemyLayers.ALL.keySet()){
                 mc.getEntityModels().bakeLayer(com.restor.magicka.client.enemy.EnemyRenderer.layer(id));

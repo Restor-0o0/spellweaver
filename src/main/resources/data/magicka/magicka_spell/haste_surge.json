@@ -7,6 +7,7 @@
   },
   "name": "Haste Surge",
   "tier": "Signature",
+  "keys": "4667",
   "tags": "MOVE/BUFF",
   "shape": "direct_target",
   "origin": "aim_hit",

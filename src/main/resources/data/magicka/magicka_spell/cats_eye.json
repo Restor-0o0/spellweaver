@@ -6,6 +6,7 @@
   },
   "name": "Cat's Eye",
   "tier": "Signature",
+  "keys": "446",
   "tags": "UTIL",
   "shape": "direct_target",
   "origin": "aim_hit",

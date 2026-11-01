@@ -7,6 +7,7 @@
   },
   "name": "Storm Elemental",
   "tier": "Signature",
+  "keys": "4478",
   "scroll": true,
   "tags": "SUMMON",
   "shape": "summon_object",

@@ -1,7 +1,7 @@
 """Specialist enemy models: art/enemies/<id>.bbmodel is the source of truth.
 
 Run: python tools/gen_enemy_models.py         -> EnemyLayers.java and textures from the .bbmodel files
-     python tools/gen_enemy_models.py --seed  -> overwrite the .bbmodel files from the procedural MOBS spec below
+     python tools/gen_enemy_models.py --seed [id ...] -> overwrite the .bbmodel files (all, or just these) from the procedural MOBS spec below
 Coordinates are absolute Blockbench pixels: 16 px = 1 block, y up from the feet, front faces -z (north).
 Every model is validated: all cubes must form one connected piece and walkers must stand on y = 0.
 """
@@ -75,6 +75,8 @@ FROST_ROBE, FROST_ROBE_DARK, FUR_WHITE, ICE, ICE_LIGHT = 0x6E8FA8, 0x4E6A80, 0xE
 STORM_ROBE, STORM_ROBE_DARK, COPPER, VERDIGRIS = 0x3A4868, 0x2A3450, 0xB8703A, 0x5A9A80
 BOMB, BRASS, APRON = 0x2E2A28, 0xB08A3A, 0x7A6248
 SHAMAN_HIDE, SHAMAN_HIDE_DARK, WARPAINT = 0x7A5A3A, 0x5A4028, 0x9A2A22
+TROLL, TROLL_DARK, TROLL_BELLY, TROLL_HAIR, TROLL_EYE, TROLL_NAIL = 0x6F7D5A, 0x515C40, 0x8E9470, 0x3B3A2C, 0xE8A53A, 0x3A332A
+STEEL, STEEL_DARK, STEEL_LIGHT, TABARD, TABARD_DARK, GOLD, PLUME = 0x8A9098, 0x5C626B, 0xB9C0C8, 0x2E3F6E, 0x22305A, 0xC9A23E, 0xA8282A
 
 MOBS = {}
 
@@ -133,6 +135,56 @@ MOBS["stone_crawler"] = sym(
     Bone("leg_left", (-5, 8, 5), [C((-8, 1, 3), (5, 7, 6), STONE_DARK), C((-8.5, 0, 2), (6, 2, 7), STONE),
                                   C((-7.5, 4, 2), (4, 3, 1), STONE, "cracks")], "body"),
 )
+
+MOBS["troll"] = sym(
+    Bone("body", (0, 14, 0), [C((-7, 12, -4), (14, 6, 9), LEATHER, "stripes"), C((-8, 17, -6), (16, 8, 11), TROLL, "spots"),
+                              C((-6, 16, -7), (12, 7, 1), TROLL_BELLY), C((-10, 24, -7), (20, 10, 12), TROLL, "spots"),
+                              C((-7, 33, -2), (14, 3, 7), TROLL_HAIR, "fur"), C((-4, 7, -5), (8, 6, 1), LEATHER_DARK, "stripes"),
+                              C((-3.5, 6, 4), (7, 7, 1), LEATHER_DARK, "stripes"), C((-7.5, 12, -4.5), (15, 1, 10), LEATHER_DARK),
+                              C((-1, 11, -5.5), (2, 2, 1), BONE_WHITE), C((-5, 25, 5), (4, 6, 1), TROLL_DARK, "spots"),
+                              C((2, 27, 5), (3, 4, 1), TROLL_DARK)]),
+    Bone("head", (0, 34, -6), [C((-5.5, 32, -15), (11, 8, 9), TROLL, "spots"), C((-6, 38, -15.5), (12, 2, 3), TROLL_DARK),
+                               C((-2, 33, -17.5), (4, 4, 3), TROLL_DARK), C((-1.5, 37, -17), (3, 1, 2), TROLL_DARK),
+                               C((-4.5, 36, -15.6), (2, 1, 1), TROLL_EYE, "eye"), C((2.5, 36, -15.6), (2, 1, 1), TROLL_EYE, "eye"),
+                               C((-3.5, 40, -13), (7, 2, 7), TROLL_HAIR, "fur"), C((-1, 42, -11), (2, 2, 4), TROLL_HAIR, "fur")], "body"),
+    Bone("ear_left", (-5.5, 37, -10), [C((-8.5, 36, -11), (3, 3, 2), TROLL_DARK), C((-10, 37, -10.5), (2, 2, 1), TROLL_DARK)], "head"),
+    Bone("jaw", (0, 33, -7), [C((-5.5, 29, -16), (11, 4, 9), TROLL, "spots"), C((-5, 33, -16.5), (10, 1, 1), TROLL_DARK),
+                              C((-4.5, 32, -17), (1, 4, 1), BONE_WHITE), C((3.5, 32, -17), (1, 4, 1), BONE_WHITE),
+                              C((-2, 28, -15), (4, 1, 5), TROLL_HAIR, "fur")], "head"),
+    Bone("arm_left", (-12, 31, -2), [C((-17, 25, -6), (8, 9, 8), TROLL, "spots"), C((-16, 17, -4.5), (5, 9, 6), TROLL_DARK, "spots"),
+                                     C((-17.5, 33, -5.5), (8, 2, 7), TROLL_HAIR, "fur"), C((-16, 35, -3), (4, 1, 3), TROLL_HAIR, "fur")], "body"),
+    Bone("forearm_left", (-13.5, 18, -1.5), [C((-17, 7, -5), (7, 11, 7), TROLL, "spots"), C((-17.5, 2, -5.5), (8, 5, 8), TROLL_DARK),
+                                            C((-17.5, 1, -5.5), (1, 1, 1), TROLL_NAIL), C((-15, 1, -5.5), (1, 1, 1), TROLL_NAIL),
+                                            C((-12.5, 1, -5.5), (1, 1, 1), TROLL_NAIL), C((-17.5, 11, -5.5), (8, 2, 8), LEATHER, "stripes")], "arm_left"),
+    Bone("leg_left", (-4.5, 13, 0), [C((-8, 6, -3), (6, 8, 6), TROLL_DARK, "spots"), C((-7.5, 2, -2.5), (5, 5, 5), TROLL, "spots"),
+                                     C((-8.5, 0, -5), (7, 2, 7), TROLL_DARK), C((-8.5, 0, -6), (1, 1, 1), TROLL_NAIL),
+                                     C((-6, 0, -6), (1, 1, 1), TROLL_NAIL), C((-3.5, 0, -6), (1, 1, 1), TROLL_NAIL)], "body"),
+) + [Bone("club", (13.5, 4.5, -6.5), [C((12.5, 2, -8), (3, 17, 3), WOOD, "wood"), C((11.5, 18, -9.5), (5, 10, 6), WOOD_DARK, "wood"),
+                                      C((12, 4, -8.5), (4, 3, 4), LEATHER, "stripes"), C((16.5, 22, -8), (1, 2, 2), BONE_WHITE),
+                                      C((10.5, 24, -7.5), (1, 2, 2), BONE_WHITE), C((13, 28, -8), (2, 1, 2), BONE_WHITE),
+                                      C((13, 21, -10.5), (2, 2, 1), BONE_WHITE)], "forearm_right")]
+
+MOBS["armored_knight"] = sym(
+    Bone("body", (0, 12, 0), [C((-5.5, 10, -3), (11, 4, 6), STEEL_DARK, "plates"), C((-5, 14, -3), (10, 10, 6), STEEL, "plates"),
+                              C((-5.5, 16, -3.5), (11, 7, 1), STEEL_LIGHT, "plates"), C((-3, 5, -4.5), (6, 13, 1), TABARD, "cloth"),
+                              C((-3.5, 17, -5), (7, 1, 1), GOLD), C((-1, 11, -5), (2, 5, 1), GOLD), C((-2.5, 12.5, -5), (5, 2, 1), GOLD),
+                              C((-5.5, 13, -3.5), (11, 1, 7), LEATHER_DARK), C((-0.5, 12.5, -4), (1, 2, 1), GOLD),
+                              C((-3.5, 24, -3), (7, 2, 6), STEEL_DARK, "plates"), C((-3, 5, 3), (6, 18, 1), TABARD_DARK, "cloth")]),
+    Bone("head", (0, 26, 0), [C((-4, 26, -4), (8, 8, 8), STEEL, "plates"), C((-4.5, 28, -5), (9, 4, 1), STEEL_DARK),
+                              C((-3.5, 30, -5.5), (7, 1, 1), BLACK), C((-1, 28, -5.5), (2, 1, 1), BLACK),
+                              C((-0.5, 34, -4), (1, 1, 8), STEEL_LIGHT), C((-1, 35, -2), (2, 3, 6), PLUME, "fur"),
+                              C((-1, 32, 3), (2, 3, 3), PLUME, "fur"), C((-4.5, 26, -4.5), (9, 1, 9), STEEL_DARK)], "body"),
+    Bone("arm_left", (-6, 23, 0), [C((-9.5, 21, -3.5), (5, 4, 7), STEEL, "plates"), C((-10, 20, -4), (6, 1, 8), STEEL_DARK),
+                                   C((-8.5, 13, -2), (4, 8, 4), STEEL, "plates"), C((-9, 16, -2.5), (5, 2, 5), STEEL_DARK),
+                                   C((-9, 10, -2.5), (5, 4, 5), STEEL_DARK, "plates")], "body"),
+    Bone("leg_left", (-2.5, 12, 0), [C((-5, 2, -2.5), (5, 10, 5), STEEL, "plates"), C((-5.5, 7, -3), (6, 3, 1), STEEL_LIGHT),
+                                     C((-5.5, 0, -3.5), (6, 2, 6), STEEL_DARK, "plates")], "body"),
+) + [Bone("shield", (-9, 12, 0), [C((-11, 6, -5), (2, 14, 10), TABARD, "cloth"), C((-11.5, 19, -5), (3, 1, 10), STEEL_LIGHT),
+                                 C((-11.5, 6, -5.5), (3, 14, 1), STEEL_LIGHT), C((-11.5, 6, 4.5), (3, 14, 1), STEEL_LIGHT),
+                                 C((-11, 4, -3), (2, 2, 6), STEEL_LIGHT), C((-12, 11, -1.5), (1, 5, 3), GOLD),
+                                 C((-12, 12.5, -3), (1, 2, 6), GOLD)], "arm_left"),
+     Bone("sword", (6.5, 11, 0), [C((6, 11, -4), (2, 2, 5), LEATHER, "stripes"), C((4.5, 10.5, -5), (5, 3, 1), GOLD),
+                                  C((6.5, 11.5, -19), (1, 2, 14), STEEL_LIGHT, "plates"), C((6, 11, 1), (2, 2, 1), GOLD)], "arm_right")]
 
 MOBS["mushroom_nurse"] = sym(
     Bone("body", (0, 3, 0), [C((-2.5, 3, -2.5), (5, 11, 5), STEM, "stripes"), C((-3, 3, -3), (6, 3, 6), STEM_DARK),
@@ -837,7 +889,10 @@ def java_layer(name, bones, width, height):
 
 def main():
     if "--seed" in sys.argv:
+        only = set(sys.argv[sys.argv.index("--seed") + 1:])
         for name, bones in MOBS.items():
+            if only and name not in only:
+                continue
             validate(name, bones)
             write_bbmodel(name, bones, *texture(name, bones))
     methods, entries = [], []

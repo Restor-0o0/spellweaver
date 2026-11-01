@@ -1,8 +1,8 @@
 {
   "id": "magicka:crystal",
+  "keys": "57",
   "formula": {
-    "earth": 1,
-    "arcane": 1
+    "shield": 1
   },
   "name": "Crystal",
   "tier": "Signature",

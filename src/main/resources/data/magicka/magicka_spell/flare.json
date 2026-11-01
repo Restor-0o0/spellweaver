@@ -6,6 +6,7 @@
   },
   "name": "Flare",
   "tier": "Signature",
+  "keys": "17",
   "tags": "UTIL",
   "shape": "projectile",
   "origin": "caster_front",

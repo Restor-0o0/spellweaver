@@ -1,5 +1,6 @@
 {
   "id": "magicka:unrelenting_force",
+  "keys": "527",
   "formula": {
     "water": 1,
     "earth": 1,
@@ -19,7 +20,7 @@
   "effects": [
     {
       "type": "deal_damage",
-      "amount": 2,
+      "amount": 4,
       "element": "earth"
     },
     {
@@ -34,7 +35,7 @@
     "effects": [
       {
         "type": "deal_damage",
-        "amount": 2,
+        "amount": 4,
         "element": "earth"
       },
       {
@@ -46,6 +47,6 @@
     ]
   },
   "balanced": true,
-  "primary": "A shout of raw force. A roaring wave sweeps a 70° cone up to 10 blocks ahead. Everyone caught:\n• Damage 1 ❤ earth\n• Stun for 1 s\n• Blown far back, harder the closer they stand\nProjectiles in the cone are turned away.",
+  "primary": "A shout of raw force. A roaring wave sweeps a 70° cone up to 10 blocks ahead. Everyone caught:\n• Damage 2 ❤ earth\n• Stun for 1 s\n• Blown far back, harder the closer they stand\nProjectiles in the cone are turned away.",
   "self_description": "The shout bursts in every direction around you."
 }

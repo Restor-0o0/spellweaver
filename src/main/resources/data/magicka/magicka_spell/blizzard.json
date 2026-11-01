@@ -1,13 +1,13 @@
 {
   "id": "magicka:blizzard",
   "formula": {
-    "cold": 3,
-    "water": 1,
-    "earth": 1
+    "cold": 2,
+    "earth": 1,
+    "ice": 1
   },
-  "incantation": "33253",
   "name": "Blizzard",
   "tier": "Signature",
+  "ultimate": true,
   "scroll": true,
   "tags": "DMG/CC/AOE",
   "shape": "targeted_zone",
@@ -72,5 +72,6 @@
   },
   "balanced": true,
   "primary": "A snowstorm covers an area 11 blocks across around the aimed spot. Chunks of ice and snow rain down from the sky and shatter on impact without leaving blocks.\nUltimate channel: just stand still for up to 12 s. Stepping aside breaks the channel; instant mode does not apply. Needs open sky: at least 10 blocks of air above the target, so it fails in caves and under roofs.\nOnce a second, everyone in the storm takes:\n• Damage 1.5 ❤ cold\n• Cold 50: slows, freezes solid at 100 accumulated cold\n• Chill for 3 s\nEach falling chunk hits within 1.5 blocks:\n• Damage 3 ❤ cold\n• Strong chill for 4 s\n• Freezes solid for 1.5 s",
-  "self_description": "On you:\n• Stone skin (resistance III), 15 s\n• Cold 60"
+  "self_description": "On you:\n• Stone skin (resistance III), 15 s\n• Cold 60",
+  "keys": "23335"
 }

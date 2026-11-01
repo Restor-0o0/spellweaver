@@ -5,6 +5,7 @@
   },
   "name": "Heal",
   "tier": "Signature",
+  "keys": "66",
   "tags": "HEAL/BUFF",
   "shape": "direct_target",
   "origin": "aim_hit",

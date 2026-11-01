@@ -7,6 +7,7 @@
   },
   "name": "Charged Plasma Convergence",
   "tier": "Family Variant",
+  "keys": "1344",
   "tags": "DMG/DOT/CC/DEBUFF",
   "shape": "chain",
   "origin": "aim_hit",

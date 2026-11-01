@@ -7,6 +7,7 @@
   },
   "name": "Charged Frostshock Convergence",
   "tier": "Family Variant",
+  "keys": "3446",
   "tags": "CC/DEBUFF/DMG/HEAL/BUFF",
   "shape": "chain",
   "origin": "aim_hit",

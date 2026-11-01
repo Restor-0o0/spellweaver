@@ -1,5 +1,6 @@
 {
   "id": "magicka:magnetic_lash",
+  "keys": "745",
   "formula": {
     "earth": 1,
     "lightning": 1,
@@ -40,7 +41,7 @@
     },
     {
       "type": "deal_damage",
-      "amount": 2,
+      "amount": 4,
       "element": "lightning"
     },
     {
@@ -65,7 +66,7 @@
       }
     ]
   },
-  "primary": "Magnetic Lash. Drags the target to you instead of pushing it away.\n• Pulls the target towards you and lifts it slightly\n• 1 ❤ lightning damage and charge 40\n• Shocked for 4 s",
+  "primary": "Magnetic Lash. Drags the target to you instead of pushing it away.\n• Pulls the target towards you and lifts it slightly\n• 2 ❤ lightning damage and charge 40\n• Shocked for 4 s",
   "self_description": "On you: charge 20 and Haste II for 10 s.",
   "balanced": true
 }

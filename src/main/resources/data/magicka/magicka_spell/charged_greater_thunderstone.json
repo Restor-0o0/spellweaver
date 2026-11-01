@@ -6,6 +6,7 @@
   },
   "name": "Charged Greater Thunderstone",
   "tier": "Family Variant",
+  "keys": "4445",
   "tags": "DMG/CC/BREAK",
   "shape": "chain",
   "origin": "aim_hit",

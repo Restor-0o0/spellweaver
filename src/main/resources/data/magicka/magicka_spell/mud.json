@@ -6,6 +6,7 @@
   },
   "name": "Mud",
   "tier": "Signature",
+  "keys": "25",
   "tags": "SETUP/CC/BREAK",
   "shape": "projectile",
   "origin": "caster_front",

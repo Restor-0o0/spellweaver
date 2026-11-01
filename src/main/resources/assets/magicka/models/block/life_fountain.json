@@ -1,0 +1,13 @@
+{
+  "textures": {
+    "stone": "minecraft:block/prismarine",
+    "water": "minecraft:block/water_still",
+    "particle": "minecraft:block/water_still"
+  },
+  "elements": [
+    {"from":[1,0,1],"to":[15,3,15],"faces":{"down":{"texture":"#stone"},"up":{"texture":"#water"},"north":{"texture":"#stone"},"south":{"texture":"#stone"},"west":{"texture":"#stone"},"east":{"texture":"#stone"}}},
+    {"from":[5,2,5],"to":[11,13,11],"faces":{"down":{"texture":"#stone"},"up":{"texture":"#stone"},"north":{"texture":"#stone"},"south":{"texture":"#stone"},"west":{"texture":"#stone"},"east":{"texture":"#stone"}}},
+    {"from":[3,10,3],"to":[13,12,13],"faces":{"down":{"texture":"#stone"},"up":{"texture":"#water"},"north":{"texture":"#stone"},"south":{"texture":"#stone"},"west":{"texture":"#stone"},"east":{"texture":"#stone"}}},
+    {"from":[7,12,7],"to":[9,16,9],"faces":{"down":{"texture":"#water"},"up":{"texture":"#water"},"north":{"texture":"#water"},"south":{"texture":"#water"},"west":{"texture":"#water"},"east":{"texture":"#water"}}}
+  ]
+}

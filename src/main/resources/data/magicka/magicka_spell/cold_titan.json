@@ -5,9 +5,10 @@
     "cold": 3,
     "arcane": 1
   },
-  "incantation": "53373",
+  "keys": "53373",
   "name": "Frost Titan",
   "tier": "Signature",
+  "ultimate": true,
   "scroll": true,
   "tags": "SUMMON/DMG/AOE",
   "shape": "targeted_zone",
@@ -69,6 +70,6 @@
     ]
   },
   "balanced": true,
-  "primary": "A giant frost titan rises waist-deep from the ground at the aimed spot and fights from there while you keep the channel.\nUltimate channel: just stand still for up to 12 s. Stepping aside breaks the channel and the titan sinks back underground; instant mode does not apply. Needs open sky above the aimed spot.\nIt picks foes within 20 blocks and, about every 1.5 s, either fires ice shards at up to 3 foes: damage 3 ❤ cold, cold 60, chill;\nor slams the ground with both fists, which freezes the ground within 3 blocks; everyone within 5 blocks takes 3 ❤ cold, cold 80 and a strong chill.",
+  "primary": "A giant frost titan rises waist-deep from the ground at the aimed spot and fights there while you stand still. Moving breaks the summon and the titan sinks back underground; instant mode does not apply. Needs open sky above the aimed spot.\nIt picks foes within 20 blocks and, about every 1.5 s, either fires ice shards at up to 3 foes: damage 3 ❤ cold, cold 60, chill;\nor slams the ground with both fists, which freezes the ground within 3 blocks; everyone within 5 blocks takes 3 ❤ cold, cold 80 and a strong chill.",
   "self_description": "On you:\n• Stone skin (resistance III), 15 s\n• Cold 60"
 }

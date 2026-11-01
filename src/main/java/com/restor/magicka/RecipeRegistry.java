@@ -13,7 +13,7 @@ import java.util.*;
 
 public final class RecipeRegistry {
     public static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
-    public static final int CATALOG_SIZE = 346;
+    public static final int CATALOG_SIZE = 361;
     private static final List<ResourceLocation> INDEX = readIndex();
     private static final Map<ResourceLocation, Integer> POSITIONS = positions();
     private static final Map<SpellFormula, SpellDefinition> BASE = loadBase();
@@ -60,7 +60,7 @@ public final class RecipeRegistry {
         try (var stream = RecipeRegistry.class.getResourceAsStream("/assets/magicka/spell_index.json")) {
             if (stream == null) throw new IllegalStateException("Missing spell catalog index");
             List<ResourceLocation> ids = new ArrayList<>();
-            for (JsonElement e : JsonParser.parseReader(new InputStreamReader(stream, StandardCharsets.UTF_8)).getAsJsonArray()) ids.add(ResourceLocation.parse(e.getAsString()));
+            for (JsonElement e : JsonParser.parseReader(new InputStreamReader(stream, StandardCharsets.UTF_8)).getAsJsonArray()) ids.add(new ResourceLocation(e.getAsString()));
             return List.copyOf(ids);
         } catch (IOException e) { throw new UncheckedIOException(e); }
     }

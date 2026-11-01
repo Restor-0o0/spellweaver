@@ -7,6 +7,7 @@
   },
   "name": "Water Elemental",
   "tier": "Signature",
+  "keys": "2278",
   "scroll": true,
   "tags": "SUMMON",
   "shape": "summon_object",
