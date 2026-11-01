@@ -6,6 +6,7 @@
   },
   "name": "Phoenix Tears",
   "tier": "Signature",
+  "incantation": "1666",
   "scroll": true,
   "tags": "HEAL/BUFF",
   "shape": "direct_target",

@@ -6,6 +6,8 @@
   },
   "name": "Heavy Greater Magma",
   "tier": "Family Variant",
+
+  "incantation": "1555",
   "tags": "DMG/DOT/BREAK",
   "shape": "projectile",
   "origin": "caster_front",

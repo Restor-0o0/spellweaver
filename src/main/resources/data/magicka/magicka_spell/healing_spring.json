@@ -7,6 +7,8 @@
   },
   "name": "Healing Spring",
   "tier": "Signature",
+
+  "incantation": "2667",
   "tags": "HEAL/BUILD/SETUP",
   "shape": "summon_object",
   "origin": "aim_ground",

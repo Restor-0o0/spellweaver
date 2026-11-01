@@ -5,6 +5,8 @@
   },
   "name": "Raise Dead",
   "tier": "Signature",
+
+  "incantation": "888",
   "tags": "SUMMON/REVIVE",
   "shape": "summon_object",
   "origin": "aim_hit",

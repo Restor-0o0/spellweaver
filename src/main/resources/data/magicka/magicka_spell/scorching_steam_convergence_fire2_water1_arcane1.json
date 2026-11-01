@@ -7,6 +7,8 @@
   },
   "name": "Scorching Steam Convergence",
   "tier": "Family Variant",
+
+  "incantation": "1127",
   "tags": "DMG/DOT/SETUP/CC",
   "shape": "burst_projectile",
   "origin": "caster_front",

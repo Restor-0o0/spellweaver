@@ -6,6 +6,8 @@
   },
   "name": "Greater Stasis",
   "tier": "Family Variant",
+
+  "incantation": "3377",
   "tags": "CC/DEBUFF/SETUP",
   "shape": "targeted_explosion",
   "origin": "aim_hit",

@@ -6,6 +6,8 @@
   },
   "name": "Stone Slab",
   "tier": "Signature",
+
+  "incantation": "5777",
   "tags": "BUILD",
   "shape": "wall",
   "origin": "caster_feet",

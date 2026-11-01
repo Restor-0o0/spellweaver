@@ -7,6 +7,8 @@
   },
   "name": "Heavy Magma Convergence",
   "tier": "Family Variant",
+
+  "incantation": "1455",
   "tags": "DMG/DOT/CC/BREAK",
   "shape": "projectile",
   "origin": "caster_front",

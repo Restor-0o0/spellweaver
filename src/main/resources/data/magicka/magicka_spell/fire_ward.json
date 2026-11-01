@@ -6,6 +6,8 @@
   },
   "name": "Fire Ward",
   "tier": "Signature",
+
+  "incantation": "116",
   "tags": "UTIL",
   "shape": "direct_target",
   "origin": "aim_hit",

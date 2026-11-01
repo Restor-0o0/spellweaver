@@ -7,6 +7,7 @@
   },
   "name": "Thunderous Shout",
   "tier": "Signature",
+  "incantation": "257",
   "scroll": true,
   "tags": "DMG/CC",
   "shape": "spray",

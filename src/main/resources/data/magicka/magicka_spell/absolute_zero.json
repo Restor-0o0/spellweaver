@@ -19,7 +19,8 @@
     "duration_ticks": 300,
     "interval_ticks": 15,
     "gravity": 0,
-    "burst_radius": 9.0
+    "burst_radius": 9.0,
+    "ice_surface": true
   },
   "effects": [
     {
@@ -46,7 +47,7 @@
     },
     {
       "type": "deal_damage",
-      "amount": 11.5,
+      "amount": 16.0,
       "element": "cold"
     }
   ],

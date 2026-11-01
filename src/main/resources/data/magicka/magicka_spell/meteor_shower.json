@@ -7,6 +7,7 @@
   "incantation": "51151",
   "name": "Meteor Shower",
   "tier": "Signature",
+  "ultimate": true,
   "scroll": true,
   "tags": "DMG/BREAK/AOE",
   "shape": "targeted_zone",

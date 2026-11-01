@@ -6,6 +6,8 @@
   },
   "name": "Scorching Greater Steam",
   "tier": "Family Variant",
+
+  "incantation": "1112",
   "tags": "DMG/DOT/SETUP/CC",
   "shape": "spray",
   "origin": "caster_front",

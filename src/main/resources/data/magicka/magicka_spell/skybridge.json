@@ -6,6 +6,8 @@
   },
   "name": "Skybridge",
   "tier": "Signature",
+
+  "incantation": "5557",
   "tags": "BUILD/MOVE",
   "shape": "bridge",
   "origin": "aim_hit",

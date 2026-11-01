@@ -7,6 +7,7 @@
   },
   "name": "Meadow",
   "tier": "Signature",
+  "incantation": "2566",
   "scroll": false,
   "tags": "BUFF/UTIL",
   "shape": "targeted_zone",

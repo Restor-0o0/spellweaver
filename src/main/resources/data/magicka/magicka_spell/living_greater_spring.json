@@ -6,6 +6,8 @@
   },
   "name": "Living Greater Spring",
   "tier": "Family Variant",
+
+  "incantation": "2666",
   "tags": "SETUP/CC/HEAL/BUFF",
   "shape": "targeted_zone",
   "origin": "aim_ground",

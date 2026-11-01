@@ -6,6 +6,8 @@
   },
   "name": "Arc Lightning",
   "tier": "Signature",
+
+  "incantation": "47",
   "tags": "DMG/CC/SETUP",
   "shape": "projectile",
   "origin": "caster_front",

@@ -6,6 +6,8 @@
   },
   "name": "Stone Platform",
   "tier": "Signature",
+
+  "incantation": "557",
   "tags": "BUILD/MOVE",
   "shape": "platform",
   "origin": "aim_surface",

@@ -6,6 +6,8 @@
   },
   "name": "Gills",
   "tier": "Signature",
+
+  "incantation": "226",
   "tags": "UTIL",
   "shape": "direct_target",
   "origin": "aim_hit",

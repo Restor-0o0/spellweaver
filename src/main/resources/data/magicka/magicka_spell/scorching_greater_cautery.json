@@ -6,6 +6,8 @@
   },
   "name": "Scorching Greater Cautery",
   "tier": "Family Variant",
+
+  "incantation": "1116",
   "tags": "DMG/DOT/HEAL/BUFF",
   "shape": "spray",
   "origin": "caster_front",

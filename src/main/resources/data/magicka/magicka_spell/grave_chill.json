@@ -6,6 +6,8 @@
   },
   "name": "Grave Chill",
   "tier": "Signature",
+
+  "incantation": "38",
   "tags": "CC/DOT",
   "shape": "targeted_zone",
   "origin": "aim_hit",

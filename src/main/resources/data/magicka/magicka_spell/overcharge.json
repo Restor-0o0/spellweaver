@@ -7,6 +7,8 @@
   },
   "name": "Overcharge",
   "tier": "Signature",
+
+  "incantation": "467",
   "tags": "MOVE/BUFF/MEME",
   "shape": "direct_target",
   "origin": "aim_hit",

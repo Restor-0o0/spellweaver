@@ -22,21 +22,25 @@ import java.util.*;
 
 /** Every spell keeps a fixed page in catalog order, blank pages follow up to the number of possible formulas; narrow screens show one page and slide the book. */
 public final class GrimoireScreen extends Screen {
-    private static final String[] TAGS={"damage","heal","control","construction","destruction","summon","utility"};
-    private static final Item[] TAG_ICONS={Items.IRON_SWORD,Items.GOLDEN_APPLE,Items.COBWEB,Items.BRICKS,Items.TNT,Items.ZOMBIE_HEAD,Items.COMPASS};
+    private static final String[] TAGS={"damage","heal","control","construction","destruction","summon","utility","defense"};
+    private static final Item[] TAG_ICONS={Items.IRON_SWORD,Items.GOLDEN_APPLE,Items.COBWEB,Items.BRICKS,Items.TNT,Items.ZOMBIE_HEAD,Items.COMPASS,Items.SHIELD};
+    private static final String[] COMPOSITES={"steam","ice","shield"};
+    private static final int[][] COMPOSITE_ELEMENTS={{0,1},{1,2},{4,6}};
     private static final int PANEL=88,TOP=4,MAX_HEIGHT=560,MIN_HALF=150,LEAF=11,STAGGER=2,OPEN_IN=7,OPEN_TURN=14,SEGMENTS=10,MUTED_INK=0xFF816B50,RUNE_INK=0x40302B37,FACT_INK=0x5A4A3A,CELL=18,CELL_W=20;
     private static final float RATIO=1.42f;
     private static final int FORMULAS=formulas();
     private static final Style RUNES=Style.EMPTY.withFont(new FontDescription.Resource(Identifier.withDefaultNamespace("alt")));
     private static final Identifier EMBLEM=Identifier.fromNamespaceAndPath(Magicka.ID,"textures/gui/cover_emblem.png");
     private static final Identifier ELEMENTS=Identifier.fromNamespaceAndPath(Magicka.ID,"textures/gui/elements.png");
+    private static final Identifier COMPOSITE_TEXTURE=Identifier.fromNamespaceAndPath(Magicka.ID,"textures/gui/composites.png");
     private record StatRow(MagicStats.Stat stat,int x,int y,int width){}
+    private record RecipeRune(Element element,int composite){}
     private interface Face{void draw(GuiGraphicsExtractor g,int side);}
     private record View(String guideKey){}
     private record Line(FormattedCharSequence text,int kind){}
     private static final View BOOK=new View(null);
     private static final int TEXT=0,HEADING=1,BULLET=2,MORE=3;
-    private int x,y,bookX,bookWidth,bookHeight,half,spine,frameX,frameWidth,panelX,page,elements,ticks,spellPage,catalogRevision=-1;
+    private int x,y,bookX,bookWidth,bookHeight,half,spine,frameX,frameWidth,panelX,page,elements,composites,ticks,spellPage,catalogRevision=-1;
     private float clock,camFrom,camTo,camStart=-100;
     private String query="",tag="all",restoreId="";
     private boolean single,laidOut;
@@ -62,7 +66,7 @@ public final class GrimoireScreen extends Screen {
         return total;
     }
     private void refresh(){
-        catalog=RecipeRegistry.clientRecipes().stream().filter(d->d.tier().equalsIgnoreCase("Signature"))
+        catalog=RecipeRegistry.clientRecipes().stream().filter(d->d.tier().equalsIgnoreCase("Signature") || d.name().equals("Shield"))
                 .sorted(Comparator.comparingInt((SpellDefinition d)->RecipeRegistry.catalogPosition(d.id())).thenComparing(d->d.id().toString())).toList();
         List<Integer> found=new ArrayList<>();
         if(filtering())for(int i=0;i<catalog.size();i++)if(matches(catalog.get(i)))found.add(front()+i);
@@ -71,10 +75,11 @@ public final class GrimoireScreen extends Screen {
     private boolean open(SpellDefinition spell){return SpellScrolls.clientOpen(minecraft.player,spell);}
     private String number(){String q=query.trim();return q.matches("\\d{1,5}")?q:null;}
     private List<String> words(){String q=query.toLowerCase(Locale.ROOT).replace("#","").trim();return number()!=null || q.isEmpty()?List.of():List.of(q.split("\\s+"));}
-    private boolean filtering(){return !tag.equals("all") || elements!=0 || !words().isEmpty();}
+    private boolean filtering(){return !tag.equals("all") || elements!=0 || composites!=0 || !words().isEmpty();}
     private boolean matches(SpellDefinition d){
         if(!open(d) || !tag.equals("all") && !SpellTags.of(d).contains(tag))return false;
         for(Element element:Element.values())if((elements&1<<element.ordinal())!=0 && d.formula().count(element)==0)return false;
+        for(int i=0;i<COMPOSITES.length;i++)if((composites&1<<i)!=0 && (d.formula().count(Element.values()[COMPOSITE_ELEMENTS[i][0]])==0 || d.formula().count(Element.values()[COMPOSITE_ELEMENTS[i][1]])==0))return false;
         String text=(d.name()+" "+d.displayName().getString()+" "+d.tags()+" "+d.primaryDescription().getString()+" "+d.selfDescription().getString()+" "+tagText(d)).toLowerCase(Locale.ROOT);
         return words().stream().allMatch(text::contains);
     }
@@ -128,16 +133,12 @@ public final class GrimoireScreen extends Screen {
     private int pages(View v){return statsPage()+(creative()?2:0);}
 
     @Override protected void init(){
-        int side=0,room=0;
-        for(int columns=1;columns<=2;columns++){
-            bookHeight=Math.max(140,Math.min(height-TOP-6,MAX_HEIGHT));
-            side=columns*CELL_W+4;room=width-PANEL-side-10;
-            half=Math.round(bookHeight/RATIO);
-            single=2*half>room && room/2<MIN_HALF;
-            half=single?Math.min(half,room):Math.min(half,room/2);
-            bookHeight=Math.round(half*RATIO);
-            if(stacked())break;
-        }
+        bookHeight=Math.max(140,Math.min(height-TOP-6,MAX_HEIGHT));
+        int side=2*CELL_W+4,room=width-PANEL-side-10;
+        half=Math.round(bookHeight/RATIO);
+        single=2*half>room && room/2<MIN_HALF;
+        half=single?Math.min(half,room):Math.min(half,room/2);
+        bookHeight=Math.round(half*RATIO);
         bookWidth=2*half;frameWidth=single?half:bookWidth;
         y=TOP+Math.max(0,(height-TOP-4-bookHeight)/2);
         frameX=PANEL+8+(room-frameWidth)/2;panelX=frameX-PANEL-4;bookX=single?frameX-half/2:frameX;x=bookX;spine=x+half;splits.clear();layouts.clear();
@@ -218,6 +219,8 @@ public final class GrimoireScreen extends Screen {
             b.active=firstOfSize(i)>=0;b.setTooltip(Tooltip.create(Component.translatable("book.magicka.filter.points",i)));}
         for(int i=0;i<Element.values().length;i++){Element element=Element.values()[i];int bit=1<<i;
             addRenderableWidget(new RuneElement(sideX(1)+1,sideY(1,i),16,16,element,(elements&bit)!=0,b->refilter(()->elements^=bit)));}
+        for(int i=0;i<COMPOSITES.length;i++){int bit=1<<i;String key="book.magicka.composite."+COMPOSITES[i];
+            addRenderableWidget(new RuneComposite(compositeX()+1,compositeY(i),16,16,i,Component.translatable(key),(composites&bit)!=0,b->refilter(()->composites^=bit)));}
         search=new SearchBox(font,panelX+4,y+5,PANEL-8,14,Component.translatable("book.magicka.search"));
         search.setValue(query);search.setHint(Component.translatable("book.magicka.search"));
         search.setResponder(value->{
@@ -270,6 +273,10 @@ public final class GrimoireScreen extends Screen {
     }
     private boolean stacked(){return bookHeight-8>=13.5f*16;}
     private int sideX(int group){return frameX+frameWidth+4+(stacked()?0:group)*CELL_W;}
+    private int compositeX(){int elements=sideX(1);return elements+(stacked()?CELL_W:-CELL_W);}
+    private int compositeY(int index){
+        return (sideY(1,index)+sideY(1,index+1))/2;
+    }
     private int tagsY(){return slotY(4)+2;}
     private int sideY(int group,int index){
         float cell=Math.min(CELL,(bookHeight-8)/13.5f),at=group==1 && stacked()?5.5f+index:index;
@@ -398,7 +405,10 @@ public final class GrimoireScreen extends Screen {
         paper(g,side);
         int px=pageX(side),pw=pageWidth(),top=pageTop(),bottom=pageBottom();
         if(p>=pages(v)){runes(g,px,top,bottom,p*13+7);return;}
-        if(p<front()){if(p<guidePages()+magicPages())guidePage(g,p<guidePages()?layout("book.magicka.guide").get(p):layout("book.magicka.magic").get(p-guidePages()),px,top,pw);return;}
+        if(p<front()){
+            if(p<guidePages()+magicPages())guidePage(g,p<guidePages()?layout("book.magicka.guide").get(p):layout("book.magicka.magic").get(p-guidePages()),px,top,pw);
+            return;
+        }
         if(p-front()<catalog.size()){
             var spell=catalog.get(p-front());
             if(open(spell))spellPage(g,spell,px,top,pw,bottom,side);else sealed(g,px,top,pw,bottom,p);
@@ -439,8 +449,9 @@ public final class GrimoireScreen extends Screen {
         int cx=px+pw/2,cy=top+2;
         for(var line:split(entry.id()+"/name",label(entry),pw)){g.text(font,line,cx-font.width(line)/2,cy,MagicUi.INK,false);cy+=11;}
         cy+=3;
-        var spoken=entry.spoken();int runes=spoken.size()*28-4;
-        for(int i=0;i<spoken.size();i++){MagicUi.socket(g,spoken.get(i),cx-runes/2+i*28,cy,true);if(i>0)g.text(font,"›",cx-runes/2+i*28-4,cy+8,0xFF786047,false);}
+        var spoken=entry.spoken();var resolved=resolve(spoken);
+        if(spoken.size()==2 && resolved.size()==1 && resolved.get(0).composite>=0)transitionRow(g,spoken,resolved.get(0).composite,cx,cy,pw);
+        else formulaRow(g,resolved.size()<spoken.size()?resolved:spoken.stream().map(e->new RecipeRune(e,-1)).toList(),cx,cy,pw);
         cy+=29;
         int arm=pw/3;g.fill(cx-arm,cy,cx-5,cy+1,0xFFAA8C59);g.fill(cx+5,cy,cx+arm,cy+1,0xFFAA8C59);g.fill(cx-1,cy-2,cx+1,cy+3,0xFF8A6A3A);g.fill(cx-2,cy-1,cx+2,cy+2,0xFF8A6A3A);
         cy+=6;
@@ -449,6 +460,39 @@ public final class GrimoireScreen extends Screen {
         boolean full=minecraft.hasShiftDown();
         fit(g,entry.id()+(full?"/full":"/brief"),body(entry,full),px,cy,pw,bottom,MagicUi.INK);
         if(!full){var more=Component.translatable("book.magicka.more");MagicUi.small(g,more,px+pw/2-(int)(font.width(more)*.375),y+bookHeight-17,MUTED_INK);}
+    }
+    private static List<RecipeRune> resolve(List<Element> spoken){
+        var runes=new ArrayList<RecipeRune>();
+        for(Element element:spoken){
+            int found=-1,composite=-1;
+            for(int i=runes.size()-1;i>=0;i--){
+                Element other=runes.get(i).element;
+                int match=MagicUi.composite(element,other);
+                if(match>=0){found=i;composite=match;break;}
+            }
+            if(found>=0)runes.set(found,new RecipeRune(null,composite));else runes.add(new RecipeRune(element,-1));
+        }
+        return List.copyOf(runes);
+    }
+    private void formulaRow(GuiGraphicsExtractor g,List<RecipeRune> runes,int cx,int cy,int width){
+        int row=runes.size()*28-4;float scale=Math.min(1,width/(float)Math.max(1,row));
+        g.pose().pushMatrix();g.pose().translate(cx,cy);g.pose().scale(scale,scale);g.pose().translate(-row/2f,0);
+        for(int i=0;i<runes.size();i++){
+            int sx=i*28;RecipeRune rune=runes.get(i);
+            if(rune.composite>=0)compositeSocket(g,rune.composite,sx,0);else MagicUi.socket(g,rune.element,sx,0,true);
+            if(i>0)g.text(font,"›",sx-4,8,0xFF786047,false);
+        }
+        g.pose().popMatrix();
+    }
+    private void transitionRow(GuiGraphicsExtractor g,List<Element> spoken,int composite,int cx,int cy,int width){
+        float scale=Math.min(1,width/100f);
+        g.pose().pushMatrix();g.pose().translate(cx,cy);g.pose().scale(scale,scale);g.pose().translate(-50,0);
+        MagicUi.socket(g,spoken.get(0),0,0,true);g.text(font,"+",27,8,0xFF786047,false);
+        MagicUi.socket(g,spoken.get(1),38,0,true);g.text(font,"→",65,8,0xFF786047,false);
+        compositeSocket(g,composite,76,0);g.pose().popMatrix();
+    }
+    private void compositeSocket(GuiGraphicsExtractor g,int cell,int x,int y){
+        MagicUi.compositeSocket(g,cell,x,y);
     }
     private Component body(SpellDefinition entry,boolean full){
         var facts=Component.translatable("book.magicka.cast_time",String.format(Locale.ROOT,"%.2f",entry.castTicks()/20.0));
@@ -597,11 +641,26 @@ public final class GrimoireScreen extends Screen {
         }
         @Override protected void extractContents(GuiGraphicsExtractor g,int mouseX,int mouseY,float partialTick){
             boolean hover=isHoveredOrFocused();
-            if(on)g.fill(getX()-2,getY()-2,getX()+width+2,getY()+height+2,0x90000000|element.color&0xFFFFFF);
+            if(on)g.outline(getX()-2,getY()-2,width+4,height+4,0xFF000000|element.color&0xFFFFFF);
+            else if(hover)g.outline(getX()-1,getY()-1,width+2,height+2,0xFF8B7BB0);
             g.pose().pushMatrix();g.pose().translate(getX(),getY());g.pose().scale(width/32f,height/32f);
             g.blit(RenderPipelines.GUI_TEXTURED,ELEMENTS,0,0,element.ordinal()*32,0,32,32,256,32);
             g.pose().popMatrix();
-            if(!on && !hover)g.fill(getX()+1,getY()+1,getX()+width-1,getY()+height-1,0x70000000);
+        }
+    }
+    private static final class RuneComposite extends Button {
+        private final int cell;private final boolean on;
+        RuneComposite(int x,int y,int width,int height,int cell,Component label,boolean on,OnPress press){
+            super(x,y,width,height,label,press,DEFAULT_NARRATION);this.cell=cell;this.on=on;setTooltip(Tooltip.create(label));
+        }
+        @Override protected void extractContents(GuiGraphicsExtractor g,int mouseX,int mouseY,float partialTick){
+            boolean hover=isHoveredOrFocused();
+            int color=switch(cell){case 0->0xFFD8D4DC;case 1->0xFF72E4F2;default->0xFFFFD95A;};
+            if(on)g.outline(getX()-2,getY()-2,width+4,height+4,color);
+            else if(hover)g.outline(getX()-1,getY()-1,width+2,height+2,0xFF8B7BB0);
+            g.pose().pushMatrix();g.pose().translate(getX(),getY());g.pose().scale(width/32f,height/32f);
+            g.blit(RenderPipelines.GUI_TEXTURED,COMPOSITE_TEXTURE,0,0,cell*32,0,32,32,96,32);
+            g.pose().popMatrix();
         }
     }
 }

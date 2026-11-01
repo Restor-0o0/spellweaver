@@ -1,10 +1,10 @@
 package com.restor.magicka;
 
-import net.minecraft.world.entity.EntityType;
 import com.google.gson.JsonParser;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.*;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
@@ -141,14 +141,28 @@ public final class RecipeGameTests {
         SpellRuntime.projectile(p,spell("Ember"),h.absoluteVec(new Vec3(1.5,2.5,1.5)),new Vec3(0,0,1),false);
         h.runAfterDelay(15,()->{h.assertTrue(pig.getHealth()==10 && !MagicStatuses.has(pig,MagicStatuses.Status.BURNING),"Wall intercepts projectile before target");h.succeed();});
     }
-    @MagicTest(timeoutTicks=60)
-    public static void delayedMine(GameTestHelper h){
+    @MagicTest(timeoutTicks=70)
+    public static void steamCloudPersists(GameTestHelper h){
         var p=caster(h);var point=h.absoluteVec(new Vec3(2,2,2));
-        SpellRuntime.zone(p,spell("Steam Mine"),point,100,2,false,true);
+        SpellRuntime.impact(p,spell("Steam Cloud"),point,.8,false,true);
         h.runAfterDelay(22,()->{
             var pig=h.spawnWithNoFreeWill(EntityType.PIG,new BlockPos(2,2,2));pig.setNoGravity(true);
-            h.runAfterDelay(12,()->{h.assertTrue(pig.getHealth()<10,"Armed persistent mine triggers on arriving target");h.succeed();});
+            h.runAfterDelay(22,()->{h.assertTrue(pig.getHealth()<10 && MagicStatuses.has(pig,MagicStatuses.Status.OBSCURED),"Steam cloud damages and obscures a target that enters after impact");h.succeed();});
         });
+    }
+    @MagicTest
+    public static void steamHitIsDry(GameTestHelper h){
+        var p=caster(h);var pig=h.spawnWithNoFreeWill(EntityType.PIG,new BlockPos(2,2,2));
+        SpellRuntime.impact(p,spell("Steam"),pig.position(),.8,false,true);
+        h.assertTrue(pig.getHealth()<10,"Steam deals damage");
+        h.assertTrue(!MagicStatuses.has(pig,MagicStatuses.Status.WET) && !MagicStatuses.has(pig,MagicStatuses.Status.BURNING),"Steam creates neither water nor fire");h.succeed();
+    }
+    @MagicTest
+    public static void shieldSelfIsProtection(GameTestHelper h){
+        var p=caster(h);var shield=spell("Shield");
+        EffectGraph.entity(p,p,shield,shield.selfEffects(),p.position(),true);
+        h.assertTrue(MagicStatuses.has(p,MagicStatuses.Status.STONE_SHELL),"Shield grants protection");
+        h.assertTrue(!MagicStatuses.has(p,MagicStatuses.Status.CHILLED) && !MagicStatuses.has(p,MagicStatuses.Status.ARCANE_UNSTABLE),"Shield has no harmful self effects");h.succeed();
     }
     @MagicTest
     public static void syncedCatalogAndGenericSelf(GameTestHelper h){

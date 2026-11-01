@@ -134,6 +134,9 @@ public final class MagicStats {
     private static double element(int[] v,String name){
         String key=name.toLowerCase(Locale.ROOT);
         if(key.equals("thermal"))return (v[Stat.FIRE.ordinal()]+v[Stat.COLD.ordinal()])/200.0;
+        if(key.equals("steam"))return (v[Stat.FIRE.ordinal()]+v[Stat.WATER.ordinal()])/200.0;
+        if(key.equals("ice"))return (v[Stat.WATER.ordinal()]+v[Stat.COLD.ordinal()])/200.0;
+        if(key.equals("shield"))return (v[Stat.EARTH.ordinal()]+v[Stat.ARCANE.ordinal()])/200.0;
         for(Stat s:Stat.values())if(s.ordinal()<8 && s.key().equals(key))return v[s.ordinal()]/100.0;
         return v[Stat.ARCANE.ordinal()]/100.0;
     }

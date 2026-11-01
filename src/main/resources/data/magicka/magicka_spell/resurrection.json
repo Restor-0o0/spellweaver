@@ -6,6 +6,8 @@
   },
   "name": "Resurrection",
   "tier": "Signature",
+
+  "incantation": "668",
   "scroll": true,
   "tags": "HEAL/REVIVE",
   "shape": "direct_target",

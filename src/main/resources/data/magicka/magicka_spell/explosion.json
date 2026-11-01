@@ -7,6 +7,7 @@
   "incantation": "17117",
   "name": "Explosion",
   "tier": "Signature",
+  "ultimate": true,
   "scroll": true,
   "tags": "DMG/AOE/BREAK",
   "shape": "targeted_explosion",

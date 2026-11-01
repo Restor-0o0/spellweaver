@@ -6,6 +6,8 @@
   },
   "name": "Flooded Steam",
   "tier": "Family Variant",
+
+  "incantation": "122",
   "tags": "DMG/DOT/SETUP/CC",
   "shape": "spray",
   "origin": "caster_front",

@@ -6,6 +6,8 @@
   },
   "name": "Fire Nova Bomb",
   "tier": "Signature",
+
+  "incantation": "1177",
   "scroll": true,
   "tags": "DMG/AOE/DOT",
   "shape": "burst_projectile",

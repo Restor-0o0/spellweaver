@@ -5,6 +5,8 @@
   },
   "name": "Frost Bolt",
   "tier": "Signature",
+
+  "incantation": "33",
   "tags": "CC/DEBUFF",
   "shape": "projectile",
   "origin": "caster_front",
