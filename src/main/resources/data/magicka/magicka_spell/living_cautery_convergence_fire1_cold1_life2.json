@@ -7,8 +7,7 @@
   },
   "name": "Living Cautery Convergence",
   "tier": "Family Variant",
-
-  "incantation": "1366",
+  "keys": "1366",
   "tags": "DMG/DOT/CC/DEBUFF/HEAL",
   "shape": "targeted_zone",
   "origin": "aim_ground",
@@ -19,7 +18,8 @@
     "duration_ticks": 260,
     "interval_ticks": 20,
     "gravity": 0,
-    "burst_radius": 3.2
+    "burst_radius": 3.2,
+    "visual": "bloom"
   },
   "construction": {
     "material": "ice",

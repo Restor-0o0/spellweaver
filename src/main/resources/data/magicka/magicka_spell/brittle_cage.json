@@ -5,9 +5,9 @@
     "earth": 1,
     "arcane": 1
   },
+  "keys": "5373",
   "name": "Brittle Cage",
   "tier": "Signature",
-  "incantation": "3357",
   "tags": "CC/DEBUFF",
   "shape": "growth",
   "origin": "aim_hit",

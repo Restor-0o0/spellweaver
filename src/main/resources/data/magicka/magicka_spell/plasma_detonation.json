@@ -7,8 +7,7 @@
   },
   "name": "Plasma Detonation",
   "tier": "Signature",
-
-  "incantation": "1147",
+  "keys": "1147",
   "scroll": true,
   "tags": "DMG/AOE/CC",
   "shape": "targeted_explosion",

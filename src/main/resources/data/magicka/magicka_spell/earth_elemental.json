@@ -5,10 +5,9 @@
     "arcane": 1,
     "death": 1
   },
+  "keys": "5587",
   "name": "Stone Elemental",
   "tier": "Signature",
-
-  "incantation": "5578",
   "tags": "SUMMON",
   "shape": "summon_object",
   "origin": "caster_front",

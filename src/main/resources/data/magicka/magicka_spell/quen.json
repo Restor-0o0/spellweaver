@@ -7,7 +7,7 @@
   },
   "name": "Ward Sign",
   "tier": "Signature",
-  "incantation": "456",
+  "keys": "456",
   "scroll": true,
   "tags": "DEF",
   "shape": "nova",

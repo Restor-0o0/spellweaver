@@ -29,8 +29,8 @@ public final class EnemyGameTests {
         h.assertTrue(ElementLocks.locked(p, Element.FIRE) && !ElementLocks.locked(p, Element.WATER), "Only the bound element is locked");
         CastingServer.input(p, Element.FIRE.ordinal());
         h.assertTrue(CastingServer.prepared(p).count(Element.FIRE) == 0, "A locked element cannot be typed");
-        CastingServer.input(p, Element.WATER.ordinal());
-        h.assertTrue(CastingServer.prepared(p).count(Element.WATER) == 1, "Other elements still work");
+        CastingServer.input(p, Element.EARTH.ordinal());
+        h.assertTrue(CastingServer.prepared(p).count(Element.EARTH) == 1, "Other elements still work");
         ElementLocks.clear(p);
         CastingServer.input(p, Element.FIRE.ordinal());
         h.assertTrue(CastingServer.prepared(p).count(Element.FIRE) == 1, "Clearing the lock restores the element");
@@ -61,7 +61,7 @@ public final class EnemyGameTests {
         SpellDefinition earth = find(d -> d.formula().count(Element.EARTH) > 0);
         h.assertTrue(hit(crawler, p, fire, 10, false) <= 4.01f, "Armor soaks plain spells");
         h.assertTrue(crawler.armored(), "Armor holds without a brittle Earth hit");
-        crawler.setInvulnerableTime(0);
+        crawler.damageCooldownTime = 0;
         hit(crawler, p, earth, 4, true);
         h.assertFalse(crawler.armored(), "Brittle Earth shatters the armor");
         h.succeed();
@@ -75,7 +75,7 @@ public final class EnemyGameTests {
         ShieldBeetle guard = mob(h, MagicEnemies.SHIELD_BEETLE.get(), 1.5, 3.5, 0);
         SpellDefinition fire = find(d -> d.formula().size() >= 2 && d.formula().count(Element.FIRE) == d.formula().size());
         SpellDefinition water = find(d -> d.formula().size() > 0 && d.formula().count(Element.WATER) == d.formula().size());
-        for (int i = 0; i < 6; i++) { guard.setInvulnerableTime(0); MagicEnemies.hurt(guard, guard.damageSources().magic(), .1f, p, fire, false); }
+        for (int i = 0; i < 6; i++) { guard.damageCooldownTime = 0; MagicEnemies.hurt(guard, guard.damageSources().magic(), .1f, p, fire, false); }
         h.assertTrue(mage.weight(Element.FIRE) >= Countermage.THRESHOLD, "Spells on allies are observed");
         mage.raiseWard(Element.FIRE);
         h.assertTrue(mage.warded() == Element.FIRE, "Ward takes the dominant element");
@@ -145,6 +145,46 @@ public final class EnemyGameTests {
     public static void stoneEaterOnlyEatsMagic(GameTestHelper h) {
         h.assertFalse(StoneEater.edible(net.minecraft.world.level.block.Blocks.STONE.defaultBlockState()), "Natural stone is not food");
         h.assertFalse(StoneEater.edible(MagicBlocks.PUDDLE.get().defaultBlockState()), "Puddles are not food");
+        h.succeed();
+    }
+
+    @MagicTest
+    public static void trollRegenerates(GameTestHelper h) {
+        DeathGameTests.floor(h);
+        Troll troll = mob(h, MagicEnemies.TROLL.get(), 2.5, 2.5, 0);
+        troll.setHealth(30);
+        h.succeedWhen(() -> h.assertTrue(troll.getHealth() >= 34, "Troll heals itself, at " + troll.getHealth()));
+    }
+
+    @MagicTest
+    public static void fireStopsTrollRegeneration(GameTestHelper h) {
+        DeathGameTests.floor(h);
+        ServerPlayer p = RecipeGameTests.caster(h);
+        Troll troll = mob(h, MagicEnemies.TROLL.get(), 2.5, 3.5, 0);
+        SpellDefinition fire = find(d -> d.formula().count(Element.FIRE) > 0);
+        float burnt = hit(troll, p, fire, 10, false);
+        h.assertTrue(burnt >= 14.9f, "Fire hurts the troll more, took " + burnt);
+        h.assertTrue(troll.scorched(), "Fire scorches the troll");
+        float after = troll.getHealth();
+        h.runAfterDelay(40, () -> {
+            h.assertTrue(troll.getHealth() <= after, "A scorched troll does not regenerate");
+            h.succeed();
+        });
+    }
+
+    @MagicTest
+    public static void knightShrugsOffMagicButNotLightning(GameTestHelper h) {
+        DeathGameTests.floor(h);
+        ServerPlayer p = RecipeGameTests.caster(h);
+        ArmoredKnight knight = mob(h, MagicEnemies.ARMORED_KNIGHT.get(), 2.5, 3.5, 0);
+        SpellDefinition arcane = find(d -> d.formula().size() > 0 && d.formula().count(Element.LIGHTNING) == 0);
+        SpellDefinition lightning = find(d -> d.formula().count(Element.LIGHTNING) > 0);
+        h.assertTrue(hit(knight, p, arcane, 10, false) <= 3.6f, "Armor wards off plain spells");
+        h.assertFalse(MagicStatuses.has(knight, MagicStatuses.Status.STUNNED), "Plain spells do not stun");
+        knight.damageCooldownTime = 0;
+        float shocked = hit(knight, p, lightning, 5, false);
+        h.assertTrue(shocked >= 9.9f, "Lightning hits armor twice as hard, took " + shocked);
+        h.assertTrue(MagicStatuses.has(knight, MagicStatuses.Status.STUNNED), "Lightning stuns the knight");
         h.succeed();
     }
 }

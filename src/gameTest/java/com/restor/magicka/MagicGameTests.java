@@ -86,6 +86,60 @@ public final class MagicGameTests {
         helper.succeed();
     }
     @MagicTest
+    public static void crossingBeamsExplode(GameTestHelper helper) {
+        var v = new net.minecraft.world.phys.Vec3(0, 0, 0);
+        helper.assertTrue(BeamClash.crossing(v, new net.minecraft.world.phys.Vec3(10, 0, 0), new net.minecraft.world.phys.Vec3(5, -5, .3), new net.minecraft.world.phys.Vec3(5, 5, .3)) != null, "Crossing beams meet");
+        helper.assertTrue(BeamClash.crossing(v, new net.minecraft.world.phys.Vec3(10, 0, 0), new net.minecraft.world.phys.Vec3(0, 3, 0), new net.minecraft.world.phys.Vec3(10, 3, 0)) == null, "Parallel beams pass by");
+        var a = FakePlayerFactory.get(helper.getLevel(), new com.mojang.authlib.GameProfile(UUID.randomUUID(), "BeamA"));
+        var b = FakePlayerFactory.get(helper.getLevel(), new com.mojang.authlib.GameProfile(UUID.randomUUID(), "BeamB"));
+        var pig = helper.spawnWithNoFreeWill(net.minecraft.world.entity.EntityTypes.PIG, new net.minecraft.core.BlockPos(2, 2, 2));
+        float hp = pig.getHealth();
+        var at = pig.position().add(1, .5, 0);
+        BeamClash.beam(a, at.add(-6, 0, 0), at.add(6, 0, 0));
+        BeamClash.beam(b, at.add(0, 0, -6), at.add(0, 0, 6));
+        helper.assertTrue(pig.getHealth() < hp, "The clash blast hurts what stands nearby");
+        helper.succeed();
+    }
+
+    @MagicTest(timeoutTicks=80)
+    public static void wadingSoaksAndStaysWet(GameTestHelper helper) {
+        helper.setBlock(new net.minecraft.core.BlockPos(2, 1, 2), net.minecraft.world.level.block.Blocks.STONE);
+        helper.setBlock(new net.minecraft.core.BlockPos(2, 2, 2), net.minecraft.world.level.block.Blocks.WATER);
+        var pig = helper.spawnWithNoFreeWill(net.minecraft.world.entity.EntityTypes.PIG, new net.minecraft.core.BlockPos(2, 2, 2));
+        helper.runAfterDelay(25, () -> {
+            helper.assertTrue(pig.isInWaterOrRain(), "Pig wades in water");
+            helper.assertTrue(MagicStatuses.has(pig, MagicStatuses.Status.WET) && pig.getPersistentData().getCompoundOrEmpty("magicka:statuses").contains("WET"), "Wading soaks the pig");
+            pig.setNoGravity(true);
+            pig.teleportTo(pig.getX(), pig.getY() + 12, pig.getZ());
+            helper.runAfterDelay(30, () -> {
+                helper.assertTrue(!pig.isInWaterOrRain(), "Pig left the water");
+                helper.assertTrue(MagicStatuses.has(pig, MagicStatuses.Status.WET), "A mob stays wet after leaving water");
+                helper.succeed();
+            });
+        });
+    }
+
+    @MagicTest
+    public static void wetCasterIsShockedByOwnLightning(GameTestHelper helper) {
+        var player = new net.minecraft.server.level.ServerPlayer(helper.getLevel().getServer(), helper.getLevel(),
+                new com.mojang.authlib.GameProfile(UUID.randomUUID(), "WetTester"), net.minecraft.server.level.ClientInformation.createDefault());
+        player.connection = FakePlayerFactory.getMinecraft(helper.getLevel()).connection;
+        player.setPos(helper.absoluteVec(new net.minecraft.world.phys.Vec3(2, 2, 2)));
+        player.setXRot(-90);
+        for (int i = 0; i < 61; i++) player.tick();
+        player.setHealth(20); player.damageCooldownTime = 0; player.getAbilities().invulnerable = false;
+        Formula bolt = new Formula(); bolt.add(Element.LIGHTNING);
+        var spell = RecipeRegistry.resolve(bolt.key());
+        SpellRuntime.cast(player, spell, false);
+        helper.assertTrue(player.getHealth() == 20, "A dry caster is not shocked by own lightning");
+        MagicStatuses.apply(player, MagicStatuses.Status.WET, 100, 1);
+        SpellRuntime.cast(player, spell, false);
+        helper.assertTrue(player.getHealth() < 20, "A wet caster is shocked by own lightning");
+        helper.succeed();
+    }
+
+    @MagicTest
+
     public static void literalSelfAndElementReactions(GameTestHelper helper) {
         // A real ServerPlayer is needed: NeoForge FakePlayer rejects every damage source.
         var player = new net.minecraft.server.level.ServerPlayer(helper.getLevel().getServer(), helper.getLevel(),
@@ -93,7 +147,7 @@ public final class MagicGameTests {
         player.connection = FakePlayerFactory.getMinecraft(helper.getLevel()).connection;
         player.setPos(helper.absoluteVec(new net.minecraft.world.phys.Vec3(2, 2, 2)));
         for (int i = 0; i < 61; i++) player.tick(); // Let vanilla spawn invulnerability expire.
-        player.setHealth(20); player.setInvulnerableTime(0); player.getAbilities().invulnerable = false;
+        player.setHealth(20); player.damageCooldownTime = 0; player.getAbilities().invulnerable = false;
         Formula water = new Formula(); water.add(Element.WATER);
         SpellRuntime.cast(player, RecipeRegistry.resolve(water.key()), true);
         helper.assertTrue(MagicStatuses.has(player,MagicStatuses.Status.WET), "Self water wets caster");
@@ -101,7 +155,7 @@ public final class MagicGameTests {
         SpellRuntime.cast(player, RecipeRegistry.resolve(cold.key()), true);
         helper.assertTrue(player.getTicksFrozen() > 0, "Wet + cold freezes caster");
         helper.assertTrue(MagicStatuses.has(player,MagicStatuses.Status.BRITTLE), "Frozen targets become brittle");
-        player.setInvulnerableTime(0);
+        player.damageCooldownTime = 0;
         Formula earth = new Formula(); earth.add(Element.EARTH);
         float before = player.getHealth();
         SpellRuntime.cast(player, RecipeRegistry.resolve(earth.key()), true);

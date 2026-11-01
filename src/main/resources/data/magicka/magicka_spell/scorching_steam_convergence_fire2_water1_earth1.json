@@ -1,14 +1,13 @@
 {
   "id": "magicka:scorching_steam_convergence_fire2_water1_earth1",
   "formula": {
-    "fire": 2,
-    "water": 1,
-    "earth": 1
+    "fire": 1,
+    "earth": 1,
+    "steam": 1
   },
+  "keys": "2151",
   "name": "Scorching Steam Convergence",
   "tier": "Family Variant",
-
-  "incantation": "1125",
   "tags": "DMG/DOT/SETUP/CC/BREAK",
   "shape": "spray",
   "origin": "caster_front",

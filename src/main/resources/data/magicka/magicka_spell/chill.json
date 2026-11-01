@@ -5,8 +5,7 @@
   },
   "name": "Chill",
   "tier": "Signature",
-
-  "incantation": "3",
+  "keys": "3",
   "tags": "CC/DEBUFF",
   "shape": "projectile",
   "origin": "caster_front",

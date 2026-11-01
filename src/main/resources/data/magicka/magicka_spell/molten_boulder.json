@@ -6,8 +6,7 @@
   },
   "name": "Molten Boulder",
   "tier": "Signature",
-
-  "incantation": "155",
+  "keys": "155",
   "tags": "DMG/BREAK/DOT",
   "shape": "projectile",
   "origin": "caster_front",

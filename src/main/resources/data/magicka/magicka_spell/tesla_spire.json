@@ -1,5 +1,6 @@
 {
   "id": "magicka:tesla_spire",
+  "keys": "5547",
   "formula": {
     "lightning": 1,
     "earth": 2,
@@ -7,8 +8,6 @@
   },
   "name": "Tesla Spire",
   "tier": "Signature",
-
-  "incantation": "4557",
   "scroll": true,
   "tags": "BUILD/DMG/AOE",
   "shape": "pillar",

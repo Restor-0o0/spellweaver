@@ -5,8 +5,7 @@
   },
   "name": "Deep Freeze",
   "tier": "Signature",
-
-  "incantation": "3333",
+  "keys": "3333",
   "tags": "CC/DEBUFF",
   "shape": "burst_projectile",
   "origin": "caster_front",

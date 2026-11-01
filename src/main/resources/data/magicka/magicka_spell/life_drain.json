@@ -6,8 +6,7 @@
   },
   "name": "Life Drain",
   "tier": "Signature",
-
-  "incantation": "688",
+  "keys": "688",
   "scroll": true,
   "tags": "DMG/HEAL",
   "shape": "beam",

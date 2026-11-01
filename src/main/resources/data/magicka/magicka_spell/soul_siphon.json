@@ -5,8 +5,7 @@
   },
   "name": "Soul Siphon",
   "tier": "Signature",
-
-  "incantation": "8",
+  "keys": "8",
   "tags": "DMG/HEAL/DEBUFF",
   "shape": "direct_target",
   "origin": "aim_hit",

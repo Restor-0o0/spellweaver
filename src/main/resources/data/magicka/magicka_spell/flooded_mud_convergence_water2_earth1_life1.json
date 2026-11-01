@@ -7,8 +7,7 @@
   },
   "name": "Flooded Mud Convergence",
   "tier": "Family Variant",
-
-  "incantation": "2256",
+  "keys": "2256",
   "tags": "SETUP/CC/BREAK/HEAL/BUFF",
   "shape": "spray",
   "origin": "caster_front",

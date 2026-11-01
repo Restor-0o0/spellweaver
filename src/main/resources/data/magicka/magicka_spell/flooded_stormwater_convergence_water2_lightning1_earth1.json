@@ -7,8 +7,7 @@
   },
   "name": "Flooded Stormwater Convergence",
   "tier": "Family Variant",
-
-  "incantation": "2245",
+  "keys": "2245",
   "tags": "SETUP/CC/DMG/BREAK",
   "shape": "spray",
   "origin": "caster_front",

@@ -7,7 +7,7 @@
   },
   "name": "Flame Sign",
   "tier": "Signature",
-  "incantation": "134",
+  "keys": "134",
   "tags": "DMG",
   "shape": "spray",
   "origin": "caster_front",

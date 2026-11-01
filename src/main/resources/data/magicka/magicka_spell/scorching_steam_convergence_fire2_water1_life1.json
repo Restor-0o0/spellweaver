@@ -1,14 +1,13 @@
 {
   "id": "magicka:scorching_steam_convergence_fire2_water1_life1",
   "formula": {
-    "fire": 2,
-    "water": 1,
-    "life": 1
+    "fire": 1,
+    "life": 1,
+    "steam": 1
   },
+  "keys": "6121",
   "name": "Scorching Steam Convergence",
   "tier": "Family Variant",
-
-  "incantation": "1126",
   "tags": "DMG/DOT/SETUP/CC/HEAL",
   "shape": "spray",
   "origin": "caster_front",

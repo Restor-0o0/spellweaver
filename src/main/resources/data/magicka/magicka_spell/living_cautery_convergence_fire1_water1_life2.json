@@ -1,14 +1,12 @@
 {
   "id": "magicka:living_cautery_convergence_fire1_water1_life2",
   "formula": {
-    "fire": 1,
-    "water": 1,
-    "life": 2
+    "life": 2,
+    "steam": 1
   },
+  "keys": "6621",
   "name": "Living Cautery Convergence",
   "tier": "Family Variant",
-
-  "incantation": "1266",
   "tags": "DMG/DOT/SETUP/CC/HEAL",
   "shape": "targeted_zone",
   "origin": "aim_ground",
@@ -19,7 +17,8 @@
     "duration_ticks": 260,
     "interval_ticks": 20,
     "gravity": 0,
-    "burst_radius": 3.2
+    "burst_radius": 3.2,
+    "visual": "bloom"
   },
   "construction": {
     "material": "root",

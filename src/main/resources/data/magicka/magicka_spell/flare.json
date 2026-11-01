@@ -6,8 +6,7 @@
   },
   "name": "Flare",
   "tier": "Signature",
-
-  "incantation": "17",
+  "keys": "17",
   "tags": "UTIL",
   "shape": "projectile",
   "origin": "caster_front",

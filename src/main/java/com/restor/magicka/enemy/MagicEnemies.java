@@ -57,6 +57,8 @@ public final class MagicEnemies {
     public static final DeferredHolder<EntityType<?>, EntityType<GoblinMage.Storm>> GOBLIN_STORM_MAGE = mob("goblin_storm_mage", GoblinMage.Storm::new, .6f, 1.4f, 0x6E8B3D, 0x3A4868, GoblinMage::attributes);
     public static final DeferredHolder<EntityType<?>, EntityType<GoblinBomber>> GOBLIN_BOMBER = mob("goblin_bomber", GoblinBomber::new, .6f, 1.4f, 0x6E8B3D, 0x9A7A4A, GoblinBomber::attributes);
     public static final DeferredHolder<EntityType<?>, EntityType<GoblinShaman>> GOBLIN_SHAMAN = mob("goblin_shaman", GoblinShaman::new, .6f, 1.4f, 0x6E8B3D, 0xDDD3BC, GoblinShaman::attributes);
+    public static final DeferredHolder<EntityType<?>, EntityType<Troll>> TROLL = mob("troll", Troll::new, 1.4f, 2.7f, 0x6F7D5A, 0x3B3A2C, Troll::attributes);
+    public static final DeferredHolder<EntityType<?>, EntityType<ArmoredKnight>> ARMORED_KNIGHT = mob("armored_knight", ArmoredKnight::new, .7f, 2.2f, 0x8A9098, 0x2E3F6E, ArmoredKnight::attributes);
     public static final DeferredHolder<EntityType<?>, EntityType<GoblinBomb>> GOBLIN_BOMB = TYPES.register("goblin_bomb", () -> EntityType.Builder.<GoblinBomb>of(GoblinBomb::new, MobCategory.MISC)
             .sized(.4f, .4f).clientTrackingRange(6).updateInterval(5).build(key("goblin_bomb")));
 
@@ -145,12 +147,14 @@ public final class MagicEnemies {
         ENCOUNTERS.put("f", List.of("countermage", "element_binder", "mushroom_nurse", "shield_beetle*2", "fodder*4"));
         ENCOUNTERS.put("g", List.of("goblin_warrior*3", "goblin_archer*2", "goblin_mage", "countermage"));
         ENCOUNTERS.put("h", List.of("goblin_warrior*2", "goblin_bomber*2", "goblin_shaman", "goblin_frost_mage", "goblin_storm_mage", "element_binder"));
+        ENCOUNTERS.put("i", List.of("troll", "armored_knight*2", "flood_caster", "fodder*3"));
     }
-    public static List<Mob> encounter(ServerLevel level, Vec3 center, String id) {
+    public static List<Mob> encounter(ServerLevel level, Vec3 center, String id) { return spawn(level, center, ENCOUNTERS.getOrDefault(id, List.of())); }
+    public static List<Mob> spawn(ServerLevel level, Vec3 center, List<String> entries) {
         List<Mob> spawned = new ArrayList<>();
         var fodder = List.of(EntityTypes.ZOMBIE, EntityTypes.SKELETON, EntityTypes.SPIDER);
         int index = 0;
-        for (String entry : ENCOUNTERS.getOrDefault(id, List.of())) {
+        for (String entry : entries) {
             String[] parts = entry.split("\\*");
             int count = parts.length > 1 ? Integer.parseInt(parts[1]) : 1;
             for (int i = 0; i < count; i++, index++) {
@@ -171,6 +175,7 @@ public final class MagicEnemies {
     @SubscribeEvent public void commands(RegisterCommandsEvent event) {
         event.getDispatcher().register(Commands.literal("spellweaver").requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .then(ConfigCommand.node())
+                .then(Arena.node())
                 .then(Commands.literal("encounter").then(Commands.argument("id", StringArgumentType.word())
                         .suggests((c, b) -> { ENCOUNTERS.keySet().forEach(b::suggest); return b.buildFuture(); })
                         .executes(c -> {

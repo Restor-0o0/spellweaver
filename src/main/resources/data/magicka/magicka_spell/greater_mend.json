@@ -5,8 +5,7 @@
   },
   "name": "Greater Mend",
   "tier": "Signature",
-
-  "incantation": "6666",
+  "keys": "6666",
   "tags": "HEAL/BUFF",
   "shape": "targeted_zone",
   "origin": "aim_ground",
@@ -17,7 +16,8 @@
     "duration_ticks": 100,
     "interval_ticks": 20,
     "gravity": 0,
-    "burst_radius": 2.7
+    "burst_radius": 2.7,
+    "visual": "bloom"
   },
   "construction": {
     "material": "root",

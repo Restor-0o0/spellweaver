@@ -6,8 +6,7 @@
   },
   "name": "Scorching Thermal Shock",
   "tier": "Family Variant",
-
-  "incantation": "113",
+  "keys": "113",
   "tags": "DMG/DOT/CC/DEBUFF",
   "shape": "spray",
   "origin": "caster_front",

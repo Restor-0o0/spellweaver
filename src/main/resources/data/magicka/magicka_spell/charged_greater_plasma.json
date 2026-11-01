@@ -6,8 +6,7 @@
   },
   "name": "Charged Greater Plasma",
   "tier": "Family Variant",
-
-  "incantation": "1444",
+  "keys": "1444",
   "tags": "DMG/DOT/CC",
   "shape": "chain",
   "origin": "aim_hit",

@@ -7,8 +7,7 @@
   },
   "name": "Living Cryostasis Convergence",
   "tier": "Family Variant",
-
-  "incantation": "3667",
+  "keys": "3667",
   "tags": "CC/DEBUFF/HEAL/BUFF/SETUP",
   "shape": "targeted_zone",
   "origin": "aim_ground",
@@ -19,7 +18,8 @@
     "duration_ticks": 260,
     "interval_ticks": 20,
     "gravity": 0,
-    "burst_radius": 3.1
+    "burst_radius": 3.1,
+    "visual": "bloom"
   },
   "construction": {
     "material": "ice",

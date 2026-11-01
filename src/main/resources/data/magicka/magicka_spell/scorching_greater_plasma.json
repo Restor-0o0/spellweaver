@@ -6,8 +6,7 @@
   },
   "name": "Scorching Greater Plasma",
   "tier": "Family Variant",
-
-  "incantation": "1114",
+  "keys": "1114",
   "tags": "DMG/DOT/CC",
   "shape": "spray",
   "origin": "caster_front",

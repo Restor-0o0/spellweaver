@@ -7,6 +7,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -24,13 +25,15 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import java.util.*;
 
 import static com.restor.magicka.LegendMagic.*;
 
 /** Pop-culture signatures built around the Life element. */
 final class LegendLife {
-    static final String PHOENIX_TAG = "magicka:phoenix";
+    static final String PHOENIX_TAG = "magicka:phoenix", SOUL_TAG = "magicka:soul_keeper", SHIELD_TAG = "magicka:soul_shield";
+    private static final int PHOENIX_SHIELD_TICKS = 100, SOUL_SHIELD_TICKS = 20;
 
     static void defibrillator(ServerPlayer p, SpellDefinition s, boolean self) {
         ServerLevel level = p.level();
@@ -54,7 +57,7 @@ final class LegendLife {
     static void lifeDrain(ServerPlayer p, SpellDefinition s, boolean self) {
         ServerLevel level = p.level();
         sound(level,p.position(),SoundEvents.WARDEN_HEARTBEAT,1.5f,.8f);
-        SpellRuntime.repeat(p,60,age -> {
+        SpellRuntime.repeatBeam(p,60,age -> {
             if (self) {
                 if (age % 20 != 0) return;
                 Vec3 heart = p.position().add(0,1,0);
@@ -69,6 +72,7 @@ final class LegendLife {
             Vec3 to = reach(p,hand,look,32);
             LivingEntity victim = segment(p,hand,to,.4).stream().filter(e -> foe(p,e)).min(Comparator.comparingDouble(e -> e.distanceToSqr(hand))).orElse(null);
             Vec3 end = victim != null ? victim.getBoundingBox().getCenter() : to;
+            BeamClash.beam(p,hand,end);
             int count = (int)Math.min(40,end.distanceTo(hand)/.5);
             for (int i = 0; i < count; i++) {
                 Vec3 at = end.lerp(hand,(i*.13+age*.08) % 1);
@@ -166,7 +170,11 @@ final class LegendLife {
     }
     static void death(LivingDeathEvent event) {
         LivingEntity v = event.getEntity();
-        if (!(v.level() instanceof ServerLevel level) || v.getPersistentData().getLongOr(PHOENIX_TAG, 0L) <= level.getGameTime()) return;
+        if (!(v.level() instanceof ServerLevel level)) return;
+        if (v.getPersistentData().getLongOr(PHOENIX_TAG, 0L) <= level.getGameTime()) {
+            if (v.getPersistentData().getLongOr(SOUL_TAG, 0L) > level.getGameTime() && !event.getSource().is(DamageTypeTags.BYPASSES_INVULNERABILITY)) soulRise(event,v,level);
+            return;
+        }
         v.getPersistentData().remove(PHOENIX_TAG);
         event.setCanceled(true);
         v.setHealth(v.getMaxHealth()*.5f);
@@ -184,6 +192,66 @@ final class LegendLife {
         sound(level,at,SoundEvents.TOTEM_USE,1f,1.2f);
         sound(level,at,SoundEvents.BLAZE_SHOOT,1.5f,.6f);
         if (v instanceof ServerPlayer player) player.sendOverlayMessage(Component.translatable("magicka.legend.phoenix_rebirth"));
+        shield(v,level,PHOENIX_SHIELD_TICKS,0xFFB040);
+    }
+
+    static void soulKeeper(ServerPlayer p, SpellDefinition s, boolean self) {
+        ServerLevel level = p.level();
+        LivingEntity aimed = self ? p : aimed(p,24);
+        LivingEntity target = aimed != null && EffectGraph.ally(p,aimed) ? aimed : p;
+        int ticks = Math.clamp((int)s.number("duration_ticks",6000),20,24000);
+        long until = level.getGameTime()+ticks;
+        target.getPersistentData().putLong(SOUL_TAG,until);
+        EffectGraph.entity(p,target,s,s.effects(),p.position(),false);
+        Vec3 at = target.getBoundingBox().getCenter();
+        announce(p,24,"magicka.legend.soul_keeper");
+        EpicMagic.fx(level,ParticleTypes.SOUL_FIRE_FLAME,at.x,at.y,at.z,30,.4,.8,.4,.05);
+        EpicMagic.fx(level,dust(0x5FB8FF,1.2f),at.x,at.y+.5,at.z,20,.5,.8,.5,0);
+        sound(level,at,SoundEvents.SOUL_ESCAPE.value(),1.5f,1.2f);
+        sound(level,at,SoundEvents.AMETHYST_BLOCK_CHIME,1.2f,.6f);
+        SpellRuntime.repeat(p,ticks,age -> {
+            if (age % 2 != 0 || !target.isAlive() || target.getPersistentData().getLongOr(SOUL_TAG, 0L) != until) return;
+            double a = age*.08;
+            Vec3 orb = target.position().add(Math.cos(a)*.9,target.getBbHeight()+.2+Math.sin(age*.15)*.15,Math.sin(a)*.9);
+            EpicMagic.fx(level,dust(0x5FB8FF,.9f),orb.x,orb.y,orb.z,2,.03,.03,.03,0);
+            if (age % 8 == 0) EpicMagic.fx(level,ParticleTypes.SOUL_FIRE_FLAME,orb.x,orb.y,orb.z,1,.02,.02,.02,0);
+        });
+    }
+    private static void soulRise(LivingDeathEvent event, LivingEntity v, ServerLevel level) {
+        v.getPersistentData().remove(SOUL_TAG);
+        event.setCanceled(true);
+        v.setHealth(v.getMaxHealth()*.5f);
+        v.clearFire();
+        v.removeEffect(MobEffects.WITHER); v.removeEffect(MobEffects.POISON);
+        MagicStatuses.remove(v,MagicStatuses.Status.BURNING); MagicStatuses.remove(v,MagicStatuses.Status.FROZEN);
+        Vec3 at = v.getBoundingBox().getCenter();
+        for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class,v.getBoundingBox().inflate(5),e -> e != v && e instanceof Enemy && e.isAlive())) {
+            Vec3 away = flat(e.position().subtract(v.position()));
+            e.push(away.x*1.5,.4,away.z*1.5); e.syncVelocity = true;
+        }
+        EpicMagic.fx(level,ParticleTypes.SOUL_FIRE_FLAME,at.x,at.y,at.z,80,1,1.2,1,.12);
+        EpicMagic.fx(level,ParticleTypes.SOUL,at.x,at.y,at.z,30,.6,.8,.6,.06);
+        sound(level,at,SoundEvents.TOTEM_USE,1f,.8f);
+        sound(level,at,SoundEvents.SOUL_ESCAPE.value(),2f,.7f);
+        if (v instanceof ServerPlayer player) player.sendOverlayMessage(Component.translatable("magicka.legend.soul_rebirth"));
+        shield(v,level,SOUL_SHIELD_TICKS,0x7FD4FF);
+    }
+    private static void shield(LivingEntity v, ServerLevel level, int ticks, int rgb) {
+        v.getPersistentData().putLong(SHIELD_TAG,level.getGameTime()+ticks);
+        v.addEffect(new MobEffectInstance(MobEffects.SPEED,ticks,1));
+        if (v instanceof ServerPlayer player) SpellRuntime.repeat(player,ticks,age -> {
+            if (age % 2 != 0) return;
+            Vec3 c = player.getBoundingBox().getCenter();
+            for (int i = 0; i < 6; i++) {
+                Vec3 d = new Vec3(level.getRandom().nextGaussian(),level.getRandom().nextGaussian(),level.getRandom().nextGaussian()).normalize().scale(1.2);
+                EpicMagic.fx(level,dust(rgb,.8f),c.x+d.x,c.y+d.y,c.z+d.z,1,0,0,0,0);
+            }
+        });
+    }
+    static void soulShield(LivingIncomingDamageEvent event) {
+        LivingEntity v = event.getEntity();
+        if (v.getPersistentData().getLongOr(SHIELD_TAG, 0L) <= v.level().getGameTime() || event.getSource().is(DamageTypeTags.BYPASSES_INVULNERABILITY)) return;
+        event.setCanceled(true);
     }
 
     static void kaioken(ServerPlayer p, SpellDefinition s) {

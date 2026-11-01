@@ -7,8 +7,7 @@
   },
   "name": "Unstable Arc Lightning Convergence",
   "tier": "Family Variant",
-
-  "incantation": "4677",
+  "keys": "4677",
   "tags": "DMG/CC/HEAL/BUFF/SETUP",
   "shape": "targeted_explosion",
   "origin": "aim_hit",

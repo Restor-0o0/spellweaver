@@ -11,7 +11,7 @@ public record SpellDefinition(Identifier id, SpellFormula formula, String name, 
         JsonObject f = json.getAsJsonObject("formula");
         if (f == null) throw new IllegalArgumentException(id + ": missing formula");
         for (String key : f.keySet()) Element.valueOf(key.toUpperCase(Locale.ROOT));
-        SpellFormula formula = new SpellFormula(count(f,"fire"), count(f,"water"), count(f,"cold"), count(f,"lightning"), count(f,"earth"), count(f,"life"), count(f,"arcane"), count(f,"death"));
+        SpellFormula formula = new SpellFormula(count(f,"fire"), count(f,"water"), count(f,"cold"), count(f,"lightning"), count(f,"earth"), count(f,"life"), count(f,"arcane"), count(f,"death"), count(f,"steam"), count(f,"ice"), count(f,"shield"));
         if (formula.size() == 0) throw new IllegalArgumentException(id + ": empty recipe");
         JsonObject self = object(json, "self");
         List<JsonObject> effects = graph(json, "effects");
@@ -20,11 +20,11 @@ public record SpellDefinition(Identifier id, SpellFormula formula, String name, 
         String mode = string(self,"mode","generic");
         if (!Set.of("generic","effects","nova","dash","zone","summon","construct","meteor","legend").contains(mode)) throw new IllegalArgumentException("Unknown self mode " + mode);
         if (!Set.of("default","instant","channel","epic").contains(string(json,"cast_mode","default"))) throw new IllegalArgumentException("Unknown cast mode " + string(json,"cast_mode",""));
-        String incantation = string(json,"incantation","");
-        if (!incantation.isEmpty()) {
-            SpellFormula spoken = ritual(id,incantation);
-            if (!spoken.equals(formula)) throw new IllegalArgumentException(id + ": incantation does not spell the formula");
-        }
+        String keys = string(json,"incantation",string(json,"keys",""));
+        if (!keys.isEmpty()) {
+            SpellFormula spoken = ritual(id,keys);
+            if (!spoken.equals(formula)) throw new IllegalArgumentException(id + ": keys do not spell the formula");
+        } else if (formula.derived() && !string(json,"tier","Generic Fusion").equals("Generic Fusion")) throw new IllegalArgumentException(id + ": a named spell with derived elements needs its keys");
         JsonObject construction = object(json, "construction");
         String material = string(construction,"material","earth");
         if (!Set.of("earth","ice","root","arcane","copper").contains(material)) throw new IllegalArgumentException("Unknown material " + material);
@@ -37,18 +37,19 @@ public record SpellDefinition(Identifier id, SpellFormula formula, String name, 
     /** Datapacks may omit Self: literal elemental rules still execute. */
     private static List<JsonObject> genericSelf(SpellFormula formula) {
         var result=new ArrayList<JsonObject>();
-        if(formula.water()>0)result.add(node("set_wet","duration_ticks",100+60*formula.water()));
-        if(formula.fire()>0 && formula.water()>0) {
-            result.add(status("obscured",40+20*formula.water(),1));
-            var shock=node("thermal_shock","amount",2*formula.fire());
+        int fire=formula.total(Element.FIRE),water=formula.total(Element.WATER),cold=formula.total(Element.COLD);
+        if(water>0)result.add(node("set_wet","duration_ticks",100+60*water));
+        if(fire>0 && water>0) {
+            result.add(status("obscured",40+20*water,1));
+            var shock=node("thermal_shock","amount",2*fire);
             shock.addProperty("duration_ticks",80);
             result.add(shock);
         }
-        if(formula.fire()>0){var damage=node("deal_damage","amount",2*formula.fire());damage.addProperty("element","fire");result.add(damage);result.add(node("modify_temperature","amount",40*formula.fire()));}
-        if(formula.cold()>0) {
-            result.add(node("modify_temperature","amount",-40*formula.cold()));
-            if(formula.water()>0)result.add(status("chilled",100+40*formula.cold(),formula.cold()));
-            if(formula.water()>0 && formula.cold()>=2)result.add(status("frozen",40,1));
+        if(fire>0){var damage=node("deal_damage","amount",2*fire);damage.addProperty("element","fire");result.add(damage);result.add(node("modify_temperature","amount",40*fire));}
+        if(cold>0) {
+            result.add(node("modify_temperature","amount",-40*cold));
+            if(water>0)result.add(status("chilled",100+40*cold,cold));
+            if(water>0 && cold>=2)result.add(status("frozen",40,1));
         }
         if(formula.lightning()>0)result.add(node("add_charge","amount",35*formula.lightning()));
         if(formula.earth()>0){result.add(status("stone_shell",140,formula.earth()));result.add(status("chilled",110,formula.earth()));}
@@ -62,13 +63,13 @@ public record SpellDefinition(Identifier id, SpellFormula formula, String name, 
     private static int count(JsonObject f, String key) { return integer(f,key,0,0,Formula.MAX); }
     public static JsonObject object(JsonObject json, String key) { return json.has(key) ? json.getAsJsonObject(key).deepCopy() : new JsonObject(); }
     public static String string(JsonObject json, String key, String fallback) { return json.has(key) ? json.get(key).getAsString() : fallback; }
-    public String incantation() { return string(source,"incantation",""); }
+    public String incantation() { return string(source,"incantation",string(source,"keys","")); }
     public boolean ultimate() { return source.has("ultimate") && source.get("ultimate").getAsBoolean(); }
     /** Generic fusions answer to their elements in any order; every named spell is one exact sequence. */
     public boolean ordered() { return !tier.equals("Generic Fusion"); }
-    /** Ultimates author a hard sequence, other named spells shuffle their elements by id. */
-    public List<Element> spoken() {
-        String order = incantation();
+    /** The keys a named spell is typed with: an authored incantation or key order, otherwise its elements shuffled by id. */
+    public List<Element> keys() {
+        String order = string(source,"incantation",string(source,"keys",""));
         if (!ordered()) return formula.elements();
         if (order.isEmpty()) {
             var elements = new ArrayList<>(formula.elements());
@@ -76,9 +77,11 @@ public record SpellDefinition(Identifier id, SpellFormula formula, String name, 
             return elements;
         }
         var elements = new ArrayList<Element>();
-        for (int i = 0; i < order.length(); i++) elements.add(Element.values()[order.charAt(i) - '1']);
+        for (int i = 0; i < order.length(); i++) elements.add(Element.byCode(order.charAt(i)));
         return elements;
     }
+    /** The queue a named spell must leave once its keys have fused. */
+    public List<Element> spoken() { return ordered() ? Reactions.fused(keys()) : formula.elements(); }
     public Formula spokenFormula() {
         Formula ordered = new Formula();
         for (Element element : spoken()) ordered.add(element);
@@ -86,11 +89,14 @@ public record SpellDefinition(Identifier id, SpellFormula formula, String name, 
     }
     public int spokenPacked() { return spokenFormula().packed(); }
     private static SpellFormula ritual(Identifier id, String order) {
-        Formula formula = new Formula();
+        var keys = new ArrayList<Element>();
         for (int i = 0; i < order.length(); i++) {
-            int index = order.charAt(i) - '1';
-            if (index < 0 || index >= Element.values().length || !formula.add(Element.values()[index])) throw new IllegalArgumentException(id + ": bad incantation " + order);
+            Element element = Element.byCode(order.charAt(i));
+            if (element == null || !element.base()) throw new IllegalArgumentException(id + ": bad keys " + order);
+            keys.add(element);
         }
+        Formula formula = new Formula();
+        for (Element element : Reactions.fused(keys)) if (!formula.add(element)) throw new IllegalArgumentException(id + ": too many elements in " + order);
         return formula.key();
     }
     public static int integer(JsonObject json, String key, int fallback, int min, int max) {

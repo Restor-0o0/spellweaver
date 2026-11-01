@@ -6,8 +6,7 @@
   },
   "name": "Arcane Elemental",
   "tier": "Signature",
-
-  "incantation": "7778",
+  "keys": "7778",
   "scroll": true,
   "tags": "SUMMON",
   "shape": "summon_object",

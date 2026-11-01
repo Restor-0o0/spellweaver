@@ -42,8 +42,11 @@ public final class EffectGraph {
         boolean frozen = MagicStatuses.has(target,MagicStatuses.Status.FROZEN) || MagicStatuses.has(target,MagicStatuses.Status.BRITTLE);
         float damage = executeEntity(caster,target,spell,graph,origin,self,frozen);
         if (damage > 0 && canHarm(caster,target)) {
-            if (target instanceof Player && target != caster) damage *= MagicConfig.PLAYER_DAMAGE.get().floatValue();
+            if (target instanceof Player && (target != caster || !self)) damage *= MagicConfig.PLAYER_DAMAGE.get().floatValue();
+            if (target == caster && !self) damage *= MagicConfig.selfHarmScale();
             com.restor.magicka.enemy.MagicEnemies.hurt(target,target == caster ? caster.damageSources().magic() : caster.damageSources().indirectMagic(caster,caster),damage,caster,spell,frozen);
+            if (!target.isAlive()) DeathFx.play(target,spell.formula());
+            Conduction.puddle(caster,target,spell,graph,origin);
         }
     }
     private static float executeEntity(ServerPlayer caster, LivingEntity target, SpellDefinition spell, List<JsonObject> graph, Vec3 origin, boolean self, boolean frozen) {
@@ -79,7 +82,9 @@ public final class EffectGraph {
                     if (!canHarm(caster,target)) break;
                     Vec3 direction = target.position().subtract(origin).normalize();
                     if (direction.lengthSqr() < .001) direction = caster.getLookAngle();
-                    target.push(direction.x*amount,number(node,"lift",0),direction.z*amount); target.syncVelocity = true;
+                    double lift = number(node,"lift",0);
+                    if (target instanceof Player && (target != caster || !self)) { amount *= MagicConfig.PLAYER_KNOCKBACK; lift = lift*MagicConfig.PLAYER_KNOCKBACK+.1; }
+                    target.push(direction.x*amount,lift,direction.z*amount); target.syncVelocity = true;
                 }
                 case "conditional" -> {
                     boolean passes = switch(text(node,"condition","")) { case "wet" -> MagicStatuses.has(target,MagicStatuses.Status.WET); case "was_frozen","brittle" -> frozen; case "self" -> self;

@@ -1,13 +1,11 @@
 {
   "id": "magicka:floating_platform",
+  "keys": "7575",
   "formula": {
-    "earth": 2,
-    "arcane": 2
+    "shield": 2
   },
   "name": "Floating Platform",
   "tier": "Signature",
-
-  "incantation": "5577",
   "tags": "BUILD/MOVE",
   "shape": "platform",
   "origin": "caster",

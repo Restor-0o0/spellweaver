@@ -217,7 +217,7 @@ public final class MagicGear {
         for (Element element : Element.values()) counts[profile.swaps.getOrDefault(element, element).ordinal()] += formula.count(element);
         for (Element element : profile.infusions)
             if (counts[element.ordinal()] == 0 && Arrays.stream(counts).sum() < 5) counts[element.ordinal()]++;
-        return new SpellFormula(counts[0], counts[1], counts[2], counts[3], counts[4], counts[5], counts[6], counts[7]);
+        return SpellFormula.of(counts);
     }
 
     public static void frail(LivingEntity mob, double health) {
@@ -376,8 +376,8 @@ public final class MagicGear {
         SpellDefinition spell = com.restor.magicka.enemy.MagicEnemies.hurting;
         if (spell != null && spell.formula().size() > 0) {
             Element lead = null;
-            for (Element element : Element.values())
-                if (lead == null || spell.formula().count(element) > spell.formula().count(lead)) lead = element;
+            for (Element element : Element.BASE)
+                if (lead == null || spell.formula().total(element) > spell.formula().total(lead)) lead = element;
             return lead;
         }
         if (source.is(net.minecraft.tags.DamageTypeTags.IS_FIRE)) return Element.FIRE;

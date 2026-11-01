@@ -5,8 +5,7 @@
   },
   "name": "Grave Call",
   "tier": "Signature",
-
-  "incantation": "88",
+  "keys": "88",
   "tags": "SUMMON",
   "shape": "summon_object",
   "origin": "aim_hit",

@@ -7,7 +7,7 @@
   },
   "name": "Spirit Wave",
   "tier": "Signature",
-  "incantation": "2477",
+  "keys": "2477",
   "scroll": true,
   "tags": "DMG/CC",
   "shape": "beam",

@@ -1,10 +1,10 @@
 {
   "id": "magicka:arcane_titan",
   "formula": {
-    "earth": 1,
-    "arcane": 4
+    "arcane": 3,
+    "shield": 1
   },
-  "incantation": "77577",
+  "keys": "77577",
   "name": "Arcane Titan",
   "tier": "Signature",
   "ultimate": true,
