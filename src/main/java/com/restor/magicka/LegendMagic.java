@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.particles.PowerParticleOption;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -62,6 +63,7 @@ public final class LegendMagic {
             case "patronus" -> patronus(p,s,self);
             case "shout" -> shout(p,s,self);
             case "explosion" -> explosion(p,s,self);
+            case "singularity" -> singularity(p,s,self);
             case "time_stop" -> timeStop(p,s);
             case "shall_not_pass" -> shallNotPass(p,s,self);
             case "defibrillator" -> LegendLife.defibrillator(p,s,self);
@@ -465,6 +467,23 @@ public final class LegendMagic {
                 EpicMagic.fx(level,ParticleTypes.LARGE_SMOKE,target.x,target.y+stem+1,target.z,14,cap,.6,cap,.02);
                 EpicMagic.fx(level,ParticleTypes.FLAME,target.x,target.y+stem,target.z,4,cap*.5,.4,cap*.5,.02);
             }
+        });
+    }
+
+    private static void singularity(ServerPlayer p, SpellDefinition s, boolean self) {
+        ServerLevel level = p.level(); Vec3 center = self ? p.position() : EpicMagic.focus(p);
+        double radius = Math.clamp(s.number("radius",9),4,16);
+        int duration = Math.clamp((int)s.number("duration_ticks",240),40,600), interval = Math.max(5,(int)s.number("interval_ticks",12));
+        RandomSource random = level.getRandom();
+        sound(level,center,SoundEvents.RESPAWN_ANCHOR_AMBIENT,2f,.35f);
+        SpellRuntime.repeat(p,duration,age -> {
+            double pulse = 1 + Math.sin(age*.12)*.08;
+            for (int ring=0; ring<3; ring++) circle(level,center.add(0,.15+ring*1.15,0),radius*(1-ring*.16)*pulse,age*(ring%2==0?.035:-.05),ring==1?0xB8A9FF:0x3A1C63);
+            for (int i=0;i<14;i++) { double a=random.nextDouble()*Math.PI*2,d=radius*(.35+random.nextDouble()*.65); Vec3 at=center.add(Math.cos(a)*d,.4+random.nextDouble()*2.5,Math.sin(a)*d), inward=center.add(0,1,0).subtract(at).normalize().scale(.08); EpicMagic.fx(level,i%3==0?ParticleTypes.REVERSE_PORTAL:PowerParticleOption.create(ParticleTypes.DRAGON_BREATH,1),at.x,at.y,at.z,1,inward.x,inward.y,inward.z,.02); }
+            EpicMagic.fx(level,ParticleTypes.END_ROD,center.x,center.y+1,center.z,2,.12,.6,.12,.01);
+            if (age%interval!=0) return;
+            for (LivingEntity entity : near(p,center,radius)) if (!(entity==p&&!self) && (entity==p || foe(p,entity))) EffectGraph.entity(p,entity,s,self?s.selfEffects():s.effects(),center,self);
+            sound(level,center,SoundEvents.BEACON_AMBIENT,.7f,.5f+random.nextFloat()*.2f);
         });
     }
     private static void detonate(ServerPlayer p, SpellDefinition s, Vec3 target, double radius, boolean self) {

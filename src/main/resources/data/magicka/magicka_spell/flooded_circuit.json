@@ -6,6 +6,8 @@
   },
   "name": "Flooded Circuit",
   "tier": "Signature",
+
+  "incantation": "2244",
   "tags": "AOE/CC/SETUP",
   "shape": "targeted_zone",
   "origin": "aim_ground",

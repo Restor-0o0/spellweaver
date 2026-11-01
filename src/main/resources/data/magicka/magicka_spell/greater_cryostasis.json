@@ -6,6 +6,7 @@
   },
   "name": "Greater Cryostasis",
   "tier": "Family Variant",
+  "incantation": "3366",
   "tags": "CC/DEBUFF/HEAL/BUFF",
   "shape": "targeted_zone",
   "origin": "aim_ground",

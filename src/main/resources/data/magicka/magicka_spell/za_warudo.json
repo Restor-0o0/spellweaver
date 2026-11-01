@@ -6,6 +6,7 @@
   },
   "name": "Time Stop",
   "tier": "Signature",
+  "incantation": "3777",
   "scroll": true,
   "tags": "CC/UTIL",
   "shape": "nova",

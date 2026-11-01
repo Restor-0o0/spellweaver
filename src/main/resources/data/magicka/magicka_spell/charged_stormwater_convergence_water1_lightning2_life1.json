@@ -7,6 +7,8 @@
   },
   "name": "Charged Stormwater Convergence",
   "tier": "Family Variant",
+
+  "incantation": "2446",
   "tags": "SETUP/CC/DMG/HEAL/BUFF",
   "shape": "chain",
   "origin": "aim_hit",

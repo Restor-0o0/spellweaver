@@ -7,6 +7,8 @@
   },
   "name": "Ice Wall",
   "tier": "Signature",
+
+  "incantation": "3557",
   "tags": "BUILD",
   "shape": "wall",
   "origin": "caster_feet",

@@ -6,6 +6,8 @@
   },
   "name": "Magma Boulder",
   "tier": "Signature",
+
+  "incantation": "1155",
   "scroll": true,
   "tags": "DMG/BREAK/AOE",
   "shape": "projectile",

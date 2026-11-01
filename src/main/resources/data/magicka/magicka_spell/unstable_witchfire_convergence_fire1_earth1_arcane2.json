@@ -7,6 +7,8 @@
   },
   "name": "Unstable Witchfire Convergence",
   "tier": "Family Variant",
+
+  "incantation": "1577",
   "tags": "DMG/DOT/BREAK/SETUP/BUILD",
   "shape": "targeted_explosion",
   "origin": "aim_hit",

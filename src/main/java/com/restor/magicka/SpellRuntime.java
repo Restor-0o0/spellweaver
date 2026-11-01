@@ -129,7 +129,7 @@ public final class SpellRuntime {
     }
     static void particles(ServerPlayer p, SpellDefinition s, Vec3 point, int count, double spread) {
         if (!p.level().hasChunkAt(BlockPos.containing(point))) return;
-        int color = s.formula().elements().getFirst().color;
+        int color = ElementBlend.of(s.formula()).color();
         EpicMagic.fx(p.level(),new DustParticleOptions(net.minecraft.util.ARGB.colorFromFloat(1f,((color>>16)&255)/255f,((color>>8)&255)/255f,(color&255)/255f),1.1f),
                 point.x,point.y,point.z,count,spread,spread,spread,.02);
         SpellVfx.particles(p,s,point,Math.max(3,count/2),spread);
@@ -139,6 +139,7 @@ public final class SpellRuntime {
         List<JsonObject> graph=self?s.selfEffects():s.effects();
         for (LivingEntity e:near(p,point,radius)) if (e != p || self) EffectGraph.entity(p,e,s,graph,point,self);
         EffectGraph.world(p,s,graph,point,self,spawn); particles(p,s,point,18,radius/3);
+        if(s.delivery().has("ice_surface"))freezeSurface(p,point,radius);
         SpellVfx.cue(p,s,SpellVfx.IMPACT,point,point,radius,12);SpellVfx.sound(p,s,point,true);
     }
     private static Vec3 beamEnd(ServerPlayer p,double reach) {
@@ -337,13 +338,13 @@ public final class SpellRuntime {
             final Vec3 from=current;
             boolean conductive=java.util.stream.Stream.concat(ACTIVE.stream(),PENDING.stream()).anyMatch(a->a instanceof Zone z && LEVELS.get(z)==p.level() && (z.wet || z.s!=null && z.s.delivery().has("conductive")) && z.point.distanceToSqr(from)<Math.pow(z.radius+1,2));
             double jumpRange=Math.clamp(range*(conductive?1.5:1),1,48);
-            var victim=near(p,from,Math.min(72,jumpRange*1.5)).stream().filter(e->!seen.contains(e.getUUID()) && EffectGraph.canHarm(p,e))
-                    .filter(e->e.distanceToSqr(from)<=Math.pow(jumpRange*(MagicStatuses.has(e,MagicStatuses.Status.WET)?1.5:1),2))
-                    .min(Comparator.comparingDouble(e->e.distanceToSqr(from)/(MagicStatuses.has(e,MagicStatuses.Status.WET)?2:1))).orElse(null);
+            var victim=near(p,from,Math.min(72,jumpRange*1.5)).stream().filter(e->!(e instanceof ElementalTitan) && !seen.contains(e.getUUID()) && EffectGraph.canHarm(p,e))
+                    .filter(e->e.distanceToSqr(from)<=Math.pow(jumpRange*((e.isInWater() || MagicStatuses.has(e,MagicStatuses.Status.WET))?1.5:1),2))
+                    .min(Comparator.comparingDouble(e->e.distanceToSqr(from)/((e.isInWater() || MagicStatuses.has(e,MagicStatuses.Status.WET))?2:1))).orElse(null);
             if(victim==null)break;
             current=victim.getBoundingBox().getCenter();seen.add(victim.getUUID());
             SpellVfx.cue(p,s,SpellVfx.ARC,from,current,.12,10);
-            float damage=amount*(MagicStatuses.has(victim,MagicStatuses.Status.WET)?2:1);
+            float damage=amount*((victim.isInWater() || MagicStatuses.has(victim,MagicStatuses.Status.WET))?2:1);
             if(victim instanceof Player)damage*=MagicConfig.PLAYER_DAMAGE.get().floatValue();
             com.restor.magicka.enemy.MagicEnemies.hurt(victim,p.damageSources().indirectMagic(p,p),damage,p,s,false);MagicStatuses.charge(victim,40);
             if(s.delivery().has("plasma"))MagicStatuses.apply(victim,MagicStatuses.Status.BURNING,60,1);

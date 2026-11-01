@@ -6,6 +6,8 @@
   },
   "name": "Healing Pool",
   "tier": "Signature",
+
+  "incantation": "266",
   "tags": "HEAL/BUILD/SETUP",
   "shape": "targeted_zone",
   "origin": "aim_ground",

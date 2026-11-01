@@ -6,6 +6,8 @@
   },
   "name": "Defibrillator",
   "tier": "Signature",
+
+  "incantation": "466",
   "scroll": true,
   "tags": "HEAL",
   "shape": "direct_target",

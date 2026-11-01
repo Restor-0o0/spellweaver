@@ -7,8 +7,27 @@ import net.minecraft.network.chat.Component;
 
 /** Compact corner HUD; the crosshair, vanilla health and hotbar retain their own space. */
 public final class MagicHud {
+    private record Rune(Element element,int composite,int sourceEnd){}
     private static void socket(GuiGraphicsExtractor g,Element element,int x,int y,boolean lit){
         g.pose().pushMatrix();g.pose().translate(x,y);g.pose().scale(.7f,.7f);MagicUi.socket(g,element,0,0,lit);g.pose().popMatrix();
+    }
+    private static void socket(GuiGraphicsExtractor g,Rune rune,int x,int y){
+        g.pose().pushMatrix();g.pose().translate(x,y);g.pose().scale(.7f,.7f);
+        if(rune==null)MagicUi.socket(g,null,0,0,true);else if(rune.composite>=0)MagicUi.compositeSocket(g,rune.composite,0,0);else MagicUi.socket(g,rune.element,0,0,true);
+        g.pose().popMatrix();
+    }
+    private static java.util.List<Rune> resolve(Formula formula){
+        var runes=new java.util.ArrayList<Rune>();
+        for(int source=0;source<formula.size();source++){
+            Element element=formula.elements().get(source);int found=-1,composite=-1;
+            for(int i=runes.size()-1;i>=0;i--){
+                if(runes.get(i).composite>=0)continue;
+                int match=MagicUi.composite(element,runes.get(i).element);
+                if(match>=0){found=i;composite=match;break;}
+            }
+            if(found>=0)runes.set(found,new Rune(null,composite,source+1));else runes.add(new Rune(element,-1,source+1));
+        }
+        return java.util.List.copyOf(runes);
     }
     private static String fit(String text,int width){
         var font=Minecraft.getInstance().font;
@@ -24,6 +43,12 @@ public final class MagicHud {
         g.pose().pushMatrix();g.nextStratum();
         g.fill(x-6,y-7,x,y,0xE80B0D14);MagicUi.small(g,Component.literal(""+count),x-4,y-6,0xFFFFFFFF);
         g.pose().popMatrix();
+    }
+    private static ElementalTitan titan(){
+        var mc=Minecraft.getInstance();
+        if(mc.level==null || mc.player==null)return null;
+        for(var entity:mc.level.entitiesForRendering())if(entity instanceof ElementalTitan titan && titan.isAlive() && !titan.sinking() && titan.ownedBy(mc.player))return titan;
+        return null;
     }
     public static void render(GuiGraphicsExtractor g,MagicNetwork.State state,int vanillaHeight){
         int w=g.guiWidth(),h=g.guiHeight();Formula prepared=Formula.unpack(state.formula());
@@ -65,26 +90,28 @@ public final class MagicHud {
             }
         }
         boolean queuing=MagicNetwork.clientQueue.formula()!=0,casting=state.remaining()>0;
-        if(!state.enabled() && prepared.empty() && !queuing)return;
+        ElementalTitan titan=titan();
+        if(!state.enabled() && prepared.empty() && !queuing && titan==null)return;
         int y=Math.max(6,presetY-37);MagicUi.panel(g,panelX,y,111,32);
-        Formula display=queuing?Formula.unpack(MagicNetwork.clientQueue.formula()):prepared;
+        Formula display=queuing?Formula.unpack(MagicNetwork.clientQueue.formula()):prepared;var runes=resolve(display);
         var spell=display.empty()?null:MagicClient.spell(display.key());
         boolean named=spell!=null && spell.ordered() && spell.spoken().equals(display.elements());
         Component label=spell==null?Component.translatable("hud.magicka.prepared"):named?spell.displayName():Component.empty();
         MagicUi.small(g,Component.literal(fit(label.getString(),130)),panelX+4,y+3,queuing?0xFFFFDC84:casting?0xFFE0B3FF:MagicUi.GOLD);
-        int cells=Math.max(com.restor.magicka.MageLevel.clientMaxElements(Minecraft.getInstance().player),display.size());
+        int cells=runes.size()+Math.max(0,com.restor.magicka.MageLevel.clientMaxElements(Minecraft.getInstance().player)-display.size());
         for(int i=0;i<cells;i++){
-            socket(g,i<display.size()?display.elements().get(i):null,panelX+4+i*21,y+12,true);
-            if(queuing && i>=prepared.size() && i<display.size())g.fill(panelX+5+i*21,y+13,panelX+20+i*21,y+28,0xAF0E1119);
+            Rune rune=i<runes.size()?runes.get(i):null;socket(g,rune,panelX+4+i*21,y+12);
+            if(queuing && rune!=null && rune.sourceEnd>prepared.size())g.fill(panelX+5+i*21,y+13,panelX+20+i*21,y+28,0xAF0E1119);
         }
         if(state.instant()){
             boolean channel=!display.empty() && (MagicClient.spell(display.key()).channeled() || MagicClient.spell(display.key()).epic());
             String text=state.channeling()?"≈≈":channel?"≈":"⚡";
             MagicUi.small(g,Component.literal(text),panelX+109-(int)Math.ceil(Minecraft.getInstance().font.width(text)*.75f),y+13,channel?0xFF7FD0FF:0xFFFFDC84);
         }
-        if(casting || queuing){
-            float progress=queuing?MagicNetwork.clientQueue.elapsed()/(float)Math.max(1,Formula.unpack(MagicNetwork.clientQueue.formula()).size()*com.restor.magicka.CastingServer.QUEUE_TICKS_PER_ELEMENT):1-state.remaining()/(float)Math.max(1,state.total());
-            g.fill(panelX+2,y+31,panelX+109,y+33,0xFF30293B);g.fill(panelX+2,y+31,panelX+2+(int)(107*Math.clamp(progress,0,1)),y+33,queuing?MagicUi.GOLD:0xFFBF92E6);
+        if(casting || queuing || titan!=null){
+            float progress=titan!=null?titan.getHealth()/Math.max(1,titan.getMaxHealth()):queuing?MagicNetwork.clientQueue.elapsed()/(float)Math.max(1,Formula.unpack(MagicNetwork.clientQueue.formula()).size()*com.restor.magicka.CastingServer.QUEUE_TICKS_PER_ELEMENT):1-state.remaining()/(float)Math.max(1,state.total());
+            int color=titan!=null?titan.element().color:queuing?MagicUi.GOLD:0xFFBF92E6;
+            g.fill(panelX+2,y+31,panelX+109,y+33,0xFF30293B);g.fill(panelX+2,y+31,panelX+2+(int)(107*Math.clamp(progress,0,1)),y+33,color);
         }
     }
     public static void render(GuiGraphicsExtractor g){

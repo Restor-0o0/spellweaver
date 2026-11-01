@@ -215,6 +215,7 @@ public final class MagicClient {
         var colors = new java.util.ArrayList<Integer>();
         for (int i = 0; i < shown; i++) {
             var pos = path.next(mc.player, i);
+            if (pos == null) break;
             colors.add(mc.level.getBlockState(pos).isAir() ? 0xB380E6F2 : 0xB3FF4CF2);
             boxes.add(new net.minecraft.world.phys.AABB(pos).inflate(0.002));
         }

@@ -6,6 +6,8 @@
   },
   "name": "Cat's Eye",
   "tier": "Signature",
+
+  "incantation": "446",
   "tags": "UTIL",
   "shape": "direct_target",
   "origin": "aim_hit",

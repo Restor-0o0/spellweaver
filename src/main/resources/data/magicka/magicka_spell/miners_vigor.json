@@ -6,6 +6,8 @@
   },
   "name": "Miner's Vigor",
   "tier": "Signature",
+
+  "incantation": "445",
   "tags": "UTIL",
   "shape": "direct_target",
   "origin": "aim_hit",

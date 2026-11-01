@@ -6,6 +6,8 @@
   },
   "name": "Curse",
   "tier": "Signature",
+
+  "incantation": "778",
   "tags": "DEBUFF/DMG",
   "shape": "direct_target",
   "origin": "aim_hit",

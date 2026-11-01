@@ -19,7 +19,8 @@
     "duration_ticks": 240,
     "interval_ticks": 12,
     "gravity": 0,
-    "burst_radius": 9.0
+    "burst_radius": 9.0,
+    "legend": "singularity"
   },
   "effects": [
     {

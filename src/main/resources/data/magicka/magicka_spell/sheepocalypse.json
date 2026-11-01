@@ -5,9 +5,10 @@
     "life": 2,
     "death": 2
   },
-  "incantation": "86658",
+  "incantation": "56688",
   "name": "Sheepocalypse",
   "tier": "Signature",
+  "ultimate": true,
   "scroll": true,
   "tags": "CC/AOE",
   "shape": "targeted_zone",
@@ -34,6 +35,7 @@
     {
       "type": "polymorph",
       "entity": "minecraft:sheep",
+      "allow_large_targets": true,
       "duration_ticks": 900
     },
     {

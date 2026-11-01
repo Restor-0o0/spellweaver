@@ -6,6 +6,7 @@
   },
   "name": "Thunder Call",
   "tier": "Signature",
+  "incantation": "455",
   "scroll": true,
   "tags": "DMG/CC",
   "shape": "targeted_zone",

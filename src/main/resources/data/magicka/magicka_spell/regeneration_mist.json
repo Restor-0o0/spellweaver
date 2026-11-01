@@ -7,6 +7,8 @@
   },
   "name": "Regeneration Mist",
   "tier": "Signature",
+
+  "incantation": "267",
   "tags": "HEAL/AOE/SETUP",
   "shape": "targeted_zone",
   "origin": "aim_ground",

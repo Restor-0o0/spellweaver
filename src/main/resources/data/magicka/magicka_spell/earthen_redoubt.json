@@ -7,6 +7,8 @@
   },
   "name": "Rune Bastion",
   "tier": "Signature",
+
+  "incantation": "2577",
   "tags": "BUILD",
   "shape": "wall",
   "origin": "caster_feet",

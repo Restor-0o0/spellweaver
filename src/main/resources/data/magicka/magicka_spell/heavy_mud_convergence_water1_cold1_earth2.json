@@ -7,6 +7,8 @@
   },
   "name": "Heavy Mud Convergence",
   "tier": "Family Variant",
+
+  "incantation": "2355",
   "tags": "SETUP/CC/DEBUFF/BREAK/BUILD",
   "shape": "targeted_zone",
   "origin": "aim_ground",

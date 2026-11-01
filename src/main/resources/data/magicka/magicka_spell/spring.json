@@ -6,6 +6,8 @@
   },
   "name": "Spring",
   "tier": "Signature",
+
+  "incantation": "26",
   "tags": "SETUP/CC/HEAL/BUFF",
   "shape": "projectile",
   "origin": "caster_front",

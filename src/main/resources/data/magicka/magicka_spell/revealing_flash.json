@@ -6,6 +6,8 @@
   },
   "name": "Revealing Flash",
   "tier": "Signature",
+
+  "incantation": "477",
   "tags": "UTIL",
   "shape": "direct_target",
   "origin": "aim_hit",

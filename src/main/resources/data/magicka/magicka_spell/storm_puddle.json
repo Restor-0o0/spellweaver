@@ -7,6 +7,8 @@
   },
   "name": "Storm Puddle",
   "tier": "Signature",
+
+  "incantation": "247",
   "tags": "AOE/SETUP/CC",
   "shape": "targeted_zone",
   "origin": "aim_ground",

@@ -7,6 +7,8 @@
   },
   "name": "Flooded Steam Convergence",
   "tier": "Family Variant",
+
+  "incantation": "1227",
   "tags": "DMG/DOT/SETUP/CC",
   "shape": "spray",
   "origin": "caster_front",

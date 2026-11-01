@@ -6,6 +6,8 @@
   },
   "name": "Charged Greater Frostshock",
   "tier": "Family Variant",
+
+  "incantation": "3444",
   "tags": "CC/DEBUFF/DMG",
   "shape": "chain",
   "origin": "aim_hit",

@@ -5,6 +5,8 @@
   },
   "name": "Boulder",
   "tier": "Signature",
+
+  "incantation": "555",
   "tags": "BREAK",
   "shape": "projectile",
   "origin": "caster_front",

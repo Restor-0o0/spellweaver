@@ -6,6 +6,8 @@
   },
   "name": "Mud",
   "tier": "Signature",
+
+  "incantation": "25",
   "tags": "SETUP/CC/BREAK",
   "shape": "projectile",
   "origin": "caster_front",

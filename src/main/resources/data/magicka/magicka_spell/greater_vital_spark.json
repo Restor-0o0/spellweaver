@@ -6,6 +6,7 @@
   },
   "name": "Greater Vital Spark",
   "tier": "Family Variant",
+  "incantation": "4466",
   "tags": "DMG/CC/HEAL/BUFF",
   "shape": "targeted_zone",
   "origin": "aim_ground",

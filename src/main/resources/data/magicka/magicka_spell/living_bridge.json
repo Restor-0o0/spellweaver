@@ -8,6 +8,8 @@
   },
   "name": "Living Bridge",
   "tier": "Signature",
+
+  "incantation": "2567",
   "tags": "BUILD/MOVE",
   "shape": "bridge",
   "origin": "aim_hit",

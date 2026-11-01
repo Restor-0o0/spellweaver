@@ -43,7 +43,8 @@ public final class PolymorphManager {
     private static final Map<UUID, LivingEntity> ACTIVE = new LinkedHashMap<>();
     private static final Map<UUID, String> PLAYERS = new LinkedHashMap<>();
 
-    public static boolean apply(ServerPlayer caster, LivingEntity target, String id, int ticks) {
+    public static boolean apply(ServerPlayer caster, LivingEntity target, String id, int ticks) { return apply(caster, target, id, ticks, false); }
+    public static boolean apply(ServerPlayer caster, LivingEntity target, String id, int ticks, boolean allowLarge) {
         if (!(target.level() instanceof ServerLevel level) || !EffectGraph.canHarm(caster, target)) return false;
         ticks = Math.clamp(ticks, 20, 24000);
         EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.getOptional(Identifier.tryParse(id)).orElse(EntityTypes.SHEEP);
@@ -53,7 +54,7 @@ public final class PolymorphManager {
             return true;
         }
         // 200 hearts of health is the cheapest way to leave modded bosses alone.
-        if (!(target instanceof Mob mob) || DENIED.contains(mob.getType()) || mob.getMaxHealth() > 200) return false;
+        if (!(target instanceof Mob mob) || DENIED.contains(mob.getType()) || !allowLarge && mob.getMaxHealth() > 200) return false;
         if (!(type.create(level, EntitySpawnReason.MOB_SUMMONED) instanceof Mob shape)) return false;
         var output = net.minecraft.world.level.storage.TagValueOutput.createWithContext(net.minecraft.util.ProblemReporter.DISCARDING, level.registryAccess());
         if (!mob.save(output)) { shape.discard(); return false; }

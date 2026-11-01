@@ -83,7 +83,10 @@ public final class FusionRules {
         }
         if (fire > 0 && water > 0) effects.add(status("obscured", 40, 1));
 
-        json.add("formula", counts); json.addProperty("name", "Fusion"); json.addProperty("tier", "Generic Fusion"); json.addProperty("fusion", true);
+        json.add("formula", counts);
+        json.addProperty("name", fire == 0 && water == 0 && cold == 0 && lightning == 0 && earth > 0 && life == 0 && arcane > 0 && death == 0 ? "Shield" : "Fusion");
+        json.addProperty("tier", "Generic Fusion"); json.addProperty("fusion", true);
+        if (earth > 0 && arcane > 0 && fire == 0 && water == 0 && cold == 0 && lightning == 0 && life == 0 && death == 0) json.addProperty("tags", "DEF");
         json.addProperty("shape", shape); json.addProperty("origin", shape.equals("chain") ? "aim_hit" : "caster_front");
         json.add("delivery", delivery); json.add("effects", effects);
         return json;

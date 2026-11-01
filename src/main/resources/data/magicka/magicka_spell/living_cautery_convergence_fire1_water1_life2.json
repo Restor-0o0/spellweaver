@@ -7,6 +7,8 @@
   },
   "name": "Living Cautery Convergence",
   "tier": "Family Variant",
+
+  "incantation": "1266",
   "tags": "DMG/DOT/SETUP/CC/HEAL",
   "shape": "targeted_zone",
   "origin": "aim_ground",

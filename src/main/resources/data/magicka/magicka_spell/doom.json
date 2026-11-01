@@ -6,6 +6,8 @@
   },
   "name": "Doom",
   "tier": "Signature",
+
+  "incantation": "488",
   "scroll": true,
   "tags": "DMG/DEBUFF",
   "shape": "direct_target",

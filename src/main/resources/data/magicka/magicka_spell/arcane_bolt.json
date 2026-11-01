@@ -5,6 +5,8 @@
   },
   "name": "Arcane Bolt",
   "tier": "Signature",
+
+  "incantation": "77",
   "tags": "SETUP",
   "shape": "projectile",
   "origin": "caster_front",

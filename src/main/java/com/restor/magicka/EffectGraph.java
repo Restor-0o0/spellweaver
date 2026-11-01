@@ -55,7 +55,8 @@ public final class EffectGraph {
                 case "deal_damage" -> {
                     if (!canHarm(caster,target)) break;
                     String element = text(node,"element","arcane");
-                    double multiplier = element.equals("lightning") && MagicStatuses.has(target,MagicStatuses.Status.WET) ? 2 : element.equals("earth") && frozen ? 2 : element.equals("fire") && MagicStatuses.has(target,MagicStatuses.Status.WET) ? .5 : 1;
+                    boolean wet = target.isInWater() || MagicStatuses.has(target,MagicStatuses.Status.WET);
+                    double multiplier = element.equals("lightning") && wet ? 2 : element.equals("earth") && frozen ? 2 : element.equals("fire") && wet ? .5 : 1;
                     damage += (float)(amount*multiplier*MobResistances.multiplier(target,element));
                 }
                 case "heal" -> target.heal(MagicGear.heal(caster,target,(float)amount));
@@ -72,7 +73,7 @@ public final class EffectGraph {
                     if (Set.of("regenerating","stone_shell","slow_falling","haste").contains(status) || canHarm(caster,target)) { MagicStatuses.apply(target,status,ticks,strength); MagicGear.status(caster,target,status); }
                 }
                 case "apply_effect" -> SupportMagic.effect(caster,target,text(node,"effect",""),ticks,strength);
-                case "polymorph" -> PolymorphManager.apply(caster,target,text(node,"entity","minecraft:sheep"),ticks);
+                case "polymorph" -> PolymorphManager.apply(caster,target,text(node,"entity","minecraft:sheep"),ticks,node.has("allow_large_targets") && node.get("allow_large_targets").getAsBoolean());
                 case "remove_status" -> MagicStatuses.remove(target,MagicStatuses.Status.valueOf(text(node,"status","").toUpperCase(Locale.ROOT)));
                 case "apply_force" -> {
                     if (!canHarm(caster,target)) break;
