@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.5.0 — composite elements and cast modes
+
+- Steam, Ice and Shield are composite elements formed from base-element combinations, with their own Grimoire pages and sprites.
+- New casting modes: area casts, protective wards and weapon imbuing. Shield can raise a dome that pushes enemies away and deflects projectiles.
+- New spells include Fire Wall, Frost Shackles, Geyser, Thundercloud, Steam Veil, Reflection and Soul Keeper.
+- Crossing beams detonate, and wet targets conduct lightning.
+- Two new enemies: the Armored Knight and the Troll.
+- Added status effect icons and richer per-spell models and visual effects.
+- Fixed titan persistence, spellcasting and spell-effect issues across the supported Minecraft versions.
+
 ## 1.4.0 — the mage's path
 
 - A new Grimoire: a leather-bound book that opens with its cover and turns real pages. The first chapters teach casting and the fusion rules; the spells follow, searchable by name, page number or tag and filterable by element, tag or formula length. Drag a spell onto one of the four quick slots. Stat tuning is a creative-only page at the back.
