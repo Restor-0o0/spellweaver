@@ -6,8 +6,7 @@
   },
   "name": "Purifying Flame",
   "tier": "Signature",
-
-  "incantation": "166",
+  "keys": "166",
   "scroll": true,
   "tags": "DMG/HEAL",
   "shape": "targeted_zone",

@@ -6,8 +6,7 @@
   },
   "name": "Frozen Host",
   "tier": "Signature",
-
-  "incantation": "388",
+  "keys": "388",
   "tags": "SUMMON/CC",
   "shape": "summon_object",
   "origin": "aim_hit",

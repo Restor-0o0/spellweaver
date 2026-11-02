@@ -7,8 +7,7 @@
   },
   "name": "Charged Frostshock Convergence",
   "tier": "Family Variant",
-
-  "incantation": "3447",
+  "keys": "3447",
   "tags": "CC/DEBUFF/DMG/SETUP",
   "shape": "chain",
   "origin": "aim_hit",

@@ -7,8 +7,7 @@
   },
   "name": "Scorching Plasma Convergence",
   "tier": "Family Variant",
-
-  "incantation": "1145",
+  "keys": "1145",
   "tags": "DMG/DOT/CC/BREAK",
   "shape": "spray",
   "origin": "caster_front",

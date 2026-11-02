@@ -50,12 +50,14 @@ public final class MagicClient {
     // Elements stay under the resting left hand: 1-4 above WASD, Q E R F around it.
     private static final int[] ELEMENT_KEYS = {InputConstants.KEY_1, InputConstants.KEY_2, InputConstants.KEY_3, InputConstants.KEY_4,
             InputConstants.KEY_Q, InputConstants.KEY_E, InputConstants.KEY_R, InputConstants.KEY_F};
-    private static final KeyMapping[] ELEMENTS = java.util.Arrays.stream(Element.values()).map(e ->
+    private static final KeyMapping[] ELEMENTS = Element.BASE.stream().map(e ->
             key(e.name().toLowerCase(java.util.Locale.ROOT), InputConstants.Type.KEYSYM, ELEMENT_KEYS[e.ordinal()])).toArray(KeyMapping[]::new);
     private static final KeyMapping TOGGLE = key("toggle", InputConstants.Type.KEYSYM, InputConstants.KEY_G);
     private static final KeyMapping CLEAR = key("clear", InputConstants.Type.KEYSYM, InputConstants.KEY_V);
     private static final KeyMapping DIRECTED = key("directed", InputConstants.Type.MOUSE, InputConstants.MOUSE_BUTTON_LEFT);
     private static final KeyMapping SELF = key("self", InputConstants.Type.MOUSE, InputConstants.MOUSE_BUTTON_RIGHT);
+    private static final KeyMapping AREA = new KeyMapping("key.magicka.area", KeyConflictContext.IN_GAME, net.neoforged.neoforge.client.settings.KeyModifier.SHIFT, InputConstants.Type.MOUSE, InputConstants.MOUSE_BUTTON_RIGHT, CATEGORY);
+    private static final KeyMapping IMBUE = new KeyMapping("key.magicka.imbue", KeyConflictContext.IN_GAME, net.neoforged.neoforge.client.settings.KeyModifier.SHIFT, InputConstants.Type.MOUSE, InputConstants.MOUSE_BUTTON_LEFT, CATEGORY);
     private static final KeyMapping BOOK = key("spellbook", InputConstants.Type.KEYSYM, InputConstants.KEY_B);
     private static final KeyMapping SHAPE = key("shape", InputConstants.Type.KEYSYM, InputConstants.KEY_K);
     private static final KeyMapping LOADOUT = key("loadout", InputConstants.Type.KEYSYM, InputConstants.KEY_J);
@@ -132,8 +134,10 @@ public final class MagicClient {
             return true;
         }
         if (!state.enabled()) return false;
-        for (int i = 0; i < ELEMENTS.length; i++) if (matches.test(ELEMENTS[i])) { send(elementAction(Element.values()[i])); return true; }
+        for (int i = 0; i < ELEMENTS.length; i++) if (matches.test(ELEMENTS[i])) { send(elementAction(Element.BASE.get(i))); return true; }
         if (matches.test(CLEAR)) { send(8); return true; }
+        if (matches.test(AREA) && AREA.getKeyModifier().isActive(AREA.getKeyConflictContext())) { send(15); return true; }
+        if (matches.test(IMBUE) && IMBUE.getKeyModifier().isActive(IMBUE.getKeyConflictContext())) { send(16); return true; }
         if (matches.test(DIRECTED)) { directedHeld = true; send(9); return true; }
         if (matches.test(SELF)) { send(10); return true; }
         return false;
@@ -241,7 +245,7 @@ public final class MagicClient {
         @SubscribeEvent public static void keys(RegisterKeyMappingsEvent event) {
             for (KeyMapping key : ELEMENTS) event.register(key);
             for(KeyMapping key:QUICK)event.register(key);
-            for (KeyMapping key : new KeyMapping[]{TOGGLE, CLEAR, DIRECTED, SELF, BOOK, SHAPE, LOADOUT}) event.register(key);
+            for (KeyMapping key : new KeyMapping[]{TOGGLE, CLEAR, DIRECTED, SELF, AREA, IMBUE, BOOK, SHAPE, LOADOUT}) event.register(key);
             for (KeyMapping key : POTIONS) event.register(key);
         }
         @SubscribeEvent public static void setup(net.neoforged.fml.event.lifecycle.FMLClientSetupEvent event) {

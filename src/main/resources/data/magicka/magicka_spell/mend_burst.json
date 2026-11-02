@@ -6,8 +6,7 @@
   },
   "name": "Mend Burst",
   "tier": "Signature",
-
-  "incantation": "667",
+  "keys": "667",
   "tags": "HEAL/AOE",
   "shape": "targeted_explosion",
   "origin": "aim_hit",

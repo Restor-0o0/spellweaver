@@ -7,7 +7,7 @@
   },
   "name": "Heavy Permafrost Convergence",
   "tier": "Family Variant",
-  "incantation": "3556",
+  "keys": "3556",
   "tags": "CC/DEBUFF/BREAK/HEAL/BUFF",
   "shape": "growth",
   "origin": "aim_surface",

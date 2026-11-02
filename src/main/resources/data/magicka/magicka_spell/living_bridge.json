@@ -1,5 +1,6 @@
 {
   "id": "magicka:living_bridge",
+  "keys": "6725",
   "formula": {
     "water": 1,
     "earth": 1,
@@ -8,8 +9,6 @@
   },
   "name": "Living Bridge",
   "tier": "Signature",
-
-  "incantation": "2567",
   "tags": "BUILD/MOVE",
   "shape": "bridge",
   "origin": "aim_hit",

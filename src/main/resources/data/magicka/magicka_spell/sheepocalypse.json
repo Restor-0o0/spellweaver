@@ -5,7 +5,7 @@
     "life": 2,
     "death": 2
   },
-  "incantation": "56688",
+  "keys": "56688",
   "name": "Sheepocalypse",
   "tier": "Signature",
   "ultimate": true,
@@ -20,7 +20,8 @@
     "duration_ticks": 200,
     "interval_ticks": 20,
     "gravity": 0,
-    "burst_radius": 3.0
+    "burst_radius": 3.0,
+    "visual": "bloom"
   },
   "construction": {
     "material": "earth",

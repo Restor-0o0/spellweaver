@@ -1,5 +1,6 @@
 {
   "id": "magicka:shall_not_pass",
+  "keys": "5477",
   "formula": {
     "lightning": 1,
     "earth": 1,
@@ -7,7 +8,6 @@
   },
   "name": "Bridge Warden",
   "tier": "Signature",
-  "incantation": "4577",
   "scroll": true,
   "tags": "CC/DMG",
   "shape": "targeted_zone",

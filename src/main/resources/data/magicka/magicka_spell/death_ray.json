@@ -6,8 +6,7 @@
   },
   "name": "Death Ray",
   "tier": "Signature",
-
-  "incantation": "78",
+  "keys": "78",
   "tags": "DMG/HEAL",
   "shape": "beam",
   "origin": "caster_front",

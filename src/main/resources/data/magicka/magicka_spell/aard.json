@@ -6,7 +6,7 @@
   },
   "name": "Force Sign",
   "tier": "Signature",
-  "incantation": "255",
+  "keys": "255",
   "tags": "CC/UTIL",
   "shape": "spray",
   "origin": "caster_front",

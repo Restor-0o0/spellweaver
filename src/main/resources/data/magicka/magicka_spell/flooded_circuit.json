@@ -6,8 +6,7 @@
   },
   "name": "Flooded Circuit",
   "tier": "Signature",
-
-  "incantation": "2244",
+  "keys": "2244",
   "tags": "AOE/CC/SETUP",
   "shape": "targeted_zone",
   "origin": "aim_ground",
@@ -18,7 +17,8 @@
     "duration_ticks": 200,
     "interval_ticks": 20,
     "gravity": 0,
-    "burst_radius": 3.3
+    "burst_radius": 3.3,
+    "visual": "pool"
   },
   "construction": {
     "material": "earth",

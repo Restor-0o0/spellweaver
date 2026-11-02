@@ -5,8 +5,7 @@
   },
   "name": "Arcane Pulse",
   "tier": "Signature",
-
-  "incantation": "7",
+  "keys": "7",
   "tags": "SETUP",
   "shape": "projectile",
   "origin": "caster_front",

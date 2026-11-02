@@ -1,0 +1,59 @@
+{
+  "id": "magicka:frost_shackles",
+  "formula": {
+    "ice": 1,
+    "death": 1
+  },
+  "keys": "238",
+  "name": "Frost Shackles",
+  "tier": "Signature",
+  "tags": "CC",
+  "shape": "direct_target",
+  "origin": "aim_hit",
+  "cast_ticks": 9,
+  "delivery": {
+    "radius": 3.0,
+    "speed": 1.0,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.0,
+    "visual": "chains",
+    "visual_ticks": 80
+  },
+  "effects": [
+    {
+      "type": "modify_temperature",
+      "amount": -80
+    },
+    {
+      "type": "apply_status",
+      "status": "frozen",
+      "duration_ticks": 80,
+      "strength": 1
+    },
+    {
+      "type": "drain_life",
+      "amount": 2.0,
+      "fraction": 0.5
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 80,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "modify_temperature",
+        "amount": -40
+      }
+    ]
+  },
+  "primary": "Icy chains that freeze and drain.\nOn the target in your sight:\n• Frozen for 4 s\n• Drains 1 ❤, half of it heals you\n• Withering for 4 s",
+  "self_description": "On you: a chill.",
+  "balanced": true
+}

@@ -5,8 +5,7 @@
   },
   "name": "Arcane Lance",
   "tier": "Signature",
-
-  "incantation": "7777",
+  "keys": "7777",
   "scroll": true,
   "tags": "SETUP",
   "shape": "beam",

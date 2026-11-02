@@ -6,8 +6,7 @@
   },
   "name": "Frostshock",
   "tier": "Signature",
-
-  "incantation": "34",
+  "keys": "34",
   "tags": "CC/DEBUFF/DMG",
   "shape": "projectile",
   "origin": "caster_front",

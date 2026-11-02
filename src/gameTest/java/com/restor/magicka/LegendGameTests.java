@@ -4,6 +4,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.*;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.zombie.Zombie;
@@ -19,7 +20,7 @@ import java.util.List;
 public final class LegendGameTests {
     private static final List<String> LEGENDS = List.of("Field of Flowers", "Piercing Rays", "Spirit Wave", "Spiral Sphere", "Storm Lunge", "Disarming Bolt",
             "Silver Stag", "Thunderous Shout", "Explosion", "Time Stop", "Bridge Warden", "Defibrillator", "Life Drain", "Purifying Flame",
-            "Cryosleep", "Phoenix Tears", "Crimson Aura", "Great Aegis", "Zombie Cure", "Wellspring", "Black Flame", "Mjolnir", "Beckon", "Infinity",
+            "Cryosleep", "Phoenix Tears", "Soul Keeper", "Crimson Aura", "Great Aegis", "Zombie Cure", "Wellspring", "Black Flame", "Thunder Hammer", "Beckon", "Infinity",
             "Scales of Judgment", "Thunder Call", "Flame Sign", "Force Sign", "Ward Sign", "Calming Sign", "Trap Sign", "Spark Portal");
 
     private static Zombie dummy(GameTestHelper h, Vec3 at) {
@@ -104,7 +105,7 @@ public final class LegendGameTests {
         h.runAfterDelay(3, () -> h.assertTrue(zombie.getHealth() == zombie.getMaxHealth() && ElementLocks.active(p) == 0, "The blast waits for the chant"));
         h.succeedWhen(() -> {
             h.assertTrue(zombie.getHealth() < zombie.getMaxHealth() || !zombie.isAlive(), "The blast hits the zombie");
-            for (Element e : Element.values()) h.assertTrue(ElementLocks.locked(p, e), e + " is spent");
+            for (Element e : Element.BASE) h.assertTrue(ElementLocks.locked(p, e), e + " is spent");
             ElementLocks.clear(p);
         });
     }
@@ -153,6 +154,23 @@ public final class LegendGameTests {
         h.succeedWhen(() -> {
             h.assertTrue(zombie.isAlive() && zombie.getHealth() >= zombie.getMaxHealth() * .4f, "The marked zombie rises from the ashes");
             h.assertTrue(p.getPersistentData().contains(LegendLife.PHOENIX_TAG), "The caster carries the phoenix mark");
+        });
+    }
+
+    @MagicTest(timeoutTicks=60,batch="legend_life")
+    public static void soulKeeperRevivesWithShield(GameTestHelper h) {
+        var p = RecipeGameTests.caster(h);
+        var zombie = dummy(h, new Vec3(3.5, 2, 3.5));
+        SpellRuntime.cast(p, RecipeGameTests.spell("Soul Keeper"), true);
+        zombie.getPersistentData().putLong(LegendLife.SOUL_TAG, h.getLevel().getGameTime() + 100);
+        zombie.hurtServer(h.getLevel(), h.getLevel().damageSources().magic(), 1000);
+        float health = zombie.getHealth();
+        zombie.hurtServer(h.getLevel(), h.getLevel().damageSources().magic(), 5);
+        h.succeedWhen(() -> {
+            h.assertTrue(zombie.isAlive() && health >= zombie.getMaxHealth() * .3f, "The kept soul comes back");
+            h.assertTrue(zombie.getHealth() == health, "The soul shield blocks the next hit");
+            h.assertFalse(zombie.getPersistentData().contains(LegendLife.SOUL_TAG), "The spirit is spent");
+            h.assertTrue(p.getPersistentData().contains(LegendLife.SOUL_TAG), "The caster carries a soul keeper");
         });
     }
 

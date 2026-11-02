@@ -6,8 +6,7 @@
   },
   "name": "Frozen Greater Frostshock",
   "tier": "Family Variant",
-
-  "incantation": "3334",
+  "keys": "3334",
   "tags": "CC/DEBUFF/DMG",
   "shape": "projectile",
   "origin": "caster_front",

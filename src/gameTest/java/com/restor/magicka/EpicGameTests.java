@@ -12,7 +12,7 @@ public final class EpicGameTests {
         return zombie;
     }
     private static void type(net.minecraft.server.level.ServerPlayer p, SpellDefinition spell) {
-        for (Element e : spell.spoken()) CastingServer.input(p, e == Element.DEATH ? 13 : e.ordinal());
+        for (Element e : spell.keys()) CastingServer.input(p, e == Element.DEATH ? 13 : e.ordinal());
     }
 
     @MagicTest

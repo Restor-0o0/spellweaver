@@ -5,8 +5,7 @@
   },
   "name": "Heal",
   "tier": "Signature",
-
-  "incantation": "66",
+  "keys": "66",
   "tags": "HEAL/BUFF",
   "shape": "direct_target",
   "origin": "aim_hit",

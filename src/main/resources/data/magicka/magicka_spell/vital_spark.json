@@ -6,8 +6,7 @@
   },
   "name": "Vital Spark",
   "tier": "Signature",
-
-  "incantation": "46",
+  "keys": "46",
   "tags": "DMG/CC/HEAL/BUFF",
   "shape": "projectile",
   "origin": "caster_front",

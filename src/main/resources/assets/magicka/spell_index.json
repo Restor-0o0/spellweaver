@@ -344,5 +344,20 @@
   "magicka:life_titan",
   "magicka:sheepocalypse",
   "magicka:arcane_titan",
-  "magicka:death_titan"
+  "magicka:death_titan",
+  "magicka:soul_keeper",
+  "magicka:barrier",
+  "magicka:fire_wall",
+  "magicka:frost_mines",
+  "magicka:storm_fence",
+  "magicka:life_mines",
+  "magicka:death_mines",
+  "magicka:steam_veil",
+  "magicka:reflection",
+  "magicka:geyser",
+  "magicka:thundercloud",
+  "magicka:healing_mist",
+  "magicka:poison_mist",
+  "magicka:ice_lances",
+  "magicka:frost_shackles"
 ]

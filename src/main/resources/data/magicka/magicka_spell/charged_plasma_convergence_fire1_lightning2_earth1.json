@@ -7,8 +7,7 @@
   },
   "name": "Charged Plasma Convergence",
   "tier": "Family Variant",
-
-  "incantation": "1445",
+  "keys": "1445",
   "tags": "DMG/DOT/CC/BREAK",
   "shape": "chain",
   "origin": "aim_hit",

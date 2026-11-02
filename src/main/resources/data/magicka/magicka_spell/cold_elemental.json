@@ -7,8 +7,7 @@
   },
   "name": "Frost Elemental",
   "tier": "Signature",
-
-  "incantation": "3378",
+  "keys": "3378",
   "scroll": true,
   "tags": "SUMMON",
   "shape": "summon_object",

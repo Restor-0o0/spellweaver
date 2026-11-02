@@ -6,8 +6,7 @@
   },
   "name": "Greater Thermal Shock",
   "tier": "Family Variant",
-
-  "incantation": "1133",
+  "keys": "1133",
   "tags": "DMG/DOT/CC/DEBUFF",
   "shape": "spray",
   "origin": "caster_front",

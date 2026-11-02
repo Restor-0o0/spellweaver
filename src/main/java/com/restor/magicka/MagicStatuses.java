@@ -9,7 +9,14 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import java.util.Locale;
 
 public final class MagicStatuses {
-    public enum Status { WET, BURNING, CHILLED, FROZEN, SHOCKED, STUNNED, BRITTLE, ROOTED, REGENERATING, ARCANE_UNSTABLE, STONE_SHELL, LEVITATING, SLOW_FALLING, HASTE, OBSCURED, WITHERING }
+    public static final int SOAK_TICKS = 200;
+    public enum Status {
+        WET(0x468CFF,true), BURNING(0xFF6A1E,true), CHILLED(0xAAE1FF,true), FROZEN(0x78C8FF,true), SHOCKED(0xFFE13C,true), STUNNED(0xFFF08C,true),
+        BRITTLE(0xC8EBFF,true), ROOTED(0x966432,true), REGENERATING(0x50DC5A,false), ARCANE_UNSTABLE(0xD25AFF,true), STONE_SHELL(0x9696A0,false),
+        LEVITATING(0xE6C8FF,false), SLOW_FALLING(0xF0F0F0,false), HASTE(0x78E6FF,false), OBSCURED(0x5A506E,true), WITHERING(0x3C3232,true);
+        public final int color; public final boolean harmful;
+        Status(int color, boolean harmful) { this.color = color; this.harmful = harmful; }
+    }
     private static CompoundTag data(LivingEntity entity) {
         CompoundTag root = entity.getPersistentData();
         if (!root.contains("magicka:statuses")) root.put("magicka:statuses",new CompoundTag());
@@ -36,6 +43,8 @@ public final class MagicStatuses {
     }
     public static void remove(LivingEntity entity, Status status) {
         data(entity).remove(status.name()); data(entity).remove(status.name()+"_strength");
+        var icon = MagicPotions.STATUS.get(status);
+        if (icon != null && entity instanceof net.minecraft.world.entity.player.Player) entity.removeEffect(icon);
         if (status == Status.BURNING) entity.clearFire();
         if (status == Status.FROZEN) entity.setTicksFrozen(0);
         if (status == Status.CHILLED || status == Status.FROZEN || status == Status.ROOTED) entity.removeEffect(MobEffects.SLOWNESS);
@@ -64,9 +73,20 @@ public final class MagicStatuses {
     public static int mask(LivingEntity target) {
         int mask = 0; for (Status status : Status.values()) if (has(target,status)) mask |= 1 << status.ordinal(); return mask;
     }
+    private static void icons(LivingEntity entity, CompoundTag tag, long now) {
+        for (var icon : MagicPotions.STATUS.entrySet()) {
+            long left = tag.getLongOr(icon.getKey().name(), 0) - now;
+            if (left <= 0) continue;
+            var current = entity.getEffect(icon.getValue());
+            if (current == null || Math.abs(current.getDuration() - left) > 20)
+                entity.addEffect(new MobEffectInstance(icon.getValue(),(int)left,Math.max(0,tag.getIntOr(icon.getKey().name()+"_strength", 0)-1),false,false,true));
+        }
+    }
     @SubscribeEvent public void tick(EntityTickEvent.Post event) {
         if (!(event.getEntity() instanceof LivingEntity entity) || !entity.isAlive() || entity.level().isClientSide()) return;
+        if (entity.tickCount % 10 == 0 && (entity.isInWaterOrRain() || com.restor.magicka.enemy.MagicEnemies.flooded(entity.level(),entity.position()))) apply(entity,Status.WET,SOAK_TICKS,1);
         if (!entity.getPersistentData().contains("magicka:statuses")) return;
+        if (entity.isInLava() && data(entity).contains(Status.WET.name())) remove(entity,Status.WET);
         var tag = data(entity); long now = entity.level().getGameTime();
         for (Status status : Status.values()) {
             if (tag.contains(status.name()) && tag.getLongOr(status.name(), 0L) <= now) { tag.remove(status.name()); tag.remove(status.name()+"_strength"); }
@@ -86,9 +106,14 @@ public final class MagicStatuses {
             if (has(entity,Status.SLOW_FALLING)) entity.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING,15,0,false,false));
             if (has(entity,Status.HASTE)) entity.addEffect(new MobEffectInstance(MobEffects.SPEED,15,Math.clamp(tag.getIntOr("HASTE_strength", 0),1,4),false,false));
             if (has(entity,Status.OBSCURED)) entity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS,15,0,false,false));
-            if (has(entity,Status.WET)) entity.clearFire();
+            if (has(entity,Status.WET)) {
+                entity.clearFire();
+                if (!entity.isInWater() && entity.level() instanceof net.minecraft.server.level.ServerLevel level)
+                    level.sendParticles(net.minecraft.core.particles.ParticleTypes.FALLING_WATER,entity.getX(),entity.getY()+entity.getBbHeight()*.6,entity.getZ(),3,entity.getBbWidth()*.35,entity.getBbHeight()*.3,entity.getBbWidth()*.35,0);
+            }
             tag.putDouble("cold", Math.max(0,tag.getDoubleOr("cold", 0)-2));
             tag.putDouble("charge",Math.max(0,tag.getDoubleOr("charge", 0)-3));
+            if (entity instanceof net.minecraft.world.entity.player.Player) icons(entity,tag,now);
             int mask = mask(entity);
             if (tag.getIntOr("last_mask", 0) != mask || now % 40 == 0) {
                 PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity,new MagicNetwork.Statuses(entity.getId(),mask));

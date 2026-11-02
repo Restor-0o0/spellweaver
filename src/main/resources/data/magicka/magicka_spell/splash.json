@@ -5,8 +5,7 @@
   },
   "name": "Splash",
   "tier": "Signature",
-
-  "incantation": "2",
+  "keys": "2",
   "tags": "SETUP/CC",
   "shape": "projectile",
   "origin": "caster_front",

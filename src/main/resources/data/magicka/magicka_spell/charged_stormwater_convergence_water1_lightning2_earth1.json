@@ -7,8 +7,7 @@
   },
   "name": "Charged Stormwater Convergence",
   "tier": "Family Variant",
-
-  "incantation": "2445",
+  "keys": "2445",
   "tags": "SETUP/CC/DMG/BREAK",
   "shape": "chain",
   "origin": "aim_hit",

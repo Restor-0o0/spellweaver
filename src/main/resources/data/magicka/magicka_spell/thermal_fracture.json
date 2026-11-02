@@ -7,8 +7,7 @@
   },
   "name": "Thermal Fracture",
   "tier": "Signature",
-
-  "incantation": "135",
+  "keys": "135",
   "tags": "BREAK/DEBUFF/AOE",
   "shape": "targeted_zone",
   "origin": "aim_surface",

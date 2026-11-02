@@ -6,8 +6,7 @@
   },
   "name": "Thorn Spike",
   "tier": "Signature",
-
-  "incantation": "566",
+  "keys": "566",
   "tags": "BUILD/DMG/CC",
   "shape": "spike",
   "origin": "caster_feet",

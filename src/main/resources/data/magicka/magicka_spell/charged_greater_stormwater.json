@@ -6,8 +6,7 @@
   },
   "name": "Charged Greater Stormwater",
   "tier": "Family Variant",
-
-  "incantation": "2444",
+  "keys": "2444",
   "tags": "SETUP/CC/DMG",
   "shape": "chain",
   "origin": "aim_hit",

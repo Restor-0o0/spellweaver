@@ -1,14 +1,12 @@
 {
   "id": "magicka:unstable_suspension_convergence_water1_cold1_arcane2",
   "formula": {
-    "water": 1,
-    "cold": 1,
-    "arcane": 2
+    "arcane": 2,
+    "ice": 1
   },
   "name": "Unstable Suspension Convergence",
   "tier": "Family Variant",
-
-  "incantation": "2377",
+  "keys": "2377",
   "tags": "SETUP/CC/DEBUFF/BUILD",
   "shape": "targeted_zone",
   "origin": "aim_ground",
@@ -19,7 +17,8 @@
     "duration_ticks": 240,
     "interval_ticks": 20,
     "gravity": 0,
-    "burst_radius": 3.5
+    "burst_radius": 3.5,
+    "visual": "spires"
   },
   "construction": {
     "material": "ice",

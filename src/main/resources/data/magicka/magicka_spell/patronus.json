@@ -6,7 +6,7 @@
   },
   "name": "Silver Stag",
   "tier": "Signature",
-  "incantation": "6677",
+  "keys": "6677",
   "scroll": true,
   "tags": "DMG/CC",
   "shape": "summon_object",

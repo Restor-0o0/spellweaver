@@ -1,13 +1,12 @@
 {
   "id": "magicka:stone_wall",
+  "keys": "757",
   "formula": {
-    "earth": 1,
-    "arcane": 2
+    "arcane": 1,
+    "shield": 1
   },
   "name": "Stone Wall",
   "tier": "Signature",
-
-  "incantation": "577",
   "tags": "BUILD",
   "shape": "wall",
   "origin": "caster_feet",

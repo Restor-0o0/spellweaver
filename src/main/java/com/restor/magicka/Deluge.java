@@ -60,7 +60,7 @@ final class Deluge {
             }
             if (age % 4 == 0) level.playSound(null, BlockPos.containing(front), SoundEvents.GENERIC_SPLASH, SoundSource.PLAYERS, 1f, .7f + (float) t * .3f);
             AABB box = new AABB(front, front).inflate(half + 1, 2.5, half + 1).expandTowards(direction.scale(-1.5));
-            for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, box, e -> e != p && e.isAlive() && !struck.contains(e.getUUID()))) {
+            for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, box, e -> (e != p || MagicConfig.selfHarm()) && e.isAlive() && !struck.contains(e.getUUID()))) {
                 Vec3 rel = e.position().subtract(start);
                 if (rel.dot(direction) < reach - 2.5 || Math.abs(rel.dot(side)) > half + .8) continue;
                 struck.add(e.getUUID());

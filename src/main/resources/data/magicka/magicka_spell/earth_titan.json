@@ -1,10 +1,10 @@
 {
   "id": "magicka:earth_titan",
   "formula": {
-    "earth": 4,
-    "arcane": 1
+    "earth": 3,
+    "shield": 1
   },
-  "incantation": "55755",
+  "keys": "55755",
   "name": "Stone Titan",
   "tier": "Signature",
   "ultimate": true,

@@ -5,7 +5,7 @@
     "fire": 3,
     "lightning": 1
   },
-  "incantation": "71141",
+  "keys": "71141",
   "name": "Firestorm",
   "tier": "Signature",
   "ultimate": true,
@@ -20,7 +20,8 @@
     "duration_ticks": 320,
     "interval_ticks": 12,
     "gravity": 0,
-    "burst_radius": 9.0
+    "burst_radius": 9.0,
+    "visual": "emberfall"
   },
   "effects": [
     {

@@ -6,8 +6,7 @@
   },
   "name": "Wisp Light",
   "tier": "Signature",
-
-  "incantation": "677",
+  "keys": "677",
   "tags": "UTIL",
   "shape": "projectile",
   "origin": "caster_front",

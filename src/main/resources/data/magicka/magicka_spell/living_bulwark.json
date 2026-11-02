@@ -1,5 +1,6 @@
 {
   "id": "magicka:living_bulwark",
+  "keys": "765",
   "formula": {
     "earth": 1,
     "life": 1,
@@ -7,8 +8,6 @@
   },
   "name": "Living Bulwark",
   "tier": "Signature",
-
-  "incantation": "567",
   "tags": "BUILD/DEF/HEAL",
   "shape": "wall",
   "origin": "aim_ground",

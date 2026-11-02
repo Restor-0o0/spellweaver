@@ -5,8 +5,7 @@
   },
   "name": "Legion of the Dead",
   "tier": "Signature",
-
-  "incantation": "8888",
+  "keys": "8888",
   "scroll": true,
   "tags": "SUMMON",
   "shape": "summon_object",

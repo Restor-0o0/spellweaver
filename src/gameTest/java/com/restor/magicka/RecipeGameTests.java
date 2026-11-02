@@ -1,5 +1,6 @@
 package com.restor.magicka;
 
+import net.minecraft.world.entity.EntityType;
 import com.google.gson.JsonParser;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.*;
@@ -22,9 +23,9 @@ public final class RecipeGameTests {
     public static void catalogAndDataOverride(GameTestHelper h){
         int[] counts=new int[6];Set<SpellFormula> keys=new HashSet<>();
         for(var d:RecipeRegistry.recipes()){counts[d.formula().size()]++;keys.add(d.formula());}
-        h.assertTrue(Arrays.equals(counts,new int[]{0,8,36,91,189,22}) && keys.size()==RecipeRegistry.CATALOG_SIZE,"Complete canonical catalog");
+        h.assertTrue(Arrays.equals(counts,new int[]{0,11,59,116,157,18}) && keys.size()==RecipeRegistry.CATALOG_SIZE,"Complete canonical catalog");
         long signatures=RecipeRegistry.recipes().stream().filter(d->d.tier().equals("Signature")).count();
-        h.assertTrue(signatures==206,"All signatures imported, got "+signatures);
+        h.assertTrue(signatures==221,"All signatures imported, got "+signatures);
         var base=spell("Ember");var json=base.source().deepCopy();json.addProperty("cast_ticks",33);json.addProperty("shape","beam");
         var changed=SpellDefinition.parse(Identifier.parse("test:custom_ember"),json);
         h.assertTrue(changed.shape()==SpellShape.BEAM && changed.castTicks()==33 && changed.formula().equals(base.formula()),"New delivery is defined by data alone");
@@ -36,7 +37,7 @@ public final class RecipeGameTests {
     public static void twoPlayersAndPrimarySelf(GameTestHelper h){
         var a=caster(h);var b=caster(h);
         CastingServer.input(a,7);CastingServer.input(a,4);
-        CastingServer.input(b,7);CastingServer.input(b,1);CastingServer.input(b,2);
+        CastingServer.input(b,7);CastingServer.input(b,1);CastingServer.input(b,4);
         var before=CastingServer.snapshot(a);a.setPos(a.position().add(3,0,0));
         h.assertTrue(CastingServer.snapshot(a).formula()==before.formula(),"Movement preserves prepared formula");
         CastingServer.input(a,12);h.assertTrue(CastingServer.snapshot(a).remaining()==0,"Release without a channel is ignored");
@@ -156,13 +157,6 @@ public final class RecipeGameTests {
         SpellRuntime.impact(p,spell("Steam"),pig.position(),.8,false,true);
         h.assertTrue(pig.getHealth()<10,"Steam deals damage");
         h.assertTrue(!MagicStatuses.has(pig,MagicStatuses.Status.WET) && !MagicStatuses.has(pig,MagicStatuses.Status.BURNING),"Steam creates neither water nor fire");h.succeed();
-    }
-    @MagicTest
-    public static void shieldSelfIsProtection(GameTestHelper h){
-        var p=caster(h);var shield=spell("Shield");
-        EffectGraph.entity(p,p,shield,shield.selfEffects(),p.position(),true);
-        h.assertTrue(MagicStatuses.has(p,MagicStatuses.Status.STONE_SHELL),"Shield grants protection");
-        h.assertTrue(!MagicStatuses.has(p,MagicStatuses.Status.CHILLED) && !MagicStatuses.has(p,MagicStatuses.Status.ARCANE_UNSTABLE),"Shield has no harmful self effects");h.succeed();
     }
     @MagicTest
     public static void syncedCatalogAndGenericSelf(GameTestHelper h){

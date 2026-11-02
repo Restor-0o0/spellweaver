@@ -13,10 +13,9 @@ import net.minecraft.world.item.Items;
 public final class MagicUi {
     public static final int GOLD = 0xFFD4B77A, INK = 0xFF302B37, MUTED = 0xFFAFA6B9;
     private static final Item[] ICONS = {Items.BLAZE_POWDER, Items.WATER_BUCKET, Items.SNOWBALL,
-        Items.GLOWSTONE_DUST, Items.CLAY_BALL, Items.OAK_SAPLING, Items.AMETHYST_SHARD, Items.SKELETON_SKULL};
+        Items.GLOWSTONE_DUST, Items.CLAY_BALL, Items.OAK_SAPLING, Items.AMETHYST_SHARD, Items.SKELETON_SKULL,
+        Items.WIND_CHARGE, Items.ICE, Items.SHIELD};
     private static final ItemStack[] STACKS = new ItemStack[ICONS.length];
-    private static final Item[] COMPOSITE_ICONS = {Items.WIND_CHARGE, Items.PRISMARINE_CRYSTALS, Items.SHIELD};
-    private static final ItemStack[] COMPOSITES = new ItemStack[COMPOSITE_ICONS.length];
     public static void panel(GuiGraphicsExtractor g, int x, int y, int w, int h) {
         g.fill(x + 2, y + 3, x + w + 2, y + h + 3, 0x60000000);
         g.fill(x, y, x + w, y + h, 0xDF141820);
@@ -46,13 +45,7 @@ public final class MagicUi {
         return ElementBlend.composite(first,second);
     }
     public static void compositeSocket(GuiGraphicsExtractor g, int composite, int x, int y) {
-        int color = switch (composite) { case 0 -> 0xFFD8D4DC; case 1 -> 0xFF72E4F2; default -> 0xFFFFD95A; };
-        g.fill(x, y, x + 24, y + 24, 0xFF0E1119);g.outline(x, y, 24, 24, color);
-        if (COMPOSITES[composite] == null) {
-            if (!COMPOSITE_ICONS[composite].builtInRegistryHolder().areComponentsBound()) return;
-            COMPOSITES[composite] = new ItemStack(COMPOSITE_ICONS[composite]);
-        }
-        g.item(COMPOSITES[composite], x + 4, y + 3);g.fill(x + 6, y + 21, x + 18, y + 22, color);
+        socket(g, Element.values()[8 + composite], x, y, true);
     }
     public static void text(GuiGraphicsExtractor g, Component text, int x, int y, int color) {
         g.text(Minecraft.getInstance().font, text, x, y, color, false);

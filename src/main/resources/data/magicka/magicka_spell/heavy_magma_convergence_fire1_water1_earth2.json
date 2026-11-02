@@ -1,14 +1,12 @@
 {
   "id": "magicka:heavy_magma_convergence_fire1_water1_earth2",
   "formula": {
-    "fire": 1,
-    "water": 1,
-    "earth": 2
+    "earth": 2,
+    "steam": 1
   },
   "name": "Heavy Magma Convergence",
   "tier": "Family Variant",
-
-  "incantation": "1255",
+  "keys": "1255",
   "tags": "DMG/DOT/SETUP/CC/BREAK",
   "shape": "projectile",
   "origin": "caster_front",

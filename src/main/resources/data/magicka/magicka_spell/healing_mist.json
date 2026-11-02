@@ -1,0 +1,89 @@
+{
+  "id": "magicka:healing_mist",
+  "formula": {
+    "steam": 1,
+    "life": 1
+  },
+  "keys": "216",
+  "name": "Healing Steam",
+  "tier": "Signature",
+  "tags": "SUPPORT",
+  "shape": "targeted_zone",
+  "origin": "aim_ground",
+  "cast_ticks": 9,
+  "delivery": {
+    "radius": 3.5,
+    "speed": 1.0,
+    "duration_ticks": 200,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.0,
+    "visual": "mist"
+  },
+  "effects": [
+    {
+      "type": "conditional",
+      "condition": "ally",
+      "effects": [
+        {
+          "type": "heal",
+          "amount": 1.5
+        },
+        {
+          "type": "remove_status",
+          "status": "burning"
+        }
+      ]
+    },
+    {
+      "type": "conditional",
+      "condition": "undead",
+      "effects": [
+        {
+          "type": "deal_damage",
+          "amount": 1.5,
+          "element": "life"
+        }
+      ]
+    },
+    {
+      "type": "apply_status",
+      "status": "obscured",
+      "duration_ticks": 40,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "zone",
+    "effects": [
+      {
+        "type": "conditional",
+        "condition": "ally",
+        "effects": [
+          {
+            "type": "heal",
+            "amount": 1.5
+          },
+          {
+            "type": "remove_status",
+            "status": "burning"
+          }
+        ]
+      },
+      {
+        "type": "conditional",
+        "condition": "undead",
+        "effects": [
+          {
+            "type": "deal_damage",
+            "amount": 1.5,
+            "element": "life"
+          }
+        ]
+      }
+    ]
+  },
+  "primary": "Warm mist that mends allies.\nA mist at the aim point for 10 s, 3.5-block radius. Every second:\n• Allies heal 0.75 ❤ and stop burning\n• Undead take 0.75 ❤ life damage\n• Enemies are blinded for 2 s",
+  "self_description": "The same mist around you, without blinding.",
+  "balanced": true
+}

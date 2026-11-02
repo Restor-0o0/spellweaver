@@ -7,8 +7,7 @@
   },
   "name": "Frozen Cryostasis Convergence",
   "tier": "Family Variant",
-
-  "incantation": "3367",
+  "keys": "3367",
   "tags": "CC/DEBUFF/HEAL/BUFF/SETUP",
   "shape": "projectile",
   "origin": "caster_front",

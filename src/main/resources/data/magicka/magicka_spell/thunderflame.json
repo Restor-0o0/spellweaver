@@ -6,8 +6,7 @@
   },
   "name": "Thunderflame",
   "tier": "Signature",
-
-  "incantation": "114",
+  "keys": "114",
   "tags": "DMG/AOE/DOT",
   "shape": "burst_projectile",
   "origin": "caster_front",
