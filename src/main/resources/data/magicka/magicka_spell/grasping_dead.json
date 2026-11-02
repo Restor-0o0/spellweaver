@@ -6,7 +6,7 @@
   },
   "name": "Grasping Dead",
   "tier": "Signature",
-  "incantation": "58",
+  "keys": "58",
   "tags": "CC/DOT",
   "shape": "targeted_zone",
   "origin": "aim_hit",

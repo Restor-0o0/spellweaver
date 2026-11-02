@@ -7,8 +7,7 @@
   },
   "name": "Frozen Thermal Shock Convergence",
   "tier": "Family Variant",
-
-  "incantation": "1337",
+  "keys": "1337",
   "tags": "DMG/DOT/CC/DEBUFF/SETUP",
   "shape": "projectile",
   "origin": "caster_front",

@@ -1,13 +1,12 @@
 {
   "id": "magicka:flooded_greater_steam",
   "formula": {
-    "fire": 1,
-    "water": 3
+    "water": 2,
+    "steam": 1
   },
   "name": "Flooded Greater Steam",
   "tier": "Family Variant",
-
-  "incantation": "1222",
+  "keys": "1222",
   "tags": "DMG/DOT/SETUP/CC",
   "shape": "spray",
   "origin": "caster_front",

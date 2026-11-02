@@ -6,8 +6,7 @@
   },
   "name": "Heavy Greater Permafrost",
   "tier": "Family Variant",
-
-  "incantation": "3555",
+  "keys": "3555",
   "tags": "CC/DEBUFF/BREAK",
   "shape": "projectile",
   "origin": "caster_front",

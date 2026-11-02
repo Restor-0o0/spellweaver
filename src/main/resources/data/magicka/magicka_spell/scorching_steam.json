@@ -1,13 +1,12 @@
 {
   "id": "magicka:scorching_steam",
   "formula": {
-    "fire": 2,
-    "water": 1
+    "fire": 1,
+    "steam": 1
   },
+  "keys": "211",
   "name": "Scorching Steam",
   "tier": "Family Variant",
-
-  "incantation": "112",
   "tags": "DMG/DOT/SETUP/CC",
   "shape": "spray",
   "origin": "caster_front",

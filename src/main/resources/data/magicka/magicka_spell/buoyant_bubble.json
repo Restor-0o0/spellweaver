@@ -7,8 +7,7 @@
   },
   "name": "Buoyant Bubble",
   "tier": "Signature",
-
-  "incantation": "2267",
+  "keys": "2267",
   "tags": "MOVE/DEF/MEME",
   "shape": "summon_object",
   "origin": "aim_hit",

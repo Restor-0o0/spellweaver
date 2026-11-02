@@ -7,7 +7,7 @@
   },
   "name": "Scales of Judgment",
   "tier": "Signature",
-  "incantation": "347",
+  "keys": "347",
   "scroll": true,
   "tags": "CC",
   "shape": "direct_target",

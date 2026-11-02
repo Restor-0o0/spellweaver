@@ -7,8 +7,7 @@
   },
   "name": "Charged Plasma Convergence",
   "tier": "Family Variant",
-
-  "incantation": "1446",
+  "keys": "1446",
   "tags": "DMG/DOT/CC/HEAL/BUFF",
   "shape": "chain",
   "origin": "aim_hit",

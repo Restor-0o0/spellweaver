@@ -7,8 +7,7 @@
   },
   "name": "Slanted Wall",
   "tier": "Signature",
-
-  "incantation": "5677",
+  "keys": "5677",
   "tags": "BUILD",
   "shape": "wall",
   "origin": "caster_feet",

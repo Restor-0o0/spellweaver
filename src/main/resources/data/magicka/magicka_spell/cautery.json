@@ -6,8 +6,7 @@
   },
   "name": "Cautery",
   "tier": "Signature",
-
-  "incantation": "16",
+  "keys": "16",
   "tags": "DMG/DOT/HEAL/BUFF",
   "shape": "projectile",
   "origin": "caster_front",

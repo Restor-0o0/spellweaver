@@ -1,14 +1,13 @@
 {
   "id": "magicka:flooded_steam_convergence_fire1_water2_lightning1",
   "formula": {
-    "fire": 1,
-    "water": 2,
-    "lightning": 1
+    "water": 1,
+    "lightning": 1,
+    "steam": 1
   },
   "name": "Flooded Steam Convergence",
   "tier": "Family Variant",
-
-  "incantation": "1224",
+  "keys": "1224",
   "tags": "DMG/DOT/SETUP/CC",
   "shape": "spray",
   "origin": "caster_front",

@@ -7,8 +7,7 @@
   },
   "name": "Moving Bastion",
   "tier": "Signature",
-
-  "incantation": "5567",
+  "keys": "5567",
   "tags": "MOVE/DEF/BUILD",
   "shape": "platform",
   "origin": "under_target",

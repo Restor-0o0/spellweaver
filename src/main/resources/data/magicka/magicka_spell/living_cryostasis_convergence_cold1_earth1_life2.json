@@ -7,8 +7,7 @@
   },
   "name": "Living Cryostasis Convergence",
   "tier": "Family Variant",
-
-  "incantation": "3566",
+  "keys": "3566",
   "tags": "CC/DEBUFF/BREAK/HEAL/BUFF",
   "shape": "projectile",
   "origin": "caster_front",

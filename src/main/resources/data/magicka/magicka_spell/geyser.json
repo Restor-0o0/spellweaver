@@ -1,0 +1,51 @@
+{
+  "id": "magicka:geyser",
+  "formula": {
+    "steam": 1,
+    "earth": 1
+  },
+  "keys": "215",
+  "name": "Geyser",
+  "tier": "Signature",
+  "tags": "CC",
+  "shape": "targeted_zone",
+  "origin": "aim_ground",
+  "cast_ticks": 9,
+  "delivery": {
+    "radius": 2.0,
+    "speed": 1.0,
+    "duration_ticks": 60,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.0,
+    "visual": "geyser"
+  },
+  "effects": [
+    {
+      "type": "apply_force",
+      "amount": 0.15,
+      "lift": 1.0
+    },
+    {
+      "type": "set_wet",
+      "duration_ticks": 100
+    },
+    {
+      "type": "deal_damage",
+      "amount": 1.0,
+      "element": "fire"
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "set_wet",
+        "duration_ticks": 60
+      }
+    ]
+  },
+  "primary": "A boiling jet bursts from the ground.\nAt the aim point the geyser erupts three times in 3 s, 2-block radius:\n• Throws enemies high into the air\n• Damage 0.5 ❤ fire (×0.5 on wet)\n• Soaked for 5 s",
+  "self_description": "On you: soaked for 3 s.",
+  "balanced": true
+}

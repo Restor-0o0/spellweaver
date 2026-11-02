@@ -5,8 +5,7 @@
   },
   "name": "Torrent",
   "tier": "Signature",
-
-  "incantation": "222",
+  "keys": "222",
   "tags": "SETUP/CC",
   "shape": "spray",
   "origin": "caster_front",

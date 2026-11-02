@@ -8,7 +8,7 @@ import java.util.*;
 
 /** The spell cast by an element set that matches no named sequence: the lead element picks the form, every element adds its mechanic, pairs react. */
 public final class FusionRules {
-    private static final List<Element> PRIORITY = List.of(Element.EARTH, Element.LIGHTNING, Element.ARCANE, Element.DEATH, Element.LIFE, Element.COLD, Element.WATER, Element.FIRE);
+    private static final List<Element> PRIORITY = List.of(Element.SHIELD, Element.EARTH, Element.LIGHTNING, Element.ARCANE, Element.DEATH, Element.LIFE, Element.ICE, Element.COLD, Element.STEAM, Element.WATER, Element.FIRE);
     private static final double[] UNIT = {0, 1, 1.4, 1.8, 2.4, 3};
     private record Mark(ServerPlayer caster, long until) {}
     private static final Map<UUID, Mark> REBIRTH = new java.util.concurrent.ConcurrentHashMap<>();
@@ -20,12 +20,13 @@ public final class FusionRules {
 
     public static JsonObject build(SpellFormula f) {
         int n = f.size(); double u = UNIT[n];
-        int fire = f.fire(), water = f.water(), cold = f.cold(), lightning = f.lightning(), earth = f.earth(), life = f.life(), arcane = f.arcane(), death = f.death();
+        int fire = f.total(Element.FIRE), water = f.total(Element.WATER), cold = f.total(Element.COLD), steam = f.steam(), ice = f.ice(), lightning = f.lightning(), earth = f.total(Element.EARTH), life = f.life(), arcane = f.total(Element.ARCANE), death = f.death(), shield = f.shield();
         Element lead = lead(f);
         var json = new JsonObject(); var counts = new JsonObject(); var delivery = new JsonObject(); var effects = new JsonArray();
         for (Element e : Element.values()) if (f.count(e) > 0) counts.addProperty(e.name().toLowerCase(Locale.ROOT), f.count(e));
         String shape = switch (lead) {
             case EARTH -> n >= 3 ? "burst_projectile" : "projectile";
+            case ICE, SHIELD -> "projectile";
             case COLD -> water > 0 ? "projectile" : "spray";
             case ARCANE, DEATH, LIFE -> "beam";
             case LIGHTNING -> "chain";
@@ -38,7 +39,7 @@ public final class FusionRules {
         delivery.addProperty("duration_ticks", 80 + 40 * n);
         delivery.addProperty("interval_ticks", 20);
         delivery.addProperty("gravity", lead == Element.EARTH ? .03 : 0);
-        if (lead == Element.COLD && water > 0) delivery.addProperty("fan", n >= 4 ? 5 : 3);
+        if (lead == Element.ICE || lead == Element.COLD && water > 0) delivery.addProperty("fan", n >= 4 ? 5 : 3);
         if (shape.equals("beam")) { delivery.addProperty("beam_width", .12 + .04 * n); if (n >= 4) delivery.addProperty("end_burst", (1 + .4 * n) * catalysis); }
         if (fire > 0 && lightning > 0) delivery.addProperty("plasma", true);
 
@@ -81,7 +82,10 @@ public final class FusionRules {
             if (death >= 3) effects.add(conditional("low_health", damage("death", 40)));
             if (life > 0) effects.add(node("rebirth", "duration_ticks", 60));
         }
-        if (fire > 0 && water > 0) effects.add(status("obscured", 40, 1));
+        if (fire > 0 && water > 0) effects.add(status("obscured", 40 + 40 * steam, 1));
+        if (steam > 0) effects.add(damage("fire", .5 * u * steam));
+        if (ice > 0) effects.add(damage("earth", .8 * u * ice));
+        if (shield > 0) effects.add(node("apply_force", "amount", .7 + .4 * shield, "lift", .25));
 
         json.add("formula", counts);
         json.addProperty("name", fire == 0 && water == 0 && cold == 0 && lightning == 0 && earth > 0 && life == 0 && arcane > 0 && death == 0 ? "Shield" : "Fusion");

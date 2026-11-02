@@ -48,7 +48,7 @@ public record GearRule(Set<Element> elements, Set<SpellShape> shapes, Set<String
     public boolean matches(SpellDefinition spell) {
         if (spell.ultimate() || spell.formula().size() < minSize) return false;
         if (!shapes.isEmpty() && !shapes.contains(spell.shape())) return false;
-        if (!elements.isEmpty() && elements.stream().noneMatch(e -> spell.formula().count(e) > 0)) return false;
+        if (!elements.isEmpty() && elements.stream().noneMatch(e -> spell.formula().total(e) > 0)) return false;
         return tags.isEmpty() || SpellTags.of(spell).stream().anyMatch(tags::contains);
     }
 

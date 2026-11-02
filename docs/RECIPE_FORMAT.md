@@ -44,7 +44,8 @@ my_spells/
 
 | Поле | Значение |
 | --- | --- |
-| `formula` | Количества `fire`, `water`, `cold`, `lightning`, `earth`, `life`, `arcane` |
+| `formula` | Количества `fire`, `water`, `cold`, `lightning`, `earth`, `life`, `arcane`, `death` и производных `steam` (Вода + Огонь), `ice` (Вода + Холод) |
+| `keys` | Порядок клавиш строкой номеров базовых стихий (`"12"` → Пар). Обязателен, если в формуле есть `steam` или `ice` и нет `incantation`; набор этих клавиш со слиянием обязан дать формулу |
 | `name`, `tier`, `tags`, `primary`, `self_description` | Тексты книги |
 | `shape` | `projectile`, `burst_projectile`, `beam`, `spray`, `chain`, `targeted_explosion`, `targeted_zone`, `nova`, `platform`, `pillar`, `wall`, `bridge`, `stair`, `ramp`, `growth`, `direct_target`, `dash`, `summon_object`, `mine` |
 | `origin` | `caster`, `caster_feet`, `caster_front`, `aim_hit`, `aim_block`, `aim_point`, `target_entity`, `under_target`, `corpse_target`, `aim_surface`, `aim_ground` |

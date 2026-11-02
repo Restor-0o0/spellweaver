@@ -6,8 +6,7 @@
   },
   "name": "Stasis Field",
   "tier": "Signature",
-
-  "incantation": "337",
+  "keys": "337",
   "tags": "AOE/CC",
   "shape": "targeted_zone",
   "origin": "aim_ground",
@@ -19,7 +18,8 @@
     "interval_ticks": 20,
     "gravity": 0,
     "burst_radius": 2.9,
-    "slow_projectiles": true
+    "slow_projectiles": true,
+    "visual": "spires"
   },
   "construction": {
     "material": "ice",

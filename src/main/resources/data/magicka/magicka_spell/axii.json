@@ -7,7 +7,7 @@
   },
   "name": "Calming Sign",
   "tier": "Signature",
-  "incantation": "346",
+  "keys": "346",
   "scroll": true,
   "tags": "CC",
   "shape": "spray",

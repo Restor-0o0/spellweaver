@@ -1,0 +1,56 @@
+{
+  "id": "magicka:poison_mist",
+  "formula": {
+    "steam": 1,
+    "death": 1
+  },
+  "keys": "218",
+  "name": "Poison Mist",
+  "tier": "Signature",
+  "tags": "AOE/ZONE",
+  "shape": "targeted_zone",
+  "origin": "aim_ground",
+  "cast_ticks": 9,
+  "delivery": {
+    "radius": 3.0,
+    "speed": 1.0,
+    "duration_ticks": 160,
+    "interval_ticks": 20,
+    "gravity": 0,
+    "burst_radius": 3.0,
+    "visual": "mist"
+  },
+  "effects": [
+    {
+      "type": "drain_life",
+      "amount": 0.6,
+      "fraction": 0.5
+    },
+    {
+      "type": "apply_status",
+      "status": "withering",
+      "duration_ticks": 60,
+      "strength": 1
+    },
+    {
+      "type": "apply_status",
+      "status": "obscured",
+      "duration_ticks": 40,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "apply_status",
+        "status": "withering",
+        "duration_ticks": 60,
+        "strength": 1
+      }
+    ]
+  },
+  "primary": "A choking deathly fog.\nA fog at the aim point for 8 s, 3-block radius. Every second, whoever is inside:\n• Drains 0.3 ❤, half of it heals you\n• Withering for 3 s\n• Blindness for 2 s",
+  "self_description": "On you: Withering for 3 s.",
+  "balanced": true
+}

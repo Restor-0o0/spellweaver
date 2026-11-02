@@ -7,8 +7,7 @@
   },
   "name": "Preservation Field",
   "tier": "Signature",
-
-  "incantation": "367",
+  "keys": "367",
   "tags": "DEF/HEAL/CC",
   "shape": "targeted_zone",
   "origin": "aim_ground",
@@ -19,7 +18,8 @@
     "duration_ticks": 200,
     "interval_ticks": 20,
     "gravity": 0,
-    "burst_radius": 2.8
+    "burst_radius": 2.8,
+    "visual": "spires"
   },
   "construction": {
     "material": "ice",

@@ -12,6 +12,8 @@ public final class Formula {
         return true;
     }
     public void clear() { elements.clear(); }
+    public void remove(int index) { elements.remove(index); }
+    public void set(int index, Element element) { elements.set(index, element); }
     public List<Element> elements() { return List.copyOf(elements); }
     public int count(Element element) { return (int) elements.stream().filter(e -> e == element).count(); }
     public boolean has(Element element) { return count(element) > 0; }
@@ -45,7 +47,7 @@ public final class Formula {
     public static boolean valid(int bits) {
         if (bits <= 0) return false;
         Formula formula = unpack(bits);
-        return !formula.empty() && (formula.packed() == bits || formula.legacyPacked() == bits && !formula.has(Element.DEATH));
+        return !formula.empty() && (formula.packed() == bits || formula.legacyPacked() == bits && formula.elements().stream().allMatch(e -> e.ordinal() < 7));
     }
     public SpellFormula key() { return SpellFormula.of(this); }
     public boolean construction() { return !empty() && RecipeRegistry.resolve(key()).shape().construction(); }

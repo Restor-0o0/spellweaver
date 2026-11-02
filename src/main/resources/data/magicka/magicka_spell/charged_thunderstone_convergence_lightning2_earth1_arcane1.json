@@ -1,5 +1,6 @@
 {
   "id": "magicka:charged_thunderstone_convergence_lightning2_earth1_arcane1",
+  "keys": "7445",
   "formula": {
     "lightning": 2,
     "earth": 1,
@@ -7,8 +8,6 @@
   },
   "name": "Charged Thunderstone Convergence",
   "tier": "Family Variant",
-
-  "incantation": "4457",
   "tags": "DMG/CC/BREAK/SETUP/BUILD",
   "shape": "chain",
   "origin": "aim_hit",

@@ -1,0 +1,59 @@
+{
+  "id": "magicka:fire_wall",
+  "formula": {
+    "shield": 1,
+    "fire": 1
+  },
+  "keys": "571",
+  "name": "Fire Wall",
+  "tier": "Signature",
+  "tags": "AOE/ZONE",
+  "shape": "targeted_zone",
+  "origin": "aim_ground",
+  "cast_ticks": 9,
+  "delivery": {
+    "radius": 1.1,
+    "speed": 1.0,
+    "duration_ticks": 200,
+    "interval_ticks": 10,
+    "gravity": 0,
+    "burst_radius": 3.0,
+    "row": 5,
+    "row_spacing": 1.6,
+    "visual": "pyre"
+  },
+  "effects": [
+    {
+      "type": "deal_damage",
+      "amount": 1.0,
+      "element": "fire"
+    },
+    {
+      "type": "modify_temperature",
+      "amount": 40
+    },
+    {
+      "type": "apply_status",
+      "status": "burning",
+      "duration_ticks": 60,
+      "strength": 1
+    }
+  ],
+  "self": {
+    "mode": "generic",
+    "effects": [
+      {
+        "type": "deal_damage",
+        "amount": 1.0,
+        "element": "fire"
+      },
+      {
+        "type": "modify_temperature",
+        "amount": 40
+      }
+    ]
+  },
+  "primary": "A line of flame across your view.\nFive fire patches in a row at the aim point for 10 s. Every 0.5 s, whoever stands in the flame:\n• Damage 0.5 ❤ fire (×0.5 on wet)\n• Heat: sets on fire for 3 s",
+  "self_description": "On you:\n• Damage 0.5 ❤ fire\n• Heat",
+  "balanced": true
+}

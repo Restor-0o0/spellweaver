@@ -42,8 +42,11 @@ public final class EffectGraph {
         boolean frozen = MagicStatuses.has(target,MagicStatuses.Status.FROZEN) || MagicStatuses.has(target,MagicStatuses.Status.BRITTLE);
         float damage = executeEntity(caster,target,spell,graph,origin,self,frozen);
         if (damage > 0 && canHarm(caster,target)) {
-            if (target instanceof Player && target != caster) damage *= MagicConfig.PLAYER_DAMAGE.get().floatValue();
+            if (target instanceof Player && (target != caster || !self)) damage *= MagicConfig.PLAYER_DAMAGE.get().floatValue();
+            if (target == caster && !self) damage *= MagicConfig.selfHarmScale();
             com.restor.magicka.enemy.MagicEnemies.hurt(target,target == caster ? caster.damageSources().magic() : caster.damageSources().indirectMagic(caster,caster),damage,caster,spell,frozen);
+            if (!target.isAlive()) DeathFx.play(target,spell.formula());
+            Conduction.puddle(caster,target,spell,graph,origin);
         }
     }
     private static float executeEntity(ServerPlayer caster, LivingEntity target, SpellDefinition spell, List<JsonObject> graph, Vec3 origin, boolean self, boolean frozen) {
@@ -73,6 +76,21 @@ public final class EffectGraph {
                     if (Set.of("regenerating","stone_shell","slow_falling","haste").contains(status) || canHarm(caster,target)) { MagicStatuses.apply(target,status,ticks,strength); MagicGear.status(caster,target,status); }
                 }
                 case "apply_effect" -> SupportMagic.effect(caster,target,text(node,"effect",""),ticks,strength);
+                case "polymorph" -> PolymorphManager.apply(caster,target,text(node,"entity","minecraft:sheep"),ticks,node.has("allow_large_targets") && node.get("allow_large_targets").getAsBoolean());
+                case "remove_status" -> MagicStatuses.remove(target,MagicStatuses.Status.valueOf(text(node,"status","").toUpperCase(Locale.ROOT)));
+                case "apply_force" -> {
+                    if (!canHarm(caster,target)) break;
+                    Vec3 direction = target.position().subtract(origin).normalize();
+                    if (direction.lengthSqr() < .001) direction = caster.getLookAngle();
+                    double lift = number(node,"lift",0);
+                    if (target instanceof Player && (target != caster || !self)) { amount *= MagicConfig.PLAYER_KNOCKBACK; lift = lift*MagicConfig.PLAYER_KNOCKBACK+.1; }
+                    target.push(direction.x*amount,lift,direction.z*amount); target.hurtMarked = true;
+                }
+                case "conditional" -> {
+                    boolean passes = switch(text(node,"condition","")) { case "wet" -> MagicStatuses.has(target,MagicStatuses.Status.WET); case "was_frozen","brittle" -> frozen; case "self" -> self;
+                        case "low_health" -> target.getHealth() < target.getMaxHealth()*.2F; case "ally" -> ally(caster,target); case "undead" -> target.isInvertedHealAndHarm(); default -> false; };
+                    if (passes) damage += executeEntity(caster,target,spell,children(node),origin,self,frozen);
+                }
                 case "thermal_shock" -> {
                     if (!canHarm(caster,target)) break;
                     if (MagicStatuses.has(target,MagicStatuses.Status.BURNING) || MagicStatuses.has(target,MagicStatuses.Status.FROZEN)) {
@@ -83,19 +101,6 @@ public final class EffectGraph {
                     MagicStatuses.apply(target,MagicStatuses.Status.BRITTLE,ticks,1);
                 }
                 case "rebirth" -> { if (canHarm(caster,target) && !(target instanceof Player)) FusionRules.markRebirth(caster,target,ticks); }
-                case "polymorph" -> PolymorphManager.apply(caster,target,text(node,"entity","minecraft:sheep"),ticks,node.has("allow_large_targets") && node.get("allow_large_targets").getAsBoolean());
-                case "remove_status" -> MagicStatuses.remove(target,MagicStatuses.Status.valueOf(text(node,"status","").toUpperCase(Locale.ROOT)));
-                case "apply_force" -> {
-                    if (!canHarm(caster,target)) break;
-                    Vec3 direction = target.position().subtract(origin).normalize();
-                    if (direction.lengthSqr() < .001) direction = caster.getLookAngle();
-                    target.push(direction.x*amount,number(node,"lift",0),direction.z*amount); target.hurtMarked = true;
-                }
-                case "conditional" -> {
-                    boolean passes = switch(text(node,"condition","")) { case "wet" -> MagicStatuses.has(target,MagicStatuses.Status.WET); case "was_frozen","brittle" -> frozen; case "self" -> self;
-                        case "low_health" -> target.getHealth() < target.getMaxHealth()*.2F; case "ally" -> ally(caster,target); case "undead" -> target.isInvertedHealAndHarm(); default -> false; };
-                    if (passes) damage += executeEntity(caster,target,spell,children(node),origin,self,frozen);
-                }
                 case "delay" -> SpellRuntime.delay(caster,Math.clamp((int)number(node,"ticks",20),1,1200), () -> {
                     if (target.isAlive() && target.level() == caster.level()) entity(caster,target,spell,children(node),origin,self);
                 });
@@ -106,7 +111,6 @@ public final class EffectGraph {
     }
     public static void world(ServerPlayer caster, SpellDefinition spell, List<JsonObject> graph, Vec3 point, boolean self, boolean allowSpawn) {
         for (JsonObject node : graph) switch(text(node,"type","")) {
-            case "ignite_ground" -> WorldMagic.ignite(caster,point,number(node,"radius",2));
             case "modify_temperature" -> WorldMagic.temperature(caster,point,number(node,"amount",0),spell);
             case "set_wet" -> {
                 SupportMagic.extinguish(caster,point,Math.clamp(spell.number("radius",2),2,4));
@@ -124,6 +128,7 @@ public final class EffectGraph {
             case "place_glowstone" -> SupportMagic.glowstone(caster,point,number(node,"offset_y",0));
             case "reveal" -> SupportMagic.reveal(caster,point,number(node,"radius",24),(int)number(node,"duration_ticks",600));
             case "extinguish" -> SupportMagic.extinguish(caster,point,number(node,"radius",5));
+            case "ignite_ground" -> WorldMagic.ignite(caster,point,number(node,"radius",2));
             case "revive" -> RevivalManager.revive(caster,point,spell.number("radius",3),(float)number(node,"health_fraction",.3));
             case "create_construction" -> { if (allowSpawn) MagicConstructionManager.start(caster,spell,self,point); }
             case "spawn_zone" -> { if (allowSpawn) SpellRuntime.zone(caster,spell,point,(int)number(node,"duration_ticks",100),number(node,"radius",2),false,false); }

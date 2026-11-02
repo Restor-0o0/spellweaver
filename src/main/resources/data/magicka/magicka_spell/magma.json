@@ -6,8 +6,7 @@
   },
   "name": "Magma",
   "tier": "Signature",
-
-  "incantation": "15",
+  "keys": "15",
   "tags": "DMG/DOT/BREAK",
   "shape": "projectile",
   "origin": "caster_front",

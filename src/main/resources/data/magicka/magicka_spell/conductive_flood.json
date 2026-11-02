@@ -6,8 +6,7 @@
   },
   "name": "Conductive Flood",
   "tier": "Signature",
-
-  "incantation": "224",
+  "keys": "224",
   "tags": "AOE/SETUP/CC",
   "shape": "targeted_zone",
   "origin": "aim_ground",
@@ -18,7 +17,8 @@
     "duration_ticks": 160,
     "interval_ticks": 20,
     "gravity": 0,
-    "burst_radius": 2.8
+    "burst_radius": 2.8,
+    "visual": "pool"
   },
   "construction": {
     "material": "earth",

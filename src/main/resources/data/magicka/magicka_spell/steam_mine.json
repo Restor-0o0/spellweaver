@@ -1,13 +1,12 @@
 {
   "id": "magicka:steam_mine",
   "formula": {
-    "fire": 1,
-    "water": 1,
-    "arcane": 1
+    "arcane": 1,
+    "steam": 1
   },
   "name": "Steam Cloud",
   "tier": "Signature",
-  "incantation": "127",
+  "keys": "127",
   "tags": "DMG/AOE/DOT/CC",
   "shape": "projectile",
   "origin": "caster_front",
@@ -18,7 +17,8 @@
     "duration_ticks": 120,
     "interval_ticks": 20,
     "gravity": 0,
-    "burst_radius": 1.2
+    "burst_radius": 1.2,
+    "visual": "totem"
   },
   "construction": {
     "material": "earth",
