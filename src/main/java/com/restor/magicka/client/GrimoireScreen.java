@@ -19,8 +19,8 @@ import java.util.*;
 
 /** Every spell keeps a fixed page in catalog order, blank pages follow up to the number of possible formulas; narrow screens show one page and slide the book. */
 public final class GrimoireScreen extends Screen {
-    private static final String[] TAGS={"damage","heal","control","construction","destruction","summon","utility","defense"};
-    private static final Item[] TAG_ICONS={Items.IRON_SWORD,Items.GOLDEN_APPLE,Items.COBWEB,Items.BRICKS,Items.TNT,Items.ZOMBIE_HEAD,Items.COMPASS,Items.SHIELD};
+    private static final String[] TAGS={"damage","heal","control","construction","destruction","summon","utility","defense","mining"};
+    private static final Item[] TAG_ICONS={Items.IRON_SWORD,Items.GOLDEN_APPLE,Items.COBWEB,Items.BRICKS,Items.TNT,Items.ZOMBIE_HEAD,Items.COMPASS,Items.SHIELD,Items.IRON_PICKAXE};
     private static final int PANEL=88,TOP=4,MAX_HEIGHT=560,MIN_HALF=150,LEAF=11,STAGGER=2,OPEN_IN=7,OPEN_TURN=14,SEGMENTS=10,MUTED_INK=0xFF816B50,RUNE_INK=0x40302B37,FACT_INK=0x5A4A3A,CELL=18,CELL_W=20;
     private static final float RATIO=1.42f;
     private static final int FORMULAS=formulas();

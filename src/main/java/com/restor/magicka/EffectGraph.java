@@ -11,8 +11,8 @@ import java.util.*;
 
 public final class EffectGraph {
     private static final Set<String> TYPES = Set.of("deal_damage","heal","apply_status","remove_status","apply_force","set_wet","modify_temperature","add_charge",
-            "spawn_projectile","spawn_zone","create_construction","destroy_blocks","heave_blocks","chain_targets","delay","conditional","revive","grow_plants","brittle_terrain","drain_life","summon_undead","raise_dead",
-            "apply_effect","polymorph","place_light","light_path","light_ring","place_glowstone","reveal","extinguish","thermal_shock","rebirth","ignite_ground");
+            "spawn_projectile","spawn_zone","create_construction","destroy_blocks","mine_blocks","heave_blocks","chain_targets","delay","conditional","revive","grow_plants","brittle_terrain","drain_life","summon_undead","raise_dead",
+            "apply_effect","polymorph","place_light","light_path","light_ring","place_glowstone","reveal","extinguish","thermal_shock","rebirth","ignite_ground","magma_ground","magma_crust","steam_cloud");
     public static void validate(JsonObject node, int depth) {
         String type = text(node,"type","");
         if (!TYPES.contains(type) || depth > 6) throw new IllegalArgumentException("Invalid effect graph node " + type);
@@ -111,6 +111,7 @@ public final class EffectGraph {
         return damage;
     }
     public static void world(ServerPlayer caster, SpellDefinition spell, List<JsonObject> graph, Vec3 point, boolean self, boolean allowSpawn) {
+        FusionRules.world(caster,spell,point,self);
         for (JsonObject node : graph) switch(text(node,"type","")) {
             case "ignite_ground" -> WorldMagic.ignite(caster,point,number(node,"radius",2));
             case "modify_temperature" -> WorldMagic.temperature(caster,point,number(node,"amount",0),spell);
@@ -119,6 +120,10 @@ public final class EffectGraph {
                 if (allowSpawn) SpellRuntime.wetZone(caster,point,Math.min(2,spell.number("radius",1)),(int)number(node,"duration_ticks",160));
             }
             case "destroy_blocks" -> WorldMagic.destroy(caster,point,(int)number(node,"budget",1),number(node,"radius",1),spell.ultimate());
+            case "mine_blocks" -> MiningMagic.mine(caster,point,text(node,"mode","single"),(int)number(node,"budget",1),(int)number(node,"depth",1),number(node,"radius",0),(int)number(node,"tier",0),node.has("smelt") && node.get("smelt").getAsBoolean(),node.has("bulk_only") && node.get("bulk_only").getAsBoolean(),node.has("universal") && node.get("universal").getAsBoolean());
+            case "magma_ground" -> WorldMagic.magmaGround(caster,point,number(node,"radius",2),(int)number(node,"duration_ticks",120));
+            case "magma_crust" -> WorldMagic.magmaCrust(caster,point,number(node,"radius",2));
+            case "steam_cloud" -> WorldMagic.steamCloud(caster,point,number(node,"radius",2));
             case "heave_blocks" -> WorldMagic.heave(caster,point,(int)number(node,"budget",8),number(node,"radius",3),number(node,"lift",.6));
             case "brittle_terrain" -> WorldMagic.brittle(caster,point,number(node,"radius",2));
             case "grow_plants" -> WorldMagic.grow(caster,point,(int)number(node,"budget",1));

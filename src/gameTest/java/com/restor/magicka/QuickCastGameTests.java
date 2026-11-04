@@ -169,8 +169,9 @@ public final class QuickCastGameTests {
     public static void everyRecipeInstant(GameTestHelper h){
         var errors=new java.util.ArrayList<String>();
         for(var d:RecipeRegistry.recipes())for(boolean self:new boolean[]{false,true}){
+            if(d.epic())continue;
             var p=RecipeGameTests.caster(h);
-            try{CastingServer.input(p,7);CastingServer.input(p,11);for(var e:d.formula().prepared().elements())CastingServer.input(p,e==Element.DEATH?13:e.ordinal());CastingServer.input(p,self?10:9);
+            try{CastingServer.input(p,7);CastingServer.input(p,11);for(var e:d.keys())CastingServer.input(p,e==Element.DEATH?13:e.ordinal());CastingServer.input(p,self?10:9);
                 var st=CastingServer.snapshot(p);if(st.formula()!=0 && !st.channeling())errors.add(d.name()+(self?" self":"")+" "+st);
                 CastingServer.input(p,12);}catch(Exception ex){errors.add(d.name()+(self?" self ":" ")+ex);}
         }

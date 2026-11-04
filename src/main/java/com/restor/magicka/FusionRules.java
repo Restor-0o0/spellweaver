@@ -3,12 +3,14 @@ package com.restor.magicka;
 import com.google.gson.*;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import java.util.*;
 
 /** The spell cast by an element set that matches no named sequence: the lead element picks the form, every element adds its mechanic, pairs react. */
 public final class FusionRules {
-    private static final List<Element> PRIORITY = List.of(Element.SHIELD, Element.EARTH, Element.LIGHTNING, Element.ARCANE, Element.DEATH, Element.LIFE, Element.ICE, Element.COLD, Element.STEAM, Element.WATER, Element.FIRE);
+    public enum TerrainReaction { NONE, MAGMA, STEAM, CRUST }
+    private static final List<Element> PRIORITY = List.of(Element.SHIELD, Element.MAGMA, Element.EARTH, Element.LIGHTNING, Element.ARCANE, Element.DEATH, Element.LIFE, Element.ICE, Element.COLD, Element.STEAM, Element.WATER, Element.FIRE);
     private static final double[] UNIT = {0, 1, 1.4, 1.8, 2.4, 3};
     private record Mark(ServerPlayer caster, long until) {}
     private static final Map<UUID, Mark> REBIRTH = new java.util.concurrent.ConcurrentHashMap<>();
@@ -20,13 +22,13 @@ public final class FusionRules {
 
     public static JsonObject build(SpellFormula f) {
         int n = f.size(); double u = UNIT[n];
-        int fire = f.total(Element.FIRE), water = f.total(Element.WATER), cold = f.total(Element.COLD), steam = f.steam(), ice = f.ice(), lightning = f.lightning(), earth = f.total(Element.EARTH), life = f.life(), arcane = f.total(Element.ARCANE), death = f.death(), shield = f.shield();
+        int fire = f.total(Element.FIRE), water = f.total(Element.WATER), cold = f.total(Element.COLD), steam = f.steam(), ice = f.ice(), lightning = f.lightning(), earth = f.total(Element.EARTH), life = f.life(), arcane = f.total(Element.ARCANE), death = f.death(), shield = f.shield(), magma = f.magma();
         Element lead = lead(f);
         var json = new JsonObject(); var counts = new JsonObject(); var delivery = new JsonObject(); var effects = new JsonArray();
         for (Element e : Element.values()) if (f.count(e) > 0) counts.addProperty(e.name().toLowerCase(Locale.ROOT), f.count(e));
         String shape = switch (lead) {
             case EARTH -> n >= 3 ? "burst_projectile" : "projectile";
-            case ICE, SHIELD -> "projectile";
+            case ICE, SHIELD, MAGMA -> "projectile";
             case COLD -> water > 0 ? "projectile" : "spray";
             case ARCANE, DEATH, LIFE -> "beam";
             case LIGHTNING -> "chain";
@@ -38,14 +40,21 @@ public final class FusionRules {
         delivery.addProperty("speed", .8 + .06 * n);
         delivery.addProperty("duration_ticks", 80 + 40 * n);
         delivery.addProperty("interval_ticks", 20);
-        delivery.addProperty("gravity", lead == Element.EARTH ? .03 : 0);
+        delivery.addProperty("gravity", lead == Element.EARTH || lead == Element.MAGMA ? .03 : 0);
         if (lead == Element.ICE || lead == Element.COLD && water > 0) delivery.addProperty("fan", n >= 4 ? 5 : 3);
         if (shape.equals("beam")) { delivery.addProperty("beam_width", .12 + .04 * n); if (n >= 4) delivery.addProperty("end_burst", (1 + .4 * n) * catalysis); }
         if (fire > 0 && lightning > 0) delivery.addProperty("plasma", true);
 
         if (fire > 0 && cold > 0) effects.add(node("thermal_shock", "amount", 2 * u, "duration_ticks", 120));
         if (fire > 0) { effects.add(damage("fire", u * fire)); effects.add(node("modify_temperature", "amount", 40 * fire)); }
-        if (water > 0) { effects.add(node("set_wet", "duration_ticks", 120 + 40 * water)); effects.add(node("apply_force", "amount", water >= 3 ? 1.6 : .2 * water, "lift", water >= 3 ? .35 : .05)); }
+        if (magma > 0) {
+            effects.add(damage("fire", u * magma));
+            if(water+steam==0 && ice==0)effects.add(status("burning",80 + 20 * magma,1));
+        }
+        if (water > 0) {
+            if(magma==0)effects.add(node("set_wet","duration_ticks",120 + 40 * water));
+            effects.add(node("apply_force","amount",water>=3?1.6:.2*water,"lift",water>=3?.35:.05));
+        }
         if (cold > 0) {
             effects.add(damage("cold", .5 * u * cold)); effects.add(node("modify_temperature", "amount", -40 * cold));
             if (cold >= 3 || water > 0) effects.add(status("frozen", cold >= 3 ? 60 : 40, 1));
@@ -94,6 +103,24 @@ public final class FusionRules {
         json.addProperty("shape", shape); json.addProperty("origin", shape.equals("chain") ? "aim_hit" : "caster_front");
         json.add("delivery", delivery); json.add("effects", effects);
         return json;
+    }
+
+    public static TerrainReaction terrainReaction(SpellFormula formula) {
+        int magma=formula.magma(), steam=formula.steam(), water=formula.water();
+        if(magma==0)return steam>0?TerrainReaction.STEAM:TerrainReaction.NONE;
+        if(formula.ice()>0||water+steam>=2)return TerrainReaction.CRUST;
+        if(water+steam>0)return TerrainReaction.STEAM;
+        return TerrainReaction.MAGMA;
+    }
+    public static void world(ServerPlayer caster, SpellDefinition spell, net.minecraft.world.phys.Vec3 point, boolean self) {
+        if(self || !spell.source().has("fusion"))return;
+        double radius=Mth.clamp(spell.number("burst_radius",spell.number("radius",2.5)),.5,8);
+        switch(terrainReaction(spell.formula())) {
+            case MAGMA -> WorldMagic.magmaGround(caster,point,radius,120);
+            case STEAM -> WorldMagic.steamCloud(caster,point,radius);
+            case CRUST -> WorldMagic.magmaCrust(caster,point,radius);
+            default -> {}
+        }
     }
 
     /** Marks a victim so that dying soon after rises it on the caster's side. */

@@ -32,6 +32,8 @@ public final class MagicBlocks {
             properties().strength(1F).lightLevel(s -> 10).sound(SoundType.AMETHYST)));
     public static final RegistryObject<Block> PUDDLE = BLOCKS.register("magic_puddle", () -> new TemporaryBlock(
             properties().strength(0F).noCollission().noOcclusion().sound(SoundType.SLIME_BLOCK)));
+    public static final RegistryObject<Block> MAGMA_PUDDLE = BLOCKS.register("magic_magma_puddle", () -> new TemporaryBlock(
+            properties().strength(0F).noCollission().noOcclusion().lightLevel(s -> 8).sound(SoundType.NETHERRACK)));
     public static final RegistryObject<Block> LIGHT = BLOCKS.register("magic_light", () -> new TemporaryBlock(
             properties().strength(0F).noCollission().noOcclusion().lightLevel(s -> 15).sound(SoundType.AMETHYST_CLUSTER)));
     public static final RegistryObject<Block> GLOW = BLOCKS.register("magic_glowstone", () -> new TemporaryBlock(
@@ -41,7 +43,7 @@ public final class MagicBlocks {
     public static final RegistryObject<Block> COIL = BLOCKS.register("magic_tesla_coil", () -> new TemporaryBlock(
             properties().strength(1.5F).lightLevel(s -> 13).sound(SoundType.COPPER)));
     public static final RegistryObject<BlockEntityType<MagicBlockEntity>> DATA = ENTITIES.register(
-            "construction", () -> BlockEntityType.Builder.of(MagicBlockEntity::new, EARTH.get(), ICE.get(), ROOT.get(), ARCANE.get(), PUDDLE.get(), LIGHT.get(), GLOW.get(), COPPER.get(), COIL.get()).build(null));
+            "construction", () -> BlockEntityType.Builder.of(MagicBlockEntity::new, EARTH.get(), ICE.get(), ROOT.get(), ARCANE.get(), PUDDLE.get(), MAGMA_PUDDLE.get(), LIGHT.get(), GLOW.get(), COPPER.get(), COIL.get()).build(null));
 
     private static BlockBehaviour.Properties properties() {
         return BlockBehaviour.Properties.of().noLootTable().pushReaction(PushReaction.BLOCK);
@@ -52,6 +54,7 @@ public final class MagicBlocks {
         @Override public net.minecraft.world.phys.shapes.VoxelShape getShape(BlockState state, net.minecraft.world.level.BlockGetter level,
                 BlockPos pos, net.minecraft.world.phys.shapes.CollisionContext context) {
             if (state.is(PUDDLE.get())) return Block.box(0, 0, 0, 16, 1, 16);
+            if (state.is(MAGMA_PUDDLE.get())) return Block.box(0, 0, 0, 16, 2, 16);
             if (state.is(ROOT.get())) return Block.box(2, 0, 2, 14, 16, 14);
             if (state.is(LIGHT.get())) return Block.box(5, 5, 5, 11, 11, 11);
             return super.getShape(state, level, pos, context);
@@ -59,6 +62,9 @@ public final class MagicBlocks {
         @Override public void entityInside(BlockState state, Level level, BlockPos pos, net.minecraft.world.entity.Entity entity) {
             if (!level.isClientSide && state.is(PUDDLE.get()) && entity instanceof net.minecraft.world.entity.LivingEntity living) {
                 MagicStatuses.apply(living, MagicStatuses.Status.WET, 100, 1); living.clearFire();
+            }
+            if (!level.isClientSide && state.is(MAGMA_PUDDLE.get()) && entity instanceof net.minecraft.world.entity.LivingEntity living) {
+                MagicStatuses.apply(living, MagicStatuses.Status.BURNING, 60, 0);
             }
             if (state.is(ROOT.get()) && entity instanceof net.minecraft.world.entity.Mob living) {
                 living.makeStuckInBlock(state, new net.minecraft.world.phys.Vec3(0.6, 1, 0.6));
@@ -108,7 +114,7 @@ public final class MagicBlocks {
         public void initialize(UUID owner, UUID construction, BlockPos root, long expires, boolean floating) {
             this.owner = owner; this.construction = construction; this.root = root.immutable();
             this.expires = expires; this.floating = floating; setChanged();
-            material=getBlockState().is(ICE.get())?"ice":getBlockState().is(ROOT.get())?"root":getBlockState().is(ARCANE.get())?"arcane":getBlockState().is(LIGHT.get())?"light":getBlockState().is(GLOW.get())?"glowstone":getBlockState().is(COPPER.get()) || getBlockState().is(COIL.get())?"copper":"earth";
+            material=getBlockState().is(MAGMA_PUDDLE.get())?"magma":getBlockState().is(ICE.get())?"ice":getBlockState().is(ROOT.get())?"root":getBlockState().is(ARCANE.get())?"arcane":getBlockState().is(LIGHT.get())?"light":getBlockState().is(GLOW.get())?"glowstone":getBlockState().is(COPPER.get()) || getBlockState().is(COIL.get())?"copper":"earth";
         }
         private void tick(ServerLevel world) {
             if (integrity <= 0) { world.removeBlock(worldPosition, false); return; }

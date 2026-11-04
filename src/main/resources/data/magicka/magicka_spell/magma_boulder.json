@@ -1,8 +1,9 @@
 {
   "id": "magicka:magma_boulder",
   "formula": {
-    "fire": 2,
-    "earth": 2
+    "fire": 1,
+    "earth": 1,
+    "magma": 1
   },
   "name": "Magma Boulder",
   "tier": "Signature",

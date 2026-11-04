@@ -24,19 +24,20 @@ public final class WorldPlacement {
         var world = player.serverLevel();
         if (!allowed(player, pos)) return false;
         BlockState old = world.getBlockState(pos);
-        if (!replaceable(old, !state.is(MagicBlocks.PUDDLE.get()))) return false;
-        boolean supported = floating || old.is(MagicBlocks.PUDDLE.get());
+        boolean soft = state.is(MagicBlocks.PUDDLE.get()) || state.is(MagicBlocks.MAGMA_PUDDLE.get());
+        if (!replaceable(old, !soft)) return false;
+        boolean supported = floating || old.is(MagicBlocks.PUDDLE.get()) || old.is(MagicBlocks.MAGMA_PUDDLE.get());
         for (Direction face : Direction.values()) {
             BlockPos neighbor = pos.relative(face);
             if (world.hasChunkAt(neighbor)) {
                 var neighborState = world.getBlockState(neighbor);
                 if (neighborState.isFaceSturdy(world, neighbor, face.getOpposite()) ||
-                        neighborState.getBlock() instanceof MagicBlocks.TemporaryBlock && !neighborState.is(MagicBlocks.PUDDLE.get())) supported = true;
+                        neighborState.getBlock() instanceof MagicBlocks.TemporaryBlock && !neighborState.is(MagicBlocks.PUDDLE.get()) && !neighborState.is(MagicBlocks.MAGMA_PUDDLE.get())) supported = true;
             }
         }
         if (!supported) return false;
         var occupants = world.getEntitiesOfClass(LivingEntity.class, new AABB(pos), LivingEntity::isAlive);
-        boolean solid = !state.is(MagicBlocks.PUDDLE.get());
+        boolean solid = !soft;
         if (solid && !occupants.isEmpty()) {
             if (!push) return false;
             for (LivingEntity entity : occupants) {
@@ -62,6 +63,7 @@ public final class WorldPlacement {
                     : state.is(MagicBlocks.ROOT.get()) ? MagicConfig.ROOT_LIFE.get()
                     : state.is(MagicBlocks.ARCANE.get()) ? MagicConfig.ARCANE_LIFE.get() : MagicConfig.EARTH_LIFE.get();
             if (state.is(MagicBlocks.PUDDLE.get())) lifetime = 300;
+            if (state.is(MagicBlocks.MAGMA_PUDDLE.get())) lifetime = 100;
             data.initialize(player.getUUID(), construction, root,
                     MagicConfig.LIFETIME.get() ? world.getGameTime() + lifetime : Long.MAX_VALUE, floating);
         }
@@ -70,7 +72,7 @@ public final class WorldPlacement {
         return true;
     }
     static boolean replaceable(BlockState old, boolean solid) {
-        return old.isAir() || old.is(MagicBlocks.PUDDLE.get()) || solid && old.canBeReplaced() && !(old.getBlock() instanceof MagicBlocks.TemporaryBlock)
+        return old.isAir() || old.is(MagicBlocks.PUDDLE.get()) || old.is(MagicBlocks.MAGMA_PUDDLE.get()) || solid && old.canBeReplaced() && !(old.getBlock() instanceof MagicBlocks.TemporaryBlock)
                 && !old.getFluidState().is(net.minecraft.tags.FluidTags.LAVA);
     }
     static boolean destroy(ServerPlayer player, BlockPos pos) {

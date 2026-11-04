@@ -40,7 +40,7 @@ public final class SpellVisuals {
             if(cue.age%3!=0)continue;
             var elements=remaining(blend);if(elements.isEmpty())continue;Element element=elements.get((cue.age/3)%elements.size());
             Vec3 point=p.from().lerp(p.to(),Math.min(1,cue.age/(double)Math.max(1,p.ticks())));
-            ParticleOptions particle=switch(element){case FIRE->ParticleTypes.FLAME;case WATER->ParticleTypes.BUBBLE_POP;case COLD->ParticleTypes.SNOWFLAKE;case LIGHTNING->ParticleTypes.ELECTRIC_SPARK;case EARTH->ParticleTypes.CRIT;case LIFE->ParticleTypes.HAPPY_VILLAGER;case ARCANE->ParticleTypes.END_ROD;case DEATH->ParticleTypes.SOUL;case STEAM->ParticleTypes.CLOUD;case ICE->ParticleTypes.ITEM_SNOWBALL;case SHIELD->ParticleTypes.WAX_ON;};
+            ParticleOptions particle=switch(element){case FIRE->ParticleTypes.FLAME;case WATER->ParticleTypes.BUBBLE_POP;case COLD->ParticleTypes.SNOWFLAKE;case LIGHTNING->ParticleTypes.ELECTRIC_SPARK;case EARTH->ParticleTypes.CRIT;case LIFE->ParticleTypes.HAPPY_VILLAGER;case ARCANE->ParticleTypes.END_ROD;case DEATH->ParticleTypes.SOUL;case STEAM->ParticleTypes.CLOUD;case ICE->ParticleTypes.ITEM_SNOWBALL;case SHIELD->ParticleTypes.WAX_ON;case MAGMA->ParticleTypes.LAVA;};
             mc.level.addParticle(particle,point.x,point.y,point.z,0,.025,0);
         }
     }

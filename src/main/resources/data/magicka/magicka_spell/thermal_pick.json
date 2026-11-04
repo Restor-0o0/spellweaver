@@ -1,0 +1,36 @@
+{
+  "id": "magicka:thermal_pick",
+  "formula": {
+    "cold": 1,
+    "magma": 1
+  },
+  "name": "Thermal Pick",
+  "tier": "Signature",
+  "keys": "153",
+  "tags": "BREAK/UTIL",
+  "shape": "direct_target",
+  "origin": "aim_hit",
+  "cast_ticks": 9,
+  "delivery": {},
+  "construction": {},
+  "effects": [
+    {
+      "type": "mine_blocks",
+      "reach": 4.5,
+      "mode": "single",
+      "budget": 1,
+      "depth": 1,
+      "radius": 0,
+      "tier": 1,
+      "smelt": false,
+      "bulk_only": false
+    }
+  ],
+  "self": {
+    "mode": "effects",
+    "effects": []
+  },
+  "primary": "A sharp pulse of heat and cold cracks one targeted block. Mines with stone-tier strength and drops items normally.",
+  "self_description": "Mining magic needs a targeted block.",
+  "balanced": true
+}

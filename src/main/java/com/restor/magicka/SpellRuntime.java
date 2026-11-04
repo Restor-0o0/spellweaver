@@ -54,6 +54,7 @@ public final class SpellRuntime {
         return true;
     }
     static double reach(ServerPlayer p, SpellDefinition s) {
+        for(JsonObject node:s.effects())if(node.has("type") && node.get("type").getAsString().equals("mine_blocks") && node.has("reach"))return Mth.clamp(node.get("reach").getAsDouble(),1,128);
         if (s.shape()!=SpellShape.SPRAY || !leads(s,Element.FIRE)) return UNLIMITED;
         return Mth.clamp((3+3*s.formula().total(Element.FIRE))*MagicStats.power(p,MagicStats.Stat.FIRE),4,64);
     }
@@ -88,7 +89,8 @@ public final class SpellRuntime {
             p.serverLevel().playSound(null,p.blockPosition(),net.minecraft.sounds.SoundEvents.LIGHTNING_BOLT_THUNDER,net.minecraft.sounds.SoundSource.PLAYERS,.8f,.7f);
         }
         p.swing(net.minecraft.world.InteractionHand.MAIN_HAND,true);
-        Vec3 point = origin(p,s.origin());
+        double reach = reach(p,s);
+        Vec3 point = reach < UNLIMITED && s.effects().stream().anyMatch(node->node.has("type") && node.get("type").getAsString().equals("mine_blocks")) ? SpellAim.hit(p,reach).getLocation() : origin(p,s.origin());
         if(s.origin()!=OriginMode.CASTER && s.origin()!=OriginMode.CASTER_FEET && s.origin()!=OriginMode.CASTER_FRONT){
             LivingEntity aimed=target(p);if(aimed!=null)point=aimed.position();
         }
@@ -110,7 +112,6 @@ public final class SpellRuntime {
             }
             return;
         }
-        double reach = reach(p,s);
         if (point.distanceToSqr(p.getEyePosition()) > reach*reach) point = p.getEyePosition().add(p.getLookAngle().scale(reach));
         if (s.shape().construction()) { MagicConstructionManager.start(p,s,false,point); return; }
         if (s.delivery().has("meteor")) { meteor(p,s,point,false); return; }

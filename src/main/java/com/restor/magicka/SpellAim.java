@@ -1,6 +1,7 @@
 package com.restor.magicka;
 
 import net.minecraft.core.*;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
@@ -16,14 +17,22 @@ public final class SpellAim {
         return true;
     }
     public static BlockHitResult hit(Player player){
-        Vec3 from=player.getEyePosition(),look=player.getLookAngle(),step=look.scale(8),current=from;
+        return trace(player,Double.POSITIVE_INFINITY);
+    }
+    public static BlockHitResult hit(Player player,double range){
+        return trace(player,Mth.clamp(range,.1,4096));
+    }
+    private static BlockHitResult trace(Player player,double max){
+        Vec3 from=player.getEyePosition(),look=player.getLookAngle(),current=from;
         if(!Double.isFinite(look.x+look.y+look.z) || look.lengthSqr()<.1)return BlockHitResult.miss(from,Direction.UP,BlockPos.containing(from));
-        while(true){
-            Vec3 next=current.add(step);
+        for(double travelled=0;travelled<max;){
+            double nextTravelled=Math.min(max,travelled+8);
+            Vec3 next=from.add(look.scale(nextTravelled));
             if(!loaded(player.level(),current,next))return BlockHitResult.miss(current,Direction.getNearest(look.x,look.y,look.z),BlockPos.containing(current));
             var hit=player.level().clip(new ClipContext(current,next,ClipContext.Block.COLLIDER,ClipContext.Fluid.NONE,player));
-            if(hit.getType()!=HitResult.Type.MISS)return hit;current=next;
+            if(hit.getType()!=HitResult.Type.MISS)return hit;current=next;travelled=nextTravelled;
         }
+        return BlockHitResult.miss(current,Direction.getNearest(look.x,look.y,look.z),BlockPos.containing(current));
     }
     public static LivingEntity entity(Player player,Vec3 end){
         Vec3 start=player.getEyePosition(),direction=end.subtract(start).normalize();double distance=start.distanceTo(end);

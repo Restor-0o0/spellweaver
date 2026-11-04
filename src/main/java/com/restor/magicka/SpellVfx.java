@@ -48,6 +48,7 @@ public final class SpellVfx {
         if(blend.steam()>0)EpicMagic.fx(p.serverLevel(),ParticleTypes.CLOUD,point.x,point.y,point.z,per*blend.steam(),spread,spread,spread,.035);
         if(blend.ice()>0){EpicMagic.fx(p.serverLevel(),ParticleTypes.SNOWFLAKE,point.x,point.y,point.z,per*blend.ice(),spread,spread,spread,.015);EpicMagic.fx(p.serverLevel(),new BlockParticleOption(ParticleTypes.BLOCK,net.minecraft.world.level.block.Blocks.PACKED_ICE.defaultBlockState()),point.x,point.y,point.z,Math.max(1,per*blend.ice()/2),spread,spread,spread,.04);}
         if(blend.shield()>0)EpicMagic.fx(p.serverLevel(),ParticleTypes.WAX_ON,point.x,point.y,point.z,per*blend.shield(),spread,spread,spread,.04);
+        if(blend.magma()>0)EpicMagic.fx(p.serverLevel(),ParticleTypes.LAVA,point.x,point.y,point.z,per*blend.magma(),spread,spread,spread,.025);
         for(Element e:Element.BASE){
             int amount=blend.count(e);if(amount==0)continue;
             ParticleOptions type=switch(e){case FIRE->ParticleTypes.FLAME;case WATER->ParticleTypes.SPLASH;case COLD->ParticleTypes.SNOWFLAKE;case LIGHTNING->ParticleTypes.ELECTRIC_SPARK;case EARTH->new BlockParticleOption(ParticleTypes.BLOCK,net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());case LIFE->ParticleTypes.HAPPY_VILLAGER;case ARCANE->ParticleTypes.END_ROD;default->ParticleTypes.SOUL;};
@@ -55,7 +56,7 @@ public final class SpellVfx {
         }
     }
     public static void sound(ServerPlayer p,SpellDefinition s,Vec3 point,boolean impact){
-        var blend=ElementBlend.of(s.formula());SoundEvent sound=blend.steam()>0?SoundEvents.FIRE_EXTINGUISH:blend.ice()>0?SoundEvents.GLASS_BREAK:blend.shield()>0?SoundEvents.SHIELD_BLOCK:s.formula().lightning()>0?SoundEvents.TRIDENT_THUNDER:blend.fire()>0?SoundEvents.FIRECHARGE_USE:blend.cold()>0?SoundEvents.GLASS_BREAK:blend.water()>0?SoundEvents.GENERIC_SPLASH:blend.earth()>0?SoundEvents.STONE_BREAK:s.formula().death()>0?SoundEvents.WITHER_SKELETON_AMBIENT:s.formula().life()>0?SoundEvents.AMETHYST_BLOCK_CHIME:SoundEvents.BEACON_POWER_SELECT;
+        var blend=ElementBlend.of(s.formula());SoundEvent sound=blend.steam()>0?SoundEvents.FIRE_EXTINGUISH:blend.ice()>0?SoundEvents.GLASS_BREAK:blend.shield()>0?SoundEvents.SHIELD_BLOCK:blend.magma()>0?SoundEvents.LAVA_POP:s.formula().lightning()>0?SoundEvents.TRIDENT_THUNDER:blend.fire()>0?SoundEvents.FIRECHARGE_USE:blend.cold()>0?SoundEvents.GLASS_BREAK:blend.water()>0?SoundEvents.GENERIC_SPLASH:blend.earth()>0?SoundEvents.STONE_BREAK:s.formula().death()>0?SoundEvents.WITHER_SKELETON_AMBIENT:s.formula().life()>0?SoundEvents.AMETHYST_BLOCK_CHIME:SoundEvents.BEACON_POWER_SELECT;
         p.serverLevel().playSound(null,point.x,point.y,point.z,sound,SoundSource.PLAYERS,impact?.65f:.4f,impact?1.3f:1.0f);
     }
     private SpellVfx(){}

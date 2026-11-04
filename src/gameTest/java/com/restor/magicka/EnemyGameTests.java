@@ -33,11 +33,11 @@ public final class EnemyGameTests {
         h.assertTrue(ElementLocks.locked(p, Element.FIRE) && !ElementLocks.locked(p, Element.WATER), "Only the bound element is locked");
         CastingServer.input(p, Element.FIRE.ordinal());
         h.assertTrue(CastingServer.prepared(p).count(Element.FIRE) == 0, "A locked element cannot be typed");
-        CastingServer.input(p, Element.EARTH.ordinal());
-        h.assertTrue(CastingServer.prepared(p).count(Element.EARTH) == 1, "Other elements still work");
+        CastingServer.input(p, Element.WATER.ordinal());
+        h.assertTrue(CastingServer.prepared(p).count(Element.WATER) == 1, "Other elements still work");
         ElementLocks.clear(p);
         CastingServer.input(p, Element.FIRE.ordinal());
-        h.assertTrue(CastingServer.prepared(p).count(Element.FIRE) == 1, "Clearing the lock restores the element");
+        h.assertTrue(CastingServer.prepared(p).count(Element.STEAM) == 1, "Clearing the lock restores the element");
         h.succeed();
     }
 

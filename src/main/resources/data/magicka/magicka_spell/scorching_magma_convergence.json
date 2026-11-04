@@ -1,9 +1,9 @@
 {
   "id": "magicka:scorching_magma_convergence",
   "formula": {
-    "fire": 2,
-    "earth": 1,
-    "life": 1
+    "fire": 1,
+    "life": 1,
+    "magma": 1
   },
   "name": "Scorching Magma Convergence",
   "tier": "Family Variant",

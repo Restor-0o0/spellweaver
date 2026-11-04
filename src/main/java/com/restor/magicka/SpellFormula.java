@@ -3,23 +3,24 @@ package com.restor.magicka;
 import java.util.List;
 
 /** Immutable multiset key: equality and hashing never depend on input order. Derived elements fill one slot each. */
-public record SpellFormula(int fire, int water, int cold, int lightning, int earth, int life, int arcane, int death, int steam, int ice, int shield) {
+public record SpellFormula(int fire, int water, int cold, int lightning, int earth, int life, int arcane, int death, int steam, int ice, int shield, int magma) {
     public SpellFormula {
-        if (fire < 0 || water < 0 || cold < 0 || lightning < 0 || earth < 0 || life < 0 || arcane < 0 || death < 0 || steam < 0 || ice < 0 || shield < 0
-                || (long)fire + water + cold + lightning + earth + life + arcane + death + steam + ice + shield > Formula.MAX) throw new IllegalArgumentException("Formula must contain 0..5 elements");
+        if (fire < 0 || water < 0 || cold < 0 || lightning < 0 || earth < 0 || life < 0 || arcane < 0 || death < 0 || steam < 0 || ice < 0 || shield < 0 || magma < 0
+                || (long)fire + water + cold + lightning + earth + life + arcane + death + steam + ice + shield + magma > Formula.MAX) throw new IllegalArgumentException("Formula must contain 0..5 elements");
     }
-    public SpellFormula(int fire, int water, int cold, int lightning, int earth, int life, int arcane, int death) { this(fire, water, cold, lightning, earth, life, arcane, death, 0, 0, 0); }
+    public SpellFormula(int fire, int water, int cold, int lightning, int earth, int life, int arcane, int death, int steam, int ice, int shield) { this(fire, water, cold, lightning, earth, life, arcane, death, steam, ice, shield, 0); }
+    public SpellFormula(int fire, int water, int cold, int lightning, int earth, int life, int arcane, int death) { this(fire, water, cold, lightning, earth, life, arcane, death, 0, 0, 0, 0); }
     public SpellFormula(int fire, int water, int cold, int lightning, int earth, int life, int arcane) { this(fire, water, cold, lightning, earth, life, arcane, 0); }
-    public static SpellFormula of(int[] c) { return new SpellFormula(c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7], c[8], c[9], c[10]); }
-    public int size() { return fire + water + cold + lightning + earth + life + arcane + death + steam + ice + shield; }
-    public int count(Element e) { return switch(e) { case FIRE -> fire; case WATER -> water; case COLD -> cold; case LIGHTNING -> lightning; case EARTH -> earth; case LIFE -> life; case ARCANE -> arcane; case DEATH -> death; case STEAM -> steam; case ICE -> ice; case SHIELD -> shield; }; }
+    public static SpellFormula of(int[] c) { return new SpellFormula(c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7], c[8], c[9], c[10], c[11]); }
+    public int size() { return fire + water + cold + lightning + earth + life + arcane + death + steam + ice + shield + magma; }
+    public int count(Element e) { return switch(e) { case FIRE -> fire; case WATER -> water; case COLD -> cold; case LIGHTNING -> lightning; case EARTH -> earth; case LIFE -> life; case ARCANE -> arcane; case DEATH -> death; case STEAM -> steam; case ICE -> ice; case SHIELD -> shield; case MAGMA -> magma; }; }
     /** How much of a base element the formula carries, counting the parents of derived elements. */
     public int total(Element e) {
         int n = count(e);
         if (e.base()) for (Element d : Element.values()) if (!d.base() && d.parents().contains(e)) n += count(d);
         return n;
     }
-    public boolean derived() { return steam + ice + shield > 0; }
+    public boolean derived() { return steam + ice + shield + magma > 0; }
     public SpellFormula without(Element e) {
         int[] c = new int[Element.values().length];
         for (Element x : Element.values()) c[x.ordinal()] = count(x) - (x == e ? 1 : 0);

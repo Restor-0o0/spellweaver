@@ -42,7 +42,8 @@ public final class AuditGameTests {
                 .filter(o->Reactions.type(java.util.Arrays.stream(o).mapToObj(x->Element.values()[x]).toList(),true).size()==5).findFirst().orElseThrow();
         CastingServer.input(scrambled,7);for(int a:order)CastingServer.input(scrambled,a);CastingServer.input(scrambled,9);
         h.assertTrue(CastingServer.snapshot(spoken).total()==RecipeGameTests.spell("Earthquake").castTicks(),"The ritual order calls the ultimate");
-        h.assertTrue(CastingServer.snapshot(scrambled).total()==RecipeRegistry.fusion(RecipeGameTests.spell("Earthquake").formula()).castTicks(),"A scrambled order casts the plain fusion");
+        var scrambledFormula=Reactions.type(java.util.Arrays.stream(order).mapToObj(x->Element.values()[x]).toList(),true).key();
+        h.assertTrue(CastingServer.snapshot(scrambled).total()==RecipeRegistry.fusion(scrambledFormula).castTicks(),"A scrambled order casts the plain fusion");
         h.succeed();
     }
     @GameTest(template="empty")

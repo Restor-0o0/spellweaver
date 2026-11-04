@@ -1,0 +1,35 @@
+{
+  "id": "magicka:smelting_ray",
+  "formula": {
+    "magma": 2
+  },
+  "name": "Smelting Ray",
+  "tier": "Signature",
+  "keys": "1515",
+  "tags": "BREAK/UTIL",
+  "shape": "beam",
+  "origin": "aim_hit",
+  "cast_ticks": 9,
+  "delivery": {},
+  "construction": {},
+  "effects": [
+    {
+      "type": "mine_blocks",
+      "reach": 16,
+      "mode": "single",
+      "budget": 1,
+      "depth": 1,
+      "radius": 0,
+      "tier": 2,
+      "smelt": true,
+      "bulk_only": false
+    }
+  ],
+  "self": {
+    "mode": "effects",
+    "effects": []
+  },
+  "primary": "Concentrated magma mines one targeted block with iron-tier strength. Ore drops that have a furnace recipe are smelted immediately.",
+  "self_description": "Mining magic needs a targeted block.",
+  "balanced": true
+}

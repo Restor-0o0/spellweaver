@@ -2,9 +2,9 @@
   "id": "magicka:arcane_meteor",
   "keys": "7155",
   "formula": {
-    "fire": 1,
-    "earth": 2,
-    "arcane": 1
+    "earth": 1,
+    "arcane": 1,
+    "magma": 1
   },
   "name": "Arcane Meteor",
   "tier": "Signature",
