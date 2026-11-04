@@ -7,10 +7,10 @@ import java.util.Locale;
 public enum Element {
     FIRE(0xFFFF7043), WATER(0xFF42A5F5), COLD(0xFF80DEEA), LIGHTNING(0xFFAF8EFF),
     EARTH(0xFFBCAAA4), LIFE(0xFF81C784), ARCANE(0xFFFF70CF), DEATH(0xFFD04860),
-    STEAM(0xFFDCE3EA), ICE(0xFF8FB8FF), SHIELD(0xFFE8C66A);
+    STEAM(0xFFDCE3EA), ICE(0xFF8FB8FF), SHIELD(0xFFE8C66A), MAGMA(0xFFFF6B32);
 
     public static final List<Element> BASE = Arrays.stream(values()).filter(Element::base).toList();
-    private static final String CODES = "12345678SIW";
+    private static final String CODES = "12345678SIWM";
     public final int color;
     Element(int color) { this.color = color; }
     public String key() { return "element.magicka." + name().toLowerCase(Locale.ROOT); }
@@ -21,6 +21,7 @@ public enum Element {
             case STEAM -> List.of(WATER, FIRE);
             case ICE -> List.of(WATER, COLD);
             case SHIELD -> List.of(ARCANE, EARTH);
+            case MAGMA -> List.of(FIRE, EARTH);
             default -> List.of(this);
         };
     }

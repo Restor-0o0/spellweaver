@@ -1,6 +1,7 @@
 package com.restor.magicka;
 
 import net.minecraft.core.*;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
@@ -15,15 +16,17 @@ public final class SpellAim {
         for(int x=Math.min(ax,bx);x<=Math.max(ax,bx);x++)for(int z=Math.min(az,bz);z<=Math.max(az,bz);z++)if(!level.hasChunk(x,z))return false;
         return true;
     }
-    public static BlockHitResult hit(Player player){
-        Vec3 from=player.getEyePosition(),look=player.getLookAngle(),step=look.scale(8),current=from;
+    public static BlockHitResult hit(Player player){return hit(player,Double.POSITIVE_INFINITY);}
+    public static BlockHitResult hit(Player player,double range){
+        Vec3 from=player.getEyePosition(),look=player.getLookAngle(),step=look.scale(8),current=from;double cap=Double.isFinite(range)?Mth.clamp(range,.1,4096):Double.POSITIVE_INFINITY,travelled=0;
         if(!Double.isFinite(look.x+look.y+look.z) || look.lengthSqr()<.1)return BlockHitResult.miss(from,Direction.UP,new BlockPos(from));
-        while(true){
-            Vec3 next=current.add(step);
+        while(travelled<cap){
+            double advance=Math.min(8,cap-travelled);Vec3 next=current.add(look.scale(advance));
             if(!loaded(player.level,current,next))return BlockHitResult.miss(current,Direction.getNearest(look.x,look.y,look.z),new BlockPos(current));
             var hit=player.level.clip(new ClipContext(current,next,ClipContext.Block.COLLIDER,ClipContext.Fluid.NONE,player));
-            if(hit.getType()!=HitResult.Type.MISS)return hit;current=next;
+            if(hit.getType()!=HitResult.Type.MISS)return hit;current=next;travelled+=advance;
         }
+        return BlockHitResult.miss(current,Direction.getNearest(look.x,look.y,look.z),new BlockPos(current));
     }
     public static LivingEntity entity(Player player,Vec3 end){
         Vec3 start=player.getEyePosition(),direction=end.subtract(start).normalize();double distance=start.distanceTo(end);

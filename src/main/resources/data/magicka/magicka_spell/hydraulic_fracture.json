@@ -1,0 +1,41 @@
+{
+  "id": "magicka:hydraulic_fracture",
+  "formula": {
+    "water": 2,
+    "cold": 1,
+    "earth": 1
+  },
+  "name": "Hydro Erosion",
+  "tier": "Signature",
+  "keys": "2253",
+  "tags": "BREAK/UTIL",
+  "shape": "beam",
+  "origin": "caster_front",
+  "cast_mode": "channel",
+  "cast_ticks": 12,
+  "delivery": {
+    "beam_width": 0.18
+  },
+  "construction": {},
+  "effects": [
+    {
+      "type": "mine_blocks",
+      "reach": 14,
+      "mode": "single",
+      "budget": 1,
+      "depth": 1,
+      "radius": 0,
+      "tier": 3,
+      "smelt": false,
+      "bulk_only": false,
+      "universal": true
+    }
+  ],
+  "self": {
+    "mode": "effects",
+    "effects": []
+  },
+  "primary": "A sustained jet of pressurized water erodes any ordinary block, including wood and leaves, one at a time. Hold to bore forward; aim down or diagonally to change direction.",
+  "self_description": "Aim at terrain and hold the cast to bore with a pressurized stream.",
+  "balanced": true
+}

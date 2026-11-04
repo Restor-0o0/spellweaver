@@ -14,7 +14,7 @@ public final class MagicUi {
     private static final ItemStack[] ICONS = {
         new ItemStack(Items.BLAZE_POWDER), new ItemStack(Items.WATER_BUCKET), new ItemStack(Items.SNOWBALL),
         new ItemStack(Items.GLOWSTONE_DUST), new ItemStack(Items.CLAY_BALL), new ItemStack(Items.OAK_SAPLING), new ItemStack(Items.AMETHYST_SHARD), new ItemStack(Items.SKELETON_SKULL),
-        new ItemStack(Items.FIREWORK_STAR), new ItemStack(Items.PACKED_ICE), new ItemStack(Items.SHIELD)
+        new ItemStack(Items.FIREWORK_STAR), new ItemStack(Items.PACKED_ICE), new ItemStack(Items.SHIELD), new ItemStack(Items.MAGMA_CREAM)
     };
     public static void panel(GuiGraphics g, int x, int y, int w, int h) {
         g.fill(x + 2, y + 3, x + w + 2, y + h + 3, 0x60000000);

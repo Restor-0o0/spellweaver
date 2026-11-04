@@ -1,0 +1,36 @@
+{
+  "id": "magicka:vein_smelter",
+  "formula": {
+    "arcane": 1,
+    "magma": 2
+  },
+  "name": "Vein Smelter",
+  "tier": "Signature",
+  "keys": "15157",
+  "scroll": true,
+  "tags": "BREAK/UTIL",
+  "shape": "direct_target",
+  "origin": "aim_hit",
+  "cast_ticks": 14,
+  "delivery": {},
+  "construction": {},
+  "effects": [
+    {
+      "type": "mine_blocks",
+      "mode": "vein",
+      "budget": 8,
+      "depth": 8,
+      "radius": 6,
+      "tier": 2,
+      "smelt": true,
+      "bulk_only": false
+    }
+  ],
+  "self": {
+    "mode": "effects",
+    "effects": []
+  },
+  "primary": "Follows a connected ore vein from the targeted ore and mines up to 8 blocks with iron-tier strength. Suitable ore drops are smelted immediately.",
+  "self_description": "Mining magic needs a targeted ore block.",
+  "balanced": true
+}

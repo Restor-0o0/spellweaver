@@ -1,8 +1,8 @@
 {
   "id": "magicka:meteor_shower",
   "formula": {
-    "fire": 3,
-    "earth": 2
+    "fire": 1,
+    "magma": 2
   },
   "keys": "51151",
   "name": "Meteor Shower",
