@@ -227,10 +227,10 @@ public final class GrimoireScreen extends Screen {
     private void rebuild(boolean focus){
         clearWidgets();
         for(int i=0;i<TAGS.length;i++){String value=TAGS[i];
-            addRenderableWidget(new TagButton(panelX+3+i%4*21,tagsY()+i/4*18,19,16,TAG_ICONS[i],Component.translatable("book.magicka.tag."+value),b->refilter(()->tag=tag.equals(value)?"all":value),tag.equals(value)));}
+            addRenderableWidget(new TagButton(panelX+3+i%3*27,tagsY()+i/3*18,24,16,TAG_ICONS[i],Component.translatable("book.magicka.tag."+value),b->refilter(()->tag=tag.equals(value)?"all":value),tag.equals(value)));}
         var spell=shown();
         for(int i=1;i<=Formula.MAX;i++){int value=i;
-            var b=addRenderableWidget(new RuneButton(panelX+(PANEL-84)/2+(i-1)*17,tagsY()+38,16,16,Component.literal(Integer.toString(i)),btn->jump(value),spell!=null && spell.formula().size()==i));
+            var b=addRenderableWidget(new RuneButton(panelX+(PANEL-84)/2+(i-1)*17,tagsY()+56,16,16,Component.literal(Integer.toString(i)),btn->jump(value),spell!=null && spell.formula().size()==i));
             b.active=firstOfSize(i)>=0;b.setTooltip(Tooltip.create(Component.translatable("book.magicka.filter.points",i)));}
         for(Element element:Element.values()){int bit=1<<element.ordinal();
             addRenderableWidget(new RuneElement(sideX(1)+1+(element.base()?0:CELL_W),elementY(element),16,16,element,(elements&bit)!=0,b->refilter(()->elements^=bit)));}
@@ -567,7 +567,7 @@ public final class GrimoireScreen extends Screen {
     private void shade(GuiGraphics g,int side,int alpha){int l=side==0?x:spine,r=side==0?spine:x+bookWidth;g.fill(l,y,r,y+bookHeight,alpha<<24|0x2A1A10);}
     private void panel(GuiGraphics g,View now,int mouseX,int mouseY,float time){
         var mage=font.split(mageLine(),(int)((PANEL-10)/.75f));
-        int linesY=tagsY()+58;
+        int linesY=tagsY()+76;
         bar(g,panelX,y,PANEL,linesY-y+mage.size()*9+5,time+40);
         g.pose().pushPose();g.pose().translate(panelX+5,linesY,0);g.pose().scale(.75f,.75f,1);
         for(int i=0;i<mage.size();i++)g.drawString(font,mage.get(i),0,i*11,0xFFB59BD0,false);
