@@ -2,9 +2,8 @@
   "id": "magicka:volatile_magma_core",
   "keys": "517",
   "formula": {
-    "fire": 1,
-    "earth": 1,
-    "arcane": 1
+    "arcane": 1,
+    "magma": 1
   },
   "name": "Volatile Magma Core",
   "tier": "Signature",

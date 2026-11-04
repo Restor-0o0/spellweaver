@@ -1,0 +1,40 @@
+{
+  "id": "magicka:worldbreaker",
+  "formula": {
+    "cold": 1,
+    "arcane": 1,
+    "death": 1,
+    "magma": 1
+  },
+  "name": "Worldbreaker",
+  "tier": "Signature",
+  "keys": "15378",
+  "tags": "BREAK/UTIL",
+  "shape": "targeted_explosion",
+  "origin": "aim_hit",
+  "cast_ticks": 22,
+  "delivery": {
+    "radius": 2.2
+  },
+  "construction": {},
+  "effects": [
+    {
+      "type": "mine_blocks",
+      "mode": "volume",
+      "budget": 24,
+      "depth": 1,
+      "radius": 2.2,
+      "tier": 3,
+      "smelt": false,
+      "bulk_only": false,
+      "universal": true
+    }
+  ],
+  "self": {
+    "mode": "effects",
+    "effects": []
+  },
+  "primary": "An arcane burst breaks up to 24 ordinary blocks in a small sphere, including wood, leaves, and other breakable materials. Containers, fluids, protected blocks, and unbreakable blocks remain intact; normal drops are preserved.",
+  "self_description": "Worldbreaker needs a targeted block.",
+  "balanced": true
+}

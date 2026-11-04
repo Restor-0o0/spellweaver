@@ -33,6 +33,16 @@ public final class FusionGameTests {
         h.succeed();
     }
     @MagicTest
+    public static void fireAndEarthFuseIntoMagma(GameTestHelper h) {
+        var forward=Reactions.type(List.of(Element.FIRE,Element.EARTH),true);
+        var reverse=Reactions.type(List.of(Element.EARTH,Element.FIRE),true);
+        h.assertTrue(forward.size()==1 && forward.has(Element.MAGMA),"Fire then Earth fuses into Magma");
+        h.assertTrue(reverse.size()==1 && reverse.has(Element.MAGMA),"Earth then Fire fuses into Magma");
+        h.assertTrue(RecipeRegistry.resolve(forward.key()).name().equals("Magma"),"The fused rune resolves the migrated Magma spell");
+        int packed=forward.packed();
+        h.assertTrue(Formula.valid(packed) && Formula.unpack(packed).has(Element.MAGMA),"Magma survives packed formula serialization");h.succeed();
+    }
+    @MagicTest
     public static void thermalShockBurstsBurningTargets(GameTestHelper h) {
         var p = RecipeGameTests.caster(h);
         var pig = h.spawnWithNoFreeWill(EntityType.PIG, new BlockPos(3, 2, 3));

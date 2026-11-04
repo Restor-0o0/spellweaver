@@ -2,9 +2,9 @@
   "id": "magicka:volcanic_vent",
   "keys": "1715",
   "formula": {
-    "fire": 2,
-    "earth": 1,
-    "arcane": 1
+    "fire": 1,
+    "arcane": 1,
+    "magma": 1
   },
   "name": "Volcanic Vent",
   "tier": "Signature",
