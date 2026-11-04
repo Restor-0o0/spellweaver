@@ -225,10 +225,10 @@ public final class GrimoireScreen extends Screen {
     private void rebuild(boolean focus){
         clearWidgets();
         for(int i=0;i<TAGS.length;i++){String value=TAGS[i];
-            addRenderableWidget(new TagButton(panelX+3+i%4*21,tagsY()+i/4*18,19,16,TAG_ICONS[i],Component.translatable("book.magicka.tag."+value),b->refilter(()->tag=tag.equals(value)?"all":value),tag.equals(value)));}
+            addRenderableWidget(new TagButton(panelX+3+i%3*27,tagsY()+i/3*18,24,16,TAG_ICONS[i],Component.translatable("book.magicka.tag."+value),b->refilter(()->tag=tag.equals(value)?"all":value),tag.equals(value)));}
         var spell=shown();
         for(int i=1;i<=Formula.MAX;i++){int value=i;
-            var b=addRenderableWidget(new RuneButton(panelX+(PANEL-84)/2+(i-1)*17,tagsY()+38,16,16,Component.literal(Integer.toString(i)),btn->jump(value),spell!=null && spell.formula().size()==i));
+            var b=addRenderableWidget(new RuneButton(panelX+(PANEL-84)/2+(i-1)*17,tagsY()+56,16,16,Component.literal(Integer.toString(i)),btn->jump(value),spell!=null && spell.formula().size()==i));
             b.active=firstOfSize(i)>=0;b.setTooltip(Component.translatable("book.magicka.filter.points",i));}
         for(Element element:Element.values()){int bit=1<<element.ordinal();
             addRenderableWidget(new RuneElement(sideX(1)+1+(element.base()?0:CELL_W),elementY(element),16,16,element,(elements&bit)!=0,b->refilter(()->elements^=bit)));}
