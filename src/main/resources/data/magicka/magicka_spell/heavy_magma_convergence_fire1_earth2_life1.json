@@ -1,9 +1,9 @@
 {
   "id": "magicka:heavy_magma_convergence_fire1_earth2_life1",
   "formula": {
-    "fire": 1,
-    "earth": 2,
-    "life": 1
+    "earth": 1,
+    "life": 1,
+    "magma": 1
   },
   "name": "Heavy Magma Convergence",
   "tier": "Family Variant",

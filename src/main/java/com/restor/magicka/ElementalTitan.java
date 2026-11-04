@@ -274,7 +274,7 @@ public class ElementalTitan extends PathfinderMob implements ElementalBody {
         switch (e) {
             case FIRE -> Elementals.bolt(owner, spell, e, from, target, 1, .6, 2.5, graph);
             case WATER, STEAM -> Elementals.bolt(owner, spell, e, from, target, .9, .6, 2.5, graph);
-            case EARTH -> Elementals.bolt(owner, spell, e, from, target, .8, .8, 2.2, graph);
+            case EARTH, MAGMA -> Elementals.bolt(owner, spell, e, from, target, .8, .8, 2.2, graph);
             case LIFE -> Elementals.bolt(owner, spell, e, from, target, .8, .45, 2, graph);
             case COLD, ICE -> { for (var v : foes(target.position(), 8, 3)) Elementals.bolt(owner, spell, e, from, v, 1.2, .3, 0, graph); }
             case ARCANE -> { for (var v : foes(position(), REACH, 3)) Elementals.beam(owner, spell, e, from, v, graph); }
@@ -296,6 +296,7 @@ public class ElementalTitan extends PathfinderMob implements ElementalBody {
             case WATER -> { SpellRuntime.wetZone(owner, at, SLAM_RADIUS, 120); EpicMagic.fx(level, ParticleTypes.SPLASH, at.x, at.y + 1, at.z, 80, 1.5, 1.5, 1.5, .3); }
             case COLD, ICE -> SpellRuntime.freezeSurface(owner, at, 3);
             case STEAM -> EpicMagic.fx(level, ParticleTypes.CLOUD, at.x, at.y + 1, at.z, 80, 2, 1, 2, .05);
+            case MAGMA -> { for (int i = 0; i < 6; i++) EpicMagic.ignite(owner, BlockPos.containing(at.add(random.nextGaussian() * 2, -.5, random.nextGaussian() * 2))); WorldMagic.heave(owner, at, 6, 2, .5); }
             case LIGHTNING -> EpicMagic.strike(owner, spell, at, at.y + 9, 1.5);
             case EARTH -> WorldMagic.heave(owner, at, 10, 3, .7);
             case LIFE -> {

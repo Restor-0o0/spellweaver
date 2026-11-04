@@ -1,0 +1,35 @@
+{
+  "id": "magicka:gallery_cutter",
+  "formula": {
+    "cold": 1,
+    "magma": 2
+  },
+  "name": "Gallery Cutter",
+  "tier": "Signature",
+  "keys": "15153",
+  "tags": "BREAK/UTIL",
+  "shape": "direct_target",
+  "origin": "aim_hit",
+  "cast_ticks": 14,
+  "delivery": {},
+  "construction": {},
+  "effects": [
+    {
+      "type": "mine_blocks",
+      "mode": "plane",
+      "budget": 9,
+      "depth": 1,
+      "radius": 1,
+      "tier": 2,
+      "smelt": false,
+      "bulk_only": true
+    }
+  ],
+  "self": {
+    "mode": "effects",
+    "effects": []
+  },
+  "primary": "Cuts a 3×3 face through common rock with iron-tier strength. Ore blocks are exposed but left intact.",
+  "self_description": "Mining magic needs a targeted block.",
+  "balanced": true
+}

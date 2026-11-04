@@ -180,6 +180,7 @@ public class Elemental extends PathfinderMob implements ElementalBody {
         switch (e) {
             case FIRE -> Elementals.bolt(owner, spell, e, hand(), target, .9, .3, 0, graph);
             case WATER, STEAM -> Elementals.bolt(owner, spell, e, hand(), target, .75, .35, 0, graph);
+            case MAGMA -> Elementals.bolt(owner, spell, e, hand(), target, .8, .5, 1.5, graph);
             case COLD, ICE -> Elementals.bolt(owner, spell, e, hand(), target, 1.1, .2, 0, graph);
             case LIFE -> Elementals.bolt(owner, spell, e, hand(), target, .7, .25, 0, graph);
             case LIGHTNING, ARCANE -> Elementals.beam(owner, spell, e, hand(), target, graph);

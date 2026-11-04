@@ -1,8 +1,8 @@
 {
   "id": "magicka:molten_boulder",
   "formula": {
-    "fire": 1,
-    "earth": 2
+    "earth": 1,
+    "magma": 1
   },
   "name": "Molten Boulder",
   "tier": "Signature",

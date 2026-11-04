@@ -1,0 +1,36 @@
+{
+  "id": "magicka:ore_thread",
+  "formula": {
+    "cold": 1,
+    "arcane": 1,
+    "magma": 1
+  },
+  "name": "Ore Thread",
+  "tier": "Signature",
+  "keys": "1537",
+  "tags": "BREAK/UTIL",
+  "shape": "direct_target",
+  "origin": "aim_hit",
+  "cast_ticks": 14,
+  "delivery": {},
+  "construction": {},
+  "effects": [
+    {
+      "type": "mine_blocks",
+      "mode": "vein",
+      "budget": 8,
+      "depth": 8,
+      "radius": 6,
+      "tier": 2,
+      "smelt": false,
+      "bulk_only": false
+    }
+  ],
+  "self": {
+    "mode": "effects",
+    "effects": []
+  },
+  "primary": "Follows a connected ore vein from the targeted ore and mines up to 8 blocks with iron-tier strength. Drops remain unprocessed.",
+  "self_description": "Mining magic needs a targeted ore block.",
+  "balanced": true
+}

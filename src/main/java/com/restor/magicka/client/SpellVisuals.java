@@ -39,14 +39,14 @@ public final class SpellVisuals {
             if(cue.age%3!=0)continue;
             var elements=remaining(blend);if(elements.isEmpty())continue;Element element=elements.get((cue.age/3)%elements.size());
             Vec3 point=p.from().lerp(p.to(),Math.min(1,cue.age/(double)Math.max(1,p.ticks())));
-            ParticleOptions particle=switch(element){case FIRE->ParticleTypes.FLAME;case WATER->ParticleTypes.BUBBLE_POP;case COLD->ParticleTypes.SNOWFLAKE;case LIGHTNING->ParticleTypes.ELECTRIC_SPARK;case EARTH->ParticleTypes.CRIT;case LIFE->ParticleTypes.HAPPY_VILLAGER;case ARCANE->ParticleTypes.END_ROD;case DEATH->ParticleTypes.SOUL;case STEAM->ParticleTypes.CLOUD;case ICE->ParticleTypes.ITEM_SNOWBALL;case SHIELD->ParticleTypes.WAX_ON;};
+            ParticleOptions particle=switch(element){case FIRE->ParticleTypes.FLAME;case WATER->ParticleTypes.BUBBLE_POP;case COLD->ParticleTypes.SNOWFLAKE;case LIGHTNING->ParticleTypes.ELECTRIC_SPARK;case EARTH->ParticleTypes.CRIT;case LIFE->ParticleTypes.HAPPY_VILLAGER;case ARCANE->ParticleTypes.END_ROD;case DEATH->ParticleTypes.SOUL;case STEAM->ParticleTypes.CLOUD;case ICE->ParticleTypes.ITEM_SNOWBALL;case SHIELD->ParticleTypes.WAX_ON;case MAGMA->ParticleTypes.LAVA;};
             mc.level.addParticle(particle,point.x,point.y,point.z,0,.025,0);
         }
     }
     private static void mist(Minecraft mc,Cue cue){var random=mc.level.getRandom();var c=cue.packet.from();double radius=Math.clamp(cue.packet.radius(),.5,12);for(int i=0;i<12;i++){Vec3 q=inside(random,c,radius*.95);mc.level.addParticle(ParticleTypes.CLOUD,q.x,q.y+.12+random.nextDouble()*1.25,q.z,(random.nextDouble()-.5)*.018,.008+random.nextDouble()*.012,(random.nextDouble()-.5)*.018);}}
     private static List<Element> remaining(ElementBlend blend){var elements=new ArrayList<Element>();for(Element element:Element.values())for(int i=0;i<blend.count(element);i++)elements.add(element);return elements;}
     private static void compounds(Minecraft mc,Cue cue,ElementBlend blend){
-        if(blend.steam()+blend.ice()+blend.shield()==0)return;
+        if(blend.steam()+blend.ice()+blend.shield()+blend.magma()==0)return;
         var p=cue.packet;var random=mc.level.getRandom();double progress=Math.min(1,cue.age/(double)Math.max(1,p.ticks())),spread=Math.clamp(p.radius(),.15,12);
         Vec3 point=switch(p.kind()){
             case SpellVfx.BEAM,SpellVfx.ARC,SpellVfx.SPRAY->p.from().lerp(p.to(),random.nextDouble());
@@ -57,6 +57,7 @@ public final class SpellVisuals {
         for(int i=0;i<blend.steam()*2;i++)mc.level.addParticle(ParticleTypes.CLOUD,point.x+(random.nextDouble()-.5)*.28,point.y+(random.nextDouble()-.5)*.18,point.z+(random.nextDouble()-.5)*.28,(random.nextDouble()-.5)*.025,.018+random.nextDouble()*.025,(random.nextDouble()-.5)*.025);
         for(int i=0;i<blend.ice();i++){ParticleOptions crystal=(cue.age+i)%2==0?new BlockParticleOption(ParticleTypes.BLOCK,net.minecraft.world.level.block.Blocks.PACKED_ICE.defaultBlockState()):ParticleTypes.SNOWFLAKE;mc.level.addParticle(crystal,point.x+(random.nextDouble()-.5)*.22,point.y+(random.nextDouble()-.5)*.22,point.z+(random.nextDouble()-.5)*.22,(random.nextDouble()-.5)*.04,.01,(random.nextDouble()-.5)*.04);}
         for(int i=0;i<blend.shield();i++){double a=cue.age*.35+i*Math.PI*2/Math.max(1,blend.shield()),r=.25+spread*.12;mc.level.addParticle(i%2==0?ParticleTypes.WAX_ON:ParticleTypes.END_ROD,point.x+Math.cos(a)*r,point.y+.15+Math.sin(a*.7)*.18,point.z+Math.sin(a)*r,0,.015,0);}
+        for(int i=0;i<blend.magma();i++)mc.level.addParticle(i%2==0?ParticleTypes.LAVA:ParticleTypes.SMALL_FLAME,point.x+(random.nextDouble()-.5)*.24,point.y+(random.nextDouble()-.5)*.2,point.z+(random.nextDouble()-.5)*.24,0,.03,0);
     }
     private static void ambience(Minecraft mc,Cue cue,SpellFormula formula,ElementBlend f){
         var random=mc.level.getRandom();var c=cue.packet.from();
@@ -66,6 +67,7 @@ public final class SpellVisuals {
         if(f.steam()>0)for(int i=0;i<Math.max(1,rim*f.steam()/total);i++){Vec3 q=inside(random,c,radius);mc.level.addParticle(ParticleTypes.CLOUD,q.x,q.y+.15+random.nextDouble()*1.2,q.z,(random.nextDouble()-.5)*.02,.015+random.nextDouble()*.02,(random.nextDouble()-.5)*.02);}
         if(f.ice()>0)for(int i=0;i<Math.max(1,rim*f.ice()/total);i++){Vec3 q=inside(random,c,radius);ParticleOptions crystal=i%3==0?new BlockParticleOption(ParticleTypes.BLOCK,net.minecraft.world.level.block.Blocks.PACKED_ICE.defaultBlockState()):ParticleTypes.SNOWFLAKE;mc.level.addParticle(crystal,q.x,q.y+.4+random.nextDouble()*1.8,q.z,(random.nextDouble()-.5)*.03,-.015,(random.nextDouble()-.5)*.03);}
         if(f.shield()>0)for(int i=0;i<Math.max(1,rim*f.shield()/total);i++){double a=time*.12+i*Math.PI*2/Math.max(1,rim*f.shield()/total);mc.level.addParticle(i%2==0?ParticleTypes.WAX_ON:ParticleTypes.END_ROD,c.x+Math.cos(a)*radius,c.y+.35+.18*Math.sin(time*.2+i),c.z+Math.sin(a)*radius,-Math.sin(a)*.025,.01,Math.cos(a)*.025);}
+        if(f.magma()>0)for(int i=0;i<Math.max(1,rim*f.magma()/total);i++){Vec3 q=inside(random,c,radius);mc.level.addParticle(i%3==0?ParticleTypes.LAVA:ParticleTypes.SMALL_FLAME,q.x,q.y+.1,q.z,0,.02,0);}
         for(Element e:Element.BASE){
             int n=f.count(e);if(n==0)continue;
             int count=Math.max(2,rim*n/total);double share=n/(double)total;

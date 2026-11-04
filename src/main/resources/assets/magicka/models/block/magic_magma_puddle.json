@@ -1,0 +1,20 @@
+{
+  "textures": {
+    "particle": "minecraft:block/lava_still",
+    "lava": "minecraft:block/lava_still"
+  },
+  "elements": [
+    {
+      "from": [0, 0, 0],
+      "to": [16, 2, 16],
+      "faces": {
+        "down": { "texture": "#lava" },
+        "up": { "texture": "#lava" },
+        "north": { "texture": "#lava" },
+        "south": { "texture": "#lava" },
+        "west": { "texture": "#lava" },
+        "east": { "texture": "#lava" }
+      }
+    }
+  ]
+}

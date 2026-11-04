@@ -1,8 +1,7 @@
 {
   "id": "magicka:magma",
   "formula": {
-    "fire": 1,
-    "earth": 1
+    "magma": 1
   },
   "name": "Magma",
   "tier": "Signature",
