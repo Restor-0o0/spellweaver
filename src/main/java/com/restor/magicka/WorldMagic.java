@@ -31,7 +31,7 @@ public final class WorldMagic {
         if (state.isAir() || state.getDestroySpeed(world,pos) > hardness) return false;
         return breakBlock(player,pos);
     }
-    private static boolean loose(ServerPlayer player, BlockPos pos) { return loose(player,pos,false); }
+    static boolean loose(ServerPlayer player, BlockPos pos) { return loose(player,pos,false); }
     private static boolean loose(ServerPlayer player, BlockPos pos, boolean ultimate) {
         var world = player.serverLevel();
         if (!MagicConfig.TERRAIN_DAMAGE.get() || !WorldPlacement.allowed(player,pos)) return false;
@@ -50,6 +50,65 @@ public final class WorldMagic {
             if (world.getBlockState(pos).isAir() && world.getBlockState(pos.below()).isFaceSturdy(world,pos.below(),Direction.UP) && WorldPlacement.allowed(player,pos))
                 world.setBlockAndUpdate(pos,net.minecraft.world.level.block.BaseFireBlock.getState(world,pos));
         }
+    }
+    public static void magmaGround(ServerPlayer player,Vec3 point,double radius,int duration) {
+        if(!MagicConfig.TERRAIN_DAMAGE.get())return;
+        var world=player.serverLevel();BlockPos center=BlockPos.containing(point);double reach=Math.clamp(radius,.5,8),squared=reach*reach;
+        int extent=(int)Math.ceil(reach);long expires=world.getGameTime()+Math.clamp(duration,20,1200);
+        for(int dx=-extent;dx<=extent;dx++)for(int dz=-extent;dz<=extent;dz++){
+            if(dx*dx+dz*dz>squared)continue;
+            boolean water=false;
+            for(int dy=1;dy>=-2;dy--){
+                BlockPos pos=center.offset(dx,dy,dz);
+                if(!world.hasChunkAt(pos)||!WorldPlacement.allowed(player,pos))continue;
+                var state=world.getBlockState(pos);
+                if(state.getFluidState().is(net.minecraft.tags.FluidTags.WATER)){
+                    if(!state.hasBlockEntity()&&!state.is(PROTECTED)&&replace(player,pos,Blocks.COBBLESTONE.defaultBlockState()))water=true;
+                    break;
+                }
+                if(!state.isAir())continue;
+                BlockPos floor=pos.below();var ground=world.getBlockState(floor);
+                if(!ground.isFaceSturdy(world,floor,Direction.UP))continue;
+                if(WorldPlacement.placeBlock(player,pos,MagicBlocks.MAGMA_PUDDLE.get().defaultBlockState(),UUID.randomUUID(),pos,false,false,null)
+                        && world.getBlockEntity(pos) instanceof MagicBlocks.MagicBlockEntity data){
+                    data.material="magma";data.expires=expires;data.heat=50;data.setChanged();
+                }
+                break;
+            }
+            if(water)continue;
+        }
+    }
+    public static void magmaCrust(ServerPlayer player,Vec3 point,double radius) {
+        if(!MagicConfig.TERRAIN_DAMAGE.get())return;
+        var world=player.serverLevel();BlockPos center=BlockPos.containing(point);double reach=Math.clamp(radius,.5,8),squared=reach*reach;
+        int extent=(int)Math.ceil(reach);
+        for(int dx=-extent;dx<=extent;dx++)for(int dz=-extent;dz<=extent;dz++){
+            if(dx*dx+dz*dz>squared)continue;
+            for(int dy=1;dy>=-2;dy--){
+                BlockPos pos=center.offset(dx,dy,dz);
+                if(!world.hasChunkAt(pos)||!WorldPlacement.allowed(player,pos))continue;
+                var state=world.getBlockState(pos);
+                if(state.getFluidState().is(net.minecraft.tags.FluidTags.WATER)||state.is(Blocks.ICE)||state.is(Blocks.PACKED_ICE)||state.is(Blocks.BLUE_ICE)||state.is(Blocks.FROSTED_ICE)){
+                    if(!state.hasBlockEntity()&&!state.is(PROTECTED))replace(player,pos,Blocks.COBBLESTONE.defaultBlockState());
+                    break;
+                }
+                if(!state.isAir())continue;
+                BlockPos floor=pos.below();var ground=world.getBlockState(floor);
+                if(!ground.isFaceSturdy(world,floor,Direction.UP))continue;
+                replace(player,pos,Blocks.COBBLESTONE.defaultBlockState());
+                break;
+            }
+        }
+    }
+    public static void steamCloud(ServerPlayer player,Vec3 point,double radius) {
+        var world=player.serverLevel();double reach=Math.clamp(radius,.5,8);
+        world.sendParticles(ParticleTypes.CLOUD,point.x,point.y+.35,point.z,96,reach*.38,.55,reach*.38,.035);
+        world.sendParticles(ParticleTypes.LARGE_SMOKE,point.x,point.y+.35,point.z,40,reach*.3,.4,reach*.3,.02);
+        world.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE,point.x,point.y+.35,point.z,20,reach*.24,.3,reach*.24,.015);
+        world.playSound(null,BlockPos.containing(point),net.minecraft.sounds.SoundEvents.LAVA_EXTINGUISH,net.minecraft.sounds.SoundSource.PLAYERS,.8f,1.2f);
+        var box=new net.minecraft.world.phys.AABB(point,point).inflate(reach);
+        for(var entity:world.getEntitiesOfClass(net.minecraft.world.entity.LivingEntity.class,box,e->e.isAlive()&&!e.isSpectator()&&e.distanceToSqr(point)<=reach*reach))
+            if(EffectGraph.canHarm(player,entity))MagicStatuses.apply(entity,MagicStatuses.Status.OBSCURED,80,1);
     }
     public static void heave(ServerPlayer player, Vec3 point, int budget, double radius, double lift) {
         var world = player.serverLevel(); BlockPos base = BlockPos.containing(point);

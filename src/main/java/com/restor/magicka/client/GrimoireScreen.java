@@ -18,12 +18,12 @@ import java.util.*;
 
 /** Every spell keeps a fixed page in catalog order, blank pages follow up to the number of possible formulas; narrow screens show one page and slide the book. */
 public final class GrimoireScreen extends Screen {
-    private static final String[] TAGS={"damage","heal","control","construction","destruction","summon","utility","defense"};
-    private static final Item[] TAG_ICONS={Items.IRON_SWORD,Items.GOLDEN_APPLE,Items.COBWEB,Items.BRICKS,Items.TNT,Items.ZOMBIE_HEAD,Items.COMPASS,Items.SHIELD};
+    private static final String[] TAGS={"damage","heal","control","construction","destruction","summon","utility","defense","mining"};
+    private static final Item[] TAG_ICONS={Items.IRON_SWORD,Items.GOLDEN_APPLE,Items.COBWEB,Items.BRICKS,Items.TNT,Items.ZOMBIE_HEAD,Items.COMPASS,Items.SHIELD,Items.MAGMA_CREAM};
     private static final int PANEL=88,TOP=4,MAX_HEIGHT=560,MIN_HALF=150,LEAF=11,STAGGER=2,OPEN_IN=7,OPEN_TURN=14,SEGMENTS=10,MUTED_INK=0xFF816B50,RUNE_INK=0x40302B37,FACT_INK=0x5A4A3A,CELL=18,CELL_W=20;
     private static final float RATIO=1.42f;
     private static final int FORMULAS=formulas();
-    private static final int COMPOSITES=3;
+    private static final int COMPOSITES=Element.values().length-Element.BASE.size();
     private static final Style RUNES=Style.EMPTY.withFont(ResourceLocation.withDefaultNamespace("alt"));
     private static final ResourceLocation EMBLEM=ResourceLocation.fromNamespaceAndPath(Magicka.ID,"textures/gui/cover_emblem.png");
     private static final ResourceLocation ELEMENTS=ResourceLocation.fromNamespaceAndPath(Magicka.ID,"textures/gui/elements.png");
@@ -52,7 +52,7 @@ public final class GrimoireScreen extends Screen {
     public GrimoireScreen(){
         super(Component.translatable("book.magicka.title"));var saved=BookPreferences.get();
         tag=Arrays.asList(TAGS).contains(saved.tag)?saved.tag:"all";query=saved.query;restoreId=saved.selectedId;
-        elements=Math.clamp(saved.elements,0,2047);
+        elements=Math.clamp(saved.elements,0,(1<<Element.values().length)-1);
     }
     private static int formulas(){
         int total=0;
@@ -229,7 +229,7 @@ public final class GrimoireScreen extends Screen {
             addRenderableWidget(new TagButton(panelX+3+i%4*21,tagsY()+i/4*18,19,16,TAG_ICONS[i],Component.translatable("book.magicka.tag."+value),b->refilter(()->tag=tag.equals(value)?"all":value),tag.equals(value)));}
         var spell=shown();
         for(int i=1;i<=Formula.MAX;i++){int value=i;
-            var b=addRenderableWidget(new RuneButton(panelX+(PANEL-84)/2+(i-1)*17,tagsY()+38,16,16,Component.literal(Integer.toString(i)),btn->jump(value),spell!=null && spell.formula().size()==i));
+            var b=addRenderableWidget(new RuneButton(panelX+(PANEL-84)/2+(i-1)*17,runesY(),16,16,Component.literal(Integer.toString(i)),btn->jump(value),spell!=null && spell.formula().size()==i));
             b.active=firstOfSize(i)>=0;b.setTooltip(Tooltip.create(Component.translatable("book.magicka.filter.points",i)));}
         for(Element element:Element.values()){int bit=1<<element.ordinal();
             addRenderableWidget(new RuneElement(sideX(1)+1+(element.base()?0:CELL_W),elementY(element),16,16,element,(elements&bit)!=0,b->refilter(()->elements^=bit)));}
@@ -286,8 +286,16 @@ public final class GrimoireScreen extends Screen {
     private boolean stacked(){return bookHeight-8>=13.5f*16;}
     private int sideX(int group){return frameX+frameWidth+4+(stacked()?0:group)*CELL_W;}
     private int tagsY(){return slotY(4)+2;}
+    private int runesY(){return tagsY()+(TAGS.length+3)/4*18+2;}
     /** Derived elements sit in a second column, halfway between their parents. */
-    private int elementY(Element element){return sideY(1,(float)element.parents().stream().mapToInt(Element::ordinal).average().orElse(0));}
+    private int elementY(Element element){
+        float target=(float)element.parents().stream().mapToInt(Element::ordinal).average().orElse(0),at=-1;
+        for(var derived:Arrays.stream(Element.values()).filter(e->!e.base()).sorted(Comparator.comparingDouble(e->e.parents().stream().mapToInt(Element::ordinal).average().orElse(0))).toList()){
+            at=Math.max((float)derived.parents().stream().mapToInt(Element::ordinal).average().orElse(0),at+1);
+            if(derived==element)return sideY(1,at);
+        }
+        return sideY(1,target);
+    }
     private int sideY(int group,float index){
         float cell=Math.min(CELL,(bookHeight-8)/13.5f),at=group==1 && stacked()?5.5f+index:index;
         return y+6+Math.round(at*cell);
@@ -566,7 +574,7 @@ public final class GrimoireScreen extends Screen {
     private void shade(GuiGraphics g,int side,int alpha){int l=side==0?x:spine,r=side==0?spine:x+bookWidth;g.fill(l,y,r,y+bookHeight,alpha<<24|0x2A1A10);}
     private void panel(GuiGraphics g,View now,int mouseX,int mouseY,float time){
         var mage=font.split(mageLine(),(int)((PANEL-10)/.75f));
-        int linesY=tagsY()+58;
+        int linesY=runesY()+20;
         bar(g,panelX,y,PANEL,linesY-y+mage.size()*9+5,time+40);
         g.pose().pushPose();g.pose().translate(panelX+5,linesY,0);g.pose().scale(.75f,.75f,1);
         for(int i=0;i<mage.size();i++)g.drawString(font,mage.get(i),0,i*11,0xFFB59BD0,false);
@@ -672,6 +680,7 @@ public final class GrimoireScreen extends Screen {
             int cx=getX()+width/2,cy=getY()+height/2,r=width/2;
             if(on){disc(g,cx,cy,r+2,0xFF000000|MagicUi.GOLD);disc(g,cx,cy,r+1,0xFF000000|element.color);}
             else if(hover)disc(g,cx,cy,r+1,0x90FFF0D0);
+            if(element==Element.MAGMA){disc(g,cx,cy,r-2,0xFF6B3527);disc(g,cx,cy,r-4,0xFF9D4A2B);}
             float tone=on||hover?1f:0.55f;g.setColor(tone,tone,tone,1f);
             g.pose().pushPose();g.pose().translate(getX(),getY(),0);g.pose().scale(width/32f,height/32f,1);
             com.mojang.blaze3d.systems.RenderSystem.enableBlend();g.blit(ELEMENTS,0,0,element.ordinal()*32,0,32,32,32*Element.values().length,32);

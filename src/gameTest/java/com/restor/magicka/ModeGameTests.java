@@ -135,7 +135,7 @@ public final class ModeGameTests {
         h.assertTrue(Reactions.type(List.of(Element.COLD, Element.WATER), true).elements().equals(List.of(Element.ICE)), "Cold and Water make Ice");
         h.assertTrue(Reactions.type(List.of(Element.EARTH, Element.WATER, Element.LIFE, Element.FIRE), true).elements().equals(List.of(Element.EARTH, Element.WATER, Element.LIFE, Element.FIRE)), "Fusion never reaches past other elements");
         h.assertTrue(Reactions.type(List.of(Element.EARTH, Element.ARCANE), true).elements().equals(List.of(Element.SHIELD)), "Earth and Arcane typed together make Shield");
-        h.assertTrue(Reactions.type(List.of(Element.ARCANE, Element.FIRE, Element.EARTH), true).elements().equals(List.of(Element.ARCANE, Element.FIRE, Element.EARTH)), "Earth and Arcane typed apart stay themselves");
+        h.assertTrue(Reactions.type(List.of(Element.ARCANE, Element.FIRE, Element.EARTH), true).elements().equals(List.of(Element.ARCANE, Element.MAGMA)), "Adjacent Fire and Earth make Magma");
         var melted = Reactions.type(List.of(Element.ARCANE, Element.COLD, Element.WATER, Element.FIRE), true).elements();
         h.assertTrue(melted.equals(List.of(Element.ARCANE, Element.WATER)) || Reactions.guarded(List.of(Element.ARCANE, Element.ICE), Element.FIRE), "Fire melts Ice back into Water: " + melted);
         var steam = Reactions.fused(List.of(Element.WATER, Element.FIRE));

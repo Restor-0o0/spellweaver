@@ -123,6 +123,7 @@ public final class Elementals {
             case STEAM -> ParticleTypes.CLOUD;
             case ICE -> ParticleTypes.ITEM_SNOWBALL;
             case SHIELD -> new DustParticleOptions(new Vector3f(.91f, .78f, .42f), 1.5f);
+            case MAGMA -> ParticleTypes.LAVA;
         };
     }
     static ParticleOptions spark(Element e) {
@@ -138,6 +139,7 @@ public final class Elementals {
             case STEAM -> ParticleTypes.POOF;
             case ICE -> new BlockParticleOption(ParticleTypes.BLOCK, Blocks.PACKED_ICE.defaultBlockState());
             case SHIELD -> ParticleTypes.WAX_ON;
+            case MAGMA -> new BlockParticleOption(ParticleTypes.BLOCK, Blocks.MAGMA_BLOCK.defaultBlockState());
         };
     }
     static SoundEvent shot(Element e) {
@@ -153,6 +155,7 @@ public final class Elementals {
             case STEAM -> SoundEvents.LAVA_EXTINGUISH;
             case ICE -> SoundEvents.GLASS_HIT;
             case SHIELD -> SoundEvents.SHIELD_BLOCK;
+            case MAGMA -> SoundEvents.BLAZE_SHOOT;
         };
     }
     static SoundEvent hit(Element e) {
@@ -168,6 +171,7 @@ public final class Elementals {
             case STEAM -> SoundEvents.FIRE_EXTINGUISH;
             case ICE -> SoundEvents.GLASS_BREAK;
             case SHIELD -> SoundEvents.ANVIL_LAND;
+            case MAGMA -> SoundEvents.LAVA_POP;
         };
     }
     static void burst(ServerLevel level, Element e, Vec3 at, int count, double spread) {

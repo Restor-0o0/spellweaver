@@ -1,9 +1,8 @@
 {
   "id": "magicka:glowstone",
   "formula": {
-    "fire": 1,
-    "earth": 1,
-    "life": 1
+    "life": 1,
+    "magma": 1
   },
   "name": "Glowstone",
   "tier": "Signature",

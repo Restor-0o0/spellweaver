@@ -1,0 +1,37 @@
+{
+  "id": "magicka:diamond_needle",
+  "formula": {
+    "cold": 1,
+    "arcane": 2,
+    "magma": 1
+  },
+  "name": "Diamond Needle",
+  "tier": "Signature",
+  "keys": "15377",
+  "scroll": true,
+  "tags": "BREAK/UTIL",
+  "shape": "direct_target",
+  "origin": "aim_hit",
+  "cast_ticks": 20,
+  "delivery": {},
+  "construction": {},
+  "effects": [
+    {
+      "type": "mine_blocks",
+      "mode": "single",
+      "budget": 1,
+      "depth": 1,
+      "radius": 0,
+      "tier": 3,
+      "smelt": false,
+      "bulk_only": false
+    }
+  ],
+  "self": {
+    "mode": "effects",
+    "effects": []
+  },
+  "primary": "An arcane needle mines exactly one targeted block with diamond-tier strength. It favors precision over volume and keeps normal drops.",
+  "self_description": "Mining magic needs a targeted block.",
+  "balanced": true
+}

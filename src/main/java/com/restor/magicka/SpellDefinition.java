@@ -11,7 +11,7 @@ public record SpellDefinition(ResourceLocation id, SpellFormula formula, String 
         JsonObject f = json.getAsJsonObject("formula");
         if (f == null) throw new IllegalArgumentException(id + ": missing formula");
         for (String key : f.keySet()) Element.valueOf(key.toUpperCase(Locale.ROOT));
-        SpellFormula formula = new SpellFormula(count(f,"fire"), count(f,"water"), count(f,"cold"), count(f,"lightning"), count(f,"earth"), count(f,"life"), count(f,"arcane"), count(f,"death"), count(f,"steam"), count(f,"ice"), count(f,"shield"));
+        SpellFormula formula = new SpellFormula(count(f,"fire"), count(f,"water"), count(f,"cold"), count(f,"lightning"), count(f,"earth"), count(f,"life"), count(f,"arcane"), count(f,"death"), count(f,"steam"), count(f,"ice"), count(f,"shield"), count(f,"magma"));
         if (formula.size() == 0) throw new IllegalArgumentException(id + ": empty recipe");
         JsonObject self = object(json, "self");
         List<JsonObject> effects = graph(json, "effects");

@@ -1,0 +1,36 @@
+{
+  "id": "magicka:drift_bore",
+  "formula": {
+    "cold": 1,
+    "earth": 1,
+    "magma": 1
+  },
+  "name": "Drift Bore",
+  "tier": "Signature",
+  "keys": "1535",
+  "tags": "BREAK/UTIL",
+  "shape": "direct_target",
+  "origin": "aim_hit",
+  "cast_ticks": 14,
+  "delivery": {},
+  "construction": {},
+  "effects": [
+    {
+      "type": "mine_blocks",
+      "mode": "tunnel",
+      "budget": 12,
+      "depth": 6,
+      "radius": 0,
+      "tier": 2,
+      "smelt": false,
+      "bulk_only": true
+    }
+  ],
+  "self": {
+    "mode": "effects",
+    "effects": []
+  },
+  "primary": "Drills a narrow shaft up to 6 blocks deep in your look direction, including downward or diagonally. It clears common rock with iron-tier strength but leaves ore blocks untouched.",
+  "self_description": "Mining magic needs a targeted block.",
+  "balanced": true
+}
