@@ -598,19 +598,19 @@ public final class GrimoireScreen extends Screen {
 
     @Override public boolean mouseClicked(MouseButtonEvent event,boolean doubleClick){double mx=event.x(),my=event.y();int button=event.button();
         int slot=slotAt(mx,my);var spell=shown();
-        if(slot>=0){if(button==1)assign(slot,0);else if(button==0 && spell!=null)assign(slot,spell.spokenPacked());return true;}
+        if(slot>=0){if(button==InputConstants.MOUSE_BUTTON_RIGHT)assign(slot,0);else if(button==InputConstants.MOUSE_BUTTON_LEFT && spell!=null)assign(slot,spell.spokenPacked());return true;}
         dragFormula=0;
-        if(button==0 && overBook(mx,my) && from==null){
+        if(button==InputConstants.MOUSE_BUTTON_LEFT && overBook(mx,my) && from==null){
             int under=pageUnder(mx);var picked=spellOn(under);
             if(picked!=null){if(under!=page){page=under;rebuild(false);}dragFormula=picked.spokenPacked();dragX=mx;dragY=my;dragging=false;}
         }
         return super.mouseClicked(event,doubleClick);
     }
     @Override public boolean mouseDragged(MouseButtonEvent event,double dx,double dy){double mx=event.x(),my=event.y();
-        if(event.button()==0 && dragFormula!=0 && Math.abs(mx-dragX)+Math.abs(my-dragY)>4){dragging=true;return true;}return super.mouseDragged(event,dx,dy);
+        if(event.button()==InputConstants.MOUSE_BUTTON_LEFT && dragFormula!=0 && Math.abs(mx-dragX)+Math.abs(my-dragY)>4){dragging=true;return true;}return super.mouseDragged(event,dx,dy);
     }
     @Override public boolean mouseReleased(MouseButtonEvent event){
-        if(event.button()==0 && dragging){int slot=slotAt(event.x(),event.y());if(slot>=0)assign(slot,dragFormula);dragFormula=0;dragging=false;super.mouseReleased(event);return true;}
+        if(event.button()==InputConstants.MOUSE_BUTTON_LEFT && dragging){int slot=slotAt(event.x(),event.y());if(slot>=0)assign(slot,dragFormula);dragFormula=0;dragging=false;super.mouseReleased(event);return true;}
         dragFormula=0;return super.mouseReleased(event);
     }
     @Override public boolean mouseScrolled(double mx,double my,double horizontal,double vertical){
