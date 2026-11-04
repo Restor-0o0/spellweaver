@@ -1,9 +1,9 @@
 {
   "id": "magicka:fire_titan",
   "formula": {
-    "earth": 1,
-    "fire": 3,
-    "arcane": 1
+    "fire": 2,
+    "arcane": 1,
+    "magma": 1
   },
   "keys": "51171",
   "name": "Fire Titan",

@@ -1,9 +1,8 @@
 {
   "id": "magicka:living_cautery_convergence_fire1_earth1_life2",
   "formula": {
-    "fire": 1,
-    "earth": 1,
-    "life": 2
+    "life": 2,
+    "magma": 1
   },
   "name": "Living Cautery Convergence",
   "tier": "Family Variant",

@@ -1,8 +1,8 @@
 {
   "id": "magicka:heavy_greater_magma",
   "formula": {
-    "fire": 1,
-    "earth": 3
+    "earth": 2,
+    "magma": 1
   },
   "name": "Heavy Greater Magma",
   "tier": "Family Variant",

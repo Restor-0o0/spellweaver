@@ -1,0 +1,37 @@
+{
+  "id": "magicka:quarry_pulse",
+  "formula": {
+    "earth": 1,
+    "magma": 2
+  },
+  "name": "Quarry Pulse",
+  "tier": "Signature",
+  "keys": "15155",
+  "scroll": true,
+  "tags": "BREAK/UTIL",
+  "shape": "burst_projectile",
+  "origin": "aim_hit",
+  "cast_ticks": 14,
+  "delivery": {},
+  "construction": {},
+  "effects": [
+    {
+      "type": "mine_blocks",
+      "reach": 36,
+      "mode": "volume",
+      "budget": 32,
+      "depth": 4,
+      "radius": 2,
+      "tier": 2,
+      "smelt": false,
+      "bulk_only": true
+    }
+  ],
+  "self": {
+    "mode": "effects",
+    "effects": []
+  },
+  "primary": "Excavates up to 32 common blocks in a broad volume, reaching 4 blocks deep. Ore blocks are left untouched for precise mining.",
+  "self_description": "Mining magic needs a targeted block.",
+  "balanced": true
+}

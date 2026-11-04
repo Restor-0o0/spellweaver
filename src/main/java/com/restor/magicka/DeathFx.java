@@ -25,6 +25,7 @@ public final class DeathFx {
             case EARTH -> { main = new BlockParticleOption(ParticleTypes.BLOCK, Blocks.STONE.defaultBlockState()); extra = ParticleTypes.POOF; sound = SoundEvents.STONE_BREAK; }
             case WATER -> { main = ParticleTypes.SPLASH; extra = ParticleTypes.BUBBLE_POP; sound = SoundEvents.GENERIC_SPLASH; }
             case STEAM -> { main = ParticleTypes.CLOUD; extra = ParticleTypes.SPLASH; sound = SoundEvents.LAVA_EXTINGUISH; }
+            case MAGMA -> { main = new BlockParticleOption(ParticleTypes.BLOCK, Blocks.MAGMA_BLOCK.defaultBlockState()); extra = ParticleTypes.LAVA; sound = SoundEvents.LAVA_POP; }
             case LIFE -> { main = ParticleTypes.CHERRY_LEAVES; extra = ParticleTypes.HAPPY_VILLAGER; sound = SoundEvents.AZALEA_LEAVES_BREAK; }
             case ARCANE -> { main = ParticleTypes.END_ROD; extra = ParticleTypes.WITCH; sound = SoundEvents.AMETHYST_CLUSTER_BREAK; }
             case DEATH -> { main = ParticleTypes.SOUL; extra = ParticleTypes.SCULK_SOUL; sound = SoundEvents.SOUL_ESCAPE.value(); }

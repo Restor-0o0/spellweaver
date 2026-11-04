@@ -1,8 +1,8 @@
 {
   "id": "magicka:scorching_magma",
   "formula": {
-    "fire": 2,
-    "earth": 1
+    "fire": 1,
+    "magma": 1
   },
   "name": "Scorching Magma",
   "tier": "Family Variant",

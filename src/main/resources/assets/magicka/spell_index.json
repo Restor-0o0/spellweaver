@@ -117,7 +117,6 @@
   "magicka:greater_steam",
   "magicka:scorching_steam_convergence_fire2_water1_cold1",
   "magicka:scorching_steam_convergence_fire2_water1_lightning1",
-  "magicka:scorching_steam_convergence_fire2_water1_earth1",
   "magicka:scorching_steam_convergence_fire2_water1_life1",
   "magicka:scorching_steam_convergence_fire2_water1_arcane1",
   "magicka:greater_thermal_shock",
@@ -143,7 +142,6 @@
   "magicka:flooded_steam_convergence_fire1_water2_arcane1",
   "magicka:frozen_thermal_shock_convergence_fire1_water1_cold2",
   "magicka:charged_plasma_convergence_fire1_water1_lightning2",
-  "magicka:heavy_magma_convergence_fire1_water1_earth2",
   "magicka:living_cautery_convergence_fire1_water1_life2",
   "magicka:unstable_witchfire_convergence_fire1_water1_arcane2",
   "magicka:frozen_greater_thermal_shock",
@@ -359,5 +357,15 @@
   "magicka:healing_mist",
   "magicka:poison_mist",
   "magicka:ice_lances",
-  "magicka:frost_shackles"
+  "magicka:frost_shackles",
+  "magicka:thermal_pick",
+  "magicka:smelting_ray",
+  "magicka:drift_bore",
+  "magicka:gallery_cutter",
+  "magicka:ore_thread",
+  "magicka:vein_smelter",
+  "magicka:diamond_needle",
+  "magicka:quarry_pulse",
+  "magicka:hydraulic_fracture",
+  "magicka:worldbreaker"
 ]
