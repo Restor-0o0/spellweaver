@@ -219,7 +219,7 @@ public final class SpellVisuals {
             boolean stream=p.kind()==SpellVfx.BEAM || p.kind()==SpellVfx.ARC || p.kind()==SpellVfx.SPRAY;
             float alpha=stream?.85f*Math.min(1,Math.max(0,(cue.until-cue.age-partial)/2f)):(1-progress)*.85f;
             int color=color(formula);double radius=Math.clamp(p.radius(),.05,16);Vec3 rayFrom=cue.from(partial),rayTo=cue.to(partial),center=p.from();
-            if(p.kind()==SpellVfx.BEAM && p.anchor()>=0 && mc.level!=null){var caster=mc.level.getEntity(p.anchor());if(caster!=null)rayFrom=caster.getEyePosition(partial).add(caster.getLookAngle().scale(.65)).add(0,-.35,0);}
+            if(p.kind()==SpellVfx.BEAM && p.anchor()>=0 && mc.level!=null){var caster=mc.level.getEntity(p.anchor());if(caster!=null){Vec3 forward=caster.getViewVector(partial),right=forward.cross(new Vec3(0,1,0));right=right.lengthSqr()<1e-4?new Vec3(1,0,0):right.normalize();Vec3 up=right.cross(forward);Vec3 hand=new Vec3(1.5+.15*formula.size(),-.3-.06*formula.size(),.35);rayFrom=caster.getEyePosition(partial).add(forward.scale(hand.x)).add(up.scale(hand.y)).add(right.scale(hand.z));}}
             boolean flames=fire(blend);
             if(SpellModels.handles(p.kind())){
                 if(p.from().distanceToSqr(camera)<128*128)SpellModels.strokes(mc,pose,consumer,camera,p,cue.age+partial,cue.until,partial);
@@ -230,7 +230,7 @@ public final class SpellVisuals {
                     Vec3 delta=rayTo.subtract(rayFrom),direction=delta.lengthSqr()<1e-8?new Vec3(0,0,1):delta.normalize();
                     Vec3 reference=Math.abs(direction.y)>.98?new Vec3(1,0,0):new Vec3(0,1,0),axis=direction.cross(reference).normalize();
                     double phase=mc.level.getGameTime()+partial;
-                    if(p.kind()==SpellVfx.BEAM){stroke(pose,consumer,camera,rayFrom,rayTo,radius,color,alpha*.5f);stroke(pose,consumer,camera,rayFrom,rayTo,radius*.28,0xFFFFFF,alpha);}
+                    if(p.kind()==SpellVfx.BEAM){beamTube(pose,consumer,rayFrom,rayTo,radius,color,alpha*.42f,8);beamTube(pose,consumer,rayFrom,rayTo,radius*.32,0xFFFFFF,alpha*.95f,6);}
                     else {int segments=Math.clamp((int)(delta.length()/1.2),2,96);Vec3 previous=rayFrom;
                         for(int i=1;i<=segments;i++){Vec3 next=rayFrom.lerp(rayTo,i/(double)segments);
                             if(i<segments)next=next.add(axis.scale(Math.sin(i*13.7+phase*.18)*.35)).add(0,Math.cos(i*8.3+phase*.13)*.18,0);
@@ -380,6 +380,16 @@ public final class SpellVisuals {
         Vec3 side=to.subtract(from).cross(camera.subtract(from)).normalize().scale(width);if(side.lengthSqr()<1e-8)side=new Vec3(width,0,0);
         float r=((color>>16)&255)/255f,g=((color>>8)&255)/255f,b=(color&255)/255f;
         for(Vec3 v:new Vec3[]{from.subtract(side),from.add(side),to.add(side),to.subtract(side)})out.addVertex(pose,(float)v.x,(float)v.y,(float)v.z).setColor(r,g,b,alpha);
+    }
+    private static void beamTube(PoseStack.Pose pose,VertexConsumer out,Vec3 from,Vec3 to,double radius,int color,float alpha,int sides){
+        Vec3 direction=to.subtract(from);if(direction.lengthSqr()<1e-8)return;direction=direction.normalize();
+        Vec3 u=direction.cross(Math.abs(direction.y)>.95?new Vec3(1,0,0):new Vec3(0,1,0)).normalize(),v=direction.cross(u).normalize();
+        float r=((color>>16)&255)/255f,g=((color>>8)&255)/255f,b=(color&255)/255f;
+        for(int i=0;i<sides;i++){
+            double a=i*Math.PI*2/sides,c=(i+1)*Math.PI*2/sides;
+            Vec3 u0=u.scale(Math.cos(a)*radius).add(v.scale(Math.sin(a)*radius)),u1=u.scale(Math.cos(c)*radius).add(v.scale(Math.sin(c)*radius));
+            for(Vec3 point:new Vec3[]{from.add(u0),from.add(u1),to.add(u1),to.add(u0)})out.addVertex(pose,(float)point.x,(float)point.y,(float)point.z).setColor(r,g,b,alpha);
+        }
     }
     private static double approach(double current,double target,double maxStep){return current<target?Math.min(target,current+maxStep):Math.max(target,current-maxStep);}
     private static Vec3 follow(Vec3 current,Vec3 target,Cue cue){
