@@ -19,9 +19,14 @@ public final class SpellVisuals {
     public static void receive(MagicNetwork.Visual packet){
         if(packet.kind()<0 || packet.kind()>SpellVfx.EMBERFALL || !GrimoireState.valid(packet.formula()) || !Double.isFinite(packet.from().lengthSqr()+packet.to().lengthSqr()) || !Float.isFinite(packet.radius()))return;
         boolean model=SpellModels.merges(packet.kind());
-        if(packet.kind()==SpellVfx.ZONE || packet.kind()==SpellVfx.MINE || packet.kind()==SpellVfx.SIGIL || model)
+        boolean stream=packet.kind()==SpellVfx.BEAM || packet.kind()==SpellVfx.ARC || packet.kind()==SpellVfx.SPRAY;
+        boolean endpoint=packet.kind()==SpellVfx.IMPACT && packet.anchor()>=0;
+        if(packet.kind()==SpellVfx.ZONE || packet.kind()==SpellVfx.MINE || packet.kind()==SpellVfx.SIGIL || model || stream || endpoint)
             for(Cue c:CUES)if(c.packet.kind()==packet.kind() && c.packet.formula()==packet.formula() && c.packet.anchor()==packet.anchor() && (packet.anchor()>=0 && model || c.packet.from().distanceToSqr(packet.from())<.04)){
-                c.packet=packet;c.until=model?c.age+Math.min(100,packet.ticks()):Math.max(c.until,c.age+Math.min(100,packet.ticks()));return;
+                c.packet=packet;
+                if(stream || endpoint){c.age=0;c.until=Math.min(100,packet.ticks());}
+                else c.until=model?c.age+Math.min(100,packet.ticks()):Math.max(c.until,c.age+Math.min(100,packet.ticks()));
+                return;
             }
         if(CUES.size()>=512)CUES.removeFirst();CUES.add(new Cue(packet));
     }
@@ -29,7 +34,9 @@ public final class SpellVisuals {
         var mc=Minecraft.getInstance();if(mc.level==null){clear();return;}
         CUES.removeIf(c->++c.age>c.until || c.packet.anchor()>=0 && mc.level.getEntity(c.packet.anchor())==null);
         for(Cue cue:CUES){
-            var p=cue.packet;if(p.kind()==SpellVfx.SIGIL || p.from().distanceToSqr(mc.gameRenderer.mainCamera().position())>128*128)continue;
+            var p=cue.packet;boolean ray=p.kind()==SpellVfx.BEAM || p.kind()==SpellVfx.ARC || p.kind()==SpellVfx.SPRAY;
+            Vec3 camera=mc.gameRenderer.mainCamera().position();
+            if(p.kind()==SpellVfx.SIGIL || p.from().distanceToSqr(camera)>128*128 && (!ray || p.to().distanceToSqr(camera)>128*128))continue;
             var formula=Formula.unpack(p.formula());var blend=ElementBlend.of(formula.key());
             if(formula.key().water()==1 && formula.key().life()==1 && formula.key().arcane()==1){mist(mc,cue);continue;}
             compounds(mc,cue,blend);
@@ -38,7 +45,8 @@ public final class SpellVisuals {
             if(SpellModels.handles(p.kind())){SpellModels.tick(mc,p,cue.age,cue.until);continue;}
             if(cue.age%3!=0)continue;
             var elements=remaining(blend);if(elements.isEmpty())continue;Element element=elements.get((cue.age/3)%elements.size());
-            Vec3 point=p.from().lerp(p.to(),Math.min(1,cue.age/(double)Math.max(1,p.ticks())));
+            double progress=ray?(mc.level.getGameTime()+cue.age)%8/8.0:Math.min(1,cue.age/(double)Math.max(1,p.ticks()));
+            Vec3 point=p.from().lerp(p.to(),progress);
             ParticleOptions particle=switch(element){case FIRE->ParticleTypes.FLAME;case WATER->ParticleTypes.BUBBLE_POP;case COLD->ParticleTypes.SNOWFLAKE;case LIGHTNING->ParticleTypes.ELECTRIC_SPARK;case EARTH->ParticleTypes.CRIT;case LIFE->ParticleTypes.HAPPY_VILLAGER;case ARCANE->ParticleTypes.END_ROD;case DEATH->ParticleTypes.SOUL;case STEAM->ParticleTypes.CLOUD;case ICE->ParticleTypes.ITEM_SNOWBALL;case SHIELD->ParticleTypes.WAX_ON;case MAGMA->ParticleTypes.LAVA;};
             mc.level.addParticle(particle,point.x,point.y,point.z,0,.025,0);
         }
@@ -188,7 +196,9 @@ public final class SpellVisuals {
         for(Cue cue:CUES){
             var p=cue.packet;var formula=Formula.unpack(p.formula()).key();var blend=ElementBlend.of(formula);
             if(formula.cold()==2 && formula.earth()==1 && p.kind()==SpellVfx.IMPACT)continue;
-            float progress=Math.clamp((cue.age+partial)/Math.max(1,p.ticks()),0,1),alpha=(1-progress)*.85f;
+            float progress=Math.clamp((cue.age+partial)/Math.max(1,p.ticks()),0,1);
+            boolean stream=p.kind()==SpellVfx.BEAM || p.kind()==SpellVfx.ARC || p.kind()==SpellVfx.SPRAY;
+            float alpha=stream?.85f*Math.min(1,Math.max(0,(cue.until-cue.age-partial)/2f)):(1-progress)*.85f;
             int color=color(formula);double radius=Math.clamp(p.radius(),.05,16);Vec3 center=p.from();
             boolean flames=fire(blend);
             if(SpellModels.handles(p.kind())){

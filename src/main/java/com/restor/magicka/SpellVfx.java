@@ -23,7 +23,11 @@ public final class SpellVfx {
         send(p,s.formula(),kind,anchor.position(),anchor.position(),radius,ticks,anchor.getId());
     }
     public static void cue(ServerPlayer p,SpellDefinition s,int kind,Vec3 from,Vec3 to,double radius,int ticks){
-        send(p,s==null?new SpellFormula(0,1,0,0,0,0,0):s.formula(),kind,from,to,radius,ticks,-1);
+        int anchor=kind==BEAM || kind==ARC || kind==SPRAY?p.getId():-1;
+        send(p,s==null?new SpellFormula(0,1,0,0,0,0,0):s.formula(),kind,from,to,radius,ticks,anchor);
+    }
+    public static void beamImpact(ServerPlayer p,SpellDefinition s,Vec3 point,double radius,int ticks){
+        send(p,s.formula(),IMPACT,point,point,radius,ticks,p.getId());
     }
     public static void sigil(ServerPlayer p,SpellFormula formula,Vec3 center,Vec3 normal,double radius,int ticks){
         send(p,formula,SIGIL,center,center.add(normal.normalize()),radius,ticks,-1);
@@ -41,7 +45,8 @@ public final class SpellVfx {
         int packed=formula.prepared().packed();
         var packet=new MagicNetwork.Visual(kind,packed,from,to,(float)Math.clamp(radius,.05,16),Math.clamp(ticks,1,100),anchor);
         Vec3 near=anchor>=0?p.position():from;
-        for(var viewer:p.level().players())if(viewer==p || viewer.distanceToSqr(near)<256*256 || anchor<0 && viewer.distanceToSqr(to)<256*256)PacketDistributor.sendToPlayer(viewer,packet);
+        boolean ray=kind==BEAM || kind==ARC || kind==SPRAY || kind==IMPACT;
+        for(var viewer:p.level().players())if(viewer==p || viewer.distanceToSqr(near)<256*256 || (anchor<0 || ray) && viewer.distanceToSqr(to)<256*256)PacketDistributor.sendToPlayer(viewer,packet);
     }
     public static void particles(ServerPlayer p,SpellDefinition s,Vec3 point,int count,double spread){
         var blend=ElementBlend.of(s.formula());int per=Math.max(1,Math.min(24,count)/Math.max(1,blend.size()));

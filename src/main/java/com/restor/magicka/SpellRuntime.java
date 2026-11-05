@@ -189,9 +189,8 @@ public final class SpellRuntime {
     private static void segment(ServerPlayer p,SpellDefinition s,boolean spray,double width,Vec3 from,Vec3 end,Set<LivingEntity> struck,boolean blocked) {
         Vec3 delta=end.subtract(from);Vec3 look=delta.lengthSqr()<1e-8?new Vec3(0,0,1):delta.normalize();
         SpellVfx.cue(p,s,spray?SpellVfx.SPRAY:SpellVfx.BEAM,from,end,width,10);
-        if(blocked){SpellVfx.cue(p,s,SpellVfx.IMPACT,end,end,Math.max(.45,Math.min(1,width*.65)),8);particles(p,s,end,5,.08);}
+        if(blocked)SpellVfx.beamImpact(p,s,end,Math.max(.45,Math.min(1,width*.65)),8);
         if(!spray)BeamClash.beam(p,from,end);
-        for(double d=.5;d<from.distanceTo(end);d+=Math.max(.8,from.distanceTo(end)/64)) particles(p,s,from.add(look.scale(d)),spray?3:1,spray?d*.12:.04);
         double burst=s.number("end_burst",0);
         for(LivingEntity e:along(p,from,end,width,spray)) if(struck.add(e) && (burst<=0 || e.getBoundingBox().distanceToSqr(end)>burst*burst)) EffectGraph.entity(p,e,s,s.effects(),from,false);
         if(burst>0) impact(p,s,end,burst,false,true); else EffectGraph.world(p,s,s.effects(),end,false,true);
