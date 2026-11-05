@@ -51,7 +51,7 @@ public final class SpellVisuals {
         var mc=Minecraft.getInstance();if(mc.level==null){clear();return;}
         CUES.removeIf(c->++c.age>c.until || c.packet.anchor()>=0 && mc.level.getEntity(c.packet.anchor())==null);
         for(Cue cue:CUES){
-            var p=cue.packet;if(p.kind()==SpellVfx.BEAM){cue.previousTo=cue.beamTip;cue.beamTip=cue.beamTip.lerp(cue.beamTarget,.28);}
+            var p=cue.packet;if(p.kind()==SpellVfx.BEAM){cue.previousTo=cue.beamTip;cue.beamTip=approach(cue.beamTip,cue.beamTarget,.9);}
             boolean ray=p.kind()==SpellVfx.BEAM || p.kind()==SpellVfx.ARC || p.kind()==SpellVfx.SPRAY;
             Vec3 camera=mc.gameRenderer.mainCamera().position();
             if(p.kind()==SpellVfx.SIGIL || p.from().distanceToSqr(camera)>128*128 && (!ray || p.to().distanceToSqr(camera)>128*128))continue;
@@ -230,10 +230,12 @@ public final class SpellVisuals {
                     Vec3 delta=rayTo.subtract(rayFrom),direction=delta.lengthSqr()<1e-8?new Vec3(0,0,1):delta.normalize();
                     Vec3 reference=Math.abs(direction.y)>.98?new Vec3(1,0,0):new Vec3(0,1,0),axis=direction.cross(reference).normalize();
                     double phase=mc.level.getGameTime()+partial;
-                    int segments=Math.clamp((int)(delta.length()/1.2),2,96);Vec3 previous=rayFrom;
-                    for(int i=1;i<=segments;i++){Vec3 next=rayFrom.lerp(rayTo,i/(double)segments);
-                        if(i<segments && p.kind()==SpellVfx.ARC)next=next.add(axis.scale(Math.sin(i*13.7+phase*.18)*.35)).add(0,Math.cos(i*8.3+phase*.13)*.18,0);
-                        stroke(pose,consumer,camera,previous,next,radius,color,alpha*.5f);stroke(pose,consumer,camera,previous,next,radius*.28,0xFFFFFF,alpha);previous=next;
+                    if(p.kind()==SpellVfx.BEAM){stroke(pose,consumer,camera,rayFrom,rayTo,radius,color,alpha*.5f);stroke(pose,consumer,camera,rayFrom,rayTo,radius*.28,0xFFFFFF,alpha);}
+                    else {int segments=Math.clamp((int)(delta.length()/1.2),2,96);Vec3 previous=rayFrom;
+                        for(int i=1;i<=segments;i++){Vec3 next=rayFrom.lerp(rayTo,i/(double)segments);
+                            if(i<segments)next=next.add(axis.scale(Math.sin(i*13.7+phase*.18)*.35)).add(0,Math.cos(i*8.3+phase*.13)*.18,0);
+                            stroke(pose,consumer,camera,previous,next,radius,color,alpha*.5f);stroke(pose,consumer,camera,previous,next,radius*.28,0xFFFFFF,alpha);previous=next;
+                        }
                     }
                 }
                 case SpellVfx.SPRAY -> {
@@ -378,6 +380,10 @@ public final class SpellVisuals {
         Vec3 side=to.subtract(from).cross(camera.subtract(from)).normalize().scale(width);if(side.lengthSqr()<1e-8)side=new Vec3(width,0,0);
         float r=((color>>16)&255)/255f,g=((color>>8)&255)/255f,b=(color&255)/255f;
         for(Vec3 v:new Vec3[]{from.subtract(side),from.add(side),to.add(side),to.subtract(side)})out.addVertex(pose,(float)v.x,(float)v.y,(float)v.z).setColor(r,g,b,alpha);
+    }
+    private static Vec3 approach(Vec3 current,Vec3 target,double maxStep){
+        Vec3 delta=target.subtract(current);double distance=delta.length();
+        return distance<=maxStep || distance<.025?target:current.add(delta.scale(maxStep/distance));
     }
     private SpellVisuals(){}
 }
