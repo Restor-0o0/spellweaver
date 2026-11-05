@@ -18,6 +18,7 @@ import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import java.text.Normalizer;
 import java.util.*;
 
 /** Every spell keeps a fixed page in catalog order, blank pages follow up to the number of possible formulas; narrow screens show one page and slide the book. */
@@ -81,19 +82,20 @@ public final class GrimoireScreen extends Screen {
     }
     private boolean open(SpellDefinition spell){return SpellScrolls.clientOpen(minecraft.player,spell);}
     private String number(){String q=query.trim();return q.matches("\\d{1,5}")?q:null;}
-    private List<String> words(){String q=query.toLowerCase(Locale.ROOT).replace("#","").trim();return number()!=null || q.isEmpty()?List.of():List.of(q.split("\\s+"));}
+    private String normalizeSearch(String value){return Normalizer.normalize(value.toLowerCase(Locale.ROOT).replace('ё','е'),Normalizer.Form.NFD).replaceAll("\\p{M}+","").replaceAll("[^\\p{L}\\p{N}_:]+"," ").trim();}
+    private List<String> words(){String q=normalizeSearch(query.replace("#",""));return number()!=null || q.isEmpty()?List.of():List.of(q.split("\\s+"));}
     private boolean filtering(){return !tag.equals("all") || elements!=0 || !words().isEmpty();}
     private boolean matches(SpellDefinition d){
-        if(!open(d) || !tag.equals("all") && !SpellTags.of(d).contains(tag))return false;
+        if(!tag.equals("all") && !SpellTags.of(d).contains(tag))return false;
         for(Element element:Element.values())if((elements&1<<element.ordinal())!=0 && d.formula().total(element)==0)return false;
-        String text=(d.name()+" "+d.displayName().getString()+" "+d.tags()+" "+d.primaryDescription().getString()+" "+d.selfDescription().getString()+" "+tagText(d)).toLowerCase(Locale.ROOT);
+        String text=normalizeSearch(d.name()+" "+d.displayName().getString()+" "+d.id().getPath()+" "+d.incantation()+" "+d.formula()+" "+d.tags()+" "+d.primaryDescription().getString()+" "+d.selfDescription().getString()+" "+tagText(d));
         return words().stream().allMatch(text::contains);
     }
     private boolean matchesComposite(int composite){
         Element element=Element.values()[8+composite];
         if(!tag.equals("all"))return false;
         for(Element selected:Element.values())if((elements&1<<selected.ordinal())!=0 && selected!=element && !element.parents().contains(selected))return false;
-        String text=Component.translatable(compositeKey(element)).getString().toLowerCase(Locale.ROOT);
+        String text=normalizeSearch(Component.translatable(compositeKey(element)).getString()+" "+element.name()+" "+element.key());
         return words().stream().allMatch(text::contains);
     }
     private static String compositeKey(Element element){return "book.magicka.composite."+element.name().toLowerCase(Locale.ROOT);}
