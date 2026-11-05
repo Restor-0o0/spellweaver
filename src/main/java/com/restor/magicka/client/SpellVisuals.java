@@ -14,8 +14,14 @@ import java.util.*;
 /** Bright world-space ribbons, persistent zone borders and vanilla block cores. No custom textures required. */
 public final class SpellVisuals {
     private static final List<Cue> CUES=new ArrayList<>();
-    private static final class Cue {MagicNetwork.Visual packet;int age,until;Cue(MagicNetwork.Visual packet){this.packet=packet;until=Math.min(100,packet.ticks());}}
+    private static final class Cue {
+        MagicNetwork.Visual packet;Vec3 previousFrom,previousTo;int age,until;
+        Cue(MagicNetwork.Visual packet){this.packet=packet;previousFrom=packet.from();previousTo=packet.to();until=Math.min(100,packet.ticks());}
+        Vec3 from(float partial){return stream(packet.kind())?previousFrom.lerp(packet.from(),Math.clamp((age+partial)/5,0,1)):packet.from();}
+        Vec3 to(float partial){return stream(packet.kind())?previousTo.lerp(packet.to(),Math.clamp((age+partial)/5,0,1)):packet.to();}
+    }
     public static void clear(){CUES.clear();}
+    private static boolean stream(int kind){return kind==SpellVfx.BEAM || kind==SpellVfx.ARC || kind==SpellVfx.SPRAY;}
     private static boolean primaryRay(MagicNetwork.Visual packet){
         var level=Minecraft.getInstance().level;if(packet.anchor()<0 || level==null)return false;
         var source=level.getEntity(packet.anchor());return source!=null && packet.from().distanceToSqr(source.getEyePosition())<2.25;
@@ -23,11 +29,12 @@ public final class SpellVisuals {
     public static void receive(MagicNetwork.Visual packet){
         if(packet.kind()<0 || packet.kind()>SpellVfx.EMBERFALL || !GrimoireState.valid(packet.formula()) || !Double.isFinite(packet.from().lengthSqr()+packet.to().lengthSqr()) || !Float.isFinite(packet.radius()))return;
         boolean model=SpellModels.merges(packet.kind());
-        boolean stream=packet.kind()==SpellVfx.BEAM || packet.kind()==SpellVfx.ARC || packet.kind()==SpellVfx.SPRAY;
+        boolean stream=stream(packet.kind());
         boolean primary=stream && primaryRay(packet);
         boolean endpoint=packet.kind()==SpellVfx.IMPACT && packet.anchor()>=0;
         if(packet.kind()==SpellVfx.ZONE || packet.kind()==SpellVfx.MINE || packet.kind()==SpellVfx.SIGIL || model || stream || endpoint)
             for(Cue c:CUES)if(c.packet.kind()==packet.kind() && c.packet.formula()==packet.formula() && c.packet.anchor()==packet.anchor() && (packet.anchor()>=0 && model || c.packet.from().distanceToSqr(packet.from())<.04 || primary && primaryRay(c.packet))){
+                if(stream){c.previousFrom=c.from(0);c.previousTo=c.to(0);}
                 c.packet=packet;
                 if(stream || endpoint){c.age=0;c.until=Math.min(100,packet.ticks());}
                 else c.until=model?c.age+Math.min(100,packet.ticks()):Math.max(c.until,c.age+Math.min(100,packet.ticks()));
@@ -45,7 +52,7 @@ public final class SpellVisuals {
             var formula=Formula.unpack(p.formula());var blend=ElementBlend.of(formula.key());
             if(formula.key().water()==1 && formula.key().life()==1 && formula.key().arcane()==1){mist(mc,cue);continue;}
             compounds(mc,cue,blend);
-            if(fire(blend))flames(mc,cue);
+            if(fire(blend) && !ray)flames(mc,cue);
             if(p.kind()==SpellVfx.ZONE)ambience(mc,cue,formula.key(),blend);
             if(SpellModels.handles(p.kind())){SpellModels.tick(mc,p,cue.age,cue.until);continue;}
             if(cue.age%3!=0 || ray)continue;
@@ -205,7 +212,7 @@ public final class SpellVisuals {
             float progress=Math.clamp((cue.age+partial)/Math.max(1,p.ticks()),0,1);
             boolean stream=p.kind()==SpellVfx.BEAM || p.kind()==SpellVfx.ARC || p.kind()==SpellVfx.SPRAY;
             float alpha=stream?.85f*Math.min(1,Math.max(0,(cue.until-cue.age-partial)/2f)):(1-progress)*.85f;
-            int color=color(formula);double radius=Math.clamp(p.radius(),.05,16);Vec3 center=p.from();
+            int color=color(formula);double radius=Math.clamp(p.radius(),.05,16);Vec3 rayFrom=cue.from(partial),rayTo=cue.to(partial),center=p.from();
             boolean flames=fire(blend);
             if(SpellModels.handles(p.kind())){
                 if(p.from().distanceToSqr(camera)<128*128)SpellModels.strokes(mc,pose,consumer,camera,p,cue.age+partial,cue.until,partial);
@@ -213,18 +220,19 @@ public final class SpellVisuals {
             }
             switch(p.kind()){
                 case SpellVfx.BEAM,SpellVfx.ARC -> {
-                    Vec3 delta=p.to().subtract(p.from()),direction=delta.lengthSqr()<1e-8?new Vec3(0,0,1):delta.normalize();
+                    Vec3 delta=rayTo.subtract(rayFrom),direction=delta.lengthSqr()<1e-8?new Vec3(0,0,1):delta.normalize();
                     Vec3 reference=Math.abs(direction.y)>.98?new Vec3(1,0,0):new Vec3(0,1,0),axis=direction.cross(reference).normalize();
-                    int segments=Math.clamp((int)(delta.length()/1.2),2,96);Vec3 previous=p.from();
-                    for(int i=1;i<=segments;i++){Vec3 next=p.from().lerp(p.to(),i/(double)segments);
-                        if(i<segments && p.kind()==SpellVfx.ARC)next=next.add(axis.scale(Math.sin(i*13.7+cue.age*.9)*.35)).add(0,Math.cos(i*8.3)*.18,0);
+                    double phase=mc.level.getGameTime()+partial;
+                    int segments=Math.clamp((int)(delta.length()/1.2),2,96);Vec3 previous=rayFrom;
+                    for(int i=1;i<=segments;i++){Vec3 next=rayFrom.lerp(rayTo,i/(double)segments);
+                        if(i<segments && p.kind()==SpellVfx.ARC)next=next.add(axis.scale(Math.sin(i*13.7+phase*.18)*.35)).add(0,Math.cos(i*8.3+phase*.13)*.18,0);
                         stroke(pose,consumer,camera,previous,next,radius,color,alpha*.5f);stroke(pose,consumer,camera,previous,next,radius*.28,0xFFFFFF,alpha);previous=next;
                     }
                 }
                 case SpellVfx.SPRAY -> {
-                    Vec3 direction=p.to().subtract(center);direction=direction.lengthSqr()<1e-8?new Vec3(0,0,1):direction.normalize();
+                    center=rayFrom;Vec3 direction=rayTo.subtract(center);direction=direction.lengthSqr()<1e-8?new Vec3(0,0,1):direction.normalize();
                     Vec3 reference=Math.abs(direction.y)>.98?new Vec3(1,0,0):new Vec3(0,1,0),side=direction.cross(reference).normalize();
-                    for(int j=-2;j<=2;j++)stroke(pose,consumer,camera,center,p.to().add(side.scale(j*radius*.5)),.06,color,alpha*.5f);
+                    for(int j=-2;j<=2;j++)stroke(pose,consumer,camera,center,rayTo.add(side.scale(j*radius*.5)),.06,color,alpha*.5f);
                 }
                 case SpellVfx.ORB -> {
                     if(formula.cold()==2 && formula.earth()==1){spear(pose,consumer,camera,p,progress);continue;}

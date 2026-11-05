@@ -177,19 +177,18 @@ public final class SpellRuntime {
         Vec3 from=p.getEyePosition(), look=p.getLookAngle();double reach=reach(p,s),width=spray?3:beamWidth(s);
         var hit=SpellAim.hit(p,reach);Vec3 end=hit.getLocation();net.minecraft.core.Direction face=hit.getType()==HitResult.Type.BLOCK?hit.getDirection():null;
         Set<LivingEntity> struck=new HashSet<>();
-        segment(p,s,spray,width,from,end,struck,face!=null);
+        segment(p,s,spray,width,from,end,struck);
         double left=reach-from.distanceTo(end);
         for(int bounce=Math.clamp((int)s.number("ricochet",0),0,3);bounce>0 && left>1 && face!=null;bounce--){
             look=reflect(look,face);from=end.add(look.scale(.05));left-=from.distanceTo(end);
             var trace=trace(p,from,look,left);end=trace.end();left-=from.distanceTo(end);
-            segment(p,s,spray,width,from,end,struck,trace.face()!=null);
+            segment(p,s,spray,width,from,end,struck);
             face=trace.face();
         }
     }
-    private static void segment(ServerPlayer p,SpellDefinition s,boolean spray,double width,Vec3 from,Vec3 end,Set<LivingEntity> struck,boolean blocked) {
+    private static void segment(ServerPlayer p,SpellDefinition s,boolean spray,double width,Vec3 from,Vec3 end,Set<LivingEntity> struck) {
         Vec3 delta=end.subtract(from);Vec3 look=delta.lengthSqr()<1e-8?new Vec3(0,0,1):delta.normalize();
         SpellVfx.cue(p,s,spray?SpellVfx.SPRAY:SpellVfx.BEAM,from,end,width,10);
-        if(blocked)SpellVfx.beamImpact(p,s,end,Math.max(.45,Math.min(1,width*.65)),8);
         if(!spray)BeamClash.beam(p,from,end);
         double burst=s.number("end_burst",0);
         for(LivingEntity e:along(p,from,end,width,spray)) if(struck.add(e) && (burst<=0 || e.getBoundingBox().distanceToSqr(end)>burst*burst)) EffectGraph.entity(p,e,s,s.effects(),from,false);

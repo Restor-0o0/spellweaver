@@ -26,9 +26,6 @@ public final class SpellVfx {
         int anchor=kind==BEAM || kind==ARC || kind==SPRAY?p.getId():-1;
         send(p,s==null?new SpellFormula(0,1,0,0,0,0,0):s.formula(),kind,from,to,radius,ticks,anchor);
     }
-    public static void beamImpact(ServerPlayer p,SpellDefinition s,Vec3 point,double radius,int ticks){
-        send(p,s.formula(),IMPACT,point,point,radius,ticks,p.getId());
-    }
     public static void sigil(ServerPlayer p,SpellFormula formula,Vec3 center,Vec3 normal,double radius,int ticks){
         send(p,formula,SIGIL,center,center.add(normal.normalize()),radius,ticks,-1);
     }
