@@ -16,13 +16,18 @@ public final class SpellVisuals {
     private static final List<Cue> CUES=new ArrayList<>();
     private static final class Cue {MagicNetwork.Visual packet;int age,until;Cue(MagicNetwork.Visual packet){this.packet=packet;until=Math.min(100,packet.ticks());}}
     public static void clear(){CUES.clear();}
+    private static boolean primaryRay(MagicNetwork.Visual packet){
+        var level=Minecraft.getInstance().level;if(packet.anchor()<0 || level==null)return false;
+        var source=level.getEntity(packet.anchor());return source!=null && packet.from().distanceToSqr(source.getEyePosition())<2.25;
+    }
     public static void receive(MagicNetwork.Visual packet){
         if(packet.kind()<0 || packet.kind()>SpellVfx.EMBERFALL || !GrimoireState.valid(packet.formula()) || !Double.isFinite(packet.from().lengthSqr()+packet.to().lengthSqr()) || !Float.isFinite(packet.radius()))return;
         boolean model=SpellModels.merges(packet.kind());
         boolean stream=packet.kind()==SpellVfx.BEAM || packet.kind()==SpellVfx.ARC || packet.kind()==SpellVfx.SPRAY;
+        boolean primary=stream && primaryRay(packet);
         boolean endpoint=packet.kind()==SpellVfx.IMPACT && packet.anchor()>=0;
         if(packet.kind()==SpellVfx.ZONE || packet.kind()==SpellVfx.MINE || packet.kind()==SpellVfx.SIGIL || model || stream || endpoint)
-            for(Cue c:CUES)if(c.packet.kind()==packet.kind() && c.packet.formula()==packet.formula() && c.packet.anchor()==packet.anchor() && (packet.anchor()>=0 && model || c.packet.from().distanceToSqr(packet.from())<.04)){
+            for(Cue c:CUES)if(c.packet.kind()==packet.kind() && c.packet.formula()==packet.formula() && c.packet.anchor()==packet.anchor() && (packet.anchor()>=0 && model || c.packet.from().distanceToSqr(packet.from())<.04 || primary && primaryRay(c.packet))){
                 c.packet=packet;
                 if(stream || endpoint){c.age=0;c.until=Math.min(100,packet.ticks());}
                 else c.until=model?c.age+Math.min(100,packet.ticks()):Math.max(c.until,c.age+Math.min(100,packet.ticks()));
@@ -43,7 +48,7 @@ public final class SpellVisuals {
             if(fire(blend))flames(mc,cue);
             if(p.kind()==SpellVfx.ZONE)ambience(mc,cue,formula.key(),blend);
             if(SpellModels.handles(p.kind())){SpellModels.tick(mc,p,cue.age,cue.until);continue;}
-            if(cue.age%3!=0)continue;
+            if(cue.age%3!=0 || ray)continue;
             var elements=remaining(blend);if(elements.isEmpty())continue;Element element=elements.get((cue.age/3)%elements.size());
             double progress=ray?(mc.level.getGameTime()+cue.age)%8/8.0:Math.min(1,cue.age/(double)Math.max(1,p.ticks()));
             Vec3 point=p.from().lerp(p.to(),progress);
@@ -143,7 +148,8 @@ public final class SpellVisuals {
         var p=cue.packet;var random=mc.level.getRandom();double progress=Math.min(1,cue.age/(double)Math.max(1,p.ticks()));
         double spread=Math.clamp(p.radius(),.15,6);
         int count=switch(p.kind()){case SpellVfx.BEAM,SpellVfx.ARC,SpellVfx.SPRAY->16;case SpellVfx.ORB->8;case SpellVfx.IMPACT,SpellVfx.ZONE->14;default->6;};
-        count=(int)Math.round(count*Math.clamp(spread/2.5,1,3));
+        if(p.kind()==SpellVfx.BEAM)count=1;else if(p.kind()==SpellVfx.ARC)count=2;else if(p.kind()==SpellVfx.SPRAY)count=4;
+        else count=(int)Math.round(count*Math.clamp(spread/2.5,1,3));
         for(int i=0;i<count;i++){
             Vec3 point=switch(p.kind()){
                 case SpellVfx.BEAM,SpellVfx.ARC,SpellVfx.SPRAY->p.from().lerp(p.to(),random.nextDouble());
@@ -205,7 +211,6 @@ public final class SpellVisuals {
                 if(p.from().distanceToSqr(camera)<128*128)SpellModels.strokes(mc,pose,consumer,camera,p,cue.age+partial,cue.until,partial);
                 continue;
             }
-            if(flames && (p.kind()==SpellVfx.BEAM || p.kind()==SpellVfx.ARC || p.kind()==SpellVfx.SPRAY))continue;
             switch(p.kind()){
                 case SpellVfx.BEAM,SpellVfx.ARC -> {
                     Vec3 delta=p.to().subtract(p.from()),direction=delta.lengthSqr()<1e-8?new Vec3(0,0,1):delta.normalize();
