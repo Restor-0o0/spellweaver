@@ -28,6 +28,11 @@ public final class SpellVisuals {
     }
     public static void receive(MagicNetwork.Visual packet){
         if(packet.kind()<0 || packet.kind()>SpellVfx.EMBERFALL || !GrimoireState.valid(packet.formula()) || !Double.isFinite(packet.from().lengthSqr()+packet.to().lengthSqr()) || !Float.isFinite(packet.radius()))return;
+        if(packet.kind()==SpellVfx.BEAM && packet.anchor()>=0){
+            Cue existing=null;
+            for(var it=CUES.iterator();it.hasNext();){Cue c=it.next();if(c.packet.kind()!=SpellVfx.BEAM || c.packet.anchor()!=packet.anchor())continue;if(existing==null)existing=c;else it.remove();}
+            if(existing!=null){existing.previousFrom=existing.from(0);existing.previousTo=existing.to(0);existing.packet=packet;existing.age=0;existing.until=Math.min(100,packet.ticks());return;}
+        }
         boolean model=SpellModels.merges(packet.kind());
         boolean stream=stream(packet.kind());
         boolean primary=stream && primaryRay(packet);
@@ -213,6 +218,7 @@ public final class SpellVisuals {
             boolean stream=p.kind()==SpellVfx.BEAM || p.kind()==SpellVfx.ARC || p.kind()==SpellVfx.SPRAY;
             float alpha=stream?.85f*Math.min(1,Math.max(0,(cue.until-cue.age-partial)/2f)):(1-progress)*.85f;
             int color=color(formula);double radius=Math.clamp(p.radius(),.05,16);Vec3 rayFrom=cue.from(partial),rayTo=cue.to(partial),center=p.from();
+            if(p.kind()==SpellVfx.BEAM && p.anchor()>=0 && mc.level!=null){var caster=mc.level.getEntity(p.anchor());if(caster!=null)rayFrom=caster.getEyePosition(partial);}
             boolean flames=fire(blend);
             if(SpellModels.handles(p.kind())){
                 if(p.from().distanceToSqr(camera)<128*128)SpellModels.strokes(mc,pose,consumer,camera,p,cue.age+partial,cue.until,partial);
