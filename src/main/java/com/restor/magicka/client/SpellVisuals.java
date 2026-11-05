@@ -230,7 +230,7 @@ public final class SpellVisuals {
                     Vec3 delta=rayTo.subtract(rayFrom),direction=delta.lengthSqr()<1e-8?new Vec3(0,0,1):delta.normalize();
                     Vec3 reference=Math.abs(direction.y)>.98?new Vec3(1,0,0):new Vec3(0,1,0),axis=direction.cross(reference).normalize();
                     double phase=mc.level.getGameTime()+partial;
-                    if(p.kind()==SpellVfx.BEAM){double beamRadius=Math.clamp(radius,.22,.5);beamTube(pose,consumer,rayFrom,rayTo,beamRadius,color,alpha*.42f,8);beamTube(pose,consumer,rayFrom,rayTo,beamRadius*.32,0xFFFFFF,alpha*.95f,6);beamRings(pose,consumer,camera,rayFrom,rayTo,beamRadius,color,alpha,phase);}
+                    if(p.kind()==SpellVfx.BEAM){double beamRadius=Math.clamp(radius,.22,.5);beamTube(pose,consumer,rayFrom,rayTo,beamRadius,color,alpha*.82f,10);}
                     else {int segments=Math.clamp((int)(delta.length()/1.2),2,96);Vec3 previous=rayFrom;
                         for(int i=1;i<=segments;i++){Vec3 next=rayFrom.lerp(rayTo,i/(double)segments);
                             if(i<segments)next=next.add(axis.scale(Math.sin(i*13.7+phase*.18)*.35)).add(0,Math.cos(i*8.3+phase*.13)*.18,0);
@@ -389,15 +389,19 @@ public final class SpellVisuals {
             double a=i*Math.PI*2/sides,c=(i+1)*Math.PI*2/sides;
             Vec3 u0=u.scale(Math.cos(a)*radius).add(v.scale(Math.sin(a)*radius)),u1=u.scale(Math.cos(c)*radius).add(v.scale(Math.sin(c)*radius));
             for(Vec3 point:new Vec3[]{from.add(u0),from.add(u1),to.add(u1),to.add(u0)})out.addVertex(pose,(float)point.x,(float)point.y,(float)point.z).setColor(r,g,b,alpha);
+            for(Vec3 point:new Vec3[]{from.add(u0),to.add(u0),to.add(u1),from.add(u1)})out.addVertex(pose,(float)point.x,(float)point.y,(float)point.z).setColor(r,g,b,alpha);
         }
+        beamCap(pose,out,from,direction,radius,color,alpha,sides);
+        beamCap(pose,out,to,direction.scale(-1),radius,color,alpha,sides);
     }
-    private static void beamRings(PoseStack.Pose pose,VertexConsumer out,Vec3 camera,Vec3 from,Vec3 to,double radius,int color,float alpha,double phase){
-        Vec3 axis=to.subtract(from);double length=axis.length();if(length<.1)return;axis=axis.scale(1/length);
+    private static void beamCap(PoseStack.Pose pose,VertexConsumer out,Vec3 center,Vec3 axis,double radius,int color,float alpha,int sides){
         Vec3 u=axis.cross(Math.abs(axis.y)>.95?new Vec3(1,0,0):new Vec3(0,1,0)).normalize(),v=axis.cross(u).normalize();
-        for(int i=0;i<3;i++){
-            double distance=Math.min(length*.28,.35+i*.48),angle=phase*.12+i*Math.PI/5,ringRadius=radius*(1.45+i*.13);
-            Vec3 ru=u.scale(Math.cos(angle)).add(v.scale(Math.sin(angle))),rv=axis.cross(ru).normalize(),center=from.add(axis.scale(distance));
-            arc(pose,out,camera,center,ru,rv,ringRadius,.025,color,alpha*.78f);
+        float r=((color>>16)&255)/255f,g=((color>>8)&255)/255f,b=(color&255)/255f;
+        for(int i=0;i<sides;i++){
+            double a=i*Math.PI*2/sides,c=(i+1)*Math.PI*2/sides;
+            Vec3 first=center.add(u.scale(Math.cos(a)*radius)).add(v.scale(Math.sin(a)*radius));
+            Vec3 second=center.add(u.scale(Math.cos(c)*radius)).add(v.scale(Math.sin(c)*radius));
+            for(Vec3 point:new Vec3[]{center,first,second,center,second,first})out.addVertex(pose,(float)point.x,(float)point.y,(float)point.z).setColor(r,g,b,alpha);
         }
     }
     private static double approach(double current,double target,double maxStep){return current<target?Math.min(target,current+maxStep):Math.max(target,current-maxStep);}
