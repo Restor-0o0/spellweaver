@@ -218,7 +218,7 @@ public final class SpellVisuals {
             boolean stream=p.kind()==SpellVfx.BEAM || p.kind()==SpellVfx.ARC || p.kind()==SpellVfx.SPRAY;
             float alpha=stream?.85f*Math.min(1,Math.max(0,(cue.until-cue.age-partial)/2f)):(1-progress)*.85f;
             int color=color(formula);double radius=Math.clamp(p.radius(),.05,16);Vec3 rayFrom=cue.from(partial),rayTo=cue.to(partial),center=p.from();
-            if(p.kind()==SpellVfx.BEAM && p.anchor()>=0 && mc.level!=null){var caster=mc.level.getEntity(p.anchor());if(caster!=null)rayFrom=caster.getEyePosition(partial).add(caster.getLookAngle().scale(.65));}
+            if(p.kind()==SpellVfx.BEAM && p.anchor()>=0 && mc.level!=null){var caster=mc.level.getEntity(p.anchor());if(caster!=null)rayFrom=caster.getEyePosition(partial).add(caster.getLookAngle().scale(.65)).add(0,-.35,0);}
             boolean flames=fire(blend);
             if(SpellModels.handles(p.kind())){
                 if(p.from().distanceToSqr(camera)<128*128)SpellModels.strokes(mc,pose,consumer,camera,p,cue.age+partial,cue.until,partial);
