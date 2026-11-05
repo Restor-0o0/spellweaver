@@ -135,7 +135,7 @@ public final class MagicNetwork {
     public static State clientState = new State(false, 0, 0, 0, 0, 0, false, false);
     public static void register(RegisterPayloadHandlersEvent event) {
         var registrar = event.registrar("12");
-        registrar.playToClient(Visual.TYPE,Visual.CODEC,(packet,context)->visualReceiver.accept(packet));
+        registrar.playToClient(Visual.TYPE,Visual.CODEC,(packet,context)->context.enqueueWork(()->visualReceiver.accept(packet)));
         registrar.playToServer(QuickFill.TYPE,QuickFill.CODEC,(packet,context)->{if(context.player() instanceof ServerPlayer p)CastingServer.quickFill(p,packet.formula);});
         registrar.playToClient(Locks.TYPE,Locks.CODEC,(packet,context)->{clientLocks=packet.mask;clientLocksUntil=System.currentTimeMillis()+packet.ticks*50L;});
         registrar.playToClient(QueueState.TYPE,QueueState.CODEC,(packet,context)->clientQueue=packet);
