@@ -15,10 +15,10 @@ import java.util.*;
 public final class SpellVisuals {
     private static final List<Cue> CUES=new ArrayList<>();
     private static final class Cue {
-        MagicNetwork.Visual packet;Vec3 previousFrom,previousTo;int age,until;
-        Cue(MagicNetwork.Visual packet){this.packet=packet;previousFrom=packet.from();previousTo=packet.to();until=Math.min(100,packet.ticks());}
+        MagicNetwork.Visual packet;Vec3 previousFrom,previousTo,beamTip,beamTarget;int age,until;
+        Cue(MagicNetwork.Visual packet){this.packet=packet;previousFrom=packet.from();previousTo=packet.to();beamTip=beamTarget=packet.to();until=Math.min(100,packet.ticks());}
         Vec3 from(float partial){return stream(packet.kind())?previousFrom.lerp(packet.from(),Math.clamp((age+partial)/5,0,1)):packet.from();}
-        Vec3 to(float partial){return stream(packet.kind())?previousTo.lerp(packet.to(),Math.clamp((age+partial)/5,0,1)):packet.to();}
+        Vec3 to(float partial){return packet.kind()==SpellVfx.BEAM?previousTo.lerp(beamTip,partial):stream(packet.kind())?previousTo.lerp(packet.to(),Math.clamp((age+partial)/5,0,1)):packet.to();}
     }
     public static void clear(){CUES.clear();}
     private static boolean stream(int kind){return kind==SpellVfx.BEAM || kind==SpellVfx.ARC || kind==SpellVfx.SPRAY;}
@@ -31,7 +31,7 @@ public final class SpellVisuals {
         if(packet.kind()==SpellVfx.BEAM && packet.anchor()>=0){
             Cue existing=null;
             for(var it=CUES.iterator();it.hasNext();){Cue c=it.next();if(c.packet.kind()!=SpellVfx.BEAM || c.packet.anchor()!=packet.anchor())continue;if(existing==null)existing=c;else it.remove();}
-            if(existing!=null){existing.previousFrom=existing.from(0);existing.previousTo=existing.to(0);existing.packet=packet;existing.age=0;existing.until=Math.min(100,packet.ticks());return;}
+            if(existing!=null){existing.previousFrom=existing.from(0);existing.beamTarget=packet.to();existing.packet=packet;existing.age=0;existing.until=Math.min(100,packet.ticks());return;}
         }
         boolean model=SpellModels.merges(packet.kind());
         boolean stream=stream(packet.kind());
@@ -39,7 +39,7 @@ public final class SpellVisuals {
         boolean endpoint=packet.kind()==SpellVfx.IMPACT && packet.anchor()>=0;
         if(packet.kind()==SpellVfx.ZONE || packet.kind()==SpellVfx.MINE || packet.kind()==SpellVfx.SIGIL || model || stream || endpoint)
             for(Cue c:CUES)if(c.packet.kind()==packet.kind() && c.packet.formula()==packet.formula() && c.packet.anchor()==packet.anchor() && (packet.anchor()>=0 && model || c.packet.from().distanceToSqr(packet.from())<.04 || primary && primaryRay(c.packet))){
-                if(stream){c.previousFrom=c.from(0);c.previousTo=c.to(0);}
+                if(stream){c.previousFrom=c.from(0);if(packet.kind()==SpellVfx.BEAM)c.beamTarget=packet.to();else c.previousTo=c.to(0);}
                 c.packet=packet;
                 if(stream || endpoint){c.age=0;c.until=Math.min(100,packet.ticks());}
                 else c.until=model?c.age+Math.min(100,packet.ticks()):Math.max(c.until,c.age+Math.min(100,packet.ticks()));
@@ -51,7 +51,8 @@ public final class SpellVisuals {
         var mc=Minecraft.getInstance();if(mc.level==null){clear();return;}
         CUES.removeIf(c->++c.age>c.until || c.packet.anchor()>=0 && mc.level.getEntity(c.packet.anchor())==null);
         for(Cue cue:CUES){
-            var p=cue.packet;boolean ray=p.kind()==SpellVfx.BEAM || p.kind()==SpellVfx.ARC || p.kind()==SpellVfx.SPRAY;
+            var p=cue.packet;if(p.kind()==SpellVfx.BEAM){cue.previousTo=cue.beamTip;cue.beamTip=cue.beamTip.lerp(cue.beamTarget,.28);}
+            boolean ray=p.kind()==SpellVfx.BEAM || p.kind()==SpellVfx.ARC || p.kind()==SpellVfx.SPRAY;
             Vec3 camera=mc.gameRenderer.mainCamera().position();
             if(p.kind()==SpellVfx.SIGIL || p.from().distanceToSqr(camera)>128*128 && (!ray || p.to().distanceToSqr(camera)>128*128))continue;
             var formula=Formula.unpack(p.formula());var blend=ElementBlend.of(formula.key());
