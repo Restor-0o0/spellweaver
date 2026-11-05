@@ -230,7 +230,7 @@ public final class SpellVisuals {
                     Vec3 delta=rayTo.subtract(rayFrom),direction=delta.lengthSqr()<1e-8?new Vec3(0,0,1):delta.normalize();
                     Vec3 reference=Math.abs(direction.y)>.98?new Vec3(1,0,0):new Vec3(0,1,0),axis=direction.cross(reference).normalize();
                     double phase=mc.level.getGameTime()+partial;
-                    if(p.kind()==SpellVfx.BEAM){double beamRadius=Math.clamp(radius,.22,.5);beamTube(pose,consumer,rayFrom,rayTo,beamRadius,color,alpha*.82f,10);}
+                    if(p.kind()==SpellVfx.BEAM){double beamRadius=Math.clamp(radius,.18,.38);beamTube(pose,consumer,rayFrom,rayTo,beamRadius,color,alpha*.22f,10);beamFlux(pose,consumer,rayFrom,rayTo,color,alpha,mc.level.getGameTime()+partial);}
                     else {int segments=Math.clamp((int)(delta.length()/1.2),2,96);Vec3 previous=rayFrom;
                         for(int i=1;i<=segments;i++){Vec3 next=rayFrom.lerp(rayTo,i/(double)segments);
                             if(i<segments)next=next.add(axis.scale(Math.sin(i*13.7+phase*.18)*.35)).add(0,Math.cos(i*8.3+phase*.13)*.18,0);
@@ -403,6 +403,28 @@ public final class SpellVisuals {
             Vec3 second=center.add(u.scale(Math.cos(c)*radius)).add(v.scale(Math.sin(c)*radius));
             for(Vec3 point:new Vec3[]{center,first,second,center,second,first})out.addVertex(pose,(float)point.x,(float)point.y,(float)point.z).setColor(r,g,b,alpha);
         }
+    }
+    private static void beamFlux(PoseStack.Pose pose,VertexConsumer out,Vec3 from,Vec3 to,int color,float alpha,double time){
+        Vec3 delta=to.subtract(from);double length=delta.length();if(length<.1)return;Vec3 axis=delta.scale(1/length);
+        Vec3 u=axis.cross(Math.abs(axis.y)>.95?new Vec3(1,0,0):new Vec3(0,1,0)).normalize(),v=axis.cross(u).normalize();
+        double spacing=.48,speed=.34;int count=Math.clamp((int)Math.ceil(length/spacing),1,128);
+        for(int i=0;i<count;i++){
+            double distance=(time*speed+i*spacing)%length;
+            Vec3 center=from.add(axis.scale(distance));double pulse=.9+.1*Math.sin(time*.22+i*1.7);
+            beamMote(pose,out,center,axis,u,v,.24*pulse,.14*pulse,(i%3==0?0xFFFFFF:color),alpha*.95f);
+        }
+    }
+    private static void beamMote(PoseStack.Pose pose,VertexConsumer out,Vec3 center,Vec3 axis,Vec3 u,Vec3 v,double length,double radius,int color,float alpha){
+        Vec3[] around={center.add(u.scale(radius)),center.add(v.scale(radius)),center.add(u.scale(-radius)),center.add(v.scale(-radius))};
+        Vec3 front=center.add(axis.scale(length)),back=center.add(axis.scale(-length));
+        float r=((color>>16)&255)/255f,g=((color>>8)&255)/255f,b=(color&255)/255f;
+        for(int i=0;i<4;i++){
+            Vec3 a=around[i],c=around[(i+1)%4];
+            beamTriangle(pose,out,front,a,c,r,g,b,alpha);beamTriangle(pose,out,back,c,a,r,g,b,alpha);
+        }
+    }
+    private static void beamTriangle(PoseStack.Pose pose,VertexConsumer out,Vec3 a,Vec3 b,Vec3 c,float r,float g,float blue,float alpha){
+        for(Vec3 point:new Vec3[]{a,b,c,a,c,b})out.addVertex(pose,(float)point.x,(float)point.y,(float)point.z).setColor(r,g,blue,alpha);
     }
     private static double approach(double current,double target,double maxStep){return current<target?Math.min(target,current+maxStep):Math.max(target,current-maxStep);}
     private static Vec3 follow(Vec3 current,Vec3 target,Cue cue){
