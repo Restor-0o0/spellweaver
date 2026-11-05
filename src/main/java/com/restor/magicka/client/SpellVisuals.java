@@ -407,17 +407,18 @@ public final class SpellVisuals {
     private static void beamFlowTubes(PoseStack.Pose pose,VertexConsumer out,Vec3 from,Vec3 to,double radius,int color,float alpha,int formula,int anchor,double time){
         Vec3 delta=to.subtract(from);double length=delta.length();if(length<.1)return;Vec3 axis=delta.scale(1/length);
         Vec3 u=axis.cross(Math.abs(axis.y)>.95?new Vec3(1,0,0):new Vec3(0,1,0)).normalize(),v=axis.cross(u).normalize();
-        double guideRadius=radius*2;int count=Math.clamp((int)Math.ceil(length/.62),1,128);int accent=ElementBlend.of(Formula.unpack(formula).key()).color();Random random=new Random(((long)formula<<32)^anchor^0x6A09E667F3BCC909L);
+        double guideRadius=radius*2,spacing=.18;int count=Math.clamp((int)Math.ceil(length/spacing),1,384);int accent=ElementBlend.of(Formula.unpack(formula).key()).color();Random random=new Random(((long)formula<<32)^anchor^0x6A09E667F3BCC909L);
         for(int i=0;i<count;i++){
             double size=.5+random.nextDouble()*2.5,thickness=radius*(.14+random.nextDouble()*.3);
             double angle=random.nextDouble()*Math.PI*2,radial=Math.sqrt(random.nextDouble())*(guideRadius-thickness);
             Vec3 offset=u.scale(Math.cos(angle)*radial).add(v.scale(Math.sin(angle)*radial));
-            double speed=.16+random.nextDouble()*.42,distance=(time*speed+random.nextDouble()*length+i*length/count)%length;
+            double speed=.08+random.nextDouble()*.2,distance=(time*speed+random.nextDouble()*8+i*spacing)%length;
             double visibleLength=Math.min(size,length-distance);
             if(visibleLength<.08)continue;
             Vec3 start=from.add(axis.scale(distance)).add(offset),end=start.add(axis.scale(visibleLength));
             int tint=i%5==0?0xFFFFFF:i%3==0?accent:color;
-            float pulse=(float)(.6+.3*Math.sin(time*.16+i*1.73));beamTube(pose,out,start,end,thickness,tint,alpha*pulse,6);
+            double fade=Math.min(1,Math.min(distance/.55,(length-distance)/.9));float opacity=(float)(fade*(.66+random.nextDouble()*.2));
+            beamTube(pose,out,start,end,thickness,tint,alpha*opacity,6);
         }
     }
     private static double approach(double current,double target,double maxStep){return current<target?Math.min(target,current+maxStep):Math.max(target,current-maxStep);}
