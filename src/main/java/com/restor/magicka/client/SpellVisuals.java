@@ -15,8 +15,8 @@ import java.util.*;
 public final class SpellVisuals {
     private static final List<Cue> CUES=new ArrayList<>();
     private static final class Cue {
-        MagicNetwork.Visual packet;Vec3 previousFrom,previousTo,beamTip,beamTarget;int age,until;
-        Cue(MagicNetwork.Visual packet){this.packet=packet;previousFrom=packet.from();previousTo=packet.to();beamTip=beamTarget=packet.to();until=Math.min(100,packet.ticks());}
+        MagicNetwork.Visual packet;Vec3 previousFrom,previousTo,beamTip,beamTarget,beamDirection;double beamDistance;int age,until;
+        Cue(MagicNetwork.Visual packet){this.packet=packet;previousFrom=packet.from();previousTo=packet.to();beamTip=beamTarget=packet.to();Vec3 ray=packet.to().subtract(packet.from());beamDistance=ray.length();beamDirection=ray.lengthSqr()<1e-8?new Vec3(0,0,1):ray.normalize();until=Math.min(100,packet.ticks());}
         Vec3 from(float partial){return stream(packet.kind())?previousFrom.lerp(packet.from(),Math.clamp((age+partial)/5,0,1)):packet.from();}
         Vec3 to(float partial){return packet.kind()==SpellVfx.BEAM?previousTo.lerp(beamTip,partial):stream(packet.kind())?previousTo.lerp(packet.to(),Math.clamp((age+partial)/5,0,1)):packet.to();}
     }
@@ -51,7 +51,7 @@ public final class SpellVisuals {
         var mc=Minecraft.getInstance();if(mc.level==null){clear();return;}
         CUES.removeIf(c->++c.age>c.until || c.packet.anchor()>=0 && mc.level.getEntity(c.packet.anchor())==null);
         for(Cue cue:CUES){
-            var p=cue.packet;if(p.kind()==SpellVfx.BEAM){cue.previousTo=cue.beamTip;cue.beamTip=approach(cue.beamTip,cue.beamTarget,.9);}
+            var p=cue.packet;if(p.kind()==SpellVfx.BEAM){cue.previousTo=cue.beamTip;Vec3 target=cue.beamTarget.subtract(p.from());double distance=target.length();if(distance>1e-4){cue.beamDirection=turnToward(cue.beamDirection,target.scale(1/distance),.24);cue.beamDistance=approach(cue.beamDistance,distance,1.5);cue.beamTip=p.from().add(cue.beamDirection.scale(cue.beamDistance));}}
             boolean ray=p.kind()==SpellVfx.BEAM || p.kind()==SpellVfx.ARC || p.kind()==SpellVfx.SPRAY;
             Vec3 camera=mc.gameRenderer.mainCamera().position();
             if(p.kind()==SpellVfx.SIGIL || p.from().distanceToSqr(camera)>128*128 && (!ray || p.to().distanceToSqr(camera)>128*128))continue;
@@ -381,9 +381,11 @@ public final class SpellVisuals {
         float r=((color>>16)&255)/255f,g=((color>>8)&255)/255f,b=(color&255)/255f;
         for(Vec3 v:new Vec3[]{from.subtract(side),from.add(side),to.add(side),to.subtract(side)})out.addVertex(pose,(float)v.x,(float)v.y,(float)v.z).setColor(r,g,b,alpha);
     }
-    private static Vec3 approach(Vec3 current,Vec3 target,double maxStep){
-        Vec3 delta=target.subtract(current);double distance=delta.length();
-        return distance<=maxStep || distance<.025?target:current.add(delta.scale(maxStep/distance));
+    private static double approach(double current,double target,double maxStep){return current<target?Math.min(target,current+maxStep):Math.max(target,current-maxStep);}
+    private static Vec3 turnToward(Vec3 current,Vec3 target,double maxAngle){
+        double dot=Math.clamp(current.dot(target),-1,1),angle=Math.acos(dot);if(angle<=maxAngle)return target;
+        Vec3 axis=current.cross(target);if(axis.lengthSqr()<1e-8){axis=current.cross(new Vec3(0,1,0));if(axis.lengthSqr()<1e-8)axis=current.cross(new Vec3(1,0,0));}
+        axis=axis.normalize();return current.scale(Math.cos(maxAngle)).add(axis.cross(current).scale(Math.sin(maxAngle))).normalize();
     }
     private SpellVisuals(){}
 }
