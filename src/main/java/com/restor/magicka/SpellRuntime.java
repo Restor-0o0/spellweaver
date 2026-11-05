@@ -57,7 +57,7 @@ public final class SpellRuntime {
         if (s.shape()!=SpellShape.SPRAY || !leads(s,Element.FIRE)) return UNLIMITED;
         return Math.clamp((3+3*s.formula().total(Element.FIRE))*MagicStats.power(p,MagicStats.Stat.FIRE),4,64);
     }
-    private static double speed(SpellDefinition s) { return Math.clamp(s.number("speed",.8)*(leads(s,Element.EARTH)?2:1),.1,4); }
+    private static double speed(SpellDefinition s) { return Math.clamp(s.number("speed",.8)*(leads(s,Element.EARTH)?2:1),.1,4)*2; }
     private static double gravity(SpellDefinition s) { return s.number("gravity",0)*(leads(s,Element.EARTH)?.25:1); }
     static List<LivingEntity> near(ServerPlayer p, Vec3 point, double radius) {
         return p.level().getEntitiesOfClass(LivingEntity.class,new AABB(point,point).inflate(radius),
