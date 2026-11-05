@@ -198,7 +198,8 @@ public final class SpellVisuals {
             if(flames && (p.kind()==SpellVfx.BEAM || p.kind()==SpellVfx.ARC || p.kind()==SpellVfx.SPRAY))continue;
             switch(p.kind()){
                 case SpellVfx.BEAM,SpellVfx.ARC -> {
-                    Vec3 delta=p.to().subtract(p.from()),axis=delta.normalize().cross(new Vec3(0,1,0)).normalize();
+                    Vec3 delta=p.to().subtract(p.from()),direction=delta.lengthSqr()<1e-8?new Vec3(0,0,1):delta.normalize();
+                    Vec3 reference=Math.abs(direction.y)>.98?new Vec3(1,0,0):new Vec3(0,1,0),axis=direction.cross(reference).normalize();
                     int segments=Math.clamp((int)(delta.length()/1.2),2,96);Vec3 previous=p.from();
                     for(int i=1;i<=segments;i++){Vec3 next=p.from().lerp(p.to(),i/(double)segments);
                         if(i<segments && p.kind()==SpellVfx.ARC)next=next.add(axis.scale(Math.sin(i*13.7+cue.age*.9)*.35)).add(0,Math.cos(i*8.3)*.18,0);
@@ -206,8 +207,9 @@ public final class SpellVisuals {
                     }
                 }
                 case SpellVfx.SPRAY -> {
-                    Vec3 direction=p.to().subtract(center),side=direction.normalize().cross(new Vec3(0,1,0)).normalize();
-                    for(int j=-2;j<=2;j++)stroke(pose,consumer,camera,center,p.to().add(side.scale(j*radius*.35)),.06,color,alpha*.5f);
+                    Vec3 direction=p.to().subtract(center);direction=direction.lengthSqr()<1e-8?new Vec3(0,0,1):direction.normalize();
+                    Vec3 reference=Math.abs(direction.y)>.98?new Vec3(1,0,0):new Vec3(0,1,0),side=direction.cross(reference).normalize();
+                    for(int j=-2;j<=2;j++)stroke(pose,consumer,camera,center,p.to().add(side.scale(j*radius*.5)),.06,color,alpha*.5f);
                 }
                 case SpellVfx.ORB -> {
                     if(formula.cold()==2 && formula.earth()==1){spear(pose,consumer,camera,p,progress);continue;}

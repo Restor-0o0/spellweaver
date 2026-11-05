@@ -146,46 +146,54 @@ public final class SpellRuntime {
         if(s.delivery().has("ice_surface"))freezeSurface(p,point,radius);
         SpellVfx.cue(p,s,SpellVfx.IMPACT,point,point,radius,12);SpellVfx.sound(p,s,point,true);
     }
-    private static Vec3 beamEnd(ServerPlayer p,double reach) {
-        Vec3 from=p.getEyePosition(); double range=Math.min(reach,from.distanceTo(SpellAim.hit(p).getLocation()));
-        return p.level().clip(new ClipContext(from,from.add(p.getLookAngle().scale(range)),ClipContext.Block.COLLIDER,ClipContext.Fluid.NONE,p)).getLocation();
+    private record BeamTrace(Vec3 end,net.minecraft.core.Direction face) {}
+    private static BeamTrace trace(ServerPlayer p,Vec3 from,Vec3 direction,double distance) {
+        var hit=p.level().clip(new ClipContext(from,from.add(direction.scale(distance)),ClipContext.Block.COLLIDER,ClipContext.Fluid.NONE,p));
+        return new BeamTrace(hit.getLocation(),hit.getType()==HitResult.Type.BLOCK?hit.getDirection():null);
     }
-    private static List<LivingEntity> along(ServerPlayer p,Vec3 from,Vec3 end,boolean spray) {
-        Vec3 look=end.subtract(from).normalize(); double length=from.distanceTo(end);
+    private static Vec3 beamEnd(ServerPlayer p,double reach) { return SpellAim.hit(p,reach).getLocation(); }
+    private static double beamWidth(SpellDefinition s) { return Math.clamp(s.number("beam_width",.15),.05,2); }
+    private static List<LivingEntity> along(ServerPlayer p,Vec3 from,Vec3 end,double width,boolean spray) {
+        Vec3 delta=end.subtract(from); double length=delta.length();
+        if(length<1e-5)return List.of();
+        Vec3 look=delta.scale(1/length);double maxWidth=spray?3:width;
         Set<LivingEntity> candidates=new HashSet<>();
-        for(double d=0;d<length+.5;d+=8)candidates.addAll(p.level().getEntitiesOfClass(LivingEntity.class,new AABB(from.add(look.scale(d)),from.add(look.scale(Math.min(length+.5,d+8)))).inflate(spray?4:1)));
+        for(double d=0;d<length+.5;d+=8)candidates.addAll(p.level().getEntitiesOfClass(LivingEntity.class,new AABB(from.add(look.scale(d)),from.add(look.scale(Math.min(length+.5,d+8)))).inflate(maxWidth+1)));
         List<LivingEntity> hits=new ArrayList<>();
         for(LivingEntity e:candidates) {
             if(e==p || !e.isAlive() || e.isSpectator())continue;
-            Vec3 delta=e.getBoundingBox().getCenter().subtract(from); double at=delta.dot(look);
-            if(at<0 || at>length+.4 || delta.subtract(look.scale(at)).length()> (spray?Math.min(3,.5+at*.3):.65+e.getBbWidth()*.5))continue;
-            if(p.level().clip(new ClipContext(from,e.getBoundingBox().getCenter(),ClipContext.Block.COLLIDER,ClipContext.Fluid.NONE,p)).getType()!=HitResult.Type.MISS)continue;
+            double at=Math.clamp(e.getBoundingBox().getCenter().subtract(from).dot(look),0,length);
+            double radius=spray?Math.min(3,.5+at*.3):width;
+            var intercept=e.getBoundingBox().inflate(radius).clip(from,end);
+            if(intercept.isEmpty())continue;
+            Vec3 contact=intercept.get();
+            if(p.level().clip(new ClipContext(from,contact,ClipContext.Block.COLLIDER,ClipContext.Fluid.NONE,p)).getType()!=HitResult.Type.MISS)continue;
             hits.add(e);
         }
-        hits.sort(Comparator.comparingDouble(e->e.distanceToSqr(from)));
+        hits.sort(Comparator.comparingDouble(e->e.getBoundingBox().getCenter().distanceToSqr(from)));
         return hits;
     }
     private static void beam(ServerPlayer p,SpellDefinition s,boolean spray) {
-        Vec3 from=p.getEyePosition(), look=p.getLookAngle(), end=beamEnd(p,reach(p,s));
+        Vec3 from=p.getEyePosition(), look=p.getLookAngle();double reach=reach(p,s),width=spray?3:beamWidth(s);
+        var hit=SpellAim.hit(p,reach);Vec3 end=hit.getLocation();net.minecraft.core.Direction face=hit.getType()==HitResult.Type.BLOCK?hit.getDirection():null;
         Set<LivingEntity> struck=new HashSet<>();
-        segment(p,s,spray,from,end,struck);
-        double left=reach(p,s)-from.distanceTo(end);
-        for(int bounce=Math.clamp((int)s.number("ricochet",0),0,3);bounce>0 && left>1;bounce--){
-            var hit=p.level().clip(new ClipContext(end.subtract(look.scale(.05)),end.add(look.scale(.3)),ClipContext.Block.COLLIDER,ClipContext.Fluid.NONE,p));
-            if(hit.getType()!=HitResult.Type.BLOCK)break;
-            look=reflect(look,hit.getDirection());from=hit.getLocation().add(look.scale(.05));
-            end=p.level().clip(new ClipContext(from,from.add(look.scale(left)),ClipContext.Block.COLLIDER,ClipContext.Fluid.NONE,p)).getLocation();
-            left-=from.distanceTo(end);
-            segment(p,s,spray,from,end,struck);
+        segment(p,s,spray,width,from,end,struck,face!=null);
+        double left=reach-from.distanceTo(end);
+        for(int bounce=Math.clamp((int)s.number("ricochet",0),0,3);bounce>0 && left>1 && face!=null;bounce--){
+            look=reflect(look,face);from=end.add(look.scale(.05));left-=from.distanceTo(end);
+            var trace=trace(p,from,look,left);end=trace.end();left-=from.distanceTo(end);
+            segment(p,s,spray,width,from,end,struck,trace.face()!=null);
+            face=trace.face();
         }
     }
-    private static void segment(ServerPlayer p,SpellDefinition s,boolean spray,Vec3 from,Vec3 end,Set<LivingEntity> struck) {
-        Vec3 look=end.subtract(from).normalize();
-        SpellVfx.cue(p,s,spray?SpellVfx.SPRAY:SpellVfx.BEAM,from,end,spray?1.5:s.number("beam_width",.15),10);
+    private static void segment(ServerPlayer p,SpellDefinition s,boolean spray,double width,Vec3 from,Vec3 end,Set<LivingEntity> struck,boolean blocked) {
+        Vec3 delta=end.subtract(from);Vec3 look=delta.lengthSqr()<1e-8?new Vec3(0,0,1):delta.normalize();
+        SpellVfx.cue(p,s,spray?SpellVfx.SPRAY:SpellVfx.BEAM,from,end,width,10);
+        if(blocked){SpellVfx.cue(p,s,SpellVfx.IMPACT,end,end,Math.max(.45,Math.min(1,width*.65)),8);particles(p,s,end,5,.08);}
         if(!spray)BeamClash.beam(p,from,end);
         for(double d=.5;d<from.distanceTo(end);d+=Math.max(.8,from.distanceTo(end)/64)) particles(p,s,from.add(look.scale(d)),spray?3:1,spray?d*.12:.04);
         double burst=s.number("end_burst",0);
-        for(LivingEntity e:along(p,from,end,spray)) if(struck.add(e) && (burst<=0 || e.getBoundingBox().distanceToSqr(end)>burst*burst)) EffectGraph.entity(p,e,s,s.effects(),from,false);
+        for(LivingEntity e:along(p,from,end,width,spray)) if(struck.add(e) && (burst<=0 || e.getBoundingBox().distanceToSqr(end)>burst*burst)) EffectGraph.entity(p,e,s,s.effects(),from,false);
         if(burst>0) impact(p,s,end,burst,false,true); else EffectGraph.world(p,s,s.effects(),end,false,true);
     }
     static Vec3 reflect(Vec3 v,net.minecraft.core.Direction face) {
@@ -202,7 +210,7 @@ public final class SpellRuntime {
     private static void lightning(ServerPlayer p,SpellDefinition s) {
         Vec3 eye=p.getEyePosition(), hand=eye.add(p.getLookAngle().scale(.6)).add(0,-.3,0), end=beamEnd(p,reach(p,s));
         boolean pierce=s.delivery().has("pierce");
-        List<LivingEntity> struck=along(p,eye,end,false);
+        List<LivingEntity> struck=along(p,eye,end,.65,false);
         LivingEntity aimed=target(p);
         if(!pierce) struck=aimed!=null && aimed!=p ? List.of(aimed) : struck.stream().limit(1).toList();
         Vec3 tip=struck.isEmpty() || pierce ? end : struck.getFirst().getBoundingBox().getCenter();
