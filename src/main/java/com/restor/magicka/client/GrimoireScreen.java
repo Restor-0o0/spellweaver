@@ -46,7 +46,7 @@ public final class GrimoireScreen extends Screen {
     private EditBox search;
     private List<SpellDefinition> catalog=List.of();
     private List<Integer> matches=List.of();
-    private SpellNameIndex nameIndex=new SpellNameIndex(List.of());
+    private SpellPrefixTree nameIndex=new SpellPrefixTree(List.of(),false),idIndex=new SpellPrefixTree(List.of(),true);
     private View from;private int fromPage,flipStart=-100,leaves=1,direction=1;
     private final Map<String,List<FormattedCharSequence>> splits=new HashMap<>();
     private final Map<String,List<List<Line>>> layouts=new HashMap<>();
@@ -74,13 +74,13 @@ public final class GrimoireScreen extends Screen {
     private void refresh(){
         catalog=RecipeRegistry.clientRecipes().stream().filter(d->d.tier().equalsIgnoreCase("Signature") || d.name().equals("Shield"))
                 .sorted(Comparator.comparingInt((SpellDefinition d)->RecipeRegistry.catalogPosition(d.id())).thenComparing(d->d.id().toString())).toList();
-        nameIndex=new SpellNameIndex(catalog);
+        nameIndex=new SpellPrefixTree(catalog,false);idIndex=new SpellPrefixTree(catalog,true);
         updateMatches();
     }
     private void updateMatches(){
         List<Integer> found=new ArrayList<>();
         if(filtering()){
-            Set<Integer> named=nameIndex.search(words());
+            Set<Integer> named=new HashSet<>(nameIndex.search(words()));named.addAll(idIndex.search(words()));
             for(int i=0;i<COMPOSITES;i++)if(matchesComposite(i))found.add(front()+i);
             for(int i=0;i<catalog.size();i++)if(named.contains(i) && matchesFilters(catalog.get(i)))found.add(front()+COMPOSITES+i);
         }
@@ -89,12 +89,12 @@ public final class GrimoireScreen extends Screen {
     private boolean open(SpellDefinition spell){return SpellScrolls.clientOpen(minecraft.player,spell);}
     private String number(){String q=query.trim();return q.matches("\\d{1,5}")?q:null;}
     private static String normalizeSearch(String value){return Normalizer.normalize(value.toLowerCase(Locale.ROOT).replace('ё','е'),Normalizer.Form.NFD).replaceAll("\\p{M}+","").replaceAll("[^\\p{L}\\p{N}]+"," ").trim();}
-    private List<String> words(){String q=normalizeSearch(query.replace("#",""));return number()!=null || q.isEmpty()?List.of():List.of(q.split("\\s+"));}
+    private List<String> words(){String q=normalizeSearch(query.replace("#",""));return q.isEmpty()?List.of():List.of(q.split("\\s+"));}
     private boolean filtering(){return !tag.equals("all") || elements!=0 || !words().isEmpty();}
-    private static final class SpellNameIndex {
+    private static final class SpellPrefixTree {
         private static final class Node {final Map<Character,Node> children=new HashMap<>();final Set<Integer> spells=new HashSet<>();}
         private final Node root=new Node();private final int size;
-        SpellNameIndex(List<SpellDefinition> catalog){size=catalog.size();for(int i=0;i<size;i++){var spell=catalog.get(i);add(spell.name(),i);add(spell.displayName().getString(),i);}}
+        SpellPrefixTree(List<SpellDefinition> catalog,boolean identifiers){size=catalog.size();for(int i=0;i<size;i++){var spell=catalog.get(i);if(identifiers){add(spell.id().getPath(),i);add(spell.id().toString(),i);}else{add(spell.name(),i);add(spell.displayName().getString(),i);}}}
         private void add(String name,int index){
             for(String word:normalizeSearch(name).split("\\s+"))if(!word.isEmpty()){
                 Node node=root;
@@ -271,7 +271,7 @@ public final class GrimoireScreen extends Screen {
             View before=current();int was=page;
             query=value;updateMatches();
             var n=number();
-            if(n!=null)page=front()+Integer.parseInt(n)-1;else if(filtering() && !matches.contains(page))page=firstFrom(page);
+            if(n!=null && matches.isEmpty())page=front()+Integer.parseInt(n)-1;else if(filtering() && !matches.contains(page))page=firstFrom(page);
             turn(before,was);rebuild(true);
         });
         addRenderableWidget(search);if(focus)setFocused(search);
