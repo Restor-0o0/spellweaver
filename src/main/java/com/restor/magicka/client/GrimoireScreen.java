@@ -46,6 +46,7 @@ public final class GrimoireScreen extends Screen {
     private EditBox search;
     private List<SpellDefinition> catalog=List.of();
     private List<Integer> matches=List.of();
+    private SpellNameIndex nameIndex=new SpellNameIndex(List.of());
     private View from;private int fromPage,flipStart=-100,leaves=1,direction=1;
     private final Map<String,List<FormattedCharSequence>> splits=new HashMap<>();
     private final Map<String,List<List<Line>>> layouts=new HashMap<>();
@@ -73,23 +74,48 @@ public final class GrimoireScreen extends Screen {
     private void refresh(){
         catalog=RecipeRegistry.clientRecipes().stream().filter(d->d.tier().equalsIgnoreCase("Signature") || d.name().equals("Shield"))
                 .sorted(Comparator.comparingInt((SpellDefinition d)->RecipeRegistry.catalogPosition(d.id())).thenComparing(d->d.id().toString())).toList();
+        nameIndex=new SpellNameIndex(catalog);
+        updateMatches();
+    }
+    private void updateMatches(){
         List<Integer> found=new ArrayList<>();
         if(filtering()){
+            Set<Integer> named=nameIndex.search(words());
             for(int i=0;i<COMPOSITES;i++)if(matchesComposite(i))found.add(front()+i);
-            for(int i=0;i<catalog.size();i++)if(matches(catalog.get(i)))found.add(front()+COMPOSITES+i);
+            for(int i=0;i<catalog.size();i++)if(named.contains(i) && matchesFilters(catalog.get(i)))found.add(front()+COMPOSITES+i);
         }
         matches=found;
     }
     private boolean open(SpellDefinition spell){return SpellScrolls.clientOpen(minecraft.player,spell);}
     private String number(){String q=query.trim();return q.matches("\\d{1,5}")?q:null;}
-    private String normalizeSearch(String value){return Normalizer.normalize(value.toLowerCase(Locale.ROOT).replace('ё','е'),Normalizer.Form.NFD).replaceAll("\\p{M}+","").replaceAll("[^\\p{L}\\p{N}_:]+"," ").trim();}
+    private static String normalizeSearch(String value){return Normalizer.normalize(value.toLowerCase(Locale.ROOT).replace('ё','е'),Normalizer.Form.NFD).replaceAll("\\p{M}+","").replaceAll("[^\\p{L}\\p{N}]+"," ").trim();}
     private List<String> words(){String q=normalizeSearch(query.replace("#",""));return number()!=null || q.isEmpty()?List.of():List.of(q.split("\\s+"));}
     private boolean filtering(){return !tag.equals("all") || elements!=0 || !words().isEmpty();}
-    private boolean matches(SpellDefinition d){
+    private static final class SpellNameIndex {
+        private static final class Node {final Map<Character,Node> children=new HashMap<>();final Set<Integer> spells=new HashSet<>();}
+        private final Node root=new Node();private final int size;
+        SpellNameIndex(List<SpellDefinition> catalog){size=catalog.size();for(int i=0;i<size;i++){var spell=catalog.get(i);add(spell.name(),i);add(spell.displayName().getString(),i);}}
+        private void add(String name,int index){
+            for(String word:normalizeSearch(name).split("\\s+"))if(!word.isEmpty()){
+                Node node=root;
+                for(char letter:word.toCharArray()){node=node.children.computeIfAbsent(letter,k->new Node());node.spells.add(index);}
+            }
+        }
+        Set<Integer> search(List<String> words){
+            Set<Integer> result=null;
+            for(String word:words){
+                Node node=root;for(char letter:word.toCharArray()){node=node.children.get(letter);if(node==null)return Set.of();}
+                if(result==null)result=new HashSet<>(node.spells);else result.retainAll(node.spells);
+                if(result.isEmpty())return Set.of();
+            }
+            if(result!=null)return result;
+            Set<Integer> all=new HashSet<>();for(int i=0;i<size;i++)all.add(i);return all;
+        }
+    }
+    private boolean matchesFilters(SpellDefinition d){
         if(!tag.equals("all") && !SpellTags.of(d).contains(tag))return false;
         for(Element element:Element.values())if((elements&1<<element.ordinal())!=0 && d.formula().total(element)==0)return false;
-        String text=normalizeSearch(d.name()+" "+d.displayName().getString()+" "+d.id().getPath()+" "+d.incantation()+" "+d.formula()+" "+d.tags()+" "+d.primaryDescription().getString()+" "+d.selfDescription().getString()+" "+tagText(d));
-        return words().stream().allMatch(text::contains);
+        return true;
     }
     private boolean matchesComposite(int composite){
         Element element=Element.values()[8+composite];
@@ -201,7 +227,7 @@ public final class GrimoireScreen extends Screen {
     private int firstFrom(int p){for(int m:matches)if(m>=p)return m;return matches.isEmpty()?p:matches.get(0);}
     private void refilter(Runnable change){
         View before=current();int was=page;
-        change.run();refresh();
+        change.run();updateMatches();
         if(filtering() && !matches.contains(page))page=firstFrom(page);
         turn(before,was);rebuild(false);
     }
@@ -243,7 +269,7 @@ public final class GrimoireScreen extends Screen {
         search.setValue(query);search.setHint(Component.translatable("book.magicka.search"));
         search.setResponder(value->{
             View before=current();int was=page;
-            query=value;refresh();
+            query=value;updateMatches();
             var n=number();
             if(n!=null)page=front()+Integer.parseInt(n)-1;else if(filtering() && !matches.contains(page))page=firstFrom(page);
             turn(before,was);rebuild(true);
