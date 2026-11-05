@@ -402,7 +402,7 @@ public final class SpellVisuals {
             double a=i*Math.PI*2/sides,c=(i+1)*Math.PI*2/sides;
             Vec3 first=center.add(u.scale(Math.cos(a)*radius)).add(v.scale(Math.sin(a)*radius));
             Vec3 second=center.add(u.scale(Math.cos(c)*radius)).add(v.scale(Math.sin(c)*radius));
-            for(Vec3 point:new Vec3[]{center,first,second,center,second,first})out.addVertex(pose,(float)point.x,(float)point.y,(float)point.z).setColor(r,g,b,alpha);
+            for(Vec3 point:new Vec3[]{center,first,second})out.addVertex(pose,(float)point.x,(float)point.y,(float)point.z).setColor(r,g,b,alpha);
         }
     }
     private static void ensureFlowTubes(Cue cue,double length,float radius,int formula,int anchor){
@@ -412,7 +412,7 @@ public final class SpellVisuals {
     private static void beamFlowTubes(PoseStack.Pose pose,VertexConsumer out,Vec3 from,Vec3 to,List<FlowTube> tubes,double radius,float alpha,float partial){
         Vec3 delta=to.subtract(from);double length=delta.length();if(length<.1)return;Vec3 axis=delta.scale(1/length);
         Vec3 u=axis.cross(Math.abs(axis.y)>.95?new Vec3(1,0,0):new Vec3(0,1,0)).normalize(),v=axis.cross(u).normalize();
-        for(FlowTube tube:tubes){double distance=tube.previousDistance+(tube.distance-tube.previousDistance)*partial;if(distance>length)continue;Vec3 center=from.add(axis.scale(distance)).add(u.scale(tube.offsetU)).add(v.scale(tube.offsetV));Vec3 start=center.add(axis.scale(-tube.length*.5)),end=center.add(axis.scale(tube.length*.5));beamTube(pose,out,start,end,tube.radius,tube.color,alpha*tube.alpha,6);}
+        for(FlowTube tube:tubes){double distance=tube.previousDistance+(tube.distance-tube.previousDistance)*partial;if(distance>length)continue;Vec3 center=from.add(axis.scale(distance)).add(u.scale(tube.offsetU)).add(v.scale(tube.offsetV));Vec3 start=center.add(axis.scale(-tube.length*.5)),end=center.add(axis.scale(tube.length*.5));beamTube(pose,out,start,end,tube.radius,tube.color,alpha*tube.alpha,4);}
     }
     private static double visibleBeamLength(double length,int formula){return Math.max(.1,length-(1.5+.15*Formula.unpack(formula).size()));}
     private static double approach(double current,double target,double maxStep){return current<target?Math.min(target,current+maxStep):Math.max(target,current-maxStep);}
