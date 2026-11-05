@@ -50,7 +50,9 @@ public final class SpellVisuals {
     }
     public static void tick(){
         var mc=Minecraft.getInstance();if(mc.level==null){clear();return;}
-        CUES.removeIf(c->++c.age>c.until || c.packet.anchor()>=0 && mc.level.getEntity(c.packet.anchor())==null);
+        Set<Long> expiredBeams=new HashSet<>();
+        CUES.removeIf(c->{boolean expired=++c.age>c.until || c.packet.anchor()>=0 && mc.level.getEntity(c.packet.anchor())==null;if(expired && c.packet.kind()==SpellVfx.BEAM)expiredBeams.add(cueKey(c.packet.anchor(),c.packet.formula()));return expired;});
+        if(!expiredBeams.isEmpty())CUES.removeIf(c->c.packet.kind()==SpellVfx.SIGIL && expiredBeams.contains(cueKey(c.packet.anchor(),c.packet.formula())));
         for(Cue cue:CUES){
             var p=cue.packet;if(p.kind()==SpellVfx.BEAM){cue.previousTo=cue.beamTip;Vec3 target=cue.beamTarget.subtract(p.from());double distance=target.length();if(distance>1e-4){cue.beamDirection=follow(cue.beamDirection,target.scale(1/distance),cue);cue.beamDistance=approach(cue.beamDistance,distance,1.5);cue.beamFlowDistance=visibleBeamLength(cue.beamDistance,p.formula());cue.beamTip=p.from().add(cue.beamDirection.scale(cue.beamDistance));ensureFlowTubes(cue,cue.beamFlowDistance,p.radius(),p.formula(),p.anchor());for(FlowTube tube:cue.flowTubes){tube.previousDistance=tube.distance;double next=tube.distance+tube.speed;if(next>=cue.beamFlowDistance){tube.distance=next%cue.beamFlowDistance;tube.previousDistance=tube.distance;}else tube.distance=next;}}}
             boolean ray=p.kind()==SpellVfx.BEAM || p.kind()==SpellVfx.ARC || p.kind()==SpellVfx.SPRAY;
@@ -231,7 +233,7 @@ public final class SpellVisuals {
                     Vec3 delta=rayTo.subtract(rayFrom),direction=delta.lengthSqr()<1e-8?new Vec3(0,0,1):delta.normalize();
                     Vec3 reference=Math.abs(direction.y)>.98?new Vec3(1,0,0):new Vec3(0,1,0),axis=direction.cross(reference).normalize();
                     double phase=mc.level.getGameTime()+partial;
-                    if(p.kind()==SpellVfx.BEAM){double beamRadius=Math.clamp(radius,.18,.38);beamFlowTubes(pose,consumer,rayFrom,rayTo,cue.flowTubes,beamRadius,alpha,partial);}
+                    if(p.kind()==SpellVfx.BEAM){double beamRadius=Math.clamp(radius,.18,.38);beamFlowTubes(pose,consumer,rayFrom,rayTo,cue.flowTubes,cue.beamFlowDistance,beamRadius,alpha,partial);}
                     else {int segments=Math.clamp((int)(delta.length()/1.2),2,96);Vec3 previous=rayFrom;
                         for(int i=1;i<=segments;i++){Vec3 next=rayFrom.lerp(rayTo,i/(double)segments);
                             if(i<segments)next=next.add(axis.scale(Math.sin(i*13.7+phase*.18)*.35)).add(0,Math.cos(i*8.3+phase*.13)*.18,0);
@@ -409,12 +411,14 @@ public final class SpellVisuals {
         int wanted=Math.clamp((int)Math.ceil(Math.max(.1,length)/.017),1,1536);long seed=((long)formula<<32)^anchor^0x6A09E667F3BCC909L;double guide=radius*2;int accent=ElementBlend.of(Formula.unpack(formula).key()).color();
         while(cue.flowTubes.size()<wanted){int index=cue.flowTubes.size();Random random=new Random(seed^((long)index*0xD1B54A32D192ED03L));FlowTube tube=new FlowTube();tube.length=.5+random.nextDouble()*2.5;tube.radius=radius*(.18+random.nextDouble()*.42);tube.speed=.16+random.nextDouble()*.32;tube.distance=random.nextDouble()*Math.max(.1,length);tube.previousDistance=tube.distance;double angle=random.nextDouble()*Math.PI*2,radial=Math.pow(random.nextDouble(),1.8)*(guide-tube.radius);tube.offsetU=Math.cos(angle)*radial;tube.offsetV=Math.sin(angle)*radial;tube.color=index%7==0?0xFFFFFF:accent;tube.alpha=(float)(.62+random.nextDouble()*.28);cue.flowTubes.add(tube);}
     }
-    private static void beamFlowTubes(PoseStack.Pose pose,VertexConsumer out,Vec3 from,Vec3 to,List<FlowTube> tubes,double radius,float alpha,float partial){
+    private static void beamFlowTubes(PoseStack.Pose pose,VertexConsumer out,Vec3 from,Vec3 to,List<FlowTube> tubes,double flowDistance,double radius,float alpha,float partial){
         Vec3 delta=to.subtract(from);double length=delta.length();if(length<.1)return;Vec3 axis=delta.scale(1/length);
         Vec3 u=axis.cross(Math.abs(axis.y)>.95?new Vec3(1,0,0):new Vec3(0,1,0)).normalize(),v=axis.cross(u).normalize();
-        for(FlowTube tube:tubes){double distance=tube.previousDistance+(tube.distance-tube.previousDistance)*partial;if(distance>length)continue;Vec3 center=from.add(axis.scale(distance)).add(u.scale(tube.offsetU)).add(v.scale(tube.offsetV));Vec3 start=center.add(axis.scale(-tube.length*.5)),end=center.add(axis.scale(tube.length*.5));beamTube(pose,out,start,end,tube.radius,tube.color,alpha*tube.alpha,4);}
+        double scale=length/Math.max(.1,flowDistance);
+        for(FlowTube tube:tubes){double distance=(tube.previousDistance+(tube.distance-tube.previousDistance)*partial)*scale;Vec3 center=from.add(axis.scale(distance)).add(u.scale(tube.offsetU)).add(v.scale(tube.offsetV));Vec3 start=center.add(axis.scale(-tube.length*.5)),end=center.add(axis.scale(tube.length*.5));beamTube(pose,out,start,end,tube.radius,tube.color,alpha*tube.alpha,4);}
     }
     private static double visibleBeamLength(double length,int formula){return Math.max(.1,length-(1.5+.15*Formula.unpack(formula).size()));}
+    private static long cueKey(int anchor,int formula){return ((long)anchor<<32)^Integer.toUnsignedLong(formula);}
     private static double approach(double current,double target,double maxStep){return current<target?Math.min(target,current+maxStep):Math.max(target,current-maxStep);}
     private static Vec3 follow(Vec3 current,Vec3 target,Cue cue){
         double dot=Math.clamp(current.dot(target),-1,1);Vec3 error=target.subtract(current.scale(dot));
