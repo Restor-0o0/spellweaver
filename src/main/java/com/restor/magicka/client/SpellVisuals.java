@@ -230,7 +230,7 @@ public final class SpellVisuals {
                     Vec3 delta=rayTo.subtract(rayFrom),direction=delta.lengthSqr()<1e-8?new Vec3(0,0,1):delta.normalize();
                     Vec3 reference=Math.abs(direction.y)>.98?new Vec3(1,0,0):new Vec3(0,1,0),axis=direction.cross(reference).normalize();
                     double phase=mc.level.getGameTime()+partial;
-                    if(p.kind()==SpellVfx.BEAM){double beamRadius=Math.clamp(radius,.18,.38);beamTube(pose,consumer,rayFrom,rayTo,beamRadius,color,alpha*.2f,10);beamFlowTubes(pose,consumer,rayFrom,rayTo,beamRadius,color,alpha,p.formula(),p.anchor(),mc.level.getGameTime()+partial);}
+                    if(p.kind()==SpellVfx.BEAM){double beamRadius=Math.clamp(radius,.18,.38);beamFlowTubes(pose,consumer,rayFrom,rayTo,beamRadius,color,alpha,p.formula(),p.anchor(),mc.level.getGameTime()+partial);}
                     else {int segments=Math.clamp((int)(delta.length()/1.2),2,96);Vec3 previous=rayFrom;
                         for(int i=1;i<=segments;i++){Vec3 next=rayFrom.lerp(rayTo,i/(double)segments);
                             if(i<segments)next=next.add(axis.scale(Math.sin(i*13.7+phase*.18)*.35)).add(0,Math.cos(i*8.3+phase*.13)*.18,0);
@@ -407,17 +407,16 @@ public final class SpellVisuals {
     private static void beamFlowTubes(PoseStack.Pose pose,VertexConsumer out,Vec3 from,Vec3 to,double radius,int color,float alpha,int formula,int anchor,double time){
         Vec3 delta=to.subtract(from);double length=delta.length();if(length<.1)return;Vec3 axis=delta.scale(1/length);
         Vec3 u=axis.cross(Math.abs(axis.y)>.95?new Vec3(1,0,0):new Vec3(0,1,0)).normalize(),v=axis.cross(u).normalize();
-        double guideRadius=radius*2,spacing=.18;int count=Math.clamp((int)Math.ceil(length/spacing),1,384);int accent=ElementBlend.of(Formula.unpack(formula).key()).color();Random random=new Random(((long)formula<<32)^anchor^0x6A09E667F3BCC909L);
+        double guideRadius=radius*2,spacing=.07;int count=Math.clamp((int)Math.ceil(length/spacing),1,768);int accent=ElementBlend.of(Formula.unpack(formula).key()).color();Random random=new Random(((long)formula<<32)^anchor^0x6A09E667F3BCC909L);
         for(int i=0;i<count;i++){
             double size=.5+random.nextDouble()*2.5,thickness=radius*(.14+random.nextDouble()*.3);
             double angle=random.nextDouble()*Math.PI*2,radial=Math.sqrt(random.nextDouble())*(guideRadius-thickness);
             Vec3 offset=u.scale(Math.cos(angle)*radial).add(v.scale(Math.sin(angle)*radial));
-            double speed=.08+random.nextDouble()*.2,distance=(time*speed+random.nextDouble()*8+i*spacing)%length;
-            double visibleLength=Math.min(size,length-distance);
-            if(visibleLength<.08)continue;
-            Vec3 start=from.add(axis.scale(distance)).add(offset),end=start.add(axis.scale(visibleLength));
+            double speed=.08+random.nextDouble()*.2,distance=(time*speed+random.nextDouble()*8+i*spacing)%(length+size);
+            if(distance>=length)continue;
+            Vec3 start=from.add(axis.scale(distance)).add(offset),end=start.add(axis.scale(size));
             int tint=i%5==0?0xFFFFFF:i%3==0?accent:color;
-            double fade=Math.min(1,Math.min(distance/.55,(length-distance)/.9));float opacity=(float)(fade*(.66+random.nextDouble()*.2));
+            float opacity=(float)(.66+random.nextDouble()*.2);
             beamTube(pose,out,start,end,thickness,tint,alpha*opacity,6);
         }
     }
