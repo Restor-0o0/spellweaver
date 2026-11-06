@@ -30,9 +30,9 @@ public final class FusionRules {
         for (Element e : Element.values()) if (f.count(e) > 0) counts.addProperty(e.name().toLowerCase(Locale.ROOT), f.count(e));
         String shape = switch (lead) {
             case EARTH -> n >= 3 ? "burst_projectile" : "projectile";
-            case FIRE, WATER, COLD, ICE, SHIELD, MAGMA -> "projectile";
-            case LIGHTNING -> lightning>=3 ? "projectile" : "chain";
-            case ARCANE, DEATH, LIFE -> "beam";
+            case FIRE, WATER, COLD, SHIELD, MAGMA -> "projectile";
+            case ICE, ARCANE, DEATH, LIFE -> "beam";
+            case LIGHTNING -> "chain";
             default -> "spray";
         };
         String projectileKind=switch(lead){case FIRE->"fireball";case WATER->"water_bolt";case COLD,ICE->"ice_shard";case LIGHTNING->"ball_lightning";case EARTH->"boulder";case SHIELD->"ward_bolt";case MAGMA->"magma_globule";default->"orb";};
@@ -98,6 +98,8 @@ public final class FusionRules {
         if (fire > 0 && water > 0) effects.add(status("obscured", 40 + 40 * steam, 1));
         if (steam > 0) effects.add(damage("fire", .5 * u * steam));
         if (ice > 0) effects.add(damage("earth", .8 * u * ice));
+        if (ice > 0) effects.add(node("snow_accumulate", "layers", ice));
+        if (death > 0) effects.add(node("wither_ground", "budget", 2 + death));
         if (shield > 0) effects.add(node("apply_force", "amount", .7 + .4 * shield, "lift", .25));
 
         json.add("formula", counts);
@@ -124,6 +126,16 @@ public final class FusionRules {
             case STEAM -> WorldMagic.steamCloud(caster,point,radius);
             case CRUST -> WorldMagic.magmaCrust(caster,point,radius);
             default -> {}
+        }
+        int lightning=spell.formula().lightning();
+        if(lightning>0){
+            var level=caster.level();long seed=level.getGameTime()*31+net.minecraft.core.BlockPos.containing(point).asLong();
+            var random=new java.util.Random(seed);
+            for(int i=0;i<Math.min(5,1+lightning);i++){
+                var end=point.add((random.nextDouble()-.5)*(1+lightning),random.nextDouble()*(.8+lightning*.25),(random.nextDouble()-.5)*(1+lightning));
+                SpellVfx.cue(caster,spell,SpellVfx.ARC,point,end,.08+.025*lightning,6);
+            }
+            EpicMagic.fx(level,net.minecraft.core.particles.ParticleTypes.ELECTRIC_SPARK,point.x,point.y,point.z,4+lightning,.25,.2,.25,.04);
         }
     }
 
