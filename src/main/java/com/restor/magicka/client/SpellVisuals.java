@@ -54,7 +54,7 @@ public final class SpellVisuals {
         CUES.removeIf(c->{if(c.packet.kind()==SpellVfx.BEAM && mc.player!=null && c.packet.anchor()==mc.player.getId() && MagicNetwork.clientState.channeling())c.until=Math.max(c.until,c.age+3);boolean expired=++c.age>c.until || c.packet.anchor()>=0 && mc.level.getEntity(c.packet.anchor())==null;if(expired && c.packet.kind()==SpellVfx.BEAM)expiredBeams.add(cueKey(c.packet.anchor(),c.packet.formula()));return expired;});
         if(!expiredBeams.isEmpty())CUES.removeIf(c->c.packet.kind()==SpellVfx.SIGIL && expiredBeams.contains(cueKey(c.packet.anchor(),c.packet.formula())));
         for(Cue cue:CUES){
-            var p=cue.packet;if(p.kind()==SpellVfx.BEAM){cue.previousTo=cue.beamTip;Vec3 targetPoint=cue.beamTarget;if(mc.player!=null && p.anchor()==mc.player.getId())targetPoint=localBeamEnd(mc,mc.player,1,cue.beamDistance);Vec3 target=targetPoint.subtract(p.from());double distance=target.length();if(distance>1e-4){cue.beamDirection=follow(cue.beamDirection,target.scale(1/distance),cue);cue.beamDistance=approach(cue.beamDistance,distance,1.5);cue.beamFlowDistance=visibleBeamLength(cue.beamDistance,p.formula());cue.beamTip=p.from().add(cue.beamDirection.scale(cue.beamDistance));ensureFlowTubes(cue,cue.beamFlowDistance,p.radius(),p.formula(),p.anchor());for(FlowTube tube:cue.flowTubes){tube.previousDistance=tube.distance;double next=tube.distance+Math.min(tube.speed,cue.beamFlowDistance*.85);if(next>=cue.beamFlowDistance){tube.distance=next%cue.beamFlowDistance;tube.previousDistance=tube.distance;}else tube.distance=next;}}}
+            var p=cue.packet;if(p.kind()==SpellVfx.BEAM){cue.previousTo=cue.beamTip;Vec3 targetPoint=cue.beamTarget,origin=p.from();if(mc.player!=null && p.anchor()==mc.player.getId()){origin=mc.player.getEyePosition();targetPoint=localBeamEnd(mc,mc.player,1,cue.beamDistance);}Vec3 target=targetPoint.subtract(origin);double distance=target.length();if(distance>1e-4){cue.beamDirection=follow(cue.beamDirection,target.scale(1/distance),cue);cue.beamDistance=approach(cue.beamDistance,distance,4);cue.beamFlowDistance=visibleBeamLength(cue.beamDistance,p.formula());cue.beamTip=origin.add(cue.beamDirection.scale(cue.beamDistance));ensureFlowTubes(cue,cue.beamFlowDistance,p.radius(),p.formula(),p.anchor());for(FlowTube tube:cue.flowTubes){tube.previousDistance=tube.distance;double next=tube.distance+Math.min(tube.speed,cue.beamFlowDistance*.85);if(next>=cue.beamFlowDistance){tube.distance=next%cue.beamFlowDistance;tube.previousDistance=tube.distance;}else tube.distance=next;}}}
             boolean ray=p.kind()==SpellVfx.BEAM || p.kind()==SpellVfx.ARC || p.kind()==SpellVfx.SPRAY;
             Vec3 camera=mc.gameRenderer.mainCamera().position();
             if(p.kind()==SpellVfx.SIGIL || p.from().distanceToSqr(camera)>128*128 && (!ray || p.to().distanceToSqr(camera)>128*128))continue;
@@ -428,9 +428,9 @@ public final class SpellVisuals {
     private static Vec3 follow(Vec3 current,Vec3 target,Cue cue){
         double dot=Math.clamp(current.dot(target),-1,1);Vec3 error=target.subtract(current.scale(dot));
         if(error.lengthSqr()<1e-8){cue.beamTurnVelocity=cue.beamTurnVelocity.scale(.55);return current;}
-        Vec3 velocity=cue.beamTurnVelocity.scale(.55).add(error.scale(.12));
+        Vec3 velocity=cue.beamTurnVelocity.scale(.4).add(error.scale(.3));
         velocity=velocity.subtract(current.scale(velocity.dot(current)));
-        double speed=velocity.length();if(speed>.18)velocity=velocity.scale(.18/speed);
+        double speed=velocity.length();if(speed>.4)velocity=velocity.scale(.4/speed);
         cue.beamTurnVelocity=velocity;
         return current.add(velocity).normalize();
     }
