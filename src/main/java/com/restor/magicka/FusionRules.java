@@ -31,7 +31,8 @@ public final class FusionRules {
         String shape = switch (lead) {
             case EARTH -> n >= 3 ? "burst_projectile" : "projectile";
             case FIRE, WATER, COLD, SHIELD, MAGMA -> "projectile";
-            case ICE, ARCANE, DEATH, LIFE -> "beam";
+            case ARCANE -> "beam";
+            case ICE, DEATH, LIFE -> "projectile";
             case LIGHTNING -> "chain";
             default -> "spray";
         };
@@ -98,8 +99,6 @@ public final class FusionRules {
         if (fire > 0 && water > 0) effects.add(status("obscured", 40 + 40 * steam, 1));
         if (steam > 0) effects.add(damage("fire", .5 * u * steam));
         if (ice > 0) effects.add(damage("earth", .8 * u * ice));
-        if (ice > 0) effects.add(node("snow_accumulate", "layers", ice));
-        if (death > 0) effects.add(node("wither_ground", "budget", 2 + death));
         if (shield > 0) effects.add(node("apply_force", "amount", .7 + .4 * shield, "lift", .25));
 
         json.add("formula", counts);
