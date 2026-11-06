@@ -188,7 +188,7 @@ public final class SpellRuntime {
     }
     private static void segment(ServerPlayer p,SpellDefinition s,boolean spray,double width,Vec3 from,Vec3 end,Set<LivingEntity> struck) {
         Vec3 delta=end.subtract(from);Vec3 look=delta.lengthSqr()<1e-8?new Vec3(0,0,1):delta.normalize();
-        SpellVfx.cue(p,s,spray?SpellVfx.SPRAY:SpellVfx.BEAM,from,end,width,100);
+        SpellVfx.cue(p,s,spray?SpellVfx.SPRAY:SpellVfx.BEAM,from,end,width,10);
         if(!spray)BeamClash.beam(p,from,end);
         double burst=s.number("end_burst",0);
         for(LivingEntity e:along(p,from,end,width,spray)) if(struck.add(e) && (burst<=0 || e.getBoundingBox().distanceToSqr(end)>burst*burst)) EffectGraph.entity(p,e,s,s.effects(),from,false);

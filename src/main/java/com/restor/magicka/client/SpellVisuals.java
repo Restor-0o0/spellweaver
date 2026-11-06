@@ -51,7 +51,7 @@ public final class SpellVisuals {
     public static void tick(){
         var mc=Minecraft.getInstance();if(mc.level==null){clear();return;}
         Set<Long> expiredBeams=new HashSet<>();
-        CUES.removeIf(c->{boolean expired=++c.age>c.until || c.packet.anchor()>=0 && mc.level.getEntity(c.packet.anchor())==null;if(expired && c.packet.kind()==SpellVfx.BEAM)expiredBeams.add(cueKey(c.packet.anchor(),c.packet.formula()));return expired;});
+        CUES.removeIf(c->{if(c.packet.kind()==SpellVfx.BEAM && mc.player!=null && c.packet.anchor()==mc.player.getId() && MagicNetwork.clientState.channeling())c.until=Math.max(c.until,c.age+3);boolean expired=++c.age>c.until || c.packet.anchor()>=0 && mc.level.getEntity(c.packet.anchor())==null;if(expired && c.packet.kind()==SpellVfx.BEAM)expiredBeams.add(cueKey(c.packet.anchor(),c.packet.formula()));return expired;});
         if(!expiredBeams.isEmpty())CUES.removeIf(c->c.packet.kind()==SpellVfx.SIGIL && expiredBeams.contains(cueKey(c.packet.anchor(),c.packet.formula())));
         for(Cue cue:CUES){
             var p=cue.packet;if(p.kind()==SpellVfx.BEAM){cue.previousTo=cue.beamTip;Vec3 target=cue.beamTarget.subtract(p.from());double distance=target.length();if(distance>1e-4){cue.beamDirection=follow(cue.beamDirection,target.scale(1/distance),cue);cue.beamDistance=approach(cue.beamDistance,distance,1.5);cue.beamFlowDistance=visibleBeamLength(cue.beamDistance,p.formula());cue.beamTip=p.from().add(cue.beamDirection.scale(cue.beamDistance));ensureFlowTubes(cue,cue.beamFlowDistance,p.radius(),p.formula(),p.anchor());for(FlowTube tube:cue.flowTubes){tube.previousDistance=tube.distance;double next=tube.distance+tube.speed;if(next>=cue.beamFlowDistance){tube.distance=next%cue.beamFlowDistance;tube.previousDistance=tube.distance;}else tube.distance=next;}}}
@@ -222,7 +222,7 @@ public final class SpellVisuals {
             boolean stream=p.kind()==SpellVfx.BEAM || p.kind()==SpellVfx.ARC || p.kind()==SpellVfx.SPRAY;
             float alpha=stream?.85f*Math.min(1,Math.max(0,(cue.until-cue.age-partial)/2f)):(1-progress)*.85f;
             int color=color(formula);double radius=Math.clamp(p.radius(),.05,16);Vec3 rayFrom=cue.from(partial),rayTo=cue.to(partial),center=p.from();
-            if(p.kind()==SpellVfx.BEAM && p.anchor()>=0 && mc.level!=null){var caster=mc.level.getEntity(p.anchor());if(caster!=null){Vec3 forward=caster.getViewVector(partial),right=forward.cross(new Vec3(0,1,0));right=right.lengthSqr()<1e-4?new Vec3(1,0,0):right.normalize();Vec3 up=right.cross(forward);Vec3 hand=new Vec3(1.5+.15*formula.size(),-.3-.06*formula.size(),.35);rayFrom=caster.getEyePosition(partial).add(forward.scale(hand.x)).add(up.scale(hand.y)).add(right.scale(hand.z));}}
+            if(p.kind()==SpellVfx.BEAM && p.anchor()>=0 && mc.level!=null){var caster=mc.level.getEntity(p.anchor());if(caster!=null){Vec3 forward=caster.getViewVector(partial),right=forward.cross(new Vec3(0,1,0));right=right.lengthSqr()<1e-4?new Vec3(1,0,0):right.normalize();Vec3 up=right.cross(forward);Vec3 hand=new Vec3(1.5+.15*formula.size(),-.3-.06*formula.size(),.35);rayFrom=caster.getEyePosition(partial).add(forward.scale(hand.x)).add(up.scale(hand.y)).add(right.scale(hand.z));if(caster==mc.player)rayTo=localBeamEnd(mc,caster,partial,cue.beamDistance);}}
             boolean flames=fire(blend);
             if(SpellModels.handles(p.kind())){
                 if(p.from().distanceToSqr(camera)<128*128)SpellModels.strokes(mc,pose,consumer,camera,p,cue.age+partial,cue.until,partial);
@@ -409,7 +409,12 @@ public final class SpellVisuals {
     }
     private static void ensureFlowTubes(Cue cue,double length,float radius,int formula,int anchor){
         int wanted=Math.clamp((int)Math.ceil(Math.max(.1,length)/.017),1,1536);long seed=((long)formula<<32)^anchor^0x6A09E667F3BCC909L;double guide=radius*2;int accent=ElementBlend.of(Formula.unpack(formula).key()).color();
-        while(cue.flowTubes.size()<wanted){int index=cue.flowTubes.size();Random random=new Random(seed^((long)index*0xD1B54A32D192ED03L));FlowTube tube=new FlowTube();tube.length=.5+random.nextDouble()*2.5;tube.radius=radius*(.18+random.nextDouble()*.42);tube.speed=.16+random.nextDouble()*.32;tube.distance=random.nextDouble()*Math.max(.1,length);tube.previousDistance=tube.distance;double angle=random.nextDouble()*Math.PI*2,radial=Math.pow(random.nextDouble(),1.8)*(guide-tube.radius);tube.offsetU=Math.cos(angle)*radial;tube.offsetV=Math.sin(angle)*radial;tube.color=index%7==0?0xFFFFFF:accent;tube.alpha=(float)(.62+random.nextDouble()*.28);cue.flowTubes.add(tube);}
+        while(cue.flowTubes.size()<wanted){int index=cue.flowTubes.size();Random random=new Random(seed^((long)index*0xD1B54A32D192ED03L));FlowTube tube=new FlowTube();double angle=random.nextDouble()*Math.PI*2,radial=Math.pow(random.nextDouble(),1.8)*guide,core=1-radial/guide;tube.length=(.5+random.nextDouble()*2.5)*(.45+.55*core);tube.radius=radius*(.18+random.nextDouble()*.42)*(.5+.5*core);tube.speed=.16+random.nextDouble()*.32;tube.distance=random.nextDouble()*Math.max(.1,length);tube.previousDistance=tube.distance;tube.offsetU=Math.cos(angle)*radial;tube.offsetV=Math.sin(angle)*radial;tube.color=index%7==0?0xFFFFFF:accent;tube.alpha=(float)(.62+random.nextDouble()*.28);cue.flowTubes.add(tube);}
+    }
+    private static Vec3 localBeamEnd(Minecraft mc,net.minecraft.world.entity.Entity caster,float partial,double previousRange){
+        Vec3 eye=caster.getEyePosition(partial),look=caster.getViewVector(partial);double reach=Math.clamp(Math.max(64,previousRange),64,128);Vec3 end=eye.add(look.scale(reach));
+        var hit=mc.level.clip(new net.minecraft.world.level.ClipContext(eye,end,net.minecraft.world.level.ClipContext.Block.COLLIDER,net.minecraft.world.level.ClipContext.Fluid.NONE,caster));
+        return hit.getType()==net.minecraft.world.phys.HitResult.Type.MISS?end:hit.getLocation();
     }
     private static void beamFlowTubes(PoseStack.Pose pose,VertexConsumer out,Vec3 from,Vec3 to,List<FlowTube> tubes,double flowDistance,double radius,float alpha,float partial){
         Vec3 delta=to.subtract(from);double length=delta.length();if(length<.1)return;Vec3 axis=delta.scale(1/length);
