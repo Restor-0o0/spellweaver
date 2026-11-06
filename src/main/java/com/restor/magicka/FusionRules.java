@@ -29,7 +29,8 @@ public final class FusionRules {
             case EARTH -> n >= 3 ? "burst_projectile" : "projectile";
             case ICE, SHIELD, MAGMA -> "projectile";
             case COLD -> water > 0 ? "projectile" : "spray";
-            case ARCANE, DEATH, LIFE -> "beam";
+            case ARCANE -> "beam";
+            case DEATH, LIFE -> "projectile";
             case LIGHTNING -> "chain";
             default -> "spray";
         };
