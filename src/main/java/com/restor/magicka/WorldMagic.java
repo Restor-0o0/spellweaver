@@ -225,54 +225,18 @@ public final class WorldMagic {
     }
     /** Growth uses cancellable state replacement rather than bypassing claims with a whole tree feature. */
     public static void grow(ServerPlayer player, Vec3 point, int budget) {
-        grow(player,point,budget,4);
-    }
-    private static void grow(ServerPlayer player,Vec3 point,int budget,int stages){
         var level = player.level(); BlockPos base = BlockPos.containing(point);
-        boolean saplingFound=false;
         for (BlockPos p : BlockPos.betweenClosed(base.offset(-2,-1,-2),base.offset(2,1,2))) {
             if (budget <= 0) break;
             BlockPos pos = p.immutable(); if (!WorldPlacement.allowed(player,pos)) continue;
             var state = level.getBlockState(pos);
-            if (state.getBlock() instanceof SaplingBlock sapling) {
-                saplingFound=true;
-                if(state.getValue(SaplingBlock.STAGE)==0){if(replace(player,pos,state.setValue(SaplingBlock.STAGE,1)))budget--;}
-                else {sapling.advanceTree(level,pos,state,level.getRandom());budget--;}
-            } else if (state.getBlock() instanceof CropBlock crop && !crop.isMaxAge(state)) {
+            if (state.getBlock() instanceof CropBlock crop && !crop.isMaxAge(state)) {
                 if (replace(player,pos,crop.getStateForAge(Math.min(crop.getMaxAge(),crop.getAge(state)+2)))) budget--;
             } else if (state.is(MagicBlocks.ROOT.get()) && level.isEmptyBlock(pos.above())) {
                 if (WorldPlacement.placeBlock(player,pos.above(),state,UUID.randomUUID(),pos.above(),false,false,null)) budget--;
             } else if (state.is(Blocks.DIRT) && level.isEmptyBlock(pos.above())) {
                 if (replace(player,pos,Blocks.GRASS_BLOCK.defaultBlockState())) budget--;
             }
-        }
-        int nextBudget=Math.max(1,budget);
-        if(saplingFound && stages>1)SpellRuntime.delay(player,8,()->grow(player,point,nextBudget,stages-1));
-    }
-    public static void snow(ServerPlayer player,Vec3 point,int layers){
-        var level=player.level();BlockPos center=BlockPos.containing(point);int remaining=Math.clamp(layers,1,8);
-        for(BlockPos p:BlockPos.betweenClosed(center.offset(-1,-1,-1),center.offset(1,1,1))){
-            if(remaining<=0)break;BlockPos pos=p.immutable();if(!WorldPlacement.allowed(player,pos))continue;
-            BlockState state=level.getBlockState(pos);BlockPos target=state.isAir()?pos:pos.above();
-            if(!state.isAir() && (state.hasBlockEntity() || state.is(WorldMagic.PROTECTED) || !state.isFaceSturdy(level,pos,Direction.UP)))continue;
-            BlockState current=level.getBlockState(target);if(current.hasBlockEntity() || current.is(WorldMagic.PROTECTED))continue;
-            if(current.is(Blocks.SNOW)){
-                int next=Math.min(8,current.getValue(SnowLayerBlock.LAYERS)+1);
-                if(next>current.getValue(SnowLayerBlock.LAYERS) && replace(player,target,current.setValue(SnowLayerBlock.LAYERS,next)))remaining--;
-            }else if(current.isAir() && WorldPlacement.allowed(player,target) && Blocks.SNOW.defaultBlockState().canSurvive(level,target)){
-                if(replace(player,target,Blocks.SNOW.defaultBlockState()))remaining--;
-            }
-        }
-    }
-    public static void wither(ServerPlayer player,Vec3 point,int budget){
-        var level=player.level();BlockPos center=BlockPos.containing(point);int remaining=Math.clamp(budget,1,16);
-        for(BlockPos p:BlockPos.betweenClosed(center.offset(-1,-1,-1),center.offset(1,1,1))){
-            if(remaining<=0)break;BlockPos pos=p.immutable();if(!WorldPlacement.allowed(player,pos))continue;
-            BlockState state=level.getBlockState(pos);if(state.hasBlockEntity() || state.is(WorldMagic.PROTECTED))continue;
-            if(state.getBlock() instanceof BushBlock){if(breakBlock(player,pos))remaining--;}
-            else if(state.is(Blocks.GRASS_BLOCK)){if(replace(player,pos,Blocks.DIRT.defaultBlockState()))remaining--;}
-            else if(state.is(Blocks.DIRT)){if(replace(player,pos,Blocks.COARSE_DIRT.defaultBlockState()))remaining--;}
-            else if(state.is(Blocks.MOSS_BLOCK)){if(replace(player,pos,Blocks.COBBLESTONE.defaultBlockState()))remaining--;}
         }
     }
     public static boolean replace(ServerPlayer player, BlockPos pos, BlockState state) {
