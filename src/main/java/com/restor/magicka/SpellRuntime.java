@@ -3,6 +3,7 @@ package com.restor.magicka;
 import com.google.gson.JsonObject;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -241,6 +242,17 @@ public final class SpellRuntime {
                 return false;
             }});
     }
+    private static void projectileTrail(ServerPlayer p,SpellDefinition s,Vec3 point){
+        switch(SpellDefinition.string(s.delivery(),"projectile_kind","orb")){
+            case "boulder" -> EpicMagic.fx(p.level(),new BlockParticleOption(ParticleTypes.BLOCK,net.minecraft.world.level.block.Blocks.COBBLESTONE.defaultBlockState()),point.x,point.y,point.z,3,.08,.08,.08,.01);
+            case "magma_globule" -> EpicMagic.fx(p.level(),ParticleTypes.LAVA,point.x,point.y,point.z,3,.08,.08,.08,.01);
+            case "ball_lightning" -> EpicMagic.fx(p.level(),ParticleTypes.ELECTRIC_SPARK,point.x,point.y,point.z,5,.12,.12,.12,.02);
+            case "fireball" -> EpicMagic.fx(p.level(),ParticleTypes.FLAME,point.x,point.y,point.z,3,.08,.08,.08,.01);
+            case "water_bolt" -> EpicMagic.fx(p.level(),ParticleTypes.SPLASH,point.x,point.y,point.z,3,.08,.08,.08,.01);
+            case "ice_shard" -> EpicMagic.fx(p.level(),ParticleTypes.SNOWFLAKE,point.x,point.y,point.z,3,.08,.08,.08,.01);
+            default -> {}
+        }
+    }
     private static void fan(ServerPlayer p,SpellDefinition s) {
         int count=Math.clamp((int)s.number("fan",1),1,7);
         Vec3 look=p.getLookAngle(),start=p.getEyePosition().add(look.scale(.7));
@@ -266,6 +278,7 @@ public final class SpellRuntime {
                 }
                 if(age%2==1)SpellVfx.cue(p,s,SpellVfx.visual(s,SpellVfx.ORB),position,end.add(velocity),s.formula().earth()>0?.35+s.formula().earth()*.17:.22+s.formula().size()*.07,2);
                 particles(p,s,end,5,.12);
+                if(s.source().has("fusion"))projectileTrail(p,s,end);
                 boolean volatileBurst=s.delivery().has("volatile") && (age>=80 || charged);
                 travelled+=position.distanceTo(end);
                 if(victim==null && bounces>0 && hit.getType()==HitResult.Type.BLOCK && travelled<reach && !volatileBurst){

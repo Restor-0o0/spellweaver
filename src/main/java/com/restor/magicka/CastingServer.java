@@ -84,6 +84,7 @@ public final class CastingServer {
                 s.root = null; s.construction = UUID.randomUUID();
                 var named = RecipeRegistry.resolve(s.formula.key());
                 s.recipe = !named.ordered() || named.spoken().equals(s.formula.elements()) ? MagicStats.resolve(player, s.formula.key()) : MagicStats.apply(player, RecipeRegistry.fusion(s.formula.key()));
+                if (!named.ordered() || !named.spoken().equals(s.formula.elements())) s.recipe = MagicStats.apply(player,RecipeRegistry.fusion(s.formula.key(),s.formula.elements()));
                 s.windup = Math.max(1,(int)Math.round(s.recipe.castTicks()*MagicConfig.CAST_SCALE.get()));
                 boolean construction = s.intent == Intent.PRIMARY && s.recipe.shape().construction() || s.intent == Intent.SELF && s.recipe.selfMode().equals("construct");
                 s.total = s.windup + (construction ? s.recipe.budget()*s.recipe.interval() : 0);

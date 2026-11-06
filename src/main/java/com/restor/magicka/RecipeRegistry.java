@@ -33,6 +33,12 @@ public final class RecipeRegistry {
     private static final Map<SpellFormula, SpellDefinition> FUSIONS = new java.util.concurrent.ConcurrentHashMap<>();
     /** What a set of elements casts when it misses every named sequence; see {@link FusionRules}. */
     public static SpellDefinition fusion(SpellFormula formula) { return FUSIONS.computeIfAbsent(formula, RecipeRegistry::fuse); }
+    public static SpellDefinition fusion(SpellFormula formula, List<Element> order) {
+        if (order == null || order.isEmpty()) return fusion(formula);
+        SpellDefinition cached = fusion(formula);
+        var source = FusionRules.build(formula, order);
+        return SpellDefinition.parse(cached.id(), source);
+    }
     private static SpellDefinition fuse(SpellFormula formula) {
         var digits = new StringBuilder();
         for (Element e : Element.values()) digits.append(formula.count(e));
