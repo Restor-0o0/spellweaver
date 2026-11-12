@@ -79,7 +79,7 @@ public final class HudLayoutScreen extends Screen {
         int closeX=helpX+HELP_WIDTH-19;g.fill(closeX,helpY+3,closeX+15,helpY+19,0xFF3A2630);g.outline(closeX,helpY+3,15,16,0xFF8B5963);
         stepper(g,helpY+panelHeight()-44,Component.translatable("screen.magicka.hud_layout.padding"),MagicHudLayout.padding(selected),false);
         stepper(g,helpY+panelHeight()-23,Component.translatable("screen.magicka.hud_layout.gap"),MagicHudLayout.gap(selected),false);
-        g.text(this.font,"×",closeX+4,helpY+7,0xFFFFD8DC,false);
+        UiText.line(g,Component.literal("×"),closeX+2,helpY+5,11,12,1,true,0xFFFFD8DC);
         button(g,helpX+HELP_WIDTH-61,helpY+3,17,16,Component.literal("↶"),!undoHistory.isEmpty(),false);
         button(g,helpX+HELP_WIDTH-41,helpY+3,17,16,Component.literal("↷"),!redoHistory.isEmpty(),false);
         String selectedName=Component.translatable("screen.magicka.hud_layout."+selected.name().toLowerCase(java.util.Locale.ROOT)).getString();
@@ -149,12 +149,11 @@ public final class HudLayoutScreen extends Screen {
     }
     private void button(GuiGraphicsExtractor g,int x,int y,int width,int height,Component label,boolean enabled,boolean active){
         int fill=!enabled?0xFF171821:active?0xFF39304D:0xFF252536,border=!enabled?0xFF33323A:active?MagicUi.GOLD:0xFF625673,color=!enabled?0xFF777785:0xFFE8E0F0;
-        g.fill(x,y,x+width,y+height,fill);g.outline(x,y,width,height,border);float textScale=Math.min(1f,(width-8f)/Math.max(1,font.width(label)));int labelWidth=Math.round(font.width(label)*textScale);fittedText(g,label,x+(width-labelWidth)/2,y+(height-8)/2,width-8,color);
+        g.fill(x,y,x+width,y+height,fill);g.outline(x,y,width,height,border);
+        UiText.line(g,label,x+4,y+2,width-8,height-4,1,true,color);
     }
     private void fittedText(GuiGraphicsExtractor g,Component label,int x,int y,int maxWidth,int color){
-        float scale=Math.min(1f,maxWidth/(float)Math.max(1,font.width(label)));
-        g.pose().pushMatrix();g.pose().translate(x,y);g.pose().scale(scale,scale);
-        g.text(font,label,0,0,color,false);g.pose().popMatrix();
+        UiText.line(g,label,x,y,maxWidth,9,1,false,color);
     }
     private void renderGrid(GuiGraphicsExtractor g,int width,int height){
         for(int x=0;x<width;x+=MagicHudLayout.GRID_CELL)g.fill(x,0,x+1,height,0x253A5068);

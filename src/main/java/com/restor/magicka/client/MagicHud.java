@@ -29,27 +29,20 @@ public final class MagicHud {
         }
         return java.util.List.copyOf(runes);
     }
-    private static String fit(String text,int width){
-        var font=Minecraft.getInstance().font;
-        return font.width(text)<=width?text:font.plainSubstrByWidth(text,width-font.width("…"))+"…";
-    }
     private static void keyBadge(GuiGraphicsExtractor g,Component key,int x,int y){
-        String label=fit(key.getString().replace(" ",""),16);int width=(int)Math.ceil(Minecraft.getInstance().font.width(label)*.75f);
+        String label=key.getString().replace(" ","");int width=Math.min(14,(int)Math.ceil(Minecraft.getInstance().font.width(label)*.75f));
         g.pose().pushMatrix();g.nextStratum();
-        g.fill(x,y,x+width+2,y+7,HudView.color(0xE80B0D14));MagicUi.small(g,Component.literal(label),x+1,y+1,MagicUi.GOLD);
+        g.fill(x,y,x+width+2,y+7,HudView.color(0xE80B0D14));UiText.line(g,Component.literal(label),x+1,y+.5f,width,6,.75f,true,MagicUi.GOLD);
         g.pose().popMatrix();
     }
     private static void countBadge(GuiGraphicsExtractor g,int count,int x,int y){
         g.pose().pushMatrix();g.nextStratum();
-        g.fill(x-6,y-7,x,y,HudView.color(0xE80B0D14));MagicUi.small(g,Component.literal(""+count),x-4,y-6,0xFFFFFFFF);
+        g.fill(x-6,y-7,x,y,HudView.color(0xE80B0D14));UiText.line(g,Component.literal(""+count),x-6,y-7,6,7,.75f,true,0xFFFFFFFF);
         g.pose().popMatrix();
     }
     private static void quickKeyBadge(GuiGraphicsExtractor g,int slot){
         String label=MagicClient.quickKey(slot).getString().replace(" ","");
-        float scale=Math.min(.75f,20f/Math.max(1,Minecraft.getInstance().font.width(label)));
-        g.pose().pushMatrix();g.pose().translate(2,1);g.pose().scale(scale,scale);
-        g.text(Minecraft.getInstance().font,label,0,0,HudView.color(MagicUi.GOLD),false);
-        g.pose().popMatrix();
+        UiText.line(g,Component.literal(label),2,.5f,20,6.5f,.75f,true,MagicUi.GOLD);
     }
     private static ElementalTitan titan(){
         var mc=Minecraft.getInstance();
@@ -77,9 +70,9 @@ public final class MagicHud {
         HudView elementsView=new HudView(MagicHudLayout.Widget.ELEMENTS);elementsView.begin(g,px,py);
         drawPanel(g,MagicHudLayout.Widget.ELEMENTS,px,py,MagicHudLayout.elementPanelWidth(),MagicHudLayout.elementPanelHeight(),editor);
         elementsView.beginContent(g);
-        if(MagicHudLayout.titleVisible(MagicHudLayout.Widget.ELEMENTS))MagicUi.small(g,Component.translatable("hud.magicka.elements"),px+4,py+4,MagicUi.GOLD);
-        if(MagicHudLayout.titleVisible(MagicHudLayout.Widget.ELEMENTS)&&state.instant())MagicUi.small(g,Component.literal("⚡"),px+37,py+4,0xFFFFDC84);
-        else if(MagicHudLayout.titleVisible(MagicHudLayout.Widget.ELEMENTS)&&!state.enabled())MagicUi.small(g,MagicClient.toggleKey(),px+36,py+4,MagicUi.MUTED);
+        if(MagicHudLayout.titleVisible(MagicHudLayout.Widget.ELEMENTS))UiText.line(g,Component.translatable("hud.magicka.elements"),px+4,py+3,MagicHudLayout.elementPanelWidth()-8-(state.instant()||!state.enabled()?14:0),8,.75f,true,MagicUi.GOLD);
+        if(MagicHudLayout.titleVisible(MagicHudLayout.Widget.ELEMENTS)&&state.instant())UiText.line(g,Component.literal("⚡"),px+MagicHudLayout.elementPanelWidth()-12,py+3,8,8,.75f,true,0xFFFFDC84);
+        else if(MagicHudLayout.titleVisible(MagicHudLayout.Widget.ELEMENTS)&&!state.enabled())UiText.line(g,MagicClient.toggleKey(),px+MagicHudLayout.elementPanelWidth()-12,py+3,8,8,.75f,true,MagicUi.MUTED);
         for(Element element:Element.BASE){
             int sx=px+(int)Math.round(MagicHudLayout.elementX(element.ordinal())),sy=py+(int)Math.round(MagicHudLayout.elementY(element.ordinal()));
             g.pose().pushMatrix();g.pose().translate((float)(sx),(float)(sy));float buttonScale=(float)MagicHudLayout.elementScale(element.ordinal());g.pose().scale(buttonScale,buttonScale);
@@ -136,7 +129,7 @@ public final class MagicHud {
         var spell=display.empty()?null:MagicClient.spell(display.key());
         boolean named=spell!=null && spell.ordered() && spell.spoken().equals(display.elements());
         Component label=spell==null?Component.translatable("hud.magicka.prepared"):named?spell.displayName():Component.empty();
-        if(MagicHudLayout.titleVisible(MagicHudLayout.Widget.CAST_STATUS))MagicUi.small(g,Component.literal(fit(label.getString(),130)),panelX+4,y+3,queuing?0xFFFFDC84:casting?0xFFE0B3FF:MagicUi.GOLD);
+        if(MagicHudLayout.titleVisible(MagicHudLayout.Widget.CAST_STATUS))UiText.line(g,label,panelX+4,y+2,103,9,.75f,true,queuing?0xFFFFDC84:casting?0xFFE0B3FF:MagicUi.GOLD);
         int cells=runes.size()+Math.max(0,com.restor.magicka.MageLevel.clientMaxElements(Minecraft.getInstance().player)-display.size());
         for(int i=0;i<cells;i++){
             Rune rune=i<runes.size()?runes.get(i):null;int runeY=MagicHudLayout.castSlotY(),slotX=MagicHudLayout.castSlotX(i,cells);socket(g,rune,panelX+slotX,y+runeY);
