@@ -67,6 +67,7 @@ public final class SpellRuntime {
     static LivingEntity target(ServerPlayer p) {
         return SpellAim.entity(p,SpellAim.hit(p).getLocation());
     }
+    public static boolean mining(SpellDefinition s){return s.effects().stream().anyMatch(node->node.has("type") && "mine_blocks".equals(node.get("type").getAsString()));}
     public static void cast(ServerPlayer p, SpellDefinition s, boolean self, boolean instant) {
         MagicConstructionManager.instantBuilds = instant;
         try { cast(p, s, self); } finally { MagicConstructionManager.instantBuilds = false; }
@@ -98,7 +99,7 @@ public final class SpellRuntime {
             Vec3 at = self ? p.position() : SpellAim.hit(p).getLocation();
             double radius = Mth.clamp(s.number("radius",5),3,10);
             for (int i = 0; i < 3; i++) SpellVfx.sigil(p,s.formula(),at.add(0,.2+i*3,0),new Vec3(0,1,0),radius*(1-i*.25),30);
-        } else if (!self && s.formula().size() >= 3 && !s.channeled() && !s.delivery().has("legend")) SpellVfx.hand(p,s.formula(),12);
+        } else if (!self && s.formula().size() >= 3 && !s.channeled() && !s.delivery().has("legend")) SpellVfx.hand(p,s.formula(),mining(s)?7:12);
         if (LegendMagic.handles(s,self)) { LegendMagic.cast(p,s,self); return; }
         if (self) {
             switch(s.selfMode()) {
@@ -184,7 +185,8 @@ public final class SpellRuntime {
         Vec3 look=end.subtract(from).normalize();
         SpellVfx.cue(p,s,spray?SpellVfx.SPRAY:SpellVfx.BEAM,from,end,spray?1.5:s.number("beam_width",.15),10);
         if(!spray)BeamClash.beam(p,from,end);
-        for(double d=.5;d<from.distanceTo(end);d+=Math.max(.8,from.distanceTo(end)/64)) particles(p,s,from.add(look.scale(d)),spray?3:1,spray?d*.12:.04);
+        if(mining(s)){for(double d=1.8;d<from.distanceTo(end);d+=Math.max(2.8,from.distanceTo(end)/18))particles(p,s,from.add(look.scale(d)),1,.025);}
+        else for(double d=.5;d<from.distanceTo(end);d+=Math.max(.8,from.distanceTo(end)/64)) particles(p,s,from.add(look.scale(d)),spray?3:1,spray?d*.12:.04);
         double burst=s.number("end_burst",0);
         for(LivingEntity e:along(p,from,end,spray)) if(struck.add(e) && (burst<=0 || SpellRuntime.boxDistanceSqr(e.getBoundingBox(),end)>burst*burst)) EffectGraph.entity(p,e,s,s.effects(),from,false);
         if(burst>0) impact(p,s,end,burst,false,true); else EffectGraph.world(p,s,s.effects(),end,false,true);
