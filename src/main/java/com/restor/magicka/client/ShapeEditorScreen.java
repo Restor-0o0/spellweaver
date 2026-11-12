@@ -80,18 +80,15 @@ public final class ShapeEditorScreen extends Screen {
     @Override public void extractRenderState(GuiGraphicsExtractor g,int mouseX,int mouseY,float partialTick){
         g.fill(0,0,width,height,0xB810101B);
         MagicUi.panel(g,panelX,panelY,panelW,panelH);
-        MagicUi.text(g,title,panelX+12,panelY+10,MagicUi.GOLD);
+        int titleW=(panelW-24)*3/5;
+        UiText.line(g,title,panelX+12,panelY+7,titleW-8,14,1,false,MagicUi.GOLD);
         var count=Component.translatable("shape.magicka.count",ShapePattern.count(bits),ShapePattern.CELLS);
-        MagicUi.small(g,count,panelX+panelW-14-(int)Math.ceil(font.width(count)*.75f),panelY+12,MagicUi.MUTED);
-        var hint=font.split(Component.translatable("shape.magicka.hint"),(int)((panelW-24)/.75));
-        for(int i=0;i<Math.min(2,hint.size());i++){
-            g.pose().pushMatrix();g.pose().translate(panelX+12,panelY+26+i*8);g.pose().scale(.75f,.75f);
-            g.text(font,hint.get(i),0,0,MagicUi.MUTED,false);g.pose().popMatrix();
-        }
-        MagicUi.small(g,Component.translatable("shape.magicka.spell"),panelX+12,panelY+46,0xFFA8D8A0);
+        UiText.line(g,count,panelX+12+titleW,panelY+7,panelW-24-titleW,14,.75f,true,MagicUi.MUTED);
+        UiText.block(g,Component.translatable("shape.magicka.hint"),panelX+12,panelY+26,panelW-24,17,.75f,false,false,MagicUi.MUTED);
+        UiText.line(g,Component.translatable("shape.magicka.spell"),panelX+12,panelY+45,panelW-24,9,.75f,false,0xFFA8D8A0);
         for(int layer=0;layer<SIZE;layer++){
             int lx=gridX+layer*(SIZE*cell+gap);
-            MagicUi.small(g,Component.translatable("shape.magicka.layer",layer),lx,gridTop-10,layer==0?MagicUi.GOLD:MagicUi.MUTED);
+            UiText.line(g,Component.translatable("shape.magicka.layer",layer),lx,gridTop-10,SIZE*cell,9,.75f,true,layer==0?MagicUi.GOLD:MagicUi.MUTED);
             for(int z=SIZE-1;z>=0;z--)for(int x=0;x<SIZE;x++){
                 int cx=lx+x*cell, cy=gridTop+(SIZE-1-z)*cell;
                 boolean filled=ShapePattern.filled(bits,x,layer,z);
