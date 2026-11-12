@@ -37,7 +37,7 @@ public final class PotionWheelScreen extends Screen {
         hovered = slotAt(mouseX, mouseY);
         var belt = PotionBelt.client();
         int color = GearScreen.BUTTON_COLORS[button];
-        MagicUi.small(g, getTitle(), width / 2 - (int) (font.width(getTitle()) * .375f), height / 2 - 3, color);
+        UiText.line(g,getTitle(),width/2f-28,height/2f-9,56,18,.75f,true,color);
         for (int i = 0; i < MagicGear.BELT; i++) {
             int x = x(i) - 10, y = y(i) - 10;
             boolean selected = PotionBelt.clientSelected(button) == i;

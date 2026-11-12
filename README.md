@@ -7,6 +7,10 @@ to grind: press up to five elements, then cast. Every combination does something
 
 *Русское руководство: [docs/GUIDE_RU.md](docs/GUIDE_RU.md)*
 
+Languages: English, Russian, German, Spanish, French, Brazilian Portuguese, Simplified
+Chinese and Japanese. Additional languages include the complete spell catalogue; they use
+machine translations with reviewed interface terminology. See [localization](docs/LOCALIZATION.md).
+
 > **You shape this mod.** I read the comments almost every day. Ideas, bug reports and balance
 > complaints from players have already turned into features. If something is missing, too strong
 > or too weak, leave a comment and it may well be in the next release.

@@ -30,7 +30,7 @@ final class BookWidgets {
             int knob=x+(int)(value*(width-8));
             g.fill(x,y+6,knob+4,y+10,0xFF7A4E8C);
             g.fill(knob,y+1,knob+8,y+15,isHoveredOrFocused()?0xFFE1C995:0xFFCDB68D);g.renderOutline(knob,y+1,8,14,0xFF4C3D50);
-            if(isHovered)g.drawCenteredString(net.minecraft.client.Minecraft.getInstance().font,getMessage(),x+width/2,y-8,MagicUi.GOLD);
+            if(isHovered)UiText.line(g,getMessage(),x,y-9,width,8,1,true,MagicUi.GOLD);
         }
     }
     static final class BookButton extends Button {
@@ -46,10 +46,7 @@ final class BookWidgets {
         @Override public void renderButton(PoseStack pose,int mouseX,int mouseY,float partialTick){var g=new GuiGraphics(pose);
             int bg=selected?0xFF4C3D50:isHoveredOrFocused() && active?0xFFE1C995:0xFFCDB68D;
             g.fill(x,y,x+width,y+height,bg);g.renderOutline(x,y,width,height,selected?0xFFAB8957:0xFFA58B64);
-            var font=net.minecraft.client.Minecraft.getInstance().font;Component label=getMessage();
-            if(font.width(label)>width-8 && font.width(label)*.75<=width-8){MagicUi.small(g,label,x+4,y+(height-6)/2,!active?0xFF9B896F:selected?0xFFFFEAC1:MagicUi.INK);return;}
-            if(font.width(label)>width-8)label=Component.literal(font.plainSubstrByWidth(label.getString(),width-15)+"…");
-            g.drawString(font,label,x+4,y+(height-8)/2,!active?0xFF9B896F:selected?0xFFFFEAC1:MagicUi.INK,false);
+            UiText.line(g,getMessage(),x+4,y+2,width-8,height-4,1,true,!active?0xFF9B896F:selected?0xFFFFEAC1:MagicUi.INK);
         }
     }
     static final class ElementButton extends Button {
