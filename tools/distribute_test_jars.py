@@ -23,6 +23,7 @@ versions = Path(os.environ['APPDATA']) / '.minecraft/versions'
 print('Test instances:', ', '.join(p.name for p in versions.glob('magicka_test*') if p.is_dir()))
 out = ROOT / 'test-jars/current'
 report = []
+locales = {path.stem:path.read_bytes() for path in (ROOT/'src/main/resources/assets/magicka/lang').glob('*.json')}
 for version, target, filename, instance, installed_name in TARGETS:
     source = ROOT / target / 'build/libs' / filename
     with zipfile.ZipFile(source) as archive:
@@ -33,8 +34,13 @@ for version, target, filename, instance, installed_name in TARGETS:
             assert b'com/restor/magicka/client/ElementIcons' in archive.read('com/restor/magicka/client/'+name+'.class'), source
         assert 'com/restor/magicka/client/GrimoireScreen$SpellPrefixTree.class' in archive.namelist(), source
         assert 'com/restor/magicka/client/HudLayoutScreen.class' in archive.namelist(), source
+        assert 'com/restor/magicka/client/UiText.class' in archive.namelist(), source
+        for name in ['GrimoireScreen','MagicHud','HudLayoutScreen','ShapeEditorScreen','GearScreen','PotionWheelScreen','BookWidgets$BookButton']:
+            assert b'com/restor/magicka/client/UiText' in archive.read('com/restor/magicka/client/'+name+'.class'), (source,name)
+        for locale,content in locales.items():
+            assert archive.read('assets/magicka/lang/'+locale+'.json') == content, (source,locale)
     digest = hashlib.sha256(source.read_bytes()).hexdigest()
-    item = {'version': version, 'jar': str(source.relative_to(ROOT)), 'sha256': digest, 'instance': instance}
+    item = {'version': version, 'jar': str(source.relative_to(ROOT)), 'sha256': digest, 'instance': instance, 'locales':sorted(locales)}
     if args.copy:
         out.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source, out / filename)

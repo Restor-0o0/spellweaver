@@ -7,6 +7,10 @@ to grind: press up to five elements, then cast. Every combination does something
 
 *Русское руководство: [docs/GUIDE_RU.md](docs/GUIDE_RU.md)*
 
+Languages: English, Russian, German, Spanish, French, Brazilian Portuguese, Simplified
+Chinese and Japanese. Additional languages include the complete spell catalogue; they use
+machine translations with reviewed interface terminology. See [localization](docs/LOCALIZATION.md).
+
 > **You shape this mod.** I read the comments almost every day. Ideas, bug reports and balance
 > complaints from players have already turned into features. If something is missing, too strong
 > or too weak, leave a comment and it may well be in the next release.
@@ -17,8 +21,8 @@ to grind: press up to five elements, then cast. Every combination does something
   into every formula of one to five elements: 346 hand-made recipes, and every other set fuses by
   clear rules — the lead element sets the form, each element adds its mechanic, pairs react.
 - **A living Grimoire.** A leather-bound book whose pages really turn. Its first chapters teach
-  casting and the fusion rules, then come **206 signature spells**: search them by name, page
-  number or tag (`#building`, `#damage`, `#summon`, `#support`…), filter by element, tag or formula
+  casting and the fusion rules, then come **206 signature spells**: search word prefixes in names
+  and IDs, jump to page numbers, filter by element, tag or formula
   length, and drag any spell into one of four quick-cast slots.
 - **Rune circles.** Every spell has its own rune written from 24 element glyphs. It flashes at your
   hand, marks the zone of area spells, and meteors fall out of a rune circle in the sky.

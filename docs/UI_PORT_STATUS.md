@@ -11,6 +11,16 @@ Source: current uncommitted 1.21.1 HUD editor, grimoire and spell icons, with th
 
 All six targets have identical Russian and English localization values (2626 keys each), type glyphs and steam/ice glyphs. Composite element pages and filter masks include magma on every target. Book quick assignment remains four slots; HUD quick slot count is configurable separately. UI behavior still needs manual in-game verification on each target.
 
+The complete 2626-key catalogue is also localized into German, Spanish, French,
+Brazilian Portuguese, Simplified Chinese and Japanese. The same eight locale files
+are installed on every target. See LOCALIZATION.md for translation and validation details.
+
 ElementIcons is the shared renderer for element filters, book formula sockets, composite pages, dragged formulas and HUD formula icons. Vanilla item pictograms for elements have been removed from MagicUi. Steam, ice, shield and magma use the same custom glyphs and backgrounds everywhere.
+
+UiText is the shared bounded text renderer on all six targets. Buttons and headings
+fit both dimensions and center after scaling; paragraphs select the largest fitting
+scale and preserve every line. The book, HUD, HUD editor, gear and shape screens and
+potion wheel use it. New labels should supply their content rectangle to UiText
+instead of measuring or truncating text at a fixed font size.
 
 No release tags created. Updated jars in magicka_test, magicka_test_19_2, magicka_test_20_ and magicka_test_26_3. No matching test instances found for 26.1 or 26.2. The complete test set and SHA-256 manifest are in test-jars/current. Archive integrity and installed jar hashes were verified by tools/distribute_test_jars.py --copy.
