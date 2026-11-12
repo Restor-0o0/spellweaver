@@ -60,9 +60,10 @@ public final class MagicClient {
     private static final KeyMapping IMBUE = new KeyMapping("key.magicka.imbue", KeyConflictContext.IN_GAME, net.neoforged.neoforge.client.settings.KeyModifier.SHIFT, InputConstants.Type.MOUSE, InputConstants.MOUSE_BUTTON_LEFT, CATEGORY);
     private static final KeyMapping BOOK = key("spellbook", InputConstants.Type.KEYSYM, InputConstants.KEY_B);
     private static final KeyMapping SHAPE = key("shape", InputConstants.Type.KEYSYM, InputConstants.KEY_K);
+    private static final KeyMapping HUD_LAYOUT=key("hud_layout",InputConstants.Type.KEYSYM,InputConstants.KEY_H);
     private static final KeyMapping LOADOUT = key("loadout", InputConstants.Type.KEYSYM, InputConstants.KEY_J);
-    private static final KeyMapping[] QUICK=java.util.stream.IntStream.range(0,4).mapToObj(i->new KeyMapping("key.magicka.quick_"+(i+1),KeyConflictContext.IN_GAME,
-            net.neoforged.neoforge.client.settings.KeyModifier.ALT,InputConstants.Type.KEYSYM,InputConstants.KEY_1+i,CATEGORY)).toArray(KeyMapping[]::new);
+    private static final KeyMapping[] QUICK=java.util.stream.IntStream.range(0,12).mapToObj(i->new KeyMapping("key.magicka.quick_"+(i+1),KeyConflictContext.IN_GAME,
+            net.neoforged.neoforge.client.settings.KeyModifier.ALT,InputConstants.Type.KEYSYM,(i<9?InputConstants.KEY_1+i:i==9?InputConstants.KEY_0:i==10?45:61),CATEGORY)).toArray(KeyMapping[]::new);
     private static final KeyMapping[] POTIONS = {key("potion_1", InputConstants.Type.KEYSYM, InputConstants.KEY_Z), key("potion_2", InputConstants.Type.KEYSYM, InputConstants.KEY_X)};
     private static final int WHEEL_TICKS = 6;
     private static final int[] potionHeld = {-1, -1};
@@ -101,7 +102,7 @@ public final class MagicClient {
     }
     public static void openLoadout() { ClientPacketDistributor.sendToServer(new MagicNetwork.Input(14)); }
     public static Component castHint(String intent) {
-        return Component.literal((intent.equals("self") ? "Self: " : "Primary: ")).append(intent.equals("self") ? SELF.getTranslatedKeyMessage() : DIRECTED.getTranslatedKeyMessage());
+        return Component.translatable(intent.equals("self")?"intent.magicka.self":"intent.magicka.directed").append(": ").append(intent.equals("self") ? SELF.getTranslatedKeyMessage() : DIRECTED.getTranslatedKeyMessage());
     }
     private static KeyMapping key(String id, InputConstants.Type type, int code) {
         return new KeyMapping("key.magicka." + id, KeyConflictContext.IN_GAME, type, code, CATEGORY);
@@ -110,9 +111,14 @@ public final class MagicClient {
         var mc = Minecraft.getInstance();
         return mc.player != null && mc.level != null && mc.screen == null && !mc.player.isSpectator();
     }
+    public static Component hudLayoutKey(){return HUD_LAYOUT.getTranslatedKeyMessage();}
+    public static void openHudLayout(){Minecraft.getInstance().setScreen(new HudLayoutScreen());}
+    private static boolean hudBookContext(){var mc=Minecraft.getInstance();return mc.screen instanceof GrimoireScreen;}
     private static boolean dispatch(java.util.function.Predicate<KeyMapping> matches) {
+        if(matches.test(HUD_LAYOUT)&&hudBookContext()){openHudLayout();return true;}
         if (!playable()) return false;
-        for(int i=0;i<4;i++)if(matches.test(QUICK[i]) && QUICK[i].getKeyModifier().isActive(QUICK[i].getKeyConflictContext())){
+        if(matches.test(HUD_LAYOUT)){openHudLayout();return true;}
+        for(int i=0;i<Math.min(QUICK.length,MagicHudLayout.quickCount());i++)if(matches.test(QUICK[i]) && QUICK[i].getKeyModifier().isActive(QUICK[i].getKeyConflictContext())){
             int formula=BookPreferences.get().slot(i);
             if(formula!=0)ClientPacketDistributor.sendToServer(new MagicNetwork.QuickFill(formula));
             else Minecraft.getInstance().player.sendOverlayMessage(Component.translatable("hud.magicka.quick_empty",i+1));
@@ -181,7 +187,7 @@ public final class MagicClient {
     public static void keyboard(InputEvent.Key event) {
         KeyEvent input = event.getKeyEvent();
         if (event.getAction() == InputConstants.RELEASE) { release(key -> key.matches(input)); return; }
-        if (!playable()) return;
+        if (!playable()&&!hudBookContext()) return;
         boolean handled = event.getAction() == InputConstants.PRESS && dispatch(key -> key.matches(input));
         boolean repeatedElement = MagicNetwork.clientState.enabled() && java.util.Arrays.stream(ELEMENTS).anyMatch(key -> key.matches(input));
         repeatedElement |= java.util.Arrays.stream(QUICK).anyMatch(key->key.matches(input) && key.getKeyModifier().isActive(key.getKeyConflictContext()));
@@ -245,7 +251,7 @@ public final class MagicClient {
         @SubscribeEvent public static void keys(RegisterKeyMappingsEvent event) {
             for (KeyMapping key : ELEMENTS) event.register(key);
             for(KeyMapping key:QUICK)event.register(key);
-            for (KeyMapping key : new KeyMapping[]{TOGGLE, CLEAR, DIRECTED, SELF, AREA, IMBUE, BOOK, SHAPE, LOADOUT}) event.register(key);
+            for (KeyMapping key : new KeyMapping[]{TOGGLE, CLEAR, DIRECTED, SELF, AREA, IMBUE, BOOK, SHAPE, LOADOUT, HUD_LAYOUT}) event.register(key);
             for (KeyMapping key : POTIONS) event.register(key);
         }
         @SubscribeEvent public static void setup(net.neoforged.fml.event.lifecycle.FMLClientSetupEvent event) {

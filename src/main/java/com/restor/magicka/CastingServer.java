@@ -201,11 +201,11 @@ public final class CastingServer {
         if (persistentTitan && !s.epic.live) { finishChannel(player, s); return; }
         if (s.channeling) {
             if (!persistentTitan && s.remaining <= 0) { finishChannel(player, s); return; }
-            if (s.epic == null && !s.recipe.shape().construction() && s.elapsed % 2 == 0) SpellVfx.hand(player, s.recipe.formula(), 8);
+            if (s.epic == null && !s.recipe.shape().construction() && s.elapsed % (SpellRuntime.mining(s.recipe) ? 6 : 2) == 0) SpellVfx.hand(player, s.recipe.formula(), SpellRuntime.mining(s.recipe) ? 6 : 8);
             if (s.epic == null && !s.recipe.shape().construction() && s.elapsed % pulseTicks(s.recipe) == 0) SpellRuntime.pulse(player, s.recipe);
             sync(player, s); return;
         }
-        if (s.elapsed < s.windup && s.elapsed % 3 == 0) SpellRuntime.particles(player,s.recipe,player.getEyePosition().add(player.getLookAngle().scale(.6)),3,.15);
+        if (s.elapsed < s.windup && s.elapsed % (SpellRuntime.mining(s.recipe) ? 8 : 3) == 0) SpellRuntime.particles(player,s.recipe,player.getEyePosition().add(player.getLookAngle().scale(.6)),SpellRuntime.mining(s.recipe) ? 1 : 3,SpellRuntime.mining(s.recipe) ? .045 : .15);
         if (s.elapsed == s.windup && s.anchor != null) { startEpic(player, s); sync(player, s); return; }
         if (s.elapsed == s.windup) {
             try {

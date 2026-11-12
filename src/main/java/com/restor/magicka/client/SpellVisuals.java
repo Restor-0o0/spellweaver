@@ -14,10 +14,11 @@ import java.util.*;
 /** Bright world-space ribbons, persistent zone borders and vanilla block cores. No custom textures required. */
 public final class SpellVisuals {
     private static final List<Cue> CUES=new ArrayList<>();
-    private static final class Cue {MagicNetwork.Visual packet;int age,until;Cue(MagicNetwork.Visual packet){this.packet=packet;until=Math.min(100,packet.ticks());}}
+    private static final class Cue {MagicNetwork.Visual packet;Vec3 previousFrom,previousTo;int age,until;Cue(MagicNetwork.Visual packet){this.packet=packet;previousFrom=packet.from();previousTo=packet.to();until=Math.min(100,packet.ticks());}Vec3 from(float partial){return previousFrom.lerp(packet.from(),Math.clamp((age+partial)/4,0,1));}Vec3 to(float partial){return previousTo.lerp(packet.to(),Math.clamp((age+partial)/4,0,1));}}
     public static void clear(){CUES.clear();}
     public static void receive(MagicNetwork.Visual packet){
         if(packet.kind()<0 || packet.kind()>SpellVfx.EMBERFALL || !GrimoireState.valid(packet.formula()) || !Double.isFinite(packet.from().lengthSqr()+packet.to().lengthSqr()) || !Float.isFinite(packet.radius()))return;
+        if(packet.kind()==SpellVfx.BEAM && packet.anchor()>=0){Cue existing=null;for(var it=CUES.iterator();it.hasNext();){Cue cue=it.next();if(cue.packet.kind()!=SpellVfx.BEAM || cue.packet.anchor()!=packet.anchor())continue;if(cue.packet.formula()==packet.formula() && existing==null)existing=cue;else it.remove();}if(existing!=null){existing.previousFrom=existing.from(0);existing.previousTo=existing.to(0);existing.packet=packet;existing.age=0;existing.until=Math.min(100,packet.ticks());return;}}
         boolean model=SpellModels.merges(packet.kind());
         if(packet.kind()==SpellVfx.ZONE || packet.kind()==SpellVfx.MINE || packet.kind()==SpellVfx.SIGIL || model)
             for(Cue c:CUES)if(c.packet.kind()==packet.kind() && c.packet.formula()==packet.formula() && c.packet.anchor()==packet.anchor() && (packet.anchor()>=0 && model || c.packet.from().distanceToSqr(packet.from())<.04)){
@@ -31,14 +32,16 @@ public final class SpellVisuals {
         for(Cue cue:CUES){
             var p=cue.packet;if(p.kind()==SpellVfx.SIGIL || p.from().distanceToSqr(mc.gameRenderer.getMainCamera().position())>128*128)continue;
             var formula=Formula.unpack(p.formula());var blend=ElementBlend.of(formula.key());
-            if(formula.key().water()==1 && formula.key().life()==1 && formula.key().arcane()==1){mist(mc,cue);continue;}
-            compounds(mc,cue,blend);
-            if(fire(blend))flames(mc,cue);
+            var spell=MagicClient.spell(formula.key());boolean mining=p.kind()==SpellVfx.BEAM && spell!=null && spell.effects().stream().anyMatch(node->node.has("type") && "mine_blocks".equals(node.get("type").getAsString()));
+            if(!mining && formula.key().water()==1 && formula.key().life()==1 && formula.key().arcane()==1){mist(mc,cue);continue;}
+            if(!mining)compounds(mc,cue,blend);
+            if(!mining && fire(blend))flames(mc,cue);
             if(p.kind()==SpellVfx.ZONE)ambience(mc,cue,formula.key(),blend);
             if(SpellModels.handles(p.kind())){SpellModels.tick(mc,p,cue.age,cue.until);continue;}
-            if(cue.age%3!=0)continue;
+            if(cue.age%(mining?8:3)!=0)continue;
             var elements=remaining(blend);if(elements.isEmpty())continue;Element element=elements.get((cue.age/3)%elements.size());
-            Vec3 point=p.from().lerp(p.to(),Math.min(1,cue.age/(double)Math.max(1,p.ticks())));
+            double progress=Math.min(1,cue.age/(double)Math.max(1,p.ticks()));if(mining)progress=.24+.68*progress;
+            Vec3 point=p.from().lerp(p.to(),progress);
             ParticleOptions particle=switch(element){case FIRE->ParticleTypes.FLAME;case WATER->ParticleTypes.BUBBLE_POP;case COLD->ParticleTypes.SNOWFLAKE;case LIGHTNING->ParticleTypes.ELECTRIC_SPARK;case EARTH->ParticleTypes.CRIT;case LIFE->ParticleTypes.HAPPY_VILLAGER;case ARCANE->ParticleTypes.END_ROD;case DEATH->ParticleTypes.SOUL;case STEAM->ParticleTypes.CLOUD;case ICE->ParticleTypes.ITEM_SNOWBALL;case SHIELD->ParticleTypes.WAX_ON;case MAGMA->ParticleTypes.LAVA;};
             mc.level.addParticle(particle,point.x,point.y,point.z,0,.025,0);
         }
@@ -198,6 +201,14 @@ public final class SpellVisuals {
             if(flames && (p.kind()==SpellVfx.BEAM || p.kind()==SpellVfx.ARC || p.kind()==SpellVfx.SPRAY))continue;
             switch(p.kind()){
                 case SpellVfx.BEAM,SpellVfx.ARC -> {
+                    if(p.kind()==SpellVfx.BEAM && formula.arcane()>0){
+                        Vec3 from=cue.from(partial),to=cue.to(partial);
+                        var caster=p.anchor()>=0?mc.level.getEntity(p.anchor()):null;
+                        if(caster!=null && from.distanceToSqr(caster.getEyePosition())<2.25){Vec3 look=caster.getViewVector(partial);from=from.add(look.scale(.28)).add(0,-.22,0);}
+                        double time=(mc.level==null?cue.age:mc.level.getGameTime())+partial;
+                        arcaneFlow(pose,consumer,camera,from,to,p.formula(),p.anchor(),radius,time,alpha);
+                        continue;
+                    }
                     Vec3 delta=p.to().subtract(p.from()),axis=delta.normalize().cross(new Vec3(0,1,0)).normalize();
                     int segments=Math.clamp((int)(delta.length()/1.2),2,96);Vec3 previous=p.from();
                     for(int i=1;i<=segments;i++){Vec3 next=p.from().lerp(p.to(),i/(double)segments);
@@ -255,6 +266,23 @@ public final class SpellVisuals {
         for(int i=1;i<=32;i++){double a=spin+i*Math.PI*2/32;Vec3 next=center.add(u.scale(Math.cos(a)*radius)).add(v.scale(Math.sin(a)*radius));stroke(pose,consumer,camera,previous,next,width,color,alpha);previous=next;}
     }
     private static void spear(PoseStack.Pose pose,VertexConsumer consumer,Vec3 camera,MagicNetwork.Visual p,float progress){Vec3 direction=p.to().subtract(p.from());if(direction.lengthSqr()<1e-6)return;direction=direction.normalize();Vec3 center=p.from().lerp(p.to(),progress);Vec3 side=direction.cross(new Vec3(0,1,0));side=side.lengthSqr()<1e-6?new Vec3(1,0,0):side.normalize();Vec3 lift=side.cross(direction).normalize();Vec3 tail=center.add(direction.scale(-1.6)),base=center.add(direction.scale(.65)),tip=center.add(direction.scale(2.4));stroke(pose,consumer,camera,tail,base,.11,0x80DEEA,.95f);stroke(pose,consumer,camera,tail,base,.035,0xFFFFFF,.95f);for(Vec3 edge:new Vec3[]{side,lift,side.scale(-1),lift.scale(-1)}){Vec3 corner=base.add(edge.scale(.38));stroke(pose,consumer,camera,corner,tip,.09,0x80DEEA,.95f);stroke(pose,consumer,camera,corner,tip,.025,0xFFFFFF,.9f);stroke(pose,consumer,camera,base,corner,.06,0xB3E5FC,.85f);}}
+    private static void arcaneFlow(PoseStack.Pose pose,VertexConsumer out,Vec3 camera,Vec3 from,Vec3 to,int formula,int anchor,double radius,double time,float alpha){
+        Vec3 delta=to.subtract(from);double length=delta.length();if(length<.1)return;Vec3 axis=delta.scale(1/length);
+        Vec3 u=axis.cross(Math.abs(axis.y)>.95?new Vec3(1,0,0):new Vec3(0,1,0)).normalize(),v=axis.cross(u).normalize();
+        double guide=Math.max(.09,radius*1.8);int count=Math.clamp((int)Math.ceil(length*5),72,360);long seed=((long)formula<<32)^anchor^0x6A09E667F3BCC909L;int accent=Element.ARCANE.color;
+        for(int i=0;i<count;i++){
+            Random random=new Random(seed^((long)i*0xD1B54A32D192ED03L));double angle=random.nextDouble()*Math.PI*2,radial=Math.pow(random.nextDouble(),1.8)*guide,core=1-radial/guide;
+            double tubeLength=(.45+random.nextDouble()*2.55)*(.5+.5*core),tubeRadius=Math.max(.012,radius*(.14+random.nextDouble()*.42)*(.45+.55*core));
+            double speed=(.16+random.nextDouble()*.32)*10,distance=(random.nextDouble()*length+time*speed)%length;Vec3 center=from.add(axis.scale(distance)).add(u.scale(Math.cos(angle)*radial)).add(v.scale(Math.sin(angle)*radial));
+            Vec3 start=center.add(axis.scale(-tubeLength*.5)),end=center.add(axis.scale(tubeLength*.5));
+            beamTube(pose,out,start,end,tubeRadius,i%9==0?0xFFFFFF:accent,alpha*(.62f+(i%5)*.055f),4);
+        }
+    }
+    private static void beamTube(PoseStack.Pose pose,VertexConsumer out,Vec3 from,Vec3 to,double radius,int color,float alpha,int sides){
+        Vec3 axis=to.subtract(from);if(axis.lengthSqr()<1e-8)return;axis=axis.normalize();Vec3 u=axis.cross(Math.abs(axis.y)>.95?new Vec3(1,0,0):new Vec3(0,1,0)).normalize(),v=axis.cross(u).normalize();
+        float red=((color>>16)&255)/255f,green=((color>>8)&255)/255f,blue=(color&255)/255f;
+        for(int i=0;i<sides;i++){double a=i*Math.PI*2/sides,b=(i+1)*Math.PI*2/sides;Vec3 u0=u.scale(Math.cos(a)*radius).add(v.scale(Math.sin(a)*radius)),u1=u.scale(Math.cos(b)*radius).add(v.scale(Math.sin(b)*radius));for(Vec3 point:new Vec3[]{from.add(u0),from.add(u1),to.add(u1),to.add(u0),from.add(u0),to.add(u0),to.add(u1),from.add(u1)})out.addVertex(pose,(float)point.x,(float)point.y,(float)point.z).setColor(red,green,blue,alpha);}
+    }
     private static int color(SpellFormula formula){
         return ElementBlend.of(formula).color();
     }
