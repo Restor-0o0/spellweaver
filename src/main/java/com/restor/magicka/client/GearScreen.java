@@ -33,7 +33,7 @@ public final class GearScreen extends AbstractContainerScreen<GearMenu> {
         MagicUi.panel(g, leftPos + 18, topPos + 16, 104, 102);
         MagicUi.panel(g, leftPos + 126, topPos + 16, 80, 102);
         for (int row = 0; row < ROW_LABELS.length; row++)
-            MagicUi.small(g, Component.translatable("screen.magicka.row." + ROW_LABELS[row]), leftPos + 25, topPos + ROW_Y[row], MagicUi.GOLD);
+            UiText.line(g,Component.translatable("screen.magicka.row."+ROW_LABELS[row]),leftPos+25,topPos+ROW_Y[row],90,8,.75f,false,MagicUi.GOLD);
         for (MagicGear.Slot slot : MagicGear.Slot.values()) {
             int[] position = GearMenu.POSITIONS[slot.ordinal()];
             socket(g, leftPos + position[0] - 1, topPos + position[1] - 1, menu.slots.get(slot.ordinal()).hasItem());
@@ -54,9 +54,9 @@ public final class GearScreen extends AbstractContainerScreen<GearMenu> {
                 if (PotionBelt.clientSelected(button) == i) g.fill(x + 1 + button * 9, y + 16, x + 8 + button * 9, y + 17, BUTTON_COLORS[button]);
         }
         int x = leftPos + GearMenu.BELT_X + MagicGear.BELT * 18 + 4;
-        MagicUi.small(g, Component.translatable("screen.magicka.row.belt"), x, topPos + 126, MagicUi.GOLD);
+        UiText.line(g,Component.translatable("screen.magicka.row.belt"),x,topPos+125,Math.max(0,leftPos+imageWidth-12-x),9,.75f,true,MagicUi.GOLD);
         for (int button = 0; button < PotionBelt.BUTTONS; button++)
-            MagicUi.small(g, MagicClient.potionKey(button), x + button * 30, topPos + 137, BUTTON_COLORS[button]);
+            UiText.line(g,MagicClient.potionKey(button),x+button*30,topPos+136,26,9,.75f,true,BUTTON_COLORS[button]);
     }
 
     private static void socket(GuiGraphics g, int x, int y, boolean filled) {
@@ -75,26 +75,26 @@ public final class GearScreen extends AbstractContainerScreen<GearMenu> {
             replaced += gear.patches().size();
         }
         int x = leftPos + 132, y = topPos + 22;
-        MagicUi.text(g, Component.translatable("screen.magicka.summary"), x, y, MagicUi.GOLD);
+        UiText.line(g,Component.translatable("screen.magicka.summary"),x,y,68,10,1,true,MagicUi.GOLD);
         y += 11;
         List<String> roles = roles(deltas, traits);
         if (roles.isEmpty()) {
-            MagicUi.small(g, Component.translatable("screen.magicka.role.none"), x, y, MagicUi.MUTED);
+            UiText.line(g,Component.translatable("screen.magicka.role.none"),x,y,68,8,.75f,false,MagicUi.MUTED);
             y += 8;
         } else for (String role : roles) {
-            MagicUi.small(g, Component.translatable("screen.magicka.role." + role), x, y, 0xFF8FD4A8);
+            UiText.line(g,Component.translatable("screen.magicka.role."+role),x,y,68,8,.75f,false,0xFF8FD4A8);
             y += 8;
         }
         y += 4;
         for (MagicStats.Stat stat : MagicStats.Stat.values()) {
             if (deltas[stat.ordinal()] == 0 || y > topPos + 104) continue;
             int delta = deltas[stat.ordinal()];
-            MagicUi.small(g, Component.literal((delta > 0 ? "+" : "") + delta + "% ")
-                    .append(Component.translatable("book.magicka.stat." + stat.key())), x, y, delta > 0 ? 0xFF9AD68F : 0xFFD68F8F);
+            UiText.line(g, Component.literal((delta > 0 ? "+" : "") + delta + "% ")
+                    .append(Component.translatable("book.magicka.stat." + stat.key())),x,y,68,8,.75f,false,delta > 0 ? 0xFF9AD68F : 0xFFD68F8F);
             y += 8;
         }
         if (replaced > 0 && y <= topPos + 104)
-            MagicUi.small(g, Component.translatable("screen.magicka.replaced", replaced), x, y, 0xFFC79ADB);
+            UiText.line(g,Component.translatable("screen.magicka.replaced",replaced),x,y,68,8,.75f,false,0xFFC79ADB);
     }
 
     private static List<String> roles(int[] deltas, Set<MagicGear.Trait> traits) {
@@ -127,7 +127,7 @@ public final class GearScreen extends AbstractContainerScreen<GearMenu> {
     }
 
     @Override protected void renderLabels(GuiGraphics g, int mouseX, int mouseY) {
-        MagicUi.text(g, title, titleLabelX, titleLabelY, MagicUi.GOLD);
-        MagicUi.text(g, playerInventoryTitle, inventoryLabelX, inventoryLabelY, MagicUi.MUTED);
+        UiText.line(g,title,titleLabelX,titleLabelY-1,imageWidth-20,10,1,true,MagicUi.GOLD);
+        UiText.line(g,playerInventoryTitle,inventoryLabelX,inventoryLabelY,imageWidth-inventoryLabelX-12,9,1,false,MagicUi.MUTED);
     }
 }
