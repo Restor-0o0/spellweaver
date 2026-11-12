@@ -5,13 +5,13 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 
-/** Personal book position and four formula presets; independent of the current server's recipe IDs. */
+/** Personal book position and formula presets; independent of the current server's recipe IDs. */
 public final class GrimoireState {
     public String selectedId="", query="", tag="all";
     public int size, elements, page, scroll;
-    private final int[] slots=new int[4];
-    public int slot(int index){return index>=0 && index<4?slots[index]:0;}
-    public void assign(int index,int packed){if(index<0 || index>=4)throw new IllegalArgumentException("Slot");slots[index]=valid(packed)?Formula.unpack(packed).packed():0;}
+    private final int[] slots=new int[12];
+    public int slot(int index){return index>=0 && index<slots.length?slots[index]:0;}
+    public void assign(int index,int packed){if(index<0 || index>=slots.length)throw new IllegalArgumentException("Slot");slots[index]=valid(packed)?Formula.unpack(packed).packed():0;}
     public static boolean valid(int packed){return Formula.valid(packed);}
     public static GrimoireState read(Path path) throws IOException {
         var state=new GrimoireState();if(!Files.exists(path))return state;
@@ -20,7 +20,7 @@ public final class GrimoireState {
             state.selectedId=SpellDefinition.string(json,"selected","");state.query=SpellDefinition.string(json,"query","");
             state.tag=SpellDefinition.string(json,"tag","all");
             state.size=SpellDefinition.integer(json,"size",0,0,Formula.MAX);state.elements=SpellDefinition.integer(json,"elements",0,0,2047);state.page=SpellDefinition.integer(json,"page",0,0,1000);state.scroll=SpellDefinition.integer(json,"scroll",0,0,10000);
-            if(json.has("slots")){var array=json.getAsJsonArray("slots");for(int i=0;i<Math.min(4,array.size());i++)state.assign(i,array.get(i).getAsInt());}
+            if(json.has("slots")){var array=json.getAsJsonArray("slots");for(int i=0;i<Math.min(state.slots.length,array.size());i++)state.assign(i,array.get(i).getAsInt());}
             return state;
         }catch(RuntimeException invalid){return new GrimoireState();}
     }
