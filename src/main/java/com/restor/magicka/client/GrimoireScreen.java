@@ -113,7 +113,7 @@ public final class GrimoireScreen extends Screen {
         }
     }
     private boolean matchesFilters(SpellDefinition d){
-        if(!tag.equals("all") && !SpellTags.of(d).contains(tag))return false;
+        if(!open(d) || !tag.equals("all") && !SpellTags.of(d).contains(tag))return false;
         for(Element element:Element.values())if((elements&1<<element.ordinal())!=0 && d.formula().total(element)==0)return false;
         return true;
     }
@@ -258,7 +258,7 @@ public final class GrimoireScreen extends Screen {
     private void rebuild(boolean focus){
         clearWidgets();
         for(int i=0;i<TAGS.length;i++){String value=TAGS[i];
-            addRenderableWidget(new TagButton(panelX+3+i%4*21,tagsY()+i/4*18,19,16,TAG_ICONS[i],Component.translatable("book.magicka.tag."+value),b->refilter(()->tag=tag.equals(value)?"all":value),tag.equals(value)));}
+            addRenderableWidget(new TagButton(panelX+3+i%4*21,tagsY()+i/4*18,19,16,i,Component.translatable("book.magicka.tag."+value),b->refilter(()->tag=tag.equals(value)?"all":value),tag.equals(value)));}
         var spell=shown();
         for(int i=1;i<=Formula.MAX;i++){int value=i;
             var b=addRenderableWidget(new RuneButton(panelX+(PANEL-84)/2+(i-1)*17,runesY(),16,16,Component.literal(Integer.toString(i)),btn->jump(value),spell!=null && spell.formula().size()==i));
@@ -280,6 +280,9 @@ public final class GrimoireScreen extends Screen {
         mark(2,"✦",Component.translatable("book.magicka.magic_button"),b->openGuide(true),inMagic());
         mark(3,"✎",Component.translatable("book.magicka.shape"),b->minecraft.gui.setScreen(new ShapeEditorScreen(this)),false);
         if(creative())mark(4,"⚙",Component.translatable("book.magicka.stats"),b->openStats(),onStats());
+        int hudButtonY=runesY()+20+font.split(mageLine(),(int)((PANEL-10)/.75f)).size()*9+2;
+        var hudButton=addRenderableWidget(new RuneButton(panelX+4,hudButtonY,PANEL-8,14,Component.literal("HUD"),b->MagicClient.openHudLayout(),false));
+        hudButton.setTooltip(Tooltip.create(Component.translatable("book.magicka.hud_layout_hint",MagicClient.hudLayoutKey())));
         int arrowY=y+bookHeight-23;
         addRenderableWidget(new RuneButton(frameX+9,arrowY,14,14,Component.literal("◀"),b->step(-1),false)).active=next(-1)!=page;
         addRenderableWidget(new RuneButton(frameX+frameWidth-23,arrowY,14,14,Component.literal("▶"),b->step(1),false)).active=next(1)!=page;
@@ -683,8 +686,8 @@ public final class GrimoireScreen extends Screen {
         }
     }
     private static final class TagButton extends Button {
-        private final Item icon;private final boolean on;private ItemStack stack;
-        TagButton(int x,int y,int width,int height,Item icon,Component label,OnPress press,boolean on){
+        private final int icon;private final boolean on;
+        TagButton(int x,int y,int width,int height,int icon,Component label,OnPress press,boolean on){
             super(x,y,width,height,label,press,DEFAULT_NARRATION);this.icon=icon;this.on=on;setTooltip(Tooltip.create(label));
         }
         @Override protected void extractContents(GuiGraphicsExtractor g,int mouseX,int mouseY,float partialTick){
@@ -692,10 +695,7 @@ public final class GrimoireScreen extends Screen {
             if(on)g.fill(getX()-1,getY()-1,getX()+width+1,getY()+height+1,0x50D4B77A);
             g.fill(getX(),getY(),getX()+width,getY()+height,on?0xFF3A2D52:hover?0xFF2A2840:0xFF161824);
             g.outline(getX(),getY(),width,height,on?MagicUi.GOLD:hover?0xFF8B7BB0:0xFF3D3850);
-            if(stack==null)stack=new ItemStack(icon);
-            g.pose().pushMatrix();g.pose().translate(getX()+(width-12)/2f,getY()+(height-12)/2f);g.pose().scale(.75f,.75f);
-            g.item(stack,0,0);
-            g.pose().popMatrix();
+            SpellTypeIcons.draw(g,icon,getX(),getY(),width,height);
         }
     }
     private static final class RuneElement extends Button {
@@ -707,13 +707,10 @@ public final class GrimoireScreen extends Screen {
         @Override protected void extractContents(GuiGraphicsExtractor g,int mouseX,int mouseY,float partialTick){
             boolean hover=isHoveredOrFocused();
             int cx=getX()+width/2,cy=getY()+height/2,r=width/2;
+            ElementIcons.background(g,element,getX(),getY(),width,on||hover);
             if(on){disc(g,cx,cy,r+2,0xFF000000|MagicUi.GOLD);disc(g,cx,cy,r+1,0xFF000000|element.color);}
             else if(hover)disc(g,cx,cy,r+1,0x90FFF0D0);
-            if(element==Element.MAGMA){disc(g,cx,cy,r-2,0xFF6B3527);disc(g,cx,cy,r-4,0xFF9D4A2B);}
-            int tone=on||hover?255:140;
-            g.pose().pushMatrix();g.pose().translate(getX(),getY());g.pose().scale(width/32f,height/32f);
-            g.blit(RenderPipelines.GUI_TEXTURED,ELEMENTS,0,0,element.ordinal()*32,0,32,32,32*Element.values().length,32,0xFF000000|tone<<16|tone<<8|tone);
-            g.pose().popMatrix();
+            ElementIcons.glyph(g,element,getX(),getY(),width,on||hover);
         }
         private static void disc(GuiGraphicsExtractor g,int cx,int cy,int r,int color){
             for(int dy=-r;dy<r;dy++){float yy=dy+0.5f;int hw=Math.round((float)Math.sqrt(r*r-yy*yy));g.fill(cx-hw,cy+dy,cx+hw,cy+dy+1,color);}

@@ -59,9 +59,10 @@ public final class SpellVisuals {
             Vec3 camera=mc.gameRenderer.mainCamera().position();
             if(p.kind()==SpellVfx.SIGIL || p.from().distanceToSqr(camera)>128*128 && (!ray || p.to().distanceToSqr(camera)>128*128))continue;
             var formula=Formula.unpack(p.formula());var blend=ElementBlend.of(formula.key());
-            if(formula.key().water()==1 && formula.key().life()==1 && formula.key().arcane()==1){mist(mc,cue);continue;}
-            compounds(mc,cue,blend);
-            if(fire(blend) && !ray)flames(mc,cue);
+            var spell=MagicClient.spell(formula.key());boolean mining=ray && spell!=null && spell.effects().stream().anyMatch(node->node.has("type") && "mine_blocks".equals(node.get("type").getAsString()));
+            if(!mining && formula.key().water()==1 && formula.key().life()==1 && formula.key().arcane()==1){mist(mc,cue);continue;}
+            if(!mining)compounds(mc,cue,blend);
+            if(!mining && fire(blend) && !ray)flames(mc,cue);
             if(p.kind()==SpellVfx.ZONE)ambience(mc,cue,formula.key(),blend);
             if(SpellModels.handles(p.kind())){SpellModels.tick(mc,p,cue.age,cue.until);continue;}
             if(cue.age%3!=0 || ray)continue;

@@ -67,6 +67,7 @@ public final class SpellRuntime {
     static LivingEntity target(ServerPlayer p) {
         return SpellAim.entity(p,SpellAim.hit(p).getLocation());
     }
+    public static boolean mining(SpellDefinition s){return s.effects().stream().anyMatch(node->node.has("type") && "mine_blocks".equals(node.get("type").getAsString()));}
     public static void cast(ServerPlayer p, SpellDefinition s, boolean self, boolean instant) {
         MagicConstructionManager.instantBuilds = instant;
         try { cast(p, s, self); } finally { MagicConstructionManager.instantBuilds = false; }
@@ -98,7 +99,7 @@ public final class SpellRuntime {
             Vec3 at = self ? p.position() : SpellAim.hit(p).getLocation();
             double radius = Math.clamp(s.number("radius",5),3,10);
             for (int i = 0; i < 3; i++) SpellVfx.sigil(p,s.formula(),at.add(0,.2+i*3,0),new Vec3(0,1,0),radius*(1-i*.25),30);
-        } else if (!self && s.formula().size() >= 3 && !s.channeled() && !s.delivery().has("legend")) SpellVfx.hand(p,s.formula(),12);
+        } else if (!self && s.formula().size() >= 3 && !s.channeled() && !s.delivery().has("legend")) SpellVfx.hand(p,s.formula(),mining(s)?7:12);
         if (LegendMagic.handles(s,self)) { LegendMagic.cast(p,s,self); return; }
         if (self) {
             switch(s.selfMode()) {
