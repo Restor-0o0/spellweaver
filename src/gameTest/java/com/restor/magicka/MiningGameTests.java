@@ -19,7 +19,7 @@ import java.util.function.Consumer;
 @GameTestHolder(Magicka.ID)
 @PrefixGameTestTemplate(false)
 public final class MiningGameTests {
-    @GameTest(template="empty")
+    @MagicTest
     public static void singleDropsNormalLoot(GameTestHelper h) {
         var player=RecipeGameTests.caster(h);BlockPos local=new BlockPos(2,2,2);h.setBlock(local,Blocks.STONE);
         MiningMagic.mine(player,h.absolutePos(local).getCenter(),"single",1,1,0,0,false,false);
@@ -27,7 +27,7 @@ public final class MiningGameTests {
         h.assertTrue(drops(h,local,Items.COBBLESTONE)==1,"Single mining drops normal pickaxe loot");h.succeed();
     }
 
-    @GameTest(template="empty")
+    @MagicTest
     public static void targetedCastMinesHitBlock(GameTestHelper h) {
         var player=RecipeGameTests.caster(h);BlockPos local=new BlockPos(1,3,5);h.setBlock(local,Blocks.STONE);
         player.setPos(h.absoluteVec(new net.minecraft.world.phys.Vec3(1.5,2,1.5)));player.setYRot(0);player.setXRot(3);
@@ -36,7 +36,7 @@ public final class MiningGameTests {
         h.assertTrue(drops(h,local,Items.COBBLESTONE)==1,"Casting at a block mines the ray hit rather than the adjacent position");h.succeed();
     }
 
-    @GameTest(template="empty")
+    @MagicTest
     public static void dirtAndCobblestoneAreMineable(GameTestHelper h) {
         var player=RecipeGameTests.caster(h);BlockPos dirt=new BlockPos(2,2,2),cobble=new BlockPos(3,2,2);
         h.setBlock(dirt,Blocks.DIRT);h.setBlock(cobble,Blocks.COBBLESTONE);
@@ -45,7 +45,7 @@ public final class MiningGameTests {
         h.assertBlockPresent(Blocks.AIR,dirt);h.assertBlockPresent(Blocks.AIR,cobble);h.succeed();
     }
 
-    @GameTest(template="empty")
+    @MagicTest
     public static void hydraulicFractureRepeatsAlongBeam(GameTestHelper h) {
         var player=RecipeGameTests.caster(h);BlockPos first=new BlockPos(1,3,5),second=first.south();
         h.setBlock(first,Blocks.STONE);h.setBlock(second,Blocks.STONE);
@@ -56,7 +56,7 @@ public final class MiningGameTests {
         h.assertBlockPresent(Blocks.AIR,first);h.assertBlockPresent(Blocks.AIR,second);h.succeed();
     }
 
-    @GameTest(template="empty")
+    @MagicTest
     public static void hydraulicFractureBreaksWoodAndLeaves(GameTestHelper h) {
         var player=RecipeGameTests.caster(h);BlockPos log=new BlockPos(1,3,5),leaves=log.south();
         h.setBlock(log,Blocks.OAK_LOG);h.setBlock(leaves,Blocks.OAK_LEAVES.defaultBlockState().setValue(net.minecraft.world.level.block.LeavesBlock.PERSISTENT,true));
@@ -66,7 +66,7 @@ public final class MiningGameTests {
         h.assertBlockPresent(Blocks.AIR,log);h.assertBlockPresent(Blocks.AIR,leaves);h.succeed();
     }
 
-    @GameTest(template="empty")
+    @MagicTest
     public static void worldbreakerDestroysBreakableMaterials(GameTestHelper h) {
         var player=RecipeGameTests.caster(h);BlockPos target=new BlockPos(1,3,5);
         for(int x=1;x<=2;x++)for(int y=3;y<=4;y++)for(int z=5;z<=6;z++)
@@ -78,7 +78,7 @@ public final class MiningGameTests {
         h.succeed();
     }
 
-    @GameTest(template="empty")
+    @MagicTest
     public static void driftBoreTracksAngledDescent(GameTestHelper h) {
         var player=RecipeGameTests.caster(h);BlockPos[] line={new BlockPos(2,4,2),new BlockPos(3,3,3),new BlockPos(4,2,4),new BlockPos(5,1,5)};
         for(BlockPos pos:line)h.setBlock(pos,Blocks.STONE);
@@ -88,7 +88,7 @@ public final class MiningGameTests {
         h.succeed();
     }
 
-    @GameTest(template="empty")
+    @MagicTest
     public static void genericMagmaLeavesBurningPoolAndCrustsWater(GameTestHelper h) {
         var player=RecipeGameTests.caster(h);
         var generic=RecipeRegistry.fusion(new SpellFormula(0,0,0,0,0,0,0,0,0,0,0,1));
@@ -122,7 +122,7 @@ public final class MiningGameTests {
         h.assertTrue(FusionRules.terrainReaction(earthSteam.formula())==FusionRules.TerrainReaction.STEAM,"Steam remains a generic element reaction with earth");h.succeed();
     }
 
-    @GameTest(template="empty")
+    @MagicTest
     public static void miningSpellsHaveDistinctReachAndDelivery(GameTestHelper h) {
         var player=RecipeGameTests.caster(h);
         var pick=RecipeGameTests.spell("Thermal Pick");
@@ -139,7 +139,7 @@ public final class MiningGameTests {
         h.succeed();
     }
 
-    @GameTest(template="empty")
+    @MagicTest
     public static void galleryCutterFollowsHitFace(GameTestHelper h) {
         h.assertTrue(MiningMagic.planeAxis(Direction.UP,new Vec3(1,0,0))==Direction.Axis.Y,"Top face selects a horizontal cut");
         h.assertTrue(MiningMagic.planeAxis(Direction.DOWN,new Vec3(1,0,0))==Direction.Axis.Y,"Bottom face selects a horizontal cut");
@@ -148,7 +148,7 @@ public final class MiningGameTests {
         h.succeed();
     }
 
-    @GameTest(template="empty")
+    @MagicTest
     public static void smeltTurnsRawIronIntoIngot(GameTestHelper h) {
         var player=RecipeGameTests.caster(h);BlockPos local=new BlockPos(2,2,2);h.setBlock(local,Blocks.IRON_ORE);
         MiningMagic.mine(player,h.absolutePos(local).getCenter(),"single",1,1,0,1,true,false);
@@ -156,14 +156,14 @@ public final class MiningGameTests {
         h.assertTrue(drops(h,local,Items.IRON_INGOT)==1 && drops(h,local,Items.RAW_IRON)==0,"Ore drop is smelted through its furnace recipe");h.succeed();
     }
 
-    @GameTest(template="empty")
+    @MagicTest
     public static void bulkOnlyLeavesOre(GameTestHelper h) {
         var player=RecipeGameTests.caster(h);BlockPos local=new BlockPos(2,2,2);h.setBlock(local,Blocks.IRON_ORE);
         MiningMagic.mine(player,h.absolutePos(local).getCenter(),"single",1,1,0,1,false,true);
         h.assertBlockPresent(Blocks.IRON_ORE,local);h.succeed();
     }
 
-    @GameTest(template="empty")
+    @MagicTest
     public static void veinMinesConnectedOreWithinBudget(GameTestHelper h) {
         var player=RecipeGameTests.caster(h);BlockPos start=new BlockPos(2,2,2);
         h.setBlock(start,Blocks.IRON_ORE);h.setBlock(start.north(),Blocks.IRON_ORE);h.setBlock(start.north(2),Blocks.IRON_ORE);h.setBlock(start.east(),Blocks.COPPER_ORE);
@@ -172,7 +172,7 @@ public final class MiningGameTests {
         h.assertTrue(broken==2,"Vein respects its block budget");h.assertBlockPresent(Blocks.COPPER_ORE,start.east());h.succeed();
     }
 
-    @GameTest(template="empty")
+    @MagicTest
     public static void protectionAndContainersStopMining(GameTestHelper h) {
         var player=RecipeGameTests.caster(h);BlockPos protectedLocal=new BlockPos(2,2,2),protectedPos=h.absolutePos(protectedLocal),chest=new BlockPos(3,2,2);
         h.setBlock(protectedLocal,Blocks.STONE);h.setBlock(chest,Blocks.CHEST);

@@ -57,8 +57,10 @@ public final class MagicClient {
     private static final KeyMapping BOOK = key("spellbook", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_B);
     private static final KeyMapping SHAPE = key("shape", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_K);
     private static final KeyMapping LOADOUT = key("loadout", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_J);
-    private static final KeyMapping[] QUICK=java.util.stream.IntStream.range(0,4).mapToObj(i->new KeyMapping("key.magicka.quick_"+(i+1),KeyConflictContext.IN_GAME,
-            net.neoforged.neoforge.client.settings.KeyModifier.ALT,InputConstants.Type.KEYSYM,GLFW.GLFW_KEY_1+i,"key.categories.magicka")).toArray(KeyMapping[]::new);
+    private static final KeyMapping HUD_LAYOUT = key("hud_layout", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_H);
+    private static final int[] QUICK_KEYS={GLFW.GLFW_KEY_1,GLFW.GLFW_KEY_2,GLFW.GLFW_KEY_3,GLFW.GLFW_KEY_4,GLFW.GLFW_KEY_5,GLFW.GLFW_KEY_6,GLFW.GLFW_KEY_7,GLFW.GLFW_KEY_8,GLFW.GLFW_KEY_9,GLFW.GLFW_KEY_0,GLFW.GLFW_KEY_MINUS,GLFW.GLFW_KEY_EQUAL};
+    private static final KeyMapping[] QUICK=java.util.stream.IntStream.range(0,QUICK_KEYS.length).mapToObj(i->new KeyMapping("key.magicka.quick_"+(i+1),KeyConflictContext.IN_GAME,
+            net.neoforged.neoforge.client.settings.KeyModifier.ALT,InputConstants.Type.KEYSYM,QUICK_KEYS[i],"key.categories.magicka")).toArray(KeyMapping[]::new);
     private static final KeyMapping[] POTIONS = {key("potion_1", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_Z), key("potion_2", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_X)};
     private static final int WHEEL_TICKS = 6;
     private static final int[] potionHeld = {-1, -1};
@@ -66,6 +68,7 @@ public final class MagicClient {
     public static Component quickKey(int index){return QUICK[index].getTranslatedKeyMessage();}
     public static Component elementKey(Element element) { return ELEMENTS[element.ordinal()].getTranslatedKeyMessage(); }
     public static Component bookKey() { return BOOK.getTranslatedKeyMessage(); }
+    public static Component hudLayoutKey() { return HUD_LAYOUT.getTranslatedKeyMessage(); }
     public static Component toggleKey() { return TOGGLE.getTranslatedKeyMessage(); }
     public static boolean bookMatches(int key, int scan) { return BOOK.matches(key, scan); }
     public static boolean shapeMatches(int key, int scan) { return SHAPE.matches(key, scan); }
@@ -98,7 +101,7 @@ public final class MagicClient {
     }
     public static void openLoadout() { PacketDistributor.sendToServer(new MagicNetwork.Input(14)); }
     public static Component castHint(String intent) {
-        return Component.literal((intent.equals("self") ? "Self: " : "Primary: ")).append(intent.equals("self") ? SELF.getTranslatedKeyMessage() : DIRECTED.getTranslatedKeyMessage());
+        return Component.translatable(intent.equals("self")?"intent.magicka.self":"intent.magicka.directed").append(": ").append(intent.equals("self") ? SELF.getTranslatedKeyMessage() : DIRECTED.getTranslatedKeyMessage());
     }
     private static KeyMapping key(String id, InputConstants.Type type, int code) {
         return new KeyMapping("key.magicka." + id, KeyConflictContext.IN_GAME, type, code, "key.categories.magicka");
@@ -107,9 +110,12 @@ public final class MagicClient {
         var mc = Minecraft.getInstance();
         return mc.player != null && mc.level != null && mc.screen == null && !mc.player.isSpectator();
     }
+    private static boolean hudBookContext(){var mc=Minecraft.getInstance();return mc.player!=null && mc.level!=null && mc.screen instanceof GrimoireScreen;}
+    public static void openHudLayout(){var mc=Minecraft.getInstance();mc.setScreen(null);mc.setScreen(new HudLayoutScreen());}
     private static boolean dispatch(java.util.function.Predicate<KeyMapping> matches) {
+        if(matches.test(HUD_LAYOUT) && hudBookContext()){openHudLayout();return true;}
         if (!playable()) return false;
-        for(int i=0;i<4;i++)if(matches.test(QUICK[i]) && QUICK[i].getKeyModifier().isActive(QUICK[i].getKeyConflictContext())){
+        for(int i=0;i<Math.min(QUICK.length,MagicHudLayout.quickCount());i++)if(matches.test(QUICK[i]) && QUICK[i].getKeyModifier().isActive(QUICK[i].getKeyConflictContext())){
             int formula=BookPreferences.get().slot(i);
             if(formula!=0)PacketDistributor.sendToServer(new MagicNetwork.QuickFill(formula));
             else Minecraft.getInstance().player.displayClientMessage(Component.translatable("hud.magicka.quick_empty",i+1),true);
@@ -118,6 +124,7 @@ public final class MagicClient {
         if (matches.test(BOOK)) { Minecraft.getInstance().setScreen(book()); return true; }
         if (matches.test(SHAPE)) { Minecraft.getInstance().setScreen(new ShapeEditorScreen()); return true; }
         if (matches.test(LOADOUT)) { send(14); return true; }
+        if (matches.test(HUD_LAYOUT)) { openHudLayout(); return true; }
         for (int i = 0; i < POTIONS.length; i++) if (matches.test(POTIONS[i])) { if (potionHeld[i] < 0) potionHeld[i] = 0; return true; }
         if (matches.test(SELF) && Minecraft.getInstance().player.getMainHandItem().is(com.restor.magicka.MagicItems.SPELLBOOK.get())) {
             Minecraft.getInstance().setScreen(book()); return true;
@@ -177,7 +184,7 @@ public final class MagicClient {
     @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.HIGHEST)
     public static void keyboard(InputEvent.Key event) {
         if (event.getAction() == GLFW.GLFW_RELEASE) { release(key -> key.matches(event.getKey(), event.getScanCode())); return; }
-        if (!playable()) return;
+        if (!playable() && !hudBookContext()) return;
         boolean handled = event.getAction() == GLFW.GLFW_PRESS && dispatch(key -> key.matches(event.getKey(), event.getScanCode()));
         boolean repeatedElement = MagicNetwork.clientState.enabled() && java.util.Arrays.stream(ELEMENTS)
                 .anyMatch(key -> key.matches(event.getKey(), event.getScanCode()));
@@ -230,7 +237,7 @@ public final class MagicClient {
         @SubscribeEvent public static void keys(RegisterKeyMappingsEvent event) {
             for (KeyMapping key : ELEMENTS) event.register(key);
             for(KeyMapping key:QUICK)event.register(key);
-            for (KeyMapping key : new KeyMapping[]{TOGGLE, CLEAR, DIRECTED, SELF, AREA, IMBUE, BOOK, SHAPE, LOADOUT}) event.register(key);
+            for (KeyMapping key : new KeyMapping[]{TOGGLE, CLEAR, DIRECTED, SELF, AREA, IMBUE, BOOK, SHAPE, LOADOUT, HUD_LAYOUT}) event.register(key);
             for (KeyMapping key : POTIONS) event.register(key);
         }
         @SubscribeEvent public static void setup(net.neoforged.fml.event.lifecycle.FMLClientSetupEvent event) {
