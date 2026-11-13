@@ -19,10 +19,11 @@ public final class ConfigCommand {
                 .then(Commands.argument("key", StringArgumentType.word())
                         .suggests((c, b) -> { values().keySet().forEach(b::suggest); return b.buildFuture(); })
                         .executes(c -> show(c.getSource(), StringArgumentType.getString(c, "key")))
-                        .then(Commands.argument("value", StringArgumentType.word())
+                        .then(Commands.argument("value", StringArgumentType.greedyString())
                                 .suggests((c, b) -> {
                                     var value = values().get(StringArgumentType.getString(c, "key"));
                                     if (value instanceof ForgeConfigSpec.BooleanValue) { b.suggest("true"); b.suggest("false"); }
+                                    else if(value!=null && value.getDefault() instanceof Enum<?> e)for(Object option:e.getDeclaringClass().getEnumConstants())b.suggest(((Enum<?>)option).name());
                                     else if (value != null) b.suggest(String.valueOf(value.getDefault()));
                                     b.suggest("default");
                                     return b.buildFuture();
@@ -30,9 +31,10 @@ public final class ConfigCommand {
                                 .executes(c -> set(c.getSource(), StringArgumentType.getString(c, "key"), StringArgumentType.getString(c, "value")))));
     }
 
-    static Map<String, ForgeConfigSpec.ConfigValue<?>> values() {
+    public static Map<String, ForgeConfigSpec.ConfigValue<?>> values() {
         Map<String, ForgeConfigSpec.ConfigValue<?>> out = new LinkedHashMap<>();
         MagicConfig.SPEC.getValues().valueMap().forEach((k, v) -> { if (v instanceof ForgeConfigSpec.ConfigValue<?> value) out.put(k, value); });
+        BalanceConfig.SPEC.getValues().valueMap().forEach((k,v)->{if(v instanceof ForgeConfigSpec.ConfigValue<?> value)out.put("balance."+k,value);});
         return out;
     }
 
@@ -54,16 +56,16 @@ public final class ConfigCommand {
         var value = values().get(key);
         if (value == null) { source.sendFailure(Component.translatable("command.magicka.config.unknown", key)); return 0; }
         source.sendSuccess(line(key, value), false);
-        source.sendSuccess(Component.translatable("magicka.configuration." + key + ".tooltip", spec(value).getComment()).withStyle(ChatFormatting.GRAY), false);
+        source.sendSuccess(Component.translatable("magicka.configuration." + key + ".tooltip").withStyle(ChatFormatting.GRAY), false);
         source.sendSuccess(Component.translatable("command.magicka.config.default", String.valueOf(value.getDefault()), allowed(value)).withStyle(ChatFormatting.DARK_GRAY), false);
         return 1;
     }
 
-    private static ForgeConfigSpec.ValueSpec spec(ForgeConfigSpec.ConfigValue<?> value) { return MagicConfig.SPEC.getSpec().get(value.getPath()); }
-
     private static String allowed(ForgeConfigSpec.ConfigValue<?> value) {
         if (value instanceof ForgeConfigSpec.BooleanValue) return "true / false";
-        var range = spec(value).getRange();
+        if(value.getDefault() instanceof Enum<?> e)return java.util.Arrays.toString(e.getDeclaringClass().getEnumConstants());
+        if(value.getDefault() instanceof java.util.List<?>)return "[\"key=value\", \"key=value\"]";
+        var range = SettingsData.spec(value).getRange();
         return range == null ? "" : range.getMin() + " … " + range.getMax();
     }
 
@@ -72,23 +74,25 @@ public final class ConfigCommand {
         var value = (ForgeConfigSpec.ConfigValue<Object>) values().get(key);
         if (value == null) { source.sendFailure(Component.translatable("command.magicka.config.unknown", key)); return 0; }
         Object parsed = text.equalsIgnoreCase("default") ? value.getDefault() : parse(value.getDefault(), text);
-        if (parsed == null || !spec(value).test(parsed)) {
+        if (!SettingsData.valid(key,parsed)) {
             source.sendFailure(Component.translatable("command.magicka.config.invalid", text, key, allowed(value)));
             return 0;
         }
         value.set(parsed);
         value.save();
-        MagicNetwork.sendConfig(source.getServer(), "spellweaver-server.toml");
+        SettingsData.sync();SettingsData.changed(source.getServer(),java.util.Set.of(key));
         source.sendSuccess(Component.translatable("command.magicka.config.set", key, String.valueOf(parsed)), true);
         return 1;
     }
 
-    private static Object parse(Object example, String text) {
+    static Object parse(Object example, String text) {
         try {
             if (example instanceof Boolean) return text.equalsIgnoreCase("true") ? Boolean.TRUE : text.equalsIgnoreCase("false") ? Boolean.FALSE : null;
             if (example instanceof Integer) return Integer.parseInt(text);
             if (example instanceof Double) return Double.parseDouble(text.replace(',', '.'));
-        } catch (NumberFormatException e) {
+            if(example instanceof Enum<?> e)return java.util.Arrays.stream(e.getDeclaringClass().getEnumConstants()).filter(x->((Enum<?>)x).name().equalsIgnoreCase(text)).findFirst().orElse(null);
+            if(example instanceof java.util.List<?>){var result=new java.util.ArrayList<String>();for(var entry:com.google.gson.JsonParser.parseString(text).getAsJsonArray()){if(!entry.isJsonPrimitive()||!entry.getAsJsonPrimitive().isString())return null;result.add(entry.getAsString());}return result;}
+        } catch (RuntimeException e) {
             return null;
         }
         return null;

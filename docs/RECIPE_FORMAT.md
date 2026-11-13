@@ -88,3 +88,8 @@ my_spells/
 Статусы: `wet`, `burning`, `chilled`, `frozen`, `shocked`, `stunned`, `brittle`, `rooted`, `regenerating`, `arcane_unstable`, `stone_shell`, `levitating`, `slow_falling`, `haste`, `obscured`.
 
 Граф выполняется последовательно. Урон одного попадания суммируется перед вызовом Minecraft damage API. Узлы мира исполняются один раз на попадание, а не на каждую сущность. Периодические зоны не создают дочерние зоны/снаряды/конструкции рекурсивно. Глубина вложения ограничена шестью уровнями, число узлов в массиве — 64; активные экземпляры ограничены сервером.
+# Optional casting balance
+
+Recipes can include a `balance` object with `group`, `recovery`, `cooldown`, `mana`,
+`mana_per_second`, `strain`, `strain_per_second`, `active_group` and `active_limit`.
+Server overrides take precedence. See [BALANCE.md](BALANCE.md) for units, defaults and examples.

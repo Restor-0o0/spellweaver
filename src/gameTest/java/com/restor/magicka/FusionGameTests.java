@@ -31,7 +31,7 @@ public final class FusionGameTests {
         Check.assertTrue(h,RecipeRegistry.fusion(of(1,0,0,0,1,0,0,0)).shape() == SpellShape.PROJECTILE, "Earth leads into a heavy projectile");
         Check.assertTrue(h,RecipeRegistry.fusion(of(0,0,0,0,3,0,0,0)).shape() == SpellShape.BURST_PROJECTILE, "Three Earth burst on impact");
         Check.assertTrue(h,RecipeRegistry.fusion(of(0,1,0,2,0,0,0,0)).shape() == SpellShape.CHAIN, "Lightning leads into a chain");
-        Check.assertTrue(h,RecipeRegistry.fusion(of(0,0,0,0,0,1,0,1)).shape() == SpellShape.BEAM, "Life and Death make a beam");
+        Check.assertTrue(h,RecipeRegistry.fusion(of(0,0,0,0,0,1,0,1)).shape() == SpellShape.PROJECTILE, "Life and Death use projectiles");
         Check.assertTrue(h,RecipeRegistry.fusion(of(0,1,2,0,0,0,0,0)).number("fan", 1) > 1, "Cold with Water fans out ice shards");
         Check.assertTrue(h,RecipeRegistry.fusion(of(1,0,0,0,0,0,1,0)).number("radius", 0) > RecipeRegistry.fusion(of(2,0,0,0,0,0,0,0)).number("radius", 0), "Arcane widens the fusion");
         h.succeed();

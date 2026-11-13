@@ -23,7 +23,7 @@ import org.lwjgl.glfw.GLFW;
 
 @Mod.EventBusSubscriber(modid = Magicka.ID, value = Dist.CLIENT)
 public final class MagicClient {
-    static {MagicNetwork.visualReceiver=SpellVisuals::receive;}
+    static {MagicNetwork.visualReceiver=SpellVisuals::receive;MagicNetwork.settingsReceiver=result->{if(Minecraft.getInstance().screen instanceof SpellSettingsScreen screen)screen.accept(result);};}
     public static com.restor.magicka.SpellDefinition spell(com.restor.magicka.SpellFormula formula) { return com.restor.magicka.SpellScrolls.clientResolve(Minecraft.getInstance().player, formula); }
     @SubscribeEvent public static void charms(net.minecraftforge.event.entity.player.ItemTooltipEvent event) {
         CharmItem.describe(event.getItemStack(), event.getToolTip()::add);
@@ -73,6 +73,30 @@ public final class MagicClient {
     public static boolean bookMatches(int key, int scan) { return BOOK.matches(key, scan); }
     public static boolean shapeMatches(int key, int scan) { return SHAPE.matches(key, scan); }
     public static Component loadoutKey() { return LOADOUT.getTranslatedKeyMessage(); }
+    public static void openSettings(net.minecraft.client.gui.screens.Screen parent) {
+        Minecraft.getInstance().setScreen(new SpellSettingsScreen(parent));
+    }
+    private static net.minecraft.client.gui.components.AbstractWidget settingsAnchor, settingsButton;
+    private static boolean labelled(net.minecraft.client.gui.components.events.GuiEventListener listener, String key) {
+        return listener instanceof net.minecraft.client.gui.components.Button button && button.getMessage().getContents() instanceof net.minecraft.network.chat.contents.TranslatableContents text && text.getKey().equals(key);
+    }
+    @SubscribeEvent public static void settingsButton(net.minecraftforge.client.event.ScreenEvent.Init.Post event) {
+        settingsAnchor = settingsButton = null;
+        String key = event.getScreen() instanceof net.minecraft.client.gui.screens.PauseScreen ? "menu.options" : event.getScreen() instanceof net.minecraft.client.gui.screens.OptionsScreen ? "gui.done" : null;
+        if (key == null || Minecraft.getInstance().level == null) return;
+        var anchor = event.getListenersList().stream().filter(l -> labelled(l, key)).map(l -> (net.minecraft.client.gui.components.AbstractWidget) l).findFirst().orElse(null);
+        if (anchor == null) return;
+        Component title = Component.translatable("magicka.configuration.title");
+        var button = new BookWidgets.BookButton(0,0,20,20,Component.literal("⚙"),b->openSettings(event.getScreen()),false).setTooltip(title);
+        settingsAnchor = anchor;
+        settingsButton = button;
+        place();
+        event.addListener(button);
+    }
+    @SubscribeEvent public static void settingsButtonFollow(net.minecraftforge.client.event.ScreenEvent.Render.Pre event) { place(); }
+    private static void place() {
+        if (settingsAnchor != null){settingsButton.x=settingsAnchor.x-24;settingsButton.y=settingsAnchor.y+(settingsAnchor.getHeight()-20)/2;}
+    }
     public static void openLoadout() { MagicNetwork.sendToServer(new MagicNetwork.Input(14)); }
     public static Component castHint(String intent) {
         return Component.translatable(intent.equals("self")?"intent.magicka.self":"intent.magicka.directed").append(": ").append(intent.equals("self") ? SELF.getTranslatedKeyMessage() : DIRECTED.getTranslatedKeyMessage());
@@ -216,6 +240,7 @@ public final class MagicClient {
         }
         @SubscribeEvent public static void screens(net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent event) {
             event.enqueueWork(() -> net.minecraft.client.gui.screens.MenuScreens.register(com.restor.magicka.GearMenu.TYPE.get(), GearScreen::new));
+            net.minecraftforge.fml.ModLoadingContext.get().registerExtensionPoint(net.minecraftforge.client.ConfigScreenHandler.ConfigScreenFactory.class,()->new net.minecraftforge.client.ConfigScreenHandler.ConfigScreenFactory((mc,parent)->new SpellSettingsScreen(parent)));
         }
         @SubscribeEvent public static void layers(RegisterGuiOverlaysEvent event) {
             event.registerAboveAll("casting", (gui, graphics, partial, width, height) -> MagicHud.render(new GuiGraphics(graphics), Math.max(gui.leftHeight, gui.rightHeight)));

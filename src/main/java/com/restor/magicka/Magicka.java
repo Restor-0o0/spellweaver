@@ -26,6 +26,7 @@ public final class Magicka {
         bus.addListener(com.restor.magicka.enemy.MagicEnemies::attributes);
         bus.addListener(com.restor.magicka.enemy.MagicEnemies::placements);
         MagicNetwork.register();
+        bus.addListener(SettingsData::loaded);
         bus.addListener(Elementals::attributes);
         MinecraftForge.EVENT_BUS.addListener(Elementals::stop);
         MinecraftForge.EVENT_BUS.addListener(LegendMagic::join);
@@ -34,6 +35,8 @@ public final class Magicka {
         MinecraftForge.EVENT_BUS.addListener(LegendLife::death);
         MinecraftForge.EVENT_BUS.addListener(LegendLife::soulShield);
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, MagicConfig.SPEC, "spellweaver-server.toml");
+        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER,BalanceConfig.SPEC,"spellweaver-balance.toml");
+        MinecraftForge.EVENT_BUS.register(new SpellBalance());
         MinecraftForge.EVENT_BUS.register(new CastingServer());
         MinecraftForge.EVENT_BUS.register(new CastModes());
         MinecraftForge.EVENT_BUS.register(new MagicStats());
