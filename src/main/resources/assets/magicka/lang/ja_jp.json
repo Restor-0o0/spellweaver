@@ -2770,5 +2770,7 @@
   "settings.magicka.command_set": "このドラフトから値を設定します",
   "settings.magicka.command_reset": "デフォルト値を復元します",
   "settings.magicka.copy": "コピー",
-  "settings.magicka.copied": "コピーしました"
+  "settings.magicka.copied": "コピーしました",
+  "book.magicka.open_cover": "本を開く",
+  "book.magicka.close_cover": "本を閉じる"
 }

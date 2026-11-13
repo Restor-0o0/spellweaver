@@ -41,8 +41,10 @@ public final class GrimoireScreen extends Screen {
     private static final int TEXT=0,HEADING=1,BULLET=2,MORE=3;
     private int x,y,bookX,bookWidth,bookHeight,half,spine,frameX,frameWidth,panelX,page,elements,ticks,spellPage,catalogRevision=-1;
     private float clock,camFrom,camTo,camStart=-100;
+    private float coverFrom,coverStart=OPEN_IN;
     private String query="",tag="all",restoreId="";
     private boolean single,laidOut;
+    private boolean coverClosed;
     private EditBox search;
     private List<SpellDefinition> catalog=List.of();
     private List<Integer> matches=List.of();
@@ -223,7 +225,20 @@ public final class GrimoireScreen extends Screen {
         for(int p:matches)if(single?(dir>0?p>page:p<page):(dir>0?p/2>page/2:p/2<page/2)){if(dir<0 || best==page){best=p;if(dir>0)break;}}
         return best==page && dir<0 && page>=front()?(single?front()-1:front()-2):best;
     }
-    private void step(int dir){int target=next(dir);if(target!=page)go(target);}
+    private boolean firstSpread(){return single?page==0:page/2==0;}
+    private float openness(float time){float t=Math.clamp((time-coverStart)/OPEN_TURN,0,1);return coverFrom+((coverClosed?0:1)-coverFrom)*t;}
+    private void cover(boolean closed){
+        if(coverClosed==closed)return;
+        coverFrom=openness(clock);coverStart=clock;coverClosed=closed;from=null;dragFormula=0;dragging=false;
+        if(closed)page=0;setFocused(null);
+        minecraft.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(net.minecraft.sounds.SoundEvents.BOOK_PAGE_TURN,1F));
+        rebuild(false);
+    }
+    private void step(int dir){
+        if(coverClosed){if(dir>0)cover(false);return;}
+        if(dir<0&&firstSpread()){cover(true);return;}
+        int target=next(dir);if(target!=page)go(target);
+    }
     private int firstFrom(int p){for(int m:matches)if(m>=p)return m;return matches.isEmpty()?p:matches.get(0);}
     private void refilter(Runnable change){
         View before=current();int was=page;
@@ -256,7 +271,12 @@ public final class GrimoireScreen extends Screen {
     private SpellDefinition shown(){return spellOn(page);}
 
     private void rebuild(boolean focus){
-        clearWidgets();
+        clearWidgets();statWidgets.clear();statRows.clear();
+        if(coverClosed){
+            mark(0,"×",null,b->onClose(),false);
+            var open=addRenderableWidget(new RuneButton((width+half)/2-23,y+bookHeight-23,14,14,Component.literal("▶"),b->cover(false),false));
+            open.setTooltip(Tooltip.create(Component.translatable("book.magicka.open_cover")));return;
+        }
         for(int i=0;i<TAGS.length;i++){String value=TAGS[i];
             addRenderableWidget(new TagButton(panelX+3+i%4*21,tagsY()+i/4*18,19,16,i,Component.translatable("book.magicka.tag."+value),b->refilter(()->tag=tag.equals(value)?"all":value),tag.equals(value)));}
         var spell=shown();
@@ -284,9 +304,9 @@ public final class GrimoireScreen extends Screen {
         var hudButton=addRenderableWidget(new RuneButton(panelX+4,hudButtonY,PANEL-8,14,Component.literal("HUD"),b->MagicClient.openHudLayout(),false));
         hudButton.setTooltip(Tooltip.create(Component.translatable("book.magicka.hud_layout_hint",MagicClient.hudLayoutKey())));
         int arrowY=y+bookHeight-23;
-        addRenderableWidget(new RuneButton(frameX+9,arrowY,14,14,Component.literal("◀"),b->step(-1),false)).active=next(-1)!=page;
+        var back=addRenderableWidget(new RuneButton(frameX+9,arrowY,14,14,Component.literal("◀"),b->step(-1),false));back.active=firstSpread()||next(-1)!=page;
+        if(firstSpread())back.setTooltip(Tooltip.create(Component.translatable("book.magicka.close_cover")));
         addRenderableWidget(new RuneButton(frameX+frameWidth-23,arrowY,14,14,Component.literal("▶"),b->step(1),false)).active=next(1)!=page;
-        statWidgets.clear();statRows.clear();
         if(onStats())for(int side=0;side<2;side++)if(!single || side==page%2)statControls(side);
     }
     private void statControls(int side){
@@ -342,23 +362,25 @@ public final class GrimoireScreen extends Screen {
         View now=current();
         float elapsed=time-flipStart;int length=LEAF+STAGGER*(leaves-1);
         if(from!=null && elapsed>=length)from=null;
-        float shut=single?-half/2f:0,open=Math.clamp((time-OPEN_IN)/OPEN_TURN,0,1);
-        float cam=time<OPEN_IN+OPEN_TURN?shut+(camTo-shut)*open*open*(3-2*open):camera(time);
+        float shut=width/2f-bookX-half*1.5f,open=openness(time);
+        float cam=shut+(camera(time)-shut)*open*open*(3-2*open);
         x=bookX+Math.round(cam);spine=x+half;
-        if(time<OPEN_IN)closed(g,time/OPEN_IN);
-        else if(time<OPEN_IN+OPEN_TURN)opening(g,now,(time-OPEN_IN)/OPEN_TURN);
+        if(time<OPEN_IN&&coverStart==OPEN_IN)closed(g,time/OPEN_IN);
+        else if(open<=0)closedBook(g);
+        else if(open<1)opening(g,now,open);
         else{
             boards(g,0);boards(g,1);
             if(from==null){page(g,now,leftPage(page/2),0);page(g,now,rightPage(page/2),1);}
             else flipping(g,now,elapsed);
             g.fill(spine-1,y+3,spine+1,y+bookHeight-3,0xFF2A1A18);
         }
-        boolean settled=from==null && time>=OPEN_IN+OPEN_TURN && Math.abs(cam-camTo)<.5f;
+        boolean settled=from==null && open>=1 && Math.abs(cam-camTo)<.5f;
         for(var widget:statWidgets)widget.visible=settled;
-        panel(g,now,mouseX,mouseY,time);
+        if(!coverClosed)panel(g,now,mouseX,mouseY,time);
         super.extractRenderState(g,mouseX,mouseY,partialTick);
         if(dragging && dragFormula!=0){g.pose().pushMatrix();g.nextStratum();var f=Formula.unpack(dragFormula);for(int i=0;i<f.size();i++)MagicUi.socket(g,f.elements().get(i),mouseX+5+i*26,mouseY-12,true);g.pose().popMatrix();return;}
-        if(slotAt(mouseX,mouseY)>=0)g.setTooltipForNextFrame(font,Component.translatable("book.magicka.quick_help"),mouseX,mouseY);
+        if(!coverClosed&&slotAt(mouseX,mouseY)>=0)g.setTooltipForNextFrame(font,Component.translatable("book.magicka.quick_help"),mouseX,mouseY);
+        if(coverClosed&&overCover(mouseX,mouseY))g.setTooltipForNextFrame(font,Component.translatable("book.magicka.open_cover"),mouseX,mouseY);
         if(settled)for(var row:statRows)if(mouseX>=row.x && mouseX<row.x+row.width && mouseY>=row.y && mouseY<row.y+16)
             g.setTooltipForNextFrame(font,font.split(Component.translatable("book.magicka.stat."+row.stat.key()+".desc",row.stat.min,row.stat.max),220),mouseX,mouseY);
     }
@@ -616,10 +638,12 @@ public final class GrimoireScreen extends Screen {
     private int slotY(int i){return y+24+i*24;}
     private int slotAt(double mx,double my){for(int i=0;i<4;i++)if(mx>=slotX(i) && mx<slotX(i)+slotWidth() && my>=slotY(i) && my<slotY(i)+20)return i;return -1;}
     private boolean overBook(double mx,double my){return mx>=frameX && mx<frameX+frameWidth && my>=y && my<y+bookHeight;}
+    private boolean overCover(double mx,double my){return mx>=spine-7&&mx<x+bookWidth+3&&my>=y&&my<y+bookHeight;}
     private int pageUnder(double mx){return single?page:mx<spine?leftPage(page/2):rightPage(page/2);}
     private void assign(int slot,int packed){BookPreferences.get().assign(slot,packed);remember();BookPreferences.save();}
 
     @Override public boolean mouseClicked(MouseButtonEvent event,boolean doubleClick){double mx=event.x(),my=event.y();int button=event.button();
+        if(coverClosed){if(super.mouseClicked(event,doubleClick))return true;if(button==0&&overCover(mx,my)){cover(false);return true;}return false;}
         int slot=slotAt(mx,my);var spell=shown();
         if(slot>=0){if(button==1)assign(slot,0);else if(button==0 && spell!=null)assign(slot,spell.spokenPacked());return true;}
         dragFormula=0;

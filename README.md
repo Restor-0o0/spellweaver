@@ -115,6 +115,7 @@ Modpack makers can extend this with entity type tags:
 | Right click | Cast on yourself |
 | V | Clear the formula |
 | B | Open the Grimoire |
+| Back from the first book spread | Close the cover for inspection; turn forward or click the cover to reopen |
 | Alt + 1–4 | Fill a formula from a quick slot |
 | K | Shape editor |
 | J | Loadout (gear and potion belt) |
