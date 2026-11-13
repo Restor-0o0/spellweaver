@@ -1,6 +1,7 @@
 # Settings application audit
 
-Target: Minecraft 1.21.1, NeoForge 21.1.250.
+Targets: Forge 1.19.2/1.20.1 and NeoForge 1.21.1/26.1/26.2/26.3.
+The 1.21.1 reference environment uses NeoForge 21.1.250.
 
 The screen exposes 82 server settings: 45 general settings and 37 balance settings.
 Every setting has a consumer in casting, progression, world effects, loot or the HUD.
@@ -59,3 +60,21 @@ per setting and the exact config file that was saved. Tests restore their starti
 
 This verifies every option's mutation and persistence, plus focused behavioral cases.
 It does not exhaust every combination of settings, spell recipes, other mods or loaders.
+
+## Check persistence across separate server processes
+
+Run these commands from the selected version's checkout:
+
+```bat
+gradlew.bat runGameTestServer --max-workers=2 -PsettingsPersistence=write
+gradlew.bat runGameTestServer --max-workers=2 -PsettingsPersistence=read
+```
+
+For the 1.21.1 reference checkout, also pass `-Pneo_version=21.1.250`.
+The write phase saves alternate valid values for all 82 options at server shutdown.
+The read phase checks the actual loaded values in a new JVM before test defaults run,
+then restores the starting values. Look for `SETTINGS_PERSISTENCE_WRITTEN: 82` and
+`SETTINGS_RELOAD_OK: 82` in the respective logs. The probe journal is
+`run/settings-persistence-probe.json`; it is only used when this test property is set.
+Forge keeps the test world's config files for the read phase and runs the tests on a
+different site in that world so existing test constructions do not interfere.

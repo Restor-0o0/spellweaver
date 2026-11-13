@@ -169,7 +169,9 @@ For example, `/spellweaver config instantCast false` brings back cast times for 
 `/spellweaver config mageLevels false` with `/spellweaver config unlockAllSpells true` opens all five
 elements and every spell from the start.
 
-**In the file.** On NeoForge 21.1.250, new settings are created in `config/spellweaver-server.toml`
+**In the file.** Forge 1.19.2/1.20.1 uses `saves/<world>/serverconfig/`
+(dedicated server: `world/serverconfig/`). NeoForge 26.3 uses `config/` for synced settings.
+On NeoForge 21.1.250, new settings are created in `config/spellweaver-server.toml`
 inside the game/server directory. An existing `saves/<world>/serverconfig/spellweaver-server.toml`
 (dedicated server: `world/serverconfig/`) overrides the shared file for that world. Older
 NeoForge versions can create world-specific files directly. Every option has a comment.

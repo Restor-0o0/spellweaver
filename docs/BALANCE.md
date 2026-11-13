@@ -1,10 +1,15 @@
 # Spell balance
 
-The experimental balance system is currently implemented for Minecraft 1.21.1 / NeoForge
-21.1.250. Settings belong to the server and apply equally to manual casting and quick slots.
+The balance system is available on Minecraft 1.19.2, 1.20.1, 1.21.1, 26.1, 26.2 and 26.3.
+Settings belong to the server and apply equally to manual casting and quick slots.
 No recipe-by-recipe group assignment is needed.
 
 ## Modes
+
+On Forge 1.19.2/1.20.1, use `saves/<world>/serverconfig/spellweaver-balance.toml`
+(dedicated server: `world/serverconfig/`). On these Forge versions, external file edits
+require a world/server restart; in-game Apply and commands work immediately.
+NeoForge 26.3 stores synced settings in `config/spellweaver-balance.toml`.
 
 On NeoForge 21.1.250, new files are created in `config/spellweaver-balance.toml`
 inside the game or dedicated-server directory. An existing

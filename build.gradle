@@ -75,6 +75,7 @@ neoForge {
         // The gametest system is also enabled by default for other run configs under the /test command.
         gameTestServer {
             type = "gameTestServer"
+            systemProperty 'magicka.settingsPersistence', project.findProperty('settingsPersistence') ?: ''
             systemProperty 'magicka.secret', 'true'
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }

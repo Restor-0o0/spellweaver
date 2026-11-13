@@ -19,7 +19,7 @@ public final class SettingsApplicationGameTests {
         void update(String key,Object value){update(Map.of(key,value));}
         @SuppressWarnings("unchecked") @Override public void close(){previous.forEach((k,v)->((ModConfigSpec.ConfigValue<Object>)values.get(k)).set(v));MagicConfig.CONSTRUCTION.save();BalanceConfig.MODE.save();SettingsData.changed(h.getLevel().getServer(),previous.keySet());}
     }
-    private static Object alternate(String key,ModConfigSpec.ConfigValue<?> value){
+    static Object alternate(String key,ModConfigSpec.ConfigValue<?> value){
         Object original=value.get();if(original instanceof Boolean b)return !b;
         if(original instanceof Enum<?> e){Object[] constants=e.getDeclaringClass().getEnumConstants();return constants[(e.ordinal()+1)%constants.length];}
         if(original instanceof Integer n){var range=value.getSpec().getRange();return n<((Number)range.getMax()).intValue()?n+1:n-1;}
