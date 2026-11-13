@@ -2770,5 +2770,7 @@
   "settings.magicka.command_set": "Defina o valor deste rascunho",
   "settings.magicka.command_reset": "Restaurar o valor padrão",
   "settings.magicka.copy": "Copiar",
-  "settings.magicka.copied": "Copiado"
+  "settings.magicka.copied": "Copiado",
+  "book.magicka.open_cover": "Abrir livro",
+  "book.magicka.close_cover": "Fechar o livro"
 }
