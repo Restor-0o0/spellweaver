@@ -53,9 +53,9 @@ public final class WorldMagic {
         }
     }
     public static void magmaGround(ServerPlayer player,Vec3 point,double radius,int duration) {
-        if(!MagicConfig.TERRAIN_DAMAGE.get())return;
-        var world=player.serverLevel();BlockPos center=BlockPos.containing(point);double reach=Mth.clamp(radius,.5,8),squared=reach*reach;
-        int extent=(int)Math.ceil(reach);long expires=world.getGameTime()+Mth.clamp(duration,20,1200);
+        if(!MagicConfig.TERRAIN_DAMAGE.get()||!MagicConfig.CONSTRUCTION.get())return;
+        var world=player.serverLevel();BlockPos center=BlockPos.containing(point);double reach=net.minecraft.util.Mth.clamp(radius,.5,8),squared=reach*reach;
+        int extent=(int)Math.ceil(reach);long expires=world.getGameTime()+net.minecraft.util.Mth.clamp(duration,20,1200);
         for(int dx=-extent;dx<=extent;dx++)for(int dz=-extent;dz<=extent;dz++){
             if(dx*dx+dz*dz>squared)continue;
             boolean water=false;
@@ -80,8 +80,8 @@ public final class WorldMagic {
         }
     }
     public static void magmaCrust(ServerPlayer player,Vec3 point,double radius) {
-        if(!MagicConfig.TERRAIN_DAMAGE.get())return;
-        var world=player.serverLevel();BlockPos center=BlockPos.containing(point);double reach=Mth.clamp(radius,.5,8),squared=reach*reach;
+        if(!MagicConfig.TERRAIN_DAMAGE.get()||!MagicConfig.CONSTRUCTION.get())return;
+        var world=player.serverLevel();BlockPos center=BlockPos.containing(point);double reach=net.minecraft.util.Mth.clamp(radius,.5,8),squared=reach*reach;
         int extent=(int)Math.ceil(reach);
         for(int dx=-extent;dx<=extent;dx++)for(int dz=-extent;dz<=extent;dz++){
             if(dx*dx+dz*dz>squared)continue;

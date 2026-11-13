@@ -114,7 +114,7 @@ public final class MagicBlocks {
         public void initialize(UUID owner, UUID construction, BlockPos root, long expires, boolean floating) {
             this.owner = owner; this.construction = construction; this.root = root.immutable();
             this.expires = expires; this.floating = floating; setChanged();
-            material=getBlockState().is(MAGMA_PUDDLE.get())?"magma":getBlockState().is(ICE.get())?"ice":getBlockState().is(ROOT.get())?"root":getBlockState().is(ARCANE.get())?"arcane":getBlockState().is(LIGHT.get())?"light":getBlockState().is(GLOW.get())?"glowstone":getBlockState().is(COPPER.get()) || getBlockState().is(COIL.get())?"copper":"earth";
+            material=getBlockState().is(PUDDLE.get())?"water":getBlockState().is(ICE.get())?"ice":getBlockState().is(ROOT.get())?"root":getBlockState().is(ARCANE.get())?"arcane":getBlockState().is(MAGMA_PUDDLE.get())?"magma":getBlockState().is(LIGHT.get())?"light":getBlockState().is(GLOW.get())?"glowstone":getBlockState().is(COPPER.get()) || getBlockState().is(COIL.get())?"copper":"earth";
         }
         private void tick(ServerLevel world) {
             if (integrity <= 0) { world.removeBlock(worldPosition, false); return; }
@@ -126,7 +126,7 @@ public final class MagicBlocks {
                 }
                 heat=Math.max(0,heat-10);setChanged();
             }
-            if (world.getGameTime() >= expires && !MagicConfig.permanent(material)) { world.removeBlock(worldPosition, false); return; }
+            if (MagicConfig.LIFETIME.get() && world.getGameTime() >= expires && !MagicConfig.permanent(material)) { world.removeBlock(worldPosition, false); return; }
             if (world.getGameTime() % 10 != 0 || floating || !MagicConfig.COLLAPSE.get() || root.equals(worldPosition)) return;
             // Never force-load the root chunk just to check its support.
             if (world.hasChunkAt(root) && (!(world.getBlockEntity(root) instanceof MagicBlockEntity anchor)

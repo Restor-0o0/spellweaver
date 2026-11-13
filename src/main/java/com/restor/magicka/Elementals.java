@@ -61,6 +61,7 @@ public final class Elementals {
         if (at == null || !WorldPlacement.allowed(p, BlockPos.containing(at))) { mob.discard(); return; }
         mob.moveTo(at.x, at.y + (mob.flyer() ? .8 : 0), at.z, p.getYRot(), 0);
         if (!level.addFreshEntity(mob)) return;
+        SpellRuntime.track(p,mob);
         Deque<Elemental> owned = OWNED.computeIfAbsent(p.getUUID(), k -> new ArrayDeque<>());
         owned.removeIf(m -> !m.isAlive());
         owned.addLast(mob);

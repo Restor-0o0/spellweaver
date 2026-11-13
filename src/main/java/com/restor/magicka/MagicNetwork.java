@@ -17,6 +17,18 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public final class MagicNetwork {
+    public record SettingsUpdate(int request,String json) implements Packet {
+        public static final Codec<SettingsUpdate> CODEC=Codec.of((b,v)->{b.writeVarInt(v.request);b.writeUtf(v.json,32767);},b->new SettingsUpdate(b.readVarInt(),b.readUtf(32767)));
+    }
+    public record SettingsResult(int request,boolean success,String reason,String detail) implements Packet {
+        public static final Codec<SettingsResult> CODEC=Codec.of((b,v)->{b.writeVarInt(v.request);b.writeBoolean(v.success);b.writeUtf(v.reason,32);b.writeUtf(v.detail,128);},b->new SettingsResult(b.readVarInt(),b.readBoolean(),b.readUtf(32),b.readUtf(128)));
+    }
+    public static java.util.function.Consumer<SettingsResult> settingsReceiver=v->{};
+    public record Balance(boolean visible,int waitTicks,float mana,float manaMax,float strain,float strainMax) implements Packet {
+        public static final Balance EMPTY=new Balance(false,0,-1,0,-1,0);
+        public static final Codec<Balance> CODEC=Codec.of((b,v)->{b.writeBoolean(v.visible);b.writeVarInt(v.waitTicks);b.writeFloat(v.mana);b.writeFloat(v.manaMax);b.writeFloat(v.strain);b.writeFloat(v.strainMax);},b->new Balance(b.readBoolean(),b.readVarInt(),b.readFloat(),b.readFloat(),b.readFloat(),b.readFloat()));
+    }
+    public static Balance clientBalance=Balance.EMPTY;
     public record Visual(int kind,int formula,net.minecraft.world.phys.Vec3 from,net.minecraft.world.phys.Vec3 to,float radius,int ticks,int anchor) implements Packet {
         public static final Codec<Visual> CODEC=Codec.of((b,v)->{b.writeVarInt(v.kind);b.writeVarInt(v.formula);b.writeDouble(v.from.x);b.writeDouble(v.from.y);b.writeDouble(v.from.z);b.writeDouble(v.to.x);b.writeDouble(v.to.y);b.writeDouble(v.to.z);b.writeFloat(v.radius);b.writeVarInt(v.ticks);b.writeVarInt(v.anchor+1);},
                 b->new Visual(b.readVarInt(),b.readVarInt(),new net.minecraft.world.phys.Vec3(b.readDouble(),b.readDouble(),b.readDouble()),new net.minecraft.world.phys.Vec3(b.readDouble(),b.readDouble(),b.readDouble()),b.readFloat(),b.readVarInt(),b.readVarInt()-1));
@@ -91,7 +103,7 @@ public final class MagicNetwork {
     public static int[] clientGear=new int[MagicStats.COUNT];
     private static final java.util.List<String> catalogBuffer=new java.util.ArrayList<>();
     public static final java.util.Map<Integer,Integer> clientStatuses=new java.util.HashMap<>();
-    public static void clearClient(){clientState=new State(false,0,0,0,0,0,false,false);clientQueue=new QueueState(0,0);catalogBuffer.clear();clientStatuses.clear();clientShapes.clear();clientConstruction=null;clientLocks=0;clientLocksUntil=0;clientStats=MagicStats.defaults();clientGear=new int[MagicStats.COUNT];clientPattern=ShapePattern.defaults();RecipeRegistry.resetClient();SpellScrolls.acceptClient(false,java.util.List.of());MageLevel.acceptClient(0);PotionBelt.clearClient();}
+    public static void clearClient(){clientBalance=Balance.EMPTY;clientState=new State(false,0,0,0,0,0,false,false);clientQueue=new QueueState(0,0);catalogBuffer.clear();clientStatuses.clear();clientShapes.clear();clientConstruction=null;clientLocks=0;clientLocksUntil=0;clientStats=MagicStats.defaults();clientGear=new int[MagicStats.COUNT];clientPattern=ShapePattern.defaults();RecipeRegistry.resetClient();SpellScrolls.acceptClient(false,java.util.List.of());MageLevel.acceptClient(0);PotionBelt.clearClient();}
     public static void construction(ServerPlayer player, java.util.UUID id, int placed, int remaining){
         Formula formula=Formula.unpack(CastingServer.snapshot(player).formula());
         if(!formula.empty()) CastingServer.construction(player,Math.max(0,MagicStats.resolve(player,formula.key()).budget()-remaining));
@@ -110,6 +122,9 @@ public final class MagicNetwork {
     /** Contains no client classes, so the payload handler is safe on dedicated servers. */
     public static State clientState = new State(false, 0, 0, 0, 0, 0, false, false);
     public static void register() {
+        toServer(SettingsUpdate.class,SettingsUpdate.CODEC,(packet,player)->SettingsData.apply(player,packet));
+        toClient(SettingsResult.class,SettingsResult.CODEC,packet->settingsReceiver.accept(packet));
+        toClient(Balance.class,Balance.CODEC,packet->clientBalance=packet);
         toClient(Visual.class,Visual.CODEC,packet->visualReceiver.accept(packet));
         toServer(QuickFill.class,QuickFill.CODEC,(packet,p)->{CastingServer.quickFill(p,packet.formula);});
         toClient(Locks.class,Locks.CODEC,packet->{clientLocks=packet.mask;clientLocksUntil=System.currentTimeMillis()+packet.ticks*50L;});
@@ -154,7 +169,7 @@ public final class MagicNetwork {
     public record Codec<T>(BiConsumer<FriendlyByteBuf,T> writer, Function<FriendlyByteBuf,T> reader) {
         public static <T> Codec<T> of(BiConsumer<FriendlyByteBuf,T> writer, Function<FriendlyByteBuf,T> reader) { return new Codec<>(writer,reader); }
     }
-    private static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(new ResourceLocation(Magicka.ID,"main"),()->"12","12"::equals,"12"::equals);
+    private static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(new ResourceLocation(Magicka.ID,"main"),()->"14","14"::equals,"14"::equals);
     private static int nextId;
     private static <T extends Packet> void toClient(Class<T> type, Codec<T> codec, Consumer<T> handler) {
         CHANNEL.messageBuilder(type,nextId++,NetworkDirection.PLAY_TO_CLIENT).encoder((T v,FriendlyByteBuf b)->codec.writer().accept(b,v)).decoder(codec.reader())

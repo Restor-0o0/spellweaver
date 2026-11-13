@@ -39,8 +39,9 @@ public final class MagicStats {
     public static double power(Player player,Stat stat){return MagicGear.total(player)[stat.ordinal()]/100.0;}
     public static void reset(ServerPlayer player){player.getPersistentData().remove(TAG);CACHE.remove(player.getUUID());sync(player);}
     public static void invalidate(ServerPlayer player){CACHE.remove(player.getUUID());sync(player);}
+    static void clearCache(){CACHE.clear();}
     public static void sync(ServerPlayer player){MagicNetwork.sendToPlayer(player,new MagicNetwork.Stats(get(player),MagicGear.deltas(player)));}
-    public static int minionCap(ServerPlayer owner){int[] v=MagicGear.total(owner);return (int)Mth.clamp(Math.round(MagicConfig.MAX_MINIONS.get()*Math.max(1,v[Stat.SUMMONS.ordinal()]/100.0*v[Stat.DEATH.ordinal()]/100.0)),1,512);}
+    public static int minionCap(ServerPlayer owner){int[] v=MagicGear.total(owner);return (int)net.minecraft.util.Mth.clamp(Math.round(MagicConfig.MAX_MINIONS.get()*Math.max(1,v[Stat.SUMMONS.ordinal()]/100.0*v[Stat.DEATH.ordinal()]/100.0)),1,512);}
 
     public static SpellDefinition resolve(ServerPlayer player,SpellFormula key){return apply(player,SpellScrolls.resolve(player,RecipeRegistry.resolve(MagicGear.transmute(player,key))));}
     public static SpellDefinition apply(ServerPlayer player,SpellDefinition base){
