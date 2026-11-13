@@ -77,25 +77,41 @@ public final class MagicClient {
         Minecraft.getInstance().setScreen(new SpellSettingsScreen(parent));
     }
     private static net.minecraft.client.gui.components.AbstractWidget settingsAnchor, settingsButton;
+    private static net.minecraft.client.gui.screens.Screen settingsScreen;
+    private static SettingsButtonPlacement settingsPlacement=new SettingsButtonPlacement();
     private static boolean labelled(net.minecraft.client.gui.components.events.GuiEventListener listener, String key) {
         return listener instanceof net.minecraft.client.gui.components.Button button && button.getMessage().getContents() instanceof net.minecraft.network.chat.contents.TranslatableContents text && text.getKey().equals(key);
     }
-    @SubscribeEvent public static void settingsButton(net.minecraftforge.client.event.ScreenEvent.Init.Post event) {
-        settingsAnchor = settingsButton = null;
+    @SubscribeEvent(priority=net.minecraftforge.eventbus.api.EventPriority.LOWEST) public static void settingsButton(net.minecraftforge.client.event.ScreenEvent.Init.Post event) {
+        settingsAnchor = settingsButton = null;settingsScreen=null;settingsPlacement=new SettingsButtonPlacement();
         String key = event.getScreen() instanceof net.minecraft.client.gui.screens.PauseScreen ? "menu.options" : event.getScreen() instanceof net.minecraft.client.gui.screens.OptionsScreen ? "gui.done" : null;
         if (key == null || Minecraft.getInstance().level == null) return;
         var anchor = event.getListenersList().stream().filter(l -> labelled(l, key)).map(l -> (net.minecraft.client.gui.components.AbstractWidget) l).findFirst().orElse(null);
         if (anchor == null) return;
         Component title = Component.translatable("magicka.configuration.title");
         var button = new BookWidgets.BookButton(0,0,20,20,Component.literal("⚙"),b->openSettings(event.getScreen()),false).setTooltip(title);
+        settingsScreen=event.getScreen();
         settingsAnchor = anchor;
         settingsButton = button;
-        place();
+        place(event.getScreen());
         event.addListener(button);
     }
-    @SubscribeEvent public static void settingsButtonFollow(net.minecraftforge.client.event.ScreenEvent.Render.Pre event) { place(); }
-    private static void place() {
-        if (settingsAnchor != null){settingsButton.x=settingsAnchor.x-24;settingsButton.y=settingsAnchor.y+(settingsAnchor.getHeight()-20)/2;}
+    @SubscribeEvent(priority=net.minecraftforge.eventbus.api.EventPriority.LOWEST) public static void settingsButtonFollow(net.minecraftforge.client.event.ScreenEvent.Render.Pre event) { place(event.getScreen()); }
+    private static SettingsButtonPlacement.Rect widgetBounds(net.minecraft.client.gui.components.AbstractWidget widget){return new SettingsButtonPlacement.Rect(widget.x,widget.y,widget.getWidth(),widget.getHeight());}
+    private static void settingsObstacles(net.minecraft.client.gui.components.events.GuiEventListener listener,java.util.List<SettingsButtonPlacement.Rect> obstacles,java.util.Set<net.minecraft.client.gui.components.events.GuiEventListener> seen){
+        if(listener==settingsButton||!seen.add(listener))return;
+        if(listener instanceof net.minecraft.client.gui.components.AbstractWidget widget){
+            if(widget.visible){var rect=widgetBounds(widget);if(rect.width()>0&&rect.height()>0&&rect.x()<settingsScreen.width&&rect.y()<settingsScreen.height&&rect.x()+rect.width()>0&&rect.y()+rect.height()>0)obstacles.add(rect);}return;
+        }
+        if(listener instanceof net.minecraft.client.gui.components.events.ContainerEventHandler container)for(var child:container.children())settingsObstacles(child,obstacles,seen);
+    }
+    private static void place(net.minecraft.client.gui.screens.Screen screen) {
+        if(screen!=settingsScreen||settingsAnchor==null||settingsButton==null)return;
+        if(!settingsAnchor.visible){settingsButton.visible=false;return;}
+        var obstacles=new java.util.ArrayList<SettingsButtonPlacement.Rect>();var seen=java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<net.minecraft.client.gui.components.events.GuiEventListener,Boolean>());
+        for(var child:screen.children())settingsObstacles(child,obstacles,seen);
+        var point=settingsPlacement.place(screen.width,screen.height,widgetBounds(settingsAnchor),obstacles);settingsButton.visible=point!=null;
+        if(point!=null){settingsButton.x=point.x();settingsButton.y=point.y();}
     }
     public static void openLoadout() { MagicNetwork.sendToServer(new MagicNetwork.Input(14)); }
     public static Component castHint(String intent) {

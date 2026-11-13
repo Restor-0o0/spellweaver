@@ -137,7 +137,8 @@ Every feature can be tuned or switched off. Don't like mage levels, scrolls from
 spells that break blocks? Turn them off. There are four ways.
 
 **In game.** Press Esc and click the book icon next to *Options…* (it is also next to *Done* in the
-Options screen), or go to *Mods → Spellweaver → Config*. The custom settings screen uses
+Options screen), or go to *Mods → Spellweaver → Config*. The menu shortcut finds free space around other widgets
+and follows menu changes. If no free position exists, it hides; the Mods entry remains available. The custom settings screen uses
 Spellweaver's dark panels, brass accents and elemental icons. Choose a category on the left,
 or search translated option names and config keys. Hover an option for its full description
 and default. Lists have a separate editor with add/remove controls. Changes stay in a draft
