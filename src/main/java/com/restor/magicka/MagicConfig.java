@@ -59,7 +59,7 @@ public final class MagicConfig {
         @Override public net.minecraft.network.chat.Component getTranslatedName() { return net.minecraft.network.chat.Component.translatable("magicka.configuration.selfHarm."+name().toLowerCase(java.util.Locale.ROOT)); }
     }
     public static boolean selfHarm() { return SELF_HARM.get() != SelfHarm.OFF; }
-    public static float selfHarmScale() { return SELF_HARM.get() == SelfHarm.SCALED ? SELF_HARM_MULTIPLIER.get().floatValue() : 1; }
+    public static float selfHarmScale() { return switch(SELF_HARM.get()){case FULL->1;case SCALED->SELF_HARM_MULTIPLIER.get().floatValue();case OFF->0;}; }
     public static boolean permanent(String material) {
         return switch(material) { case "earth" -> PERMANENT_EARTH.get(); case "root" -> PERMANENT_ROOTS.get(); case "light", "glowstone" -> true; default -> false; };
     }

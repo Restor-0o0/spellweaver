@@ -26,6 +26,7 @@ public final class Magicka {
         bus.addListener(com.restor.magicka.enemy.MagicEnemies::attributes);
         bus.addListener(com.restor.magicka.enemy.MagicEnemies::placements);
         bus.addListener(MagicNetwork::register);
+        bus.addListener(SettingsData::loaded);
         bus.addListener(Elementals::attributes);
         NeoForge.EVENT_BUS.addListener(Elementals::stop);
         NeoForge.EVENT_BUS.addListener(LegendMagic::join);
@@ -34,7 +35,9 @@ public final class Magicka {
         NeoForge.EVENT_BUS.addListener(LegendLife::death);
         NeoForge.EVENT_BUS.addListener(LegendLife::soulShield);
         container.registerConfig(ModConfig.Type.SYNCED, MagicConfig.SPEC, "spellweaver-server.toml");
+        container.registerConfig(ModConfig.Type.SYNCED, BalanceConfig.SPEC, "spellweaver-balance.toml");
         NeoForge.EVENT_BUS.register(new CastingServer());
+        NeoForge.EVENT_BUS.register(new SpellBalance());
         NeoForge.EVENT_BUS.register(new CastModes());
         NeoForge.EVENT_BUS.register(new MagicStats());
         NeoForge.EVENT_BUS.register(new MagicGear());

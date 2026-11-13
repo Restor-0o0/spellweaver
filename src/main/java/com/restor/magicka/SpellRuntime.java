@@ -26,9 +26,14 @@ public final class SpellRuntime {
     private static final List<Active> ACTIVE = new ArrayList<>(), PENDING = new ArrayList<>();
     private static final Map<UUID, ServerPlayer> OWNERS = new HashMap<>();
     private static final Map<Active,ServerLevel> LEVELS = new IdentityHashMap<>();
+    private static final Map<Active,SpellBalance.Cast> CASTS = new IdentityHashMap<>();
+    static List<SpellBalance.Cast> activeCasts(ServerPlayer p,String group){return CASTS.values().stream().filter(c->c.plan!=null && !c.cancelled && c.owner.equals(p.getUUID()) && c.plan.activeGroup().equals(group)).distinct().sorted(Comparator.comparingLong(c->c.serial)).toList();}
+    static void track(ServerPlayer p,net.minecraft.world.entity.Entity entity){if(SpellBalance.context()!=null)add(new Active(){public ServerPlayer caster(){return p;}public boolean tick(){return !entity.isAlive()||entity.isRemoved();}public void dispose(){entity.discard();}});}
+    private static boolean step(Active active){var cast=CASTS.get(active);if(cast!=null && cast.cancelled)return true;boolean[] done={false};SpellBalance.run(cast,()->done[0]=active.tick());return done[0];}
     private static boolean add(Active value) {
         if (ACTIVE.size()+PENDING.size() >= 2048 || java.util.stream.Stream.concat(ACTIVE.stream(),PENDING.stream())
                 .filter(a -> a.caster().getUUID().equals(value.caster().getUUID())).count() >= MagicConfig.MAX_RUNTIME.get()) { value.dispose(); return false; }
+        if(SpellBalance.context()!=null)CASTS.put(value,SpellBalance.context());
         OWNERS.put(value.caster().getUUID(), value.caster()); LEVELS.put(value,value.caster().level());PENDING.add(value); return true;
     }
     public static ServerPlayer owner(ServerLevel level, UUID id) {
@@ -373,6 +378,7 @@ public final class SpellRuntime {
         for(Active a:java.util.stream.Stream.concat(ACTIVE.stream(),PENDING.stream()).toList())if(a instanceof Zone z && z.wet && z.p.level()==p.level() && z.point.distanceToSqr(point)<Math.pow(radius+z.radius,2)){z.remaining=0;freezeSurface(p,z.point,z.radius);}
     }
     static void freezeSurface(ServerPlayer p,Vec3 point,double radius){
+        if(!MagicConfig.CONSTRUCTION.get())return;
         BlockPos center=BlockPos.containing(point); UUID id=UUID.randomUUID();int budget=0,r=(int)Math.ceil(radius),limit=Math.min(2048,(int)(Math.PI*radius*radius*1.5));
         for(BlockPos candidate:BlockPos.betweenClosed(center.offset(-r,-1,-r),center.offset(r,1,r)))if(candidate.distSqr(center)<=radius*radius && budget<limit){
             BlockPos pos=candidate.immutable();var state=p.level().getBlockState(pos);
@@ -441,12 +447,12 @@ public final class SpellRuntime {
         if(!(event.getLevel() instanceof ServerLevel level))return;
         ACTIVE.addAll(PENDING);PENDING.clear();
         for(var it=ACTIVE.iterator();it.hasNext();){Active a=it.next();if(LEVELS.get(a)!=level)continue;
-            if(a.caster().level()!=level || !a.caster().isAlive() || a.caster().isRemoved() || a.tick()){a.dispose();it.remove();LEVELS.remove(a);}}
+            if(a.caster().level()!=level || !a.caster().isAlive() || a.caster().isRemoved() || step(a)){a.dispose();it.remove();LEVELS.remove(a);CASTS.remove(a);}}
         OWNERS.entrySet().removeIf(e->e.getValue().isRemoved());
     }
     @SubscribeEvent public void logout(net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedOutEvent event){
         var id=event.getEntity().getUUID();OWNERS.remove(id);
-        for(var list:List.of(ACTIVE,PENDING))list.removeIf(a->{if(!a.caster().getUUID().equals(id))return false;a.dispose();LEVELS.remove(a);return true;});
+        for(var list:List.of(ACTIVE,PENDING))list.removeIf(a->{if(!a.caster().getUUID().equals(id))return false;a.dispose();LEVELS.remove(a);CASTS.remove(a);return true;});
     }
-    @SubscribeEvent public void stop(ServerStoppedEvent event){ACTIVE.forEach(Active::dispose);PENDING.forEach(Active::dispose);ACTIVE.clear();PENDING.clear();OWNERS.clear();LEVELS.clear();}
+    @SubscribeEvent public void stop(ServerStoppedEvent event){ACTIVE.forEach(Active::dispose);PENDING.forEach(Active::dispose);ACTIVE.clear();PENDING.clear();OWNERS.clear();LEVELS.clear();CASTS.clear();}
 }

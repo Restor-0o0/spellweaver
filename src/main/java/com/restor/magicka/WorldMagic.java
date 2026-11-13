@@ -43,7 +43,7 @@ public final class WorldMagic {
         return !NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.block.BreakBlockEvent(world,pos,state,player)).isCanceled();
     }
     public static void magmaGround(ServerPlayer player,Vec3 point,double radius,int duration) {
-        if(!MagicConfig.TERRAIN_DAMAGE.get())return;
+        if(!MagicConfig.TERRAIN_DAMAGE.get()||!MagicConfig.CONSTRUCTION.get())return;
         var world=player.level();BlockPos center=BlockPos.containing(point);double reach=Math.clamp(radius,.5,8),squared=reach*reach;
         int extent=(int)Math.ceil(reach);long expires=world.getGameTime()+Math.clamp(duration,20,1200);
         for(int dx=-extent;dx<=extent;dx++)for(int dz=-extent;dz<=extent;dz++){
@@ -70,7 +70,7 @@ public final class WorldMagic {
         }
     }
     public static void magmaCrust(ServerPlayer player,Vec3 point,double radius) {
-        if(!MagicConfig.TERRAIN_DAMAGE.get())return;
+        if(!MagicConfig.TERRAIN_DAMAGE.get()||!MagicConfig.CONSTRUCTION.get())return;
         var world=player.level();BlockPos center=BlockPos.containing(point);double reach=Math.clamp(radius,.5,8),squared=reach*reach;
         int extent=(int)Math.ceil(reach);
         for(int dx=-extent;dx<=extent;dx++)for(int dz=-extent;dz<=extent;dz++){
