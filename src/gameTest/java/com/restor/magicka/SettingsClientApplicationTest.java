@@ -78,7 +78,15 @@ public final class SettingsClientApplicationTest {
         }else if(stage==23 && ++ticks==25){
             server(p->check(BalanceConfig.MANA_MAX.get().equals(BalanceConfig.MANA_MAX.getDefault())&&BalanceConfig.MANA_BASE.get().equals(BalanceConfig.MANA_BASE.getDefault()),"Section reset failed to apply defaults"));LOG.info("SETTINGS_UI_LIST_AND_RESETS_OK");PacketDistributor.sendToServer(new MagicNetwork.SettingsUpdate(200,new com.google.gson.Gson().toJson(initial)));next(14);
         }else if(stage==14 && ++ticks==30){
-            server(p->initial.forEach((key,value)->check(Objects.equals(ConfigCommand.values().get(key).get(),value),"Restore failed for "+key)));LOG.info("SETTINGS_UI_APPLICATION_AUDIT_OK: real UI, network, server mechanics, cancellation, validation, synchronization and restart persistence verified");disconnect(15);
+            server(p->initial.forEach((key,value)->check(Objects.equals(ConfigCommand.values().get(key).get(),value),"Restore failed for "+key)));LOG.info("SETTINGS_UI_APPLICATION_AUDIT_OK: real UI, network, server mechanics, cancellation, validation, synchronization and restart persistence verified");mc.setScreen(new net.minecraft.client.gui.screens.PauseScreen(true));next(30);
+        }else if(stage==30 && ++ticks==5){
+            SettingsShortcutCollisions.check(mc.screen);net.minecraft.client.Screenshot.grab(mc.gameDirectory,"settings-shortcut-pause.png",mc.getMainRenderTarget(),message->{});SettingsShortcutCollisions.cover(mc.screen);next(31);
+        }else if(stage==31 && ++ticks==5){
+            check(!button(Component.translatable("magicka.configuration.title")).visible,"No space must hide the shortcut");SettingsShortcutCollisions.uncover();next(32);
+        }else if(stage==32 && ++ticks==5){
+            var shortcut=SettingsShortcutCollisions.check(mc.screen);check(mc.screen.mouseClicked(shortcut.getX()+10,shortcut.getY()+10,0),"Shortcut click not consumed");check(mc.screen instanceof SpellSettingsScreen,"Shortcut click did not open Spellweaver settings");mc.screen.onClose();mc.setScreen(new net.minecraft.client.gui.screens.options.OptionsScreen(mc.screen,mc.options));next(33);
+        }else if(stage==33 && ++ticks==5){
+            SettingsShortcutCollisions.check(mc.screen);net.minecraft.client.Screenshot.grab(mc.gameDirectory,"settings-shortcut-options.png",mc.getMainRenderTarget(),message->{});LOG.info("SETTINGS_SHORTCUT_COLLISIONS_OK: late mod buttons, live movement, hiding, reappearance and click routing in pause/options screens");disconnect(15);
         }else if(stage==15 && mc.getSingleplayerServer()==null && ++ticks>20)mc.stop();
     }
 }

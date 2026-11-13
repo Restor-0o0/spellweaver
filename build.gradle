@@ -203,3 +203,17 @@ idea {
         downloadJavadoc = true
     }
 }
+
+sourceSets {
+    layoutTest {
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+}
+tasks.register('checkSettingsButtonPlacement', JavaExec) {
+    dependsOn tasks.named('layoutTestClasses')
+    classpath = sourceSets.layoutTest.runtimeClasspath
+    mainClass = 'com.restor.magicka.client.SettingsButtonPlacementTest'
+    javaLauncher = javaToolchains.launcherFor(java.toolchain)
+}
+tasks.named('check') { dependsOn 'checkSettingsButtonPlacement' }
