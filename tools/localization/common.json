@@ -1230,5 +1230,21 @@
     "Limites de feitiços",
     "法术限制",
     "呪文の制限"
+  ],
+  "Open book": [
+    "Buch öffnen",
+    "Abrir libro",
+    "Ouvrir le livre",
+    "Abrir livro",
+    "打开书",
+    "本を開く"
+  ],
+  "Close the book cover": [
+    "Buch zuklappen",
+    "Cerrar el libro",
+    "Fermer le livre",
+    "Fechar o livro",
+    "合上书",
+    "本を閉じる"
   ]
 }

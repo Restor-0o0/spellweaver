@@ -2770,5 +2770,7 @@
   "settings.magicka.command_set": "设置此草稿中的值",
   "settings.magicka.command_reset": "恢复默认值",
   "settings.magicka.copy": "复制",
-  "settings.magicka.copied": "已复制"
+  "settings.magicka.copied": "已复制",
+  "book.magicka.open_cover": "打开书",
+  "book.magicka.close_cover": "合上书"
 }
