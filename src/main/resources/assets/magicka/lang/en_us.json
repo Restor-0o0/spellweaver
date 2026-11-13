@@ -2770,5 +2770,7 @@
   "settings.magicka.command_set": "Set the value from this draft",
   "settings.magicka.command_reset": "Restore the default value",
   "settings.magicka.copy": "Copy",
-  "settings.magicka.copied": "Copied"
+  "settings.magicka.copied": "Copied",
+  "book.magicka.open_cover": "Open book",
+  "book.magicka.close_cover": "Close the book cover"
 }

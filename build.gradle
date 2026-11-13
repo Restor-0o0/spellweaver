@@ -57,6 +57,8 @@ legacyForge {
         client {
             client()
             systemProperty 'magicka.clientSmokeTest', project.hasProperty('clientSmokeTest').toString()
+            systemProperty 'magicka.bookCoverTest', project.hasProperty('bookCoverTest').toString()
+            if (project.hasProperty('bookCoverTest')) gameDirectory = project.file('run-book-cover')
             if (project.hasProperty('clientSmokeTest')) gameDirectory = project.file('run-settings-smoke')
             systemProperty 'magicka.settingsApplicationTest', project.hasProperty('settingsApplicationTest').toString()
             if (project.hasProperty('settingsApplicationTest')) gameDirectory = project.file('run-settings-audit')
