@@ -167,7 +167,8 @@ public final class MiningGameTests {
     public static void protectionAndContainersStopMining(GameTestHelper h) {
         var player=RecipeGameTests.caster(h);BlockPos protectedLocal=new BlockPos(2,2,2),protectedPos=h.absolutePos(protectedLocal),chest=new BlockPos(3,2,2);
         h.setBlock(protectedLocal,Blocks.STONE);h.setBlock(chest,Blocks.CHEST);
-        MiningMagic.mine(player,Vec3.atCenterOf(protectedPos),"single",1,1,0,0,false,false);
+        java.util.function.Consumer<net.neoforged.neoforge.event.level.block.BreakBlockEvent> deny=event->{if(event.getPos().equals(protectedPos))event.setCanceled(true);};net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(deny);
+        try{MiningMagic.mine(player,Vec3.atCenterOf(protectedPos),"single",1,1,0,0,false,false);}finally{net.neoforged.neoforge.common.NeoForge.EVENT_BUS.unregister(deny);}
         MiningMagic.mine(player,Vec3.atCenterOf(h.absolutePos(chest)),"single",1,1,0,3,false,false);
         h.assertBlockPresent(Blocks.STONE,protectedLocal);h.assertBlockPresent(Blocks.CHEST,chest);h.succeed();
     }

@@ -15,13 +15,14 @@ import net.neoforged.neoforge.event.level.BlockEvent;
 
 public final class WorldPlacement {
     static boolean allowed(ServerPlayer player, BlockPos pos) {
-        var world = player.level();
+        var world = (net.minecraft.server.level.ServerLevel)player.level();
         return player.mayBuild() && world.hasChunkAt(pos) && !world.isOutsideBuildHeight(pos)
                 && world.getWorldBorder().isWithinBounds(pos) && world.mayInteract(player, pos);
     }
     static boolean placeBlock(ServerPlayer player, BlockPos pos, BlockState state, java.util.UUID construction,
                               BlockPos root, boolean floating, boolean push, Object ignored) {
-        var world = player.level();
+        if(!MagicConfig.CONSTRUCTION.get())return false;
+        var world = (net.minecraft.server.level.ServerLevel)player.level();
         if (!allowed(player, pos)) return false;
         BlockState old = world.getBlockState(pos);
         if (!replaceable(old, !state.is(MagicBlocks.PUDDLE.get()))) return false;
@@ -75,7 +76,7 @@ public final class WorldPlacement {
     }
     static boolean destroy(ServerPlayer player, BlockPos pos) {
         if (!MagicConfig.TERRAIN_DAMAGE.get() || !allowed(player, pos)) return false;
-        var world = player.level();
+        var world = (net.minecraft.server.level.ServerLevel)player.level();
         if (!(world.getBlockState(pos).getBlock() instanceof MagicBlocks.TemporaryBlock)) return false;
         if (NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.block.BreakBlockEvent(world, pos, world.getBlockState(pos), player)).isCanceled()) return false;
         return world.removeBlock(pos, false);

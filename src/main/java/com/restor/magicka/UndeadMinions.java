@@ -72,6 +72,7 @@ public final class UndeadMinions {
         mob.noPhysics = true;
         mob.setNoAi(true);
         if (!level.addFreshEntity(mob)) { MINIONS.remove(mob.getUUID()); return false; }
+        SpellRuntime.track(owner,mob);
         RISING.put(mob, at);
         trim(owner);
         EpicMagic.fx(level,ParticleTypes.LARGE_SMOKE, at.x, at.y + .1, at.z, 8, .4, .1, .4, .01);

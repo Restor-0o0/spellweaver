@@ -26,7 +26,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 @EventBusSubscriber(modid = Magicka.ID, value = Dist.CLIENT)
 public final class MagicClient {
     private static final KeyMapping.Category CATEGORY = KeyMapping.Category.register(Identifier.fromNamespaceAndPath(Magicka.ID, "main"));
-    static {MagicNetwork.visualReceiver=SpellVisuals::receive;}
+    static {MagicNetwork.visualReceiver=SpellVisuals::receive;MagicNetwork.settingsReceiver=result->{if(Minecraft.getInstance().gui.screen() instanceof SpellSettingsScreen screen)screen.accept(result);};}
     public static com.restor.magicka.SpellDefinition spell(com.restor.magicka.SpellFormula formula) { return com.restor.magicka.SpellScrolls.clientResolve(Minecraft.getInstance().player, formula); }
     @SubscribeEvent public static void charms(net.neoforged.neoforge.event.entity.player.ItemTooltipEvent event) {
         CharmItem.describe(event.getItemStack(), event.getToolTip()::add);
@@ -76,7 +76,7 @@ public final class MagicClient {
     public static boolean shapeMatches(KeyEvent event) { return SHAPE.matches(event); }
     public static Component loadoutKey() { return LOADOUT.getTranslatedKeyMessage(); }
     public static void openSettings(net.minecraft.client.gui.screens.Screen parent) {
-        net.neoforged.fml.ModList.get().getModContainerById(Magicka.ID).ifPresent(mod -> net.minecraft.client.Minecraft.getInstance().gui.setScreen(new net.neoforged.neoforge.client.gui.ConfigurationScreen(mod, parent)));
+        Minecraft.getInstance().gui.setScreen(new SpellSettingsScreen(parent));
     }
     private static net.minecraft.client.gui.components.AbstractWidget settingsAnchor, settingsButton;
     private static boolean labelled(net.minecraft.client.gui.components.events.GuiEventListener listener, String key) {
@@ -255,7 +255,7 @@ public final class MagicClient {
             for (KeyMapping key : POTIONS) event.register(key);
         }
         @SubscribeEvent public static void setup(net.neoforged.fml.event.lifecycle.FMLClientSetupEvent event) {
-            net.neoforged.fml.ModList.get().getModContainerById(Magicka.ID).ifPresent(mod -> mod.registerExtensionPoint(net.neoforged.neoforge.client.gui.IConfigScreenFactory.class, net.neoforged.neoforge.client.gui.ConfigurationScreen::new));
+            net.neoforged.fml.ModList.get().getModContainerById(Magicka.ID).ifPresent(mod -> mod.registerExtensionPoint(net.neoforged.neoforge.client.gui.IConfigScreenFactory.class, (container,parent)->new SpellSettingsScreen(parent)));
         }
         @SubscribeEvent public static void screens(net.neoforged.neoforge.client.event.RegisterMenuScreensEvent event) {
             event.register(com.restor.magicka.GearMenu.TYPE.get(), GearScreen::new);
