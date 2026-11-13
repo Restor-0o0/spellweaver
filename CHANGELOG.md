@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.6.0 — mining magic, HUD editor and casting balance
+
+- Added mining spells for close-range digging, beams, continuous Hydro Erosion, directional tunnels, quarry impacts, ore veins and smelting. Mining supports suitable blocks from other mods without listing every block by ID.
+- Reworked Magma interactions: burning ground, steam when mixed with water, and cobblestone with stronger water or ice combinations.
+- Generic formulas select their primary casting element by point count, with the earlier element winning ties; other elements add their effects. Named spells keep their own behavior.
+- Doubled projectile speed and rebuilt the experimental Arcane beam with a continuous animated flow, smooth aim following and fewer effects blocking the view. Life, Death and Ice beams remain disabled.
+- Added a HUD editor with movable and resizable cards and child elements, alignment, content distribution, padding, layers, visibility, backgrounds and opacity controls.
+- HUD layouts support multi-selection, undo/redo, reset, and export/import through a shareable code.
+- Refined the Grimoire layout, quick slots and filter icons; element icons now share a consistent style. Search matches name and ID prefixes.
+- Turn backward from the first book spread to close and inspect the cover; turn forward or click the cover to reopen it.
+- Added configurable casting limits: short recovery and automatic shared spell-group cooldowns by default, with optional element cooldowns, mana, strain and custom combinations. Costs, regeneration, active limits and per-spell overrides are configurable.
+- Rebuilt the settings screen with categories, list editors and server-command help. Settings changes apply and persist; the menu shortcut avoids other mods' buttons.
+- Added German, Spanish, French, Brazilian Portuguese, Simplified Chinese and Japanese alongside English and Russian, with text scaling and centering for long translations.
+- Updated the README with navigation links, balance modes, spell groups, configuration examples and server commands.
+
 ## 1.5.0 — composite elements and cast modes
 
 - Steam, Ice and Shield are composite elements formed from base-element combinations, with their own Grimoire pages and sprites.
