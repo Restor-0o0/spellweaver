@@ -1,0 +1,1234 @@
+{
+  "# Casting": [
+    "# Zaubern",
+    "# Lanzamiento",
+    "# Incantation",
+    "# Conjuração",
+    "# 施法",
+    "# 詠唱"
+  ],
+  "# Modes": [
+    "# Modi",
+    "# Modos",
+    "# Modes",
+    "# Modos",
+    "# 模式",
+    "# モード"
+  ],
+  "# The book": [
+    "# Das Buch",
+    "# El libro",
+    "# Le livre",
+    "# O livro",
+    "# 魔法书",
+    "# 魔導書"
+  ],
+  "# Quick slots": [
+    "# Schnellplätze",
+    "# Accesos rápidos",
+    "# Raccourcis",
+    "# Atalhos",
+    "# 快捷栏",
+    "# クイック枠"
+  ],
+  "# Tips": [
+    "# Tipps",
+    "# Consejos",
+    "# Conseils",
+    "# Dicas",
+    "# 提示",
+    "# ヒント"
+  ],
+  "# Death and undead": [
+    "# Tod und Untote",
+    "# Muerte y no muertos",
+    "# Mort et morts-vivants",
+    "# Morte e mortos-vivos",
+    "# 死亡与亡灵",
+    "# 死とアンデッド"
+  ],
+  "# Utility": [
+    "# Hilfszauber",
+    "# Utilidad",
+    "# Utilitaires",
+    "# Utilidade",
+    "# 实用法术",
+    "# 便利な呪文"
+  ],
+  "# HUD": [
+    "# HUD",
+    "# HUD",
+    "# HUD",
+    "# HUD",
+    "# HUD",
+    "# HUD"
+  ],
+  "# Fusions": [
+    "# Fusionen",
+    "# Fusiones",
+    "# Fusions",
+    "# Fusões",
+    "# 元素融合",
+    "# 元素融合"
+  ],
+  "# Typing": [
+    "# Eingabe",
+    "# Introducción",
+    "# Saisie",
+    "# Inserção",
+    "# 输入",
+    "# 元素の入力"
+  ],
+  "# Form": [
+    "# Form",
+    "# Forma",
+    "# Forme",
+    "# Forma",
+    "# 施法形态",
+    "# 呪文の形状"
+  ],
+  "# Elements": [
+    "# Elemente",
+    "# Elementos",
+    "# Éléments",
+    "# Elementos",
+    "# 元素",
+    "# 元素"
+  ],
+  "# Pair reactions": [
+    "# Paarreaktionen",
+    "# Reacciones de pares",
+    "# Réactions par paires",
+    "# Reações de pares",
+    "# 双元素反应",
+    "# 元素ペアの反応"
+  ],
+  "# Opposites": [
+    "# Gegensätze",
+    "# Opuestos",
+    "# Opposés",
+    "# Opostos",
+    "# 对立元素",
+    "# 相反する元素"
+  ],
+  "Inner padding": [
+    "Innenabstand",
+    "Margen interior",
+    "Marge intérieure",
+    "Margem interna",
+    "内边距",
+    "内側余白"
+  ],
+  "Item spacing": [
+    "Elementabstand",
+    "Separación",
+    "Espacement",
+    "Espaçamento",
+    "元素间距",
+    "項目の間隔"
+  ],
+  "α %s%% · Alt+wheel": [
+    "α %s%% · Alt+Mausrad",
+    "α %s%% · Alt+rueda",
+    "α %s%% · Alt+molette",
+    "α %s%% · Alt+roda",
+    "α %s%% · Alt+滚轮",
+    "α %s%% · Alt+ホイール"
+  ],
+  "Spacing: %s": [
+    "Verteilung: %s",
+    "Distribución: %s",
+    "Répartition : %s",
+    "Distribuição: %s",
+    "分布：%s",
+    "配置：%s"
+  ],
+  "Packed": [
+    "Kompakt",
+    "Compacta",
+    "Compacte",
+    "Compacta",
+    "紧凑",
+    "詰める"
+  ],
+  "Even": [
+    "Gleichmäßig",
+    "Uniforme",
+    "Uniforme",
+    "Uniforme",
+    "均匀",
+    "均等"
+  ],
+  "Edges": [
+    "An den Rändern",
+    "Entre extremos",
+    "Aux extrémités",
+    "Entre bordas",
+    "两端对齐",
+    "両端揃え"
+  ],
+  "Title: %s": [
+    "Titel: %s",
+    "Título: %s",
+    "Titre : %s",
+    "Título: %s",
+    "标题：%s",
+    "見出し：%s"
+  ],
+  "Arcane": [
+    "Arkan",
+    "Arcano",
+    "Arcanes",
+    "Arcano",
+    "奥术",
+    "秘術"
+  ],
+  "Cold": [
+    "Kälte",
+    "Frío",
+    "Froid",
+    "Frio",
+    "寒冷",
+    "冷気"
+  ],
+  "Death": [
+    "Tod",
+    "Muerte",
+    "Mort",
+    "Morte",
+    "死亡",
+    "死"
+  ],
+  "Earth": [
+    "Erde",
+    "Tierra",
+    "Terre",
+    "Terra",
+    "大地",
+    "大地"
+  ],
+  "Fire": [
+    "Feuer",
+    "Fuego",
+    "Feu",
+    "Fogo",
+    "火焰",
+    "炎"
+  ],
+  "Life": [
+    "Leben",
+    "Vida",
+    "Vie",
+    "Vida",
+    "生命",
+    "生命"
+  ],
+  "Lightning": [
+    "Blitz",
+    "Rayo",
+    "Foudre",
+    "Raio",
+    "闪电",
+    "雷"
+  ],
+  "Water": [
+    "Wasser",
+    "Agua",
+    "Eau",
+    "Água",
+    "水",
+    "水"
+  ],
+  "Steam": [
+    "Dampf",
+    "Vapor",
+    "Vapeur",
+    "Vapor",
+    "蒸汽",
+    "蒸気"
+  ],
+  "Ice": [
+    "Eis",
+    "Hielo",
+    "Glace",
+    "Gelo",
+    "冰",
+    "氷"
+  ],
+  "Shield": [
+    "Schild",
+    "Escudo",
+    "Bouclier",
+    "Escudo",
+    "护盾",
+    "障壁"
+  ],
+  "Magma": [
+    "Magma",
+    "Magma",
+    "Magma",
+    "Magma",
+    "岩浆",
+    "マグマ"
+  ],
+  "All": [
+    "Alle",
+    "Todos",
+    "Tous",
+    "Todos",
+    "全部",
+    "すべて"
+  ],
+  "Building": [
+    "Bauen",
+    "Construcción",
+    "Construction",
+    "Construção",
+    "建造",
+    "建築"
+  ],
+  "Control": [
+    "Kontrolle",
+    "Control",
+    "Contrôle",
+    "Controle",
+    "控制",
+    "制御"
+  ],
+  "Damage": [
+    "Schaden",
+    "Daño",
+    "Dégâts",
+    "Dano",
+    "伤害",
+    "ダメージ"
+  ],
+  "Destruction": [
+    "Zerstörung",
+    "Destrucción",
+    "Destruction",
+    "Destruição",
+    "破坏",
+    "破壊"
+  ],
+  "Defense": [
+    "Verteidigung",
+    "Defensa",
+    "Défense",
+    "Defesa",
+    "防御",
+    "防御"
+  ],
+  "Healing": [
+    "Heilung",
+    "Curación",
+    "Soins",
+    "Cura",
+    "治疗",
+    "回復"
+  ],
+  "Mining": [
+    "Bergbau",
+    "Minería",
+    "Extraction",
+    "Mineração",
+    "采掘",
+    "採掘"
+  ],
+  "Movement": [
+    "Bewegung",
+    "Movimiento",
+    "Déplacement",
+    "Movimento",
+    "移动",
+    "移動"
+  ],
+  "Projectile": [
+    "Geschoss",
+    "Proyectil",
+    "Projectile",
+    "Projétil",
+    "弹射物",
+    "飛び道具"
+  ],
+  "Summon": [
+    "Beschwörung",
+    "Invocación",
+    "Invocation",
+    "Invocação",
+    "召唤",
+    "召喚"
+  ],
+  "Utility": [
+    "Hilfszauber",
+    "Utilidad",
+    "Utilitaires",
+    "Utilidade",
+    "实用",
+    "便利"
+  ],
+  "Zone": [
+    "Zone",
+    "Zona",
+    "Zone",
+    "Zona",
+    "区域",
+    "領域"
+  ],
+  "+ Assign": [
+    "+ Zuweisen",
+    "+ Asignar",
+    "+ Assigner",
+    "+ Atribuir",
+    "+ 设置",
+    "+ 割り当て"
+  ],
+  "Windup: %s s": [
+    "Vorbereitung: %s s",
+    "Preparación: %s s",
+    "Incantation : %s s",
+    "Preparação: %s s",
+    "蓄力：%s秒",
+    "詠唱：%s秒"
+  ],
+  "order matters": [
+    "Reihenfolge beachten",
+    "el orden importa",
+    "l'ordre compte",
+    "a ordem importa",
+    "顺序很重要",
+    "順序が重要"
+  ],
+  "Instant mode: channeled while held": [
+    "Sofortmodus: wirkt beim Gedrückthalten",
+    "Modo instantáneo: canaliza mientras mantienes pulsado",
+    "Mode instantané : canalisation tant que le bouton est maintenu",
+    "Modo instantâneo: canaliza enquanto mantém pressionado",
+    "瞬发模式：按住以持续施法",
+    "即時モード：押している間は維持"
+  ],
+  "Instant mode: grows at once, no need to hold": [
+    "Sofortmodus: wächst sofort, kein Halten nötig",
+    "Modo instantáneo: crece al instante, sin mantener pulsado",
+    "Mode instantané : croissance immédiate, sans maintenir",
+    "Modo instantâneo: cresce na hora, sem manter pressionado",
+    "瞬发模式：立即生长，无需按住",
+    "即時モード：すぐに成長、長押し不要"
+  ],
+  "Instant mode: fires at once": [
+    "Sofortmodus: wird sofort gewirkt",
+    "Modo instantáneo: se lanza al instante",
+    "Mode instantané : lancement immédiat",
+    "Modo instantâneo: lançado na hora",
+    "瞬发模式：立即施放",
+    "即時モード：すぐに発動"
+  ],
+  "Guide": [
+    "Anleitung",
+    "Guía",
+    "Guide",
+    "Guia",
+    "指南",
+    "ガイド"
+  ],
+  "Found: %s": [
+    "Gefunden: %s",
+    "Resultados: %s",
+    "Résultats : %s",
+    "Encontrados: %s",
+    "找到：%s",
+    "検索結果：%s"
+  ],
+  "Search name / ID…": [
+    "Name / ID suchen…",
+    "Buscar nombre / ID…",
+    "Chercher nom / ID…",
+    "Buscar nome / ID…",
+    "搜索名称 / ID…",
+    "名前 / IDを検索…"
+  ],
+  "Shift — details": [
+    "Shift — Details",
+    "Shift — detalles",
+    "Shift — détails",
+    "Shift — detalhes",
+    "Shift — 详情",
+    "Shift — 詳細"
+  ],
+  "GRIMOIRE OF ELEMENTS": [
+    "GRIMOIRE DER ELEMENTE",
+    "GRIMORIO ELEMENTAL",
+    "GRIMOIRE DES ÉLÉMENTS",
+    "GRIMÓRIO ELEMENTAL",
+    "元素魔法书",
+    "元素の魔導書"
+  ],
+  "Grimoire of Elements": [
+    "Grimoire der Elemente",
+    "Grimorio elemental",
+    "Grimoire des éléments",
+    "Grimório elemental",
+    "元素魔法书",
+    "元素の魔導書"
+  ],
+  "ELEMENTS": [
+    "ELEMENTE",
+    "ELEMENTOS",
+    "ÉLÉMENTS",
+    "ELEMENTOS",
+    "元素",
+    "元素"
+  ],
+  "PREPARED SPELL": [
+    "VORBEREITETER ZAUBER",
+    "HECHIZO PREPARADO",
+    "SORT PRÉPARÉ",
+    "FEITIÇO PREPARADO",
+    "已准备的法术",
+    "準備中の呪文"
+  ],
+  "Area": [
+    "Fläche",
+    "Área",
+    "Zone",
+    "Área",
+    "范围",
+    "範囲"
+  ],
+  "Directed": [
+    "Gezielt",
+    "Dirigido",
+    "Dirigé",
+    "Direcionado",
+    "定向",
+    "前方"
+  ],
+  "Self": [
+    "Selbst",
+    "Sobre ti",
+    "Sur soi",
+    "Em si",
+    "自身",
+    "自分"
+  ],
+  "Shape": [
+    "Form",
+    "Forma",
+    "Forme",
+    "Forma",
+    "形状",
+    "形状"
+  ],
+  "Attributes": [
+    "Attribute",
+    "Atributos",
+    "Attributs",
+    "Atributos",
+    "属性",
+    "能力値"
+  ],
+  "Cast speed": [
+    "Zaubertempo",
+    "Velocidad de lanzamiento",
+    "Vitesse d'incantation",
+    "Velocidade de conjuração",
+    "施法速度",
+    "詠唱速度"
+  ],
+  "Chains": [
+    "Ketten",
+    "Cadenas",
+    "Chaînes",
+    "Correntes",
+    "连锁",
+    "連鎖"
+  ],
+  "Force": [
+    "Kraft",
+    "Fuerza",
+    "Force",
+    "Força",
+    "冲击力",
+    "衝撃力"
+  ],
+  "Duration": [
+    "Dauer",
+    "Duración",
+    "Durée",
+    "Duração",
+    "持续时间",
+    "持続時間"
+  ],
+  "Summons": [
+    "Beschwörungen",
+    "Invocaciones",
+    "Invocations",
+    "Invocações",
+    "召唤数量",
+    "召喚数"
+  ],
+  "Construction": [
+    "Konstruktion",
+    "Construcción",
+    "Construction",
+    "Construção",
+    "构筑",
+    "構築"
+  ],
+  "Reset all": [
+    "Alles zurücksetzen",
+    "Restablecer todo",
+    "Tout réinitialiser",
+    "Redefinir tudo",
+    "全部重置",
+    "すべてリセット"
+  ],
+  "Reset to 100%%": [
+    "Auf 100%% zurücksetzen",
+    "Restablecer al 100%%",
+    "Rétablir à 100%%",
+    "Redefinir para 100%%",
+    "重置为100%%",
+    "100%%に戻す"
+  ],
+  "Magic HUD layout": [
+    "Magie-HUD anpassen",
+    "Diseño del HUD mágico",
+    "Disposition du HUD magique",
+    "Layout do HUD mágico",
+    "魔法HUD布局",
+    "魔法HUDの配置"
+  ],
+  "HUD: %s to arrange": [
+    "HUD: mit %s anpassen",
+    "HUD: %s para editar",
+    "HUD : %s pour modifier",
+    "HUD: %s para editar",
+    "HUD：按%s编辑",
+    "HUD：%sで編集"
+  ],
+  "%s · W %s%% · H %s%%": [
+    "%s · B %s%% · H %s%%",
+    "%s · An. %s%% · Al. %s%%",
+    "%s · L %s%% · H %s%%",
+    "%s · L %s%% · A %s%%",
+    "%s · 宽%s%% · 高%s%%",
+    "%s · 幅%s%% · 高さ%s%%"
+  ],
+  "Layout: %s": [
+    "Anordnung: %s",
+    "Diseño: %s",
+    "Disposition : %s",
+    "Layout: %s",
+    "布局：%s",
+    "配置：%s"
+  ],
+  "Quick spell slots": [
+    "Schnellzauberplätze",
+    "Hechizos rápidos",
+    "Emplacements rapides",
+    "Feitiços rápidos",
+    "快捷法术栏",
+    "クイック呪文枠"
+  ],
+  "Columns": [
+    "Spalten",
+    "Columnas",
+    "Colonnes",
+    "Colunas",
+    "列数",
+    "列数"
+  ],
+  "Rows": [
+    "Zeilen",
+    "Filas",
+    "Lignes",
+    "Linhas",
+    "行数",
+    "行数"
+  ],
+  "Width": [
+    "Breite",
+    "Ancho",
+    "Largeur",
+    "Largura",
+    "宽度",
+    "幅"
+  ],
+  "Height": [
+    "Höhe",
+    "Alto",
+    "Hauteur",
+    "Altura",
+    "高度",
+    "高さ"
+  ],
+  "Content alignment": [
+    "Inhalt ausrichten",
+    "Alinear contenido",
+    "Aligner le contenu",
+    "Alinhar conteúdo",
+    "内容对齐",
+    "内容の配置"
+  ],
+  "Move layer back": [
+    "Ebene nach hinten",
+    "Capa hacia atrás",
+    "Plan arrière",
+    "Camada para trás",
+    "下移图层",
+    "背面へ"
+  ],
+  "Move layer forward": [
+    "Ebene nach vorn",
+    "Capa hacia delante",
+    "Plan avant",
+    "Camada para frente",
+    "上移图层",
+    "前面へ"
+  ],
+  "Selected slot size": [
+    "Größe der Auswahl",
+    "Tamaño de selección",
+    "Taille de la sélection",
+    "Tamanho da seleção",
+    "所选格子大小",
+    "選択枠のサイズ"
+  ],
+  "Grid and snap: %s": [
+    "Raster einrasten: %s",
+    "Cuadrícula y ajuste: %s",
+    "Grille et aimantation : %s",
+    "Grade e encaixe: %s",
+    "网格吸附：%s",
+    "グリッド吸着：%s"
+  ],
+  "Reset selected panel": [
+    "Karte zurücksetzen",
+    "Restablecer panel",
+    "Réinitialiser le panneau",
+    "Redefinir painel",
+    "重置所选面板",
+    "選択パネルをリセット"
+  ],
+  "Reset selected slot": [
+    "Platz zurücksetzen",
+    "Restablecer casilla",
+    "Réinitialiser la case",
+    "Redefinir espaço",
+    "重置所选格子",
+    "選択枠をリセット"
+  ],
+  "Rows and columns": [
+    "Zeilen und Spalten",
+    "Filas y columnas",
+    "Lignes et colonnes",
+    "Linhas e colunas",
+    "行列布局",
+    "行と列"
+  ],
+  "Custom positions": [
+    "Freie Positionen",
+    "Posiciones libres",
+    "Positions libres",
+    "Posições livres",
+    "自定义位置",
+    "自由配置"
+  ],
+  "on": [
+    "an",
+    "sí",
+    "oui",
+    "sim",
+    "开",
+    "オン"
+  ],
+  "off": [
+    "aus",
+    "no",
+    "non",
+    "não",
+    "关",
+    "オフ"
+  ],
+  "Copy code": [
+    "Code kopieren",
+    "Copiar código",
+    "Copier le code",
+    "Copiar código",
+    "复制代码",
+    "コードをコピー"
+  ],
+  "Paste code": [
+    "Code einfügen",
+    "Pegar código",
+    "Coller le code",
+    "Colar código",
+    "粘贴代码",
+    "コードを貼り付け"
+  ],
+  "Show: %s": [
+    "Anzeigen: %s",
+    "Mostrar: %s",
+    "Afficher : %s",
+    "Mostrar: %s",
+    "显示：%s",
+    "表示：%s"
+  ],
+  "Background: %s": [
+    "Hintergrund: %s",
+    "Fondo: %s",
+    "Fond : %s",
+    "Fundo: %s",
+    "背景：%s",
+    "背景：%s"
+  ],
+  "Hints: %s": [
+    "Hinweise: %s",
+    "Pistas: %s",
+    "Aides : %s",
+    "Dicas: %s",
+    "提示：%s",
+    "ヒント：%s"
+  ],
+  "Undo": [
+    "Rückgängig",
+    "Deshacer",
+    "Annuler",
+    "Desfazer",
+    "撤销",
+    "元に戻す"
+  ],
+  "Redo": [
+    "Wiederholen",
+    "Rehacer",
+    "Rétablir",
+    "Refazer",
+    "重做",
+    "やり直す"
+  ],
+  "Formula": [
+    "Formel",
+    "Fórmula",
+    "Formule",
+    "Fórmula",
+    "法术配方",
+    "呪文式"
+  ],
+  "Elements": [
+    "Elemente",
+    "Elementos",
+    "Éléments",
+    "Elementos",
+    "元素",
+    "元素"
+  ],
+  "Quick slots": [
+    "Schnellplätze",
+    "Accesos rápidos",
+    "Raccourcis",
+    "Atalhos",
+    "快捷栏",
+    "クイック枠"
+  ],
+  "Book hint": [
+    "Buchhinweis",
+    "Acceso al libro",
+    "Raccourci du livre",
+    "Atalho do livro",
+    "魔法书提示",
+    "魔導書のヒント"
+  ],
+  "Edit magic HUD": [
+    "Magie-HUD bearbeiten",
+    "Editar HUD mágico",
+    "Modifier le HUD magique",
+    "Editar HUD mágico",
+    "编辑魔法HUD",
+    "魔法HUDを編集"
+  ],
+  "Open grimoire": [
+    "Grimoire öffnen",
+    "Abrir grimorio",
+    "Ouvrir le grimoire",
+    "Abrir grimório",
+    "打开魔法书",
+    "魔導書を開く"
+  ],
+  "Clear formula": [
+    "Formel löschen",
+    "Borrar fórmula",
+    "Effacer la formule",
+    "Limpar fórmula",
+    "清空配方",
+    "呪文式を消去"
+  ],
+  "Primary cast": [
+    "Gezielt zaubern",
+    "Lanzamiento dirigido",
+    "Lancer devant soi",
+    "Conjuração direcionada",
+    "定向施法",
+    "前方に詠唱"
+  ],
+  "Self cast": [
+    "Auf sich zaubern",
+    "Lanzamiento sobre ti",
+    "Lancer sur soi",
+    "Conjurar em si",
+    "自身施法",
+    "自分に詠唱"
+  ],
+  "Area Cast": [
+    "Flächenzauber",
+    "Lanzamiento de área",
+    "Lancer en zone",
+    "Conjuração em área",
+    "范围施法",
+    "範囲詠唱"
+  ],
+  "Imbue Weapon": [
+    "Waffe verzaubern",
+    "Imbuir arma",
+    "Imprégner l'arme",
+    "Imbuir arma",
+    "武器附魔",
+    "武器に付与"
+  ],
+  "Shape editor": [
+    "Formeditor",
+    "Editor de formas",
+    "Éditeur de formes",
+    "Editor de formas",
+    "形状编辑器",
+    "形状エディター"
+  ],
+  "Magma — Fire + Earth": [
+    "Magma — Feuer + Erde",
+    "Magma — Fuego + Tierra",
+    "Magma — Feu + Terre",
+    "Magma — Fogo + Terra",
+    "岩浆 — 火焰 + 大地",
+    "マグマ — 炎 + 大地"
+  ],
+  "Steam — Fire + Water": [
+    "Dampf — Feuer + Wasser",
+    "Vapor — Fuego + Agua",
+    "Vapeur — Feu + Eau",
+    "Vapor — Fogo + Água",
+    "蒸汽 — 火焰 + 水",
+    "蒸気 — 炎 + 水"
+  ],
+  "Ice — Water + Cold": [
+    "Eis — Wasser + Kälte",
+    "Hielo — Agua + Frío",
+    "Glace — Eau + Froid",
+    "Gelo — Água + Frio",
+    "冰 — 水 + 寒冷",
+    "氷 — 水 + 冷気"
+  ],
+  "Shield — Earth + Arcane": [
+    "Schild — Erde + Arkan",
+    "Escudo — Tierra + Arcano",
+    "Bouclier — Terre + Arcanes",
+    "Escudo — Terra + Arcano",
+    "护盾 — 大地 + 奥术",
+    "障壁 — 大地 + 秘術"
+  ],
+  "Text hints: %s": [
+    "Tastenhinweise: %s",
+    "Texto de ayuda: %s",
+    "Indications : %s",
+    "Dicas de texto: %s",
+    "文字提示：%s",
+    "文字ヒント：%s"
+  ],
+  "Visible: %s": [
+    "Sichtbar: %s",
+    "Visible: %s",
+    "Visible : %s",
+    "Visível: %s",
+    "可见：%s",
+    "表示：%s"
+  ],
+  "Spellbook hint": [
+    "Buchhinweis",
+    "Acceso al libro",
+    "Raccourci du livre",
+    "Atalho do livro",
+    "魔法书提示",
+    "魔導書のヒント"
+  ],
+  "Cast status": [
+    "Zauberstatus",
+    "Estado del hechizo",
+    "État d'incantation",
+    "Estado da conjuração",
+    "施法状态",
+    "詠唱状態"
+  ],
+  "Reset to defaults": [
+    "Standard wiederherstellen",
+    "Restaurar valores",
+    "Rétablir les valeurs",
+    "Restaurar padrões",
+    "恢复默认",
+    "初期設定に戻す"
+  ],
+  "Button size (%s selected)": [
+    "Tastengröße (%s gewählt)",
+    "Tamaño (%s elegidos)",
+    "Taille (%s sélectionnés)",
+    "Tamanho (%s selecionados)",
+    "按钮大小（已选%s个）",
+    "ボタンサイズ（%s個選択）"
+  ],
+  "Scale: %s%%": [
+    "Skalierung: %s%%",
+    "Escala: %s%%",
+    "Échelle : %s%%",
+    "Escala: %s%%",
+    "缩放：%s%%",
+    "倍率：%s%%"
+  ],
+  "HUD layout code copied to clipboard": [
+    "HUD-Code in die Zwischenablage kopiert",
+    "Código del HUD copiado",
+    "Code du HUD copié",
+    "Código do HUD copiado",
+    "HUD布局代码已复制",
+    "HUD配置コードをコピーしました"
+  ],
+  "HUD layout code applied": [
+    "HUD-Code angewendet",
+    "Diseño del HUD aplicado",
+    "Disposition du HUD appliquée",
+    "Layout do HUD aplicado",
+    "HUD布局代码已应用",
+    "HUD配置コードを適用しました"
+  ],
+  "Clipboard does not contain a valid HUD code": [
+    "Kein gültiger HUD-Code in der Zwischenablage",
+    "El portapapeles no contiene un código HUD válido",
+    "Le presse-papiers ne contient pas de code HUD valide",
+    "A área de transferência não contém um código HUD válido",
+    "剪贴板中没有有效的HUD代码",
+    "クリップボードに有効なHUDコードがありません"
+  ],
+  "Could not copy HUD layout code": [
+    "HUD-Code konnte nicht kopiert werden",
+    "No se pudo copiar el código del HUD",
+    "Impossible de copier le code du HUD",
+    "Não foi possível copiar o código do HUD",
+    "无法复制HUD布局代码",
+    "HUD配置コードをコピーできませんでした"
+  ],
+  "Thermal Pick": [
+    "Thermische Spitzhacke",
+    "Pico térmico",
+    "Pioche thermique",
+    "Picareta térmica",
+    "热能镐",
+    "熱衝撃のつるはし"
+  ],
+  "Smelting Ray": [
+    "Schmelzstrahl",
+    "Rayo fundidor",
+    "Rayon de fusion",
+    "Raio de fundição",
+    "熔炼射线",
+    "製錬光線"
+  ],
+  "Drift Bore": [
+    "Stollenbohrer",
+    "Perforador de túneles",
+    "Foreuse de galerie",
+    "Perfurador de túneis",
+    "巷道钻孔",
+    "坑道ドリル"
+  ],
+  "Gallery Cutter": [
+    "Stollenschneider",
+    "Cortador de galerías",
+    "Tailleur de galeries",
+    "Cortador de galerias",
+    "巷道切割",
+    "坑道カッター"
+  ],
+  "Ore Thread": [
+    "Erzfaden",
+    "Hilo de mena",
+    "Filon de minerai",
+    "Fio de minério",
+    "矿脉之线",
+    "鉱脈の糸"
+  ],
+  "Vein Smelter": [
+    "Aderschmelzer",
+    "Fundidor de vetas",
+    "Fondeur de filons",
+    "Fundidor de veios",
+    "矿脉熔炼",
+    "鉱脈製錬"
+  ],
+  "Diamond Needle": [
+    "Diamantnadel",
+    "Aguja de diamante",
+    "Aiguille de diamant",
+    "Agulha de diamante",
+    "钻石之针",
+    "ダイヤの針"
+  ],
+  "Quarry Pulse": [
+    "Steinbruchimpuls",
+    "Pulso de cantera",
+    "Impulsion de carrière",
+    "Pulso de pedreira",
+    "采石脉冲",
+    "採石パルス"
+  ],
+  "Hydro Erosion": [
+    "Hydroerosion",
+    "Hidroerosión",
+    "Hydroérosion",
+    "Hidroerosão",
+    "水力侵蚀",
+    "水圧侵食"
+  ],
+  "Worldbreaker": [
+    "Weltenbrecher",
+    "Rompe mundos",
+    "Brise-monde",
+    "Quebra-mundos",
+    "碎界者",
+    "ワールドブレイカー"
+  ],
+  "Either order gives the same rune. Every spell whose formula holds %s is found under each of its elements as well.": [
+    "Beide Reihenfolgen ergeben dieselbe Rune. Zauber mit %s in ihrer Formel erscheinen auch unter den zugehörigen Grundelementen.",
+    "Ambos órdenes producen la misma runa. Los hechizos cuya fórmula contiene %s también aparecen al filtrar por cada uno de sus elementos.",
+    "Les deux ordres donnent la même rune. Les sorts dont la formule contient %s apparaissent aussi sous chacun de ses éléments.",
+    "As duas ordens produzem a mesma runa. Os feitiços cuja fórmula contém %s também aparecem nos filtros de cada um dos seus elementos.",
+    "两种顺序都生成同一种符文。配方中含有%s的法术，也会出现在其组成元素的筛选结果中。",
+    "どちらの順でも同じルーンになります。呪文式に%sを含む呪文は、その構成元素のフィルターでも見つかります。"
+  ],
+  "Mining magic needs a targeted block.": [
+    "Bergbaumagie benötigt einen anvisierten Block.",
+    "La magia minera requiere apuntar a un bloque.",
+    "La magie minière nécessite de viser un bloc.",
+    "A magia de mineração exige mirar em um bloco.",
+    "采掘魔法需要瞄准一个方块。",
+    "採掘魔法はブロックを狙って使います。"
+  ],
+  "Needs a targeted block.": [
+    "Visiere einen Block an.",
+    "Apunta a un bloque.",
+    "Visez un bloc.",
+    "Mire em um bloco.",
+    "需要瞄准方块。",
+    "ブロックを狙ってください。"
+  ],
+  "Mining magic needs a targeted ore block.": [
+    "Bergbaumagie benötigt einen anvisierten Erzblock.",
+    "La magia minera requiere apuntar a un bloque de mena.",
+    "La magie minière nécessite de viser un bloc de minerai.",
+    "A magia de mineração exige mirar em um bloco de minério.",
+    "采掘魔法需要瞄准一个矿石方块。",
+    "採掘魔法は鉱石ブロックを狙って使います。"
+  ],
+  "Needs a targeted ore block.": [
+    "Visiere einen Erzblock an.",
+    "Apunta a un bloque de mena.",
+    "Visez un bloc de minerai.",
+    "Mire em um bloco de minério.",
+    "需要瞄准矿石方块。",
+    "鉱石ブロックを狙ってください。"
+  ],
+  "Worldbreaker needs a targeted block.": [
+    "Weltenbrecher benötigt einen anvisierten Block.",
+    "Rompe mundos requiere apuntar a un bloque.",
+    "Brise-monde nécessite de viser un bloc.",
+    "Quebra-mundos exige mirar em um bloco.",
+    "碎界者需要瞄准一个方块。",
+    "ワールドブレイカーはブロックを狙って使います。"
+  ],
+  "Mines one targeted block with iron-tier strength. Ore drops that have a furnace recipe are smelted immediately.": [
+    "Baut einen anvisierten Block mit der Abbaustufe Eisen ab. Geeignete Erzbeute wird sofort nach dem Ofenrezept geschmolzen.",
+    "Extrae el bloque al que apuntas con el nivel de un pico de hierro. Los objetos de mineral obtenidos se funden al instante si tienen una receta de horno.",
+    "Mine le bloc visé avec le niveau d'une pioche en fer. Les ressources obtenues sont immédiatement fondues si une recette de four existe.",
+    "Minera o bloco na mira com o nível de uma picareta de ferro. Os itens de minério obtidos são fundidos imediatamente se houver uma receita de fornalha.",
+    "以铁镐级别采掘瞄准的一个方块。掉落的矿物若有熔炉配方，会立即熔炼。",
+    "狙ったブロックを鉄のつるはし相当で採掘します。鉱石のドロップにかまどのレシピがあれば、その場で製錬します。"
+  ],
+  "One block, iron-tier strength, smelts suitable ore drops.": [
+    "Ein Block, Abbaustufe Eisen; schmilzt geeignete Erzbeute.",
+    "Un bloque; nivel de hierro; funde los minerales compatibles.",
+    "Un bloc ; niveau fer ; fond les minerais compatibles.",
+    "Um bloco; nível de ferro; funde minérios compatíveis.",
+    "采掘一个方块，铁镐级别，可熔炼适用的矿物掉落。",
+    "1ブロックを鉄相当で採掘し、対応する鉱物を製錬。"
+  ],
+  "Hold the pressurized water stream to erode ordinary blocks, including wood and leaves, one at a time. Aim straight, down, or diagonally to change the bore direction.": [
+    "Halte den Wasserstrahl, um gewöhnliche Blöcke wie Holz und Laub einzeln abzutragen. Die Bohrrichtung folgt deinem Blick: geradeaus, abwärts oder diagonal.",
+    "Mantén el chorro de agua a presión para erosionar los bloques comunes, incluida la madera y las hojas, uno a uno. Apunta de frente, hacia abajo o en diagonal para dirigir la perforación.",
+    "Maintenez le jet d'eau sous pression pour éroder les blocs ordinaires, y compris le bois et les feuilles, un par un. Visez devant vous, vers le bas ou en diagonale pour diriger le forage.",
+    "Mantenha o jato de água pressurizada para desgastar blocos comuns, incluindo madeira e folhas, um por vez. Mire para frente, para baixo ou na diagonal para direcionar a perfuração.",
+    "持续施放高压水流，逐个侵蚀普通方块，包括木头和树叶。向前、向下或斜向瞄准可改变钻孔方向。",
+    "高圧水流を維持し、木や葉を含む通常のブロックを1個ずつ削ります。前方、下、斜めを狙って掘削方向を変えられます。"
+  ],
+  "Erodes wood, leaves, and rock one block at a time; follows your aim.": [
+    "Trägt Holz, Laub und Gestein Block für Block in Blickrichtung ab.",
+    "Erosiona madera, hojas y roca bloque a bloque siguiendo la mira.",
+    "Érode le bois, les feuilles et la roche bloc par bloc selon votre visée.",
+    "Desgasta madeira, folhas e rocha bloco a bloco seguindo a mira.",
+    "沿瞄准方向逐个侵蚀木头、树叶和岩石。",
+    "照準に沿って木、葉、岩を1ブロックずつ削ります。"
+  ],
+  "Aim at a block and hold.": [
+    "Visiere einen Block an und halte die Taste.",
+    "Apunta a un bloque y mantén pulsado.",
+    "Visez un bloc et maintenez le bouton.",
+    "Mire em um bloco e mantenha pressionado.",
+    "瞄准方块并持续施法。",
+    "ブロックを狙い、ボタンを押し続けてください。"
+  ],
+  "max": [
+    "max.",
+    "máx.",
+    "max.",
+    "máx.",
+    "满级",
+    "最大"
+  ],
+  "id|recovery=5|cooldown=20|group=burst|mana=10|mana_per_second=4|strain=8|strain_per_second=5|active_group=zone|active_limit=2; only specified values are replaced": [
+    "id|recovery=5|cooldown=20|group=burst|mana=10|mana_per_second=4|strain=8|strain_per_second=5|active_group=zone|active_limit=2; Nur angegebene Werte werden ersetzt.",
+    "id|recovery=5|cooldown=20|group=burst|mana=10|mana_per_second=4|strain=8|strain_per_second=5|active_group=zone|active_limit=2; Solo se sustituyen los valores indicados.",
+    "id|recovery=5|cooldown=20|group=burst|mana=10|mana_per_second=4|strain=8|strain_per_second=5|active_group=zone|active_limit=2; Seules les valeurs indiquées sont remplacées.",
+    "id|recovery=5|cooldown=20|group=burst|mana=10|mana_per_second=4|strain=8|strain_per_second=5|active_group=zone|active_limit=2; Apenas os valores indicados são substituídos.",
+    "id|recovery=5|cooldown=20|group=burst|mana=10|mana_per_second=4|strain=8|strain_per_second=5|active_group=zone|active_limit=2; 仅替换指定的值。",
+    "id|recovery=5|cooldown=20|group=burst|mana=10|mana_per_second=4|strain=8|strain_per_second=5|active_group=zone|active_limit=2; 指定した値のみを置き換えます。"
+  ],
+  "DEFAULT uses recovery and automatic spell groups; ELEMENTS, MANA and STRAIN are alternatives; CUSTOM combines the switches below; OFF disables balance rules": [
+    "DEFAULT: Erholung und automatische Gruppen; ELEMENTS: Elementabklingzeiten; MANA: Mana; STRAIN: Belastung; CUSTOM: Kombination der Schalter; OFF: deaktiviert.",
+    "DEFAULT: recuperación y grupos automáticos; ELEMENTS: recargas de elementos; MANA: maná; STRAIN: tensión; CUSTOM: combina las opciones; OFF: desactivado.",
+    "DEFAULT : récupération et groupes automatiques ; ELEMENTS : recharge des éléments ; MANA : mana ; STRAIN : tension ; CUSTOM : combinaison des options ; OFF : désactivé.",
+    "DEFAULT: recuperação e grupos automáticos; ELEMENTS: recargas dos elementos; MANA: mana; STRAIN: tensão; CUSTOM: combina as opções; OFF: desativado.",
+    "DEFAULT：恢复与自动法术组；ELEMENTS：元素冷却；MANA：魔力；STRAIN：负荷；CUSTOM：组合以下选项；OFF：关闭。",
+    "DEFAULT：詠唱後の回復と自動グループ。ELEMENTS：元素のクールダウン。MANA：マナ。STRAIN：負荷。CUSTOM：以下の設定を組み合わせる。OFF：無効。"
+  ],
+  "General settings": [
+    "Allgemeine Einstellungen",
+    "Ajustes generales",
+    "Paramètres généraux",
+    "Configurações gerais",
+    "常规设置",
+    "一般設定"
+  ],
+  "Spell limits": [
+    "Zauberbegrenzungen",
+    "Límites de hechizos",
+    "Limites des sorts",
+    "Limites de feitiços",
+    "法术限制",
+    "呪文の制限"
+  ]
+}

@@ -28,13 +28,13 @@ public final class WorldMagic {
         return player.level().destroyBlock(pos,false,player);
     }
     public static boolean shatterWeak(ServerPlayer player, BlockPos pos, float hardness) {
-        var world = player.level(); var state = world.getBlockState(pos);
+        var world = (net.minecraft.server.level.ServerLevel)player.level(); var state = world.getBlockState(pos);
         if (state.isAir() || state.getDestroySpeed(world,pos) > hardness) return false;
         return breakBlock(player,pos);
     }
     static boolean loose(ServerPlayer player, BlockPos pos) { return loose(player,pos,false); }
     private static boolean loose(ServerPlayer player, BlockPos pos, boolean ultimate) {
-        var world = player.level();
+        var world = (net.minecraft.server.level.ServerLevel)player.level();
         if (!MagicConfig.TERRAIN_DAMAGE.get() || !WorldPlacement.allowed(player,pos)) return false;
         var state = world.getBlockState(pos);
         if (ultimate && state.is(SHATTERABLE) && state.getDestroySpeed(world,pos) >= 0)
@@ -44,7 +44,7 @@ public final class WorldMagic {
         return !NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.block.BreakBlockEvent(world,pos,state,player)).isCanceled();
     }
     public static void ignite(ServerPlayer player, Vec3 point, double radius) {
-        var world = player.level(); BlockPos center = BlockPos.containing(point); int r = (int)Math.ceil(radius);
+        var world = (net.minecraft.server.level.ServerLevel)player.level(); BlockPos center = BlockPos.containing(point); int r = (int)Math.ceil(radius);
         for (BlockPos p : BlockPos.betweenClosed(center.offset(-r,-2,-r),center.offset(r,2,r))) {
             if (p.distSqr(center) > radius*radius+4 || world.getRandom().nextFloat() > .6f) continue;
             BlockPos pos = p.immutable();
@@ -53,8 +53,8 @@ public final class WorldMagic {
         }
     }
     public static void magmaGround(ServerPlayer player,Vec3 point,double radius,int duration) {
-        if(!MagicConfig.TERRAIN_DAMAGE.get())return;
-        var world=(ServerLevel)player.level();BlockPos center=BlockPos.containing(point);double reach=Math.clamp(radius,.5,8),squared=reach*reach;
+        if(!MagicConfig.TERRAIN_DAMAGE.get()||!MagicConfig.CONSTRUCTION.get())return;
+        var world=(net.minecraft.server.level.ServerLevel)player.level();BlockPos center=BlockPos.containing(point);double reach=Math.clamp(radius,.5,8),squared=reach*reach;
         int extent=(int)Math.ceil(reach);long expires=world.getGameTime()+Math.clamp(duration,20,1200);
         for(int dx=-extent;dx<=extent;dx++)for(int dz=-extent;dz<=extent;dz++){
             if(dx*dx+dz*dz>squared)continue;
@@ -80,8 +80,8 @@ public final class WorldMagic {
         }
     }
     public static void magmaCrust(ServerPlayer player,Vec3 point,double radius) {
-        if(!MagicConfig.TERRAIN_DAMAGE.get())return;
-        var world=(ServerLevel)player.level();BlockPos center=BlockPos.containing(point);double reach=Math.clamp(radius,.5,8),squared=reach*reach;
+        if(!MagicConfig.TERRAIN_DAMAGE.get()||!MagicConfig.CONSTRUCTION.get())return;
+        var world=(net.minecraft.server.level.ServerLevel)player.level();BlockPos center=BlockPos.containing(point);double reach=Math.clamp(radius,.5,8),squared=reach*reach;
         int extent=(int)Math.ceil(reach);
         for(int dx=-extent;dx<=extent;dx++)for(int dz=-extent;dz<=extent;dz++){
             if(dx*dx+dz*dz>squared)continue;
@@ -112,7 +112,7 @@ public final class WorldMagic {
             if(EffectGraph.canHarm(player,entity))MagicStatuses.apply(entity,MagicStatuses.Status.OBSCURED,80,1);
     }
     public static void heave(ServerPlayer player, Vec3 point, int budget, double radius, double lift) {
-        var world = player.level(); BlockPos base = BlockPos.containing(point);
+        var world = (net.minecraft.server.level.ServerLevel)player.level(); BlockPos base = BlockPos.containing(point);
         int r = Math.clamp((int)Math.ceil(radius),0,16), remaining = Math.clamp(budget,0,256);
         var columns = new ArrayList<BlockPos>();
         for (int dx = -r; dx <= r; dx++) for (int dz = -r; dz <= r; dz++)
@@ -168,14 +168,14 @@ public final class WorldMagic {
         return dx*dx+dy*dy+dz*dz;
     }
     private static void shatter(ServerPlayer player, BlockPos pos) {
-        var world = player.level();
+        var world = (net.minecraft.server.level.ServerLevel)player.level();
         if (!breakBlock(player,pos,true)) return;
         world.levelEvent(2001,pos,Block.getId(Blocks.SPAWNER.defaultBlockState()));
         EpicMagic.fx(world,ParticleTypes.SOUL,pos.getX()+.5,pos.getY()+.5,pos.getZ()+.5,24,.4,.4,.4,.04);
         world.playSound(null,pos,net.minecraft.sounds.SoundEvents.RESPAWN_ANCHOR_DEPLETE.value(),net.minecraft.sounds.SoundSource.BLOCKS,1.2F,.7F);
     }
     public static void temperature(ServerPlayer player, Vec3 point, double amount, SpellDefinition spell) {
-        var world = player.level(); BlockPos center = BlockPos.containing(point); int r = Math.clamp(spell.formula().size()-1,1,2);
+        var world = (net.minecraft.server.level.ServerLevel)player.level(); BlockPos center = BlockPos.containing(point); int r = Math.clamp(spell.formula().size()-1,1,2);
         int budget = 16;
         for (BlockPos p : BlockPos.betweenClosed(center.offset(-r,-r,-r),center.offset(r,r,r))) {
             BlockPos pos = p.immutable(); if (budget == 0 || !WorldPlacement.allowed(player,pos)) continue;
@@ -241,7 +241,7 @@ public final class WorldMagic {
         }
     }
     public static boolean replace(ServerPlayer player, BlockPos pos, BlockState state) {
-        var world = player.level();
+        var world = (net.minecraft.server.level.ServerLevel)player.level();
         if (!WorldPlacement.allowed(player,pos) || world.getBlockState(pos).hasBlockEntity() || world.getBlockState(pos).is(PROTECTED)) return false;
         var snapshot = BlockSnapshot.create(world.dimension(),world,pos);
         if (!world.setBlock(pos,state,Block.UPDATE_CLIENTS)) return false;

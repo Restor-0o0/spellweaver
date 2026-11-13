@@ -44,7 +44,7 @@ public final class MagicHudLayout {
         int bottom=width>=410?height-6:height-Math.max(49,vanillaHeight)-7;
         int defaultHeight=quickRows*32-8;
         int presetY=Math.max(6,bottom-defaultHeight);
-        return switch(widget){case ELEMENTS->new Point(6,Math.max(6,height-110));case QUICK_SLOTS->new Point(panelX,presetY);case CAST_STATUS->new Point(panelX,Math.max(6,bottom-68));case BOOK_HINT->new Point(6,Math.max(6,height-25));};
+        return switch(widget){case ELEMENTS->new Point(6,Math.max(6,height-110));case QUICK_SLOTS->new Point(panelX,presetY);case CAST_STATUS->new Point(panelX,Math.max(6,bottom-68-balanceHeight()));case BOOK_HINT->new Point(6,Math.max(6,height-25));};
     }
     private static double quickMinX(){double min=0;if(quickCustom)for(int i=0;i<quickCount;i++)min=Math.min(min,QUICK_PLACEMENTS[i].x);return min;}
     private static double quickMinY(){double min=0;if(quickCustom)for(int i=0;i<quickCount;i++)min=Math.min(min,QUICK_PLACEMENTS[i].y);return min;}
@@ -80,12 +80,13 @@ public final class MagicHudLayout {
     public static int elementPanelWidth(){return baseWidth(Widget.ELEMENTS);}
     public static int elementPanelHeight(){return baseHeight(Widget.ELEMENTS);}
     public static int castPanelHeight(){return baseHeight(Widget.CAST_STATUS);}
+    public static int balanceHeight(){var b=com.restor.magicka.MagicNetwork.clientBalance;return b.visible()?10+(b.mana()>=0?11:0)+(b.strain()>=0?11:0):0;}
     public static int frameWidth(Widget widget,int contentWidth){Placement p=PLACEMENTS[widget.ordinal()];return Math.max(1,(int)Math.round(contentWidth*p.frameScaleX/p.scaleX));}
     public static int frameHeight(Widget widget,int contentHeight){Placement p=PLACEMENTS[widget.ordinal()];return Math.max(1,(int)Math.round(contentHeight*p.frameScaleY/p.scaleY));}
     private static double contentOffsetX(Widget widget){return alignedOffset(widget,true);}
     private static double contentOffsetY(Widget widget){return alignedOffset(widget,false);}
     private static int baseWidth(Widget widget){return switch(widget){case ELEMENTS->(int)Math.ceil(elementFrameMaxX());case QUICK_SLOTS->Math.max(1,(int)Math.ceil(quickMaxX()-quickMinX()));case CAST_STATUS->111;case BOOK_HINT->21;};}
-    private static int baseHeight(Widget widget){return switch(widget){case ELEMENTS->Math.max(1,(int)Math.ceil(elementFrameMaxY()+3));case QUICK_SLOTS->Math.max(1,(int)Math.ceil(quickMaxY()-quickMinY()));case CAST_STATUS->titleVisible(Widget.CAST_STATUS)?36:23;case BOOK_HINT->21;};}
+    private static int baseHeight(Widget widget){return switch(widget){case ELEMENTS->Math.max(1,(int)Math.ceil(elementFrameMaxY()+3));case QUICK_SLOTS->Math.max(1,(int)Math.ceil(quickMaxY()-quickMinY()));case CAST_STATUS->(titleVisible(Widget.CAST_STATUS)?36:23)+balanceHeight();case BOOK_HINT->21;};}
     public static Bounds bounds(Widget widget,int width,int height,int vanillaHeight){
         Point base=base(widget,width,height,vanillaHeight);Placement p=PLACEMENTS[widget.ordinal()];
         double minX=widget==Widget.QUICK_SLOTS?Math.min(0,quickMinX()*p.scaleX):0,minY=widget==Widget.QUICK_SLOTS?Math.min(0,quickMinY()*p.scaleY):0;
@@ -246,6 +247,7 @@ public final class MagicHudLayout {
         double scale=horizontal?p.scaleX:p.scaleY;
         double start=p.padding/scale+(!horizontal&&(widget==Widget.ELEMENTS||widget==Widget.CAST_STATUS)&&p.titleVisible?13:0);
         double end=(horizontal?frameWidth(widget,baseWidth(widget)):frameHeight(widget,baseHeight(widget)))/contentFit(widget)-p.padding/scale;
+        if(widget==Widget.CAST_STATUS&&!horizontal)end-=balanceHeight();
         double available=Math.max(0,end-start),position=start;
         if(widget==Widget.QUICK_SLOTS||widget==Widget.ELEMENTS){
             double[] sizes=new double[count];
@@ -281,7 +283,7 @@ public final class MagicHudLayout {
         double scale=horizontal?p.scaleX:p.scaleY;
         double padding=2*p.padding/scale;
         if(widget==Widget.BOOK_HINT)return 11.2+padding;
-        if(widget==Widget.CAST_STATUS)return padding+(horizontal?17*castCount+(castCount-1)*p.gap/scale:17+(p.titleVisible?13:0));
+        if(widget==Widget.CAST_STATUS)return padding+(horizontal?Math.max(balanceHeight()>0?105:0,17*castCount+(castCount-1)*p.gap/scale):17+(p.titleVisible?13:0)+balanceHeight());
         boolean elements=widget==Widget.ELEMENTS,custom=elements?elementCustom:quickCustom;
         int columns=elements?elementColumns:quickColumns,rows=elements?elementRows:quickRows,count=elements?8:quickCount;
         double[] sizes=new double[horizontal?columns:rows];

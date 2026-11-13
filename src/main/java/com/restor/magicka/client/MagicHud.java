@@ -61,8 +61,9 @@ public final class MagicHud {
     }
     private static void renderPart(GuiGraphicsExtractor g,MagicNetwork.State state,int vanillaHeight,MagicHudLayout.Widget selected){
         int w=g.guiWidth(),h=g.guiHeight();Formula prepared=Formula.unpack(state.formula());boolean editor=Minecraft.getInstance().screen instanceof HudLayoutScreen;
+        var player=Minecraft.getInstance().player;int capacity=player==null?Formula.MAX:com.restor.magicka.MageLevel.clientMaxElements(player);
         Formula castFormula=MagicNetwork.clientQueue.formula()!=0?Formula.unpack(MagicNetwork.clientQueue.formula()):prepared;
-        MagicHudLayout.castCount(resolve(castFormula).size()+Math.max(0,com.restor.magicka.MageLevel.clientMaxElements(Minecraft.getInstance().player)-castFormula.size()));
+        MagicHudLayout.castCount(resolve(castFormula).size()+Math.max(0,capacity-castFormula.size()));
         MagicHudLayout.clampToScreen(w,h,vanillaHeight);
         if(selected==MagicHudLayout.Widget.ELEMENTS&&(MagicHudLayout.visible(MagicHudLayout.Widget.ELEMENTS)||editor)){
         int px=6,py=Math.max(6,h-110);
@@ -130,7 +131,7 @@ public final class MagicHud {
         boolean named=spell!=null && spell.ordered() && spell.spoken().equals(display.elements());
         Component label=spell==null?Component.translatable("hud.magicka.prepared"):named?spell.displayName():Component.empty();
         if(MagicHudLayout.titleVisible(MagicHudLayout.Widget.CAST_STATUS))UiText.line(g,label,panelX+4,y+2,103,9,.75f,true,queuing?0xFFFFDC84:casting?0xFFE0B3FF:MagicUi.GOLD);
-        int cells=runes.size()+Math.max(0,com.restor.magicka.MageLevel.clientMaxElements(Minecraft.getInstance().player)-display.size());
+        int cells=runes.size()+Math.max(0,capacity-display.size());
         for(int i=0;i<cells;i++){
             Rune rune=i<runes.size()?runes.get(i):null;int runeY=MagicHudLayout.castSlotY(),slotX=MagicHudLayout.castSlotX(i,cells);socket(g,rune,panelX+slotX,y+runeY);
             if(queuing && rune!=null && rune.sourceEnd>prepared.size())g.fill(panelX+slotX+1,y+runeY+1,panelX+slotX+16,y+runeY+16,HudView.color(0xAF0E1119));
@@ -141,9 +142,19 @@ public final class MagicHud {
             int progressY=y+MagicHudLayout.castSlotY()+15;
             g.fill(panelX+2,progressY,panelX+109,progressY+2,HudView.color(0xFF30293B));g.fill(panelX+2,progressY,panelX+2+(int)(107*Math.clamp(progress,0,1)),progressY+2,HudView.color(color));
         }
+        if(MagicNetwork.clientBalance.visible()){
+            var balance=MagicNetwork.clientBalance;int statusY=y+MagicHudLayout.castSlotY()+20;
+            UiText.line(g,balance.waitTicks()>0?Component.translatable("balance.magicka.hud_wait",String.format(java.util.Locale.ROOT,"%.1f",balance.waitTicks()/20f)):Component.translatable("balance.magicka.ready"),panelX+4,statusY,103,8,.65f,true,balance.waitTicks()>0?0xFFFFCC80:0xFFA5D6A7);statusY+=9;
+            if(balance.mana()>=0){balanceRow(g,panelX,statusY,"balance.magicka.mana",balance.mana(),balance.manaMax(),0xFF64B5F6);statusY+=11;}
+            if(balance.strain()>=0)balanceRow(g,panelX,statusY,"balance.magicka.strain",balance.strain(),balance.strainMax(),0xFFFFAB70);
+        }
         castView.endContent(g);g.disableScissor();castView.end(g);
         if(!MagicHudLayout.visible(MagicHudLayout.Widget.CAST_STATUS))dimWindow(g,MagicHudLayout.Widget.CAST_STATUS,w,h,vanillaHeight);
         }
+    }
+    private static void balanceRow(GuiGraphicsExtractor g,int x,int y,String key,float value,float max,int color){
+        UiText.line(g,Component.translatable(key,(int)value,(int)max),x+4,y,103,8,.65f,true,color);
+        g.fill(x+4,y+8,x+107,y+9,0xFF30293B);g.fill(x+4,y+8,x+4+(int)(103*Math.clamp(value/Math.max(1,max),0,1)),y+9,color);
     }
     private static void renderBookHint(GuiGraphicsExtractor g,int width,int height,int vanillaHeight,boolean editor){
         var widget=MagicHudLayout.Widget.BOOK_HINT;if(!MagicHudLayout.visible(widget)&&!editor)return;
