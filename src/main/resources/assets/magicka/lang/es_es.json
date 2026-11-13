@@ -2770,5 +2770,7 @@
   "settings.magicka.command_set": "Establecer el valor de este borrador",
   "settings.magicka.command_reset": "Restaurar el valor predeterminado",
   "settings.magicka.copy": "Copiar",
-  "settings.magicka.copied": "Copiado"
+  "settings.magicka.copied": "Copiado",
+  "book.magicka.open_cover": "Abrir libro",
+  "book.magicka.close_cover": "Cerrar el libro"
 }
