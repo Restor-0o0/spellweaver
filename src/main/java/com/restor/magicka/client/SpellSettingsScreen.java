@@ -97,6 +97,7 @@ public final class SpellSettingsScreen extends Screen {
         UiText.line(g,title,left+39,top+11,panelWidth/2-50,12,.9f,false,TEXT);
         UiText.line(g,tr("subtitle"),left+39,top+25,panelWidth/2-50,8,.6f,false,DIM);
         surface(g,search.x-5,search.y-4,search.getWidth()+10,23,0xFF10121A,search.isFocused()?ACCENT:EDGE);
+        if(search.getValue().isEmpty()&&!search.isFocused())UiText.line(g,tr("search"),search.x,search.y,search.getWidth(),16,.9f,false,DIM);
         g.fill(contentX-7,bodyY,contentX-6,bodyY+bodyHeight,EDGE);
         var keys=matching();UiText.line(g,query.isBlank()?Component.translatable(category.key()):tr("results"),contentX,bodyY+2,contentWidth-70,11,.8f,false,ACCENT);
         UiText.line(g,Component.literal(Integer.toString(keys.size())),contentX+contentWidth-47,bodyY+2,20,10,.7f,true,DIM);
