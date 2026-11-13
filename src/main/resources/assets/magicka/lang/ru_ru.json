@@ -2770,5 +2770,7 @@
   "settings.magicka.command_set": "Установить значение из черновика",
   "settings.magicka.command_reset": "Восстановить значение по умолчанию",
   "settings.magicka.copy": "Копировать",
-  "settings.magicka.copied": "Скопировано"
+  "settings.magicka.copied": "Скопировано",
+  "book.magicka.open_cover": "Открыть книгу",
+  "book.magicka.close_cover": "Закрыть обложку"
 }

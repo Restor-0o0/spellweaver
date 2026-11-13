@@ -2770,5 +2770,7 @@
   "settings.magicka.command_set": "Legen Sie den Wert aus diesem Entwurf fest",
   "settings.magicka.command_reset": "Stellen Sie den Standardwert wieder her",
   "settings.magicka.copy": "Kopieren",
-  "settings.magicka.copied": "Kopiert"
+  "settings.magicka.copied": "Kopiert",
+  "book.magicka.open_cover": "Buch öffnen",
+  "book.magicka.close_cover": "Buch zuklappen"
 }

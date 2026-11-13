@@ -2770,5 +2770,7 @@
   "settings.magicka.command_set": "Définir la valeur de ce brouillon",
   "settings.magicka.command_reset": "Restaurer la valeur par défaut",
   "settings.magicka.copy": "Copier",
-  "settings.magicka.copied": "Copié"
+  "settings.magicka.copied": "Copié",
+  "book.magicka.open_cover": "Ouvrir le livre",
+  "book.magicka.close_cover": "Fermer le livre"
 }
