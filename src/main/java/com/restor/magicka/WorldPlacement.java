@@ -21,6 +21,7 @@ public final class WorldPlacement {
     }
     static boolean placeBlock(ServerPlayer player, BlockPos pos, BlockState state, java.util.UUID construction,
                               BlockPos root, boolean floating, boolean push, Object ignored) {
+        if(!MagicConfig.CONSTRUCTION.get())return false;
         var world = player.serverLevel();
         if (!allowed(player, pos)) return false;
         BlockState old = world.getBlockState(pos);

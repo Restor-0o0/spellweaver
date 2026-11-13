@@ -39,6 +39,7 @@ public final class MagicStats {
     public static double power(Player player,Stat stat){return MagicGear.total(player)[stat.ordinal()]/100.0;}
     public static void reset(ServerPlayer player){player.getPersistentData().remove(TAG);CACHE.remove(player.getUUID());sync(player);}
     public static void invalidate(ServerPlayer player){CACHE.remove(player.getUUID());sync(player);}
+    static void clearCache(){CACHE.clear();}
     public static void sync(ServerPlayer player){PacketDistributor.sendToPlayer(player,new MagicNetwork.Stats(get(player),MagicGear.deltas(player)));}
     public static int minionCap(ServerPlayer owner){int[] v=MagicGear.total(owner);return (int)Math.clamp(Math.round(MagicConfig.MAX_MINIONS.get()*Math.max(1,v[Stat.SUMMONS.ordinal()]/100.0*v[Stat.DEATH.ordinal()]/100.0)),1,512);}
 
